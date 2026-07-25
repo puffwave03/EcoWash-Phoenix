@@ -1,0 +1,15 @@
+{
+  "hero": {
+    "eyebrow": "Designgrundlage",
+    "title": "EcoWash Phoenix",
+    "subtitle": "Executive-Luxury-Designsystem für die öffentliche Website-Grundlage.",
+    "demoButton": "Demo anfragen",
+    "learnMore": "Struktur ansehen"
+  },
+  "foundationCard": {
+    "logoLabel": "EcoWash Phoenix Logo-Platzhalter",
+    "logoPlaceholder": "EP",
+    "title": "Öffentliche Website",
+    "description": "Globales Layout, Typografie, Farben und wiederverwendbare Komponenten sind eingerichtet."
+  }
+}

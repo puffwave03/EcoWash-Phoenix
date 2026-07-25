@@ -1,22 +1,26 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Link } from "@/i18n/navigation";
 
 const navigationItems = [
-  "Home",
-  "Solutions",
-  "Services",
-  "Industries",
-  "Pricing",
-  "Resources",
-  "Contact",
+  "home",
+  "solutions",
+  "services",
+  "industries",
+  "pricing",
+  "resources",
+  "contact",
 ];
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const brand = useTranslations("common.brand");
+  const navigation = useTranslations("common.navigation");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
@@ -25,36 +29,40 @@ export function Header() {
           <Link
             className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             href="/"
-            aria-label="EcoWash Phoenix home"
+            aria-label={brand("logoLabel")}
           >
             <span className="flex size-11 items-center justify-center rounded-logo border border-secondary/40 bg-primary text-sm font-semibold text-white shadow-card">
-              EP
+              {brand("logoPlaceholder")}
             </span>
             <span className="text-sm font-semibold tracking-wide text-text">
-              EcoWash Phoenix
+              {brand("name")}
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">
+          <nav
+            className="hidden items-center gap-7 lg:flex"
+            aria-label={navigation("primaryLabel")}
+          >
             {navigationItems.map((item) => (
               <button
                 className="text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 key={item}
                 type="button"
               >
-                {item}
+                {navigation(item)}
               </button>
             ))}
           </nav>
 
-          <div className="hidden lg:block">
-            <Button>Request a Demo</Button>
+          <div className="hidden items-center gap-3 lg:flex">
+            <LanguageSwitcher />
+            <Button>{navigation("requestDemo")}</Button>
           </div>
 
           <button
             aria-controls="mobile-navigation"
             aria-expanded={isOpen}
-            aria-label="Toggle navigation menu"
+            aria-label={navigation("toggleMenu")}
             className="inline-flex size-11 items-center justify-center rounded-control border border-border bg-surface text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 lg:hidden"
             onClick={() => setIsOpen((current) => !current)}
             type="button"
@@ -71,7 +79,7 @@ export function Header() {
           <nav
             id="mobile-navigation"
             className="border-t border-border py-5 lg:hidden"
-            aria-label="Mobile navigation"
+            aria-label={navigation("mobileLabel")}
           >
             <div className="flex flex-col gap-1">
               {navigationItems.map((item) => (
@@ -81,10 +89,13 @@ export function Header() {
                   onClick={() => setIsOpen(false)}
                   type="button"
                 >
-                  {item}
+                  {navigation(item)}
                 </button>
               ))}
-              <Button className="mt-4 w-full">Request a Demo</Button>
+              <div className="mt-4 flex flex-col gap-3">
+                <LanguageSwitcher />
+                <Button className="w-full">{navigation("requestDemo")}</Button>
+              </div>
             </div>
           </nav>
         ) : null}

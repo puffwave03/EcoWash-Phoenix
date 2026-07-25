@@ -1,0 +1,75 @@
+{
+  "brand": {
+    "name": "EcoWash Phoenix",
+    "logoLabel": "Home EcoWash Phoenix",
+    "logoPlaceholder": "EP"
+  },
+  "metadata": {
+    "title": "EcoWash Phoenix",
+    "description": "Fondazione del sito pubblico executive per EcoWash Phoenix."
+  },
+  "navigation": {
+    "home": "Home",
+    "solutions": "Soluzioni",
+    "services": "Servizi",
+    "industries": "Settori",
+    "pricing": "Prezzi",
+    "resources": "Risorse",
+    "contact": "Contatti",
+    "requestDemo": "Richiedi una demo",
+    "toggleMenu": "Apri o chiudi il menu di navigazione",
+    "primaryLabel": "Navigazione principale",
+    "mobileLabel": "Navigazione mobile"
+  },
+  "footer": {
+    "platform": {
+      "title": "Piattaforma",
+      "links": {
+        "overview": "Panoramica",
+        "features": "Funzionalità",
+        "operations": "Operazioni"
+      }
+    },
+    "solutions": {
+      "title": "Soluzioni",
+      "links": {
+        "hotels": "Hotel",
+        "vacationRentals": "Affitti brevi",
+        "laundries": "Lavanderie"
+      }
+    },
+    "company": {
+      "title": "Azienda",
+      "links": {
+        "about": "Chi siamo",
+        "resources": "Risorse",
+        "contact": "Contatti"
+      }
+    },
+    "legal": {
+      "title": "Legale",
+      "links": {
+        "privacy": "Privacy",
+        "terms": "Termini",
+        "compliance": "Conformità"
+      }
+    },
+    "navigationLabel": "Navigazione footer",
+    "socialLabel": "Link social",
+    "social": {
+      "linkedin": "IN",
+      "x": "X",
+      "youtube": "YT"
+    }
+  },
+  "language": {
+    "label": "Lingua",
+    "locales": {
+      "en": "English",
+      "it": "Italiano",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch"
+    }
+  }
+}

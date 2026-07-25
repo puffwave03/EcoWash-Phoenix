@@ -1,0 +1,15 @@
+{
+  "hero": {
+    "eyebrow": "Fondation design",
+    "title": "EcoWash Phoenix",
+    "subtitle": "Système visuel executive luxury pour la fondation du site public.",
+    "demoButton": "Demander une démo",
+    "learnMore": "Voir la structure"
+  },
+  "foundationCard": {
+    "logoLabel": "Emplacement réservé au logo EcoWash Phoenix",
+    "logoPlaceholder": "EP",
+    "title": "Site public",
+    "description": "La mise en page globale, la typographie, les couleurs et les composants réutilisables sont en place."
+  }
+}

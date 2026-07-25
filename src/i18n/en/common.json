@@ -1,0 +1,75 @@
+{
+  "brand": {
+    "name": "EcoWash Phoenix",
+    "logoLabel": "EcoWash Phoenix home",
+    "logoPlaceholder": "EP"
+  },
+  "metadata": {
+    "title": "EcoWash Phoenix",
+    "description": "Executive public website foundation for EcoWash Phoenix."
+  },
+  "navigation": {
+    "home": "Home",
+    "solutions": "Solutions",
+    "services": "Services",
+    "industries": "Industries",
+    "pricing": "Pricing",
+    "resources": "Resources",
+    "contact": "Contact",
+    "requestDemo": "Request a Demo",
+    "toggleMenu": "Toggle navigation menu",
+    "primaryLabel": "Primary navigation",
+    "mobileLabel": "Mobile navigation"
+  },
+  "footer": {
+    "platform": {
+      "title": "Platform",
+      "links": {
+        "overview": "Overview",
+        "features": "Features",
+        "operations": "Operations"
+      }
+    },
+    "solutions": {
+      "title": "Solutions",
+      "links": {
+        "hotels": "Hotels",
+        "vacationRentals": "Vacation Rentals",
+        "laundries": "Laundries"
+      }
+    },
+    "company": {
+      "title": "Company",
+      "links": {
+        "about": "About",
+        "resources": "Resources",
+        "contact": "Contact"
+      }
+    },
+    "legal": {
+      "title": "Legal",
+      "links": {
+        "privacy": "Privacy",
+        "terms": "Terms",
+        "compliance": "Compliance"
+      }
+    },
+    "navigationLabel": "Footer navigation",
+    "socialLabel": "Social links",
+    "social": {
+      "linkedin": "IN",
+      "x": "X",
+      "youtube": "YT"
+    }
+  },
+  "language": {
+    "label": "Language",
+    "locales": {
+      "en": "English",
+      "it": "Italiano",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch"
+    }
+  }
+}
