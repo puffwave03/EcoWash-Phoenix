@@ -1,15 +1,73 @@
 {
   "hero": {
-    "eyebrow": "Fondazione design",
-    "title": "EcoWash Phoenix",
-    "subtitle": "Sistema visivo executive luxury per la fondazione del sito pubblico.",
-    "demoButton": "Richiedi una demo",
-    "learnMore": "Vedi struttura"
-  },
-  "foundationCard": {
-    "logoLabel": "Logo segnaposto EcoWash Phoenix",
-    "logoPlaceholder": "EP",
-    "title": "Sito pubblico",
-    "description": "Layout globale, tipografia, colori e componenti riutilizzabili sono pronti."
+    "eyebrow": "Operazioni ripensate",
+    "title": "La piattaforma operativa per le lavanderie moderne.",
+    "description": "Gestisci ordini, produzione, ritiri, consegne e fatturazione da un'unica piattaforma elegante, progettata per le lavanderie professionali.",
+    "primaryCta": "Richiedi una demo",
+    "secondaryCta": "Esplora la piattaforma",
+    "trustStatement": "Pensata per lavanderie, hotel, affitti brevi e team di servizi professionali.",
+    "preview": {
+      "logoPlaceholder": "EP",
+      "title": "Centro operativo",
+      "subtitle": "Oggi",
+      "metrics": {
+        "activeOrders": {
+          "label": "Ordini attivi",
+          "value": "128"
+        },
+        "inProduction": {
+          "label": "In produzione",
+          "value": "46"
+        },
+        "deliveries": {
+          "label": "Consegne",
+          "value": "18"
+        }
+      },
+      "orders": {
+        "title": "Ordini recenti",
+        "items": [
+          {
+            "customer": "Grand Hotel Aurora",
+            "status": "Pronto per la consegna",
+            "amount": "1.240 €"
+          },
+          {
+            "customer": "Villa Serena Rentals",
+            "status": "In finitura",
+            "amount": "680 €"
+          },
+          {
+            "customer": "CityCare Laundry",
+            "status": "Ritiro programmato",
+            "amount": "920 €"
+          }
+        ]
+      },
+      "production": {
+        "title": "Stato produzione",
+        "washing": {
+          "label": "Lavaggio",
+          "value": "82%"
+        },
+        "drying": {
+          "label": "Asciugatura",
+          "value": "64%"
+        },
+        "ironing": {
+          "label": "Stiratura",
+          "value": "48%"
+        },
+        "ready": {
+          "label": "Pronto",
+          "value": "76%"
+        }
+      },
+      "delivery": {
+        "title": "Giro consegne",
+        "route": "Percorso zona nord",
+        "status": "In orario"
+      }
+    }
   }
 }

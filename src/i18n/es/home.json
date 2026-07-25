@@ -1,15 +1,73 @@
 {
   "hero": {
-    "eyebrow": "Base de diseño",
-    "title": "EcoWash Phoenix",
-    "subtitle": "Sistema visual executive luxury para la base del sitio público.",
-    "demoButton": "Solicitar demo",
-    "learnMore": "Ver estructura"
-  },
-  "foundationCard": {
-    "logoLabel": "Marcador de posición del logo de EcoWash Phoenix",
-    "logoPlaceholder": "EP",
-    "title": "Sitio público",
-    "description": "El layout global, la tipografía, los colores y los componentes reutilizables están listos."
+    "eyebrow": "Operaciones reinventadas",
+    "title": "La plataforma operativa para lavanderías modernas.",
+    "description": "Gestiona pedidos, producción, recogidas, entregas y facturación desde una plataforma elegante creada para operaciones profesionales de lavandería.",
+    "primaryCta": "Solicitar demo",
+    "secondaryCta": "Explorar la plataforma",
+    "trustStatement": "Creada para lavanderías, hoteles, alquileres vacacionales y equipos de servicios profesionales.",
+    "preview": {
+      "logoPlaceholder": "EP",
+      "title": "Centro de operaciones",
+      "subtitle": "Hoy",
+      "metrics": {
+        "activeOrders": {
+          "label": "Pedidos activos",
+          "value": "128"
+        },
+        "inProduction": {
+          "label": "En producción",
+          "value": "46"
+        },
+        "deliveries": {
+          "label": "Entregas",
+          "value": "18"
+        }
+      },
+      "orders": {
+        "title": "Pedidos recientes",
+        "items": [
+          {
+            "customer": "Grand Hotel Aurora",
+            "status": "Listo para entrega",
+            "amount": "1.240 €"
+          },
+          {
+            "customer": "Villa Serena Rentals",
+            "status": "En acabado",
+            "amount": "680 €"
+          },
+          {
+            "customer": "CityCare Laundry",
+            "status": "Recogida programada",
+            "amount": "920 €"
+          }
+        ]
+      },
+      "production": {
+        "title": "Estado de producción",
+        "washing": {
+          "label": "Lavado",
+          "value": "82%"
+        },
+        "drying": {
+          "label": "Secado",
+          "value": "64%"
+        },
+        "ironing": {
+          "label": "Planchado",
+          "value": "48%"
+        },
+        "ready": {
+          "label": "Listo",
+          "value": "76%"
+        }
+      },
+      "delivery": {
+        "title": "Ruta de entrega",
+        "route": "Ruta distrito norte",
+        "status": "A tiempo"
+      }
+    }
   }
 }

@@ -1,15 +1,73 @@
 {
   "hero": {
-    "eyebrow": "Designgrundlage",
-    "title": "EcoWash Phoenix",
-    "subtitle": "Executive-Luxury-Designsystem für die öffentliche Website-Grundlage.",
-    "demoButton": "Demo anfragen",
-    "learnMore": "Struktur ansehen"
-  },
-  "foundationCard": {
-    "logoLabel": "EcoWash Phoenix Logo-Platzhalter",
-    "logoPlaceholder": "EP",
-    "title": "Öffentliche Website",
-    "description": "Globales Layout, Typografie, Farben und wiederverwendbare Komponenten sind eingerichtet."
+    "eyebrow": "Abläufe neu gedacht",
+    "title": "Die Betriebsplattform für moderne Wäschereien.",
+    "description": "Verwalten Sie Aufträge, Produktion, Abholungen, Lieferungen und Abrechnung über eine elegante Plattform für professionelle Wäschereibetriebe.",
+    "primaryCta": "Demo anfragen",
+    "secondaryCta": "Plattform ansehen",
+    "trustStatement": "Entwickelt für Wäschereien, Hotels, Ferienvermietungen und professionelle Serviceteams.",
+    "preview": {
+      "logoPlaceholder": "EP",
+      "title": "Betriebszentrale",
+      "subtitle": "Heute",
+      "metrics": {
+        "activeOrders": {
+          "label": "Aktive Aufträge",
+          "value": "128"
+        },
+        "inProduction": {
+          "label": "In Produktion",
+          "value": "46"
+        },
+        "deliveries": {
+          "label": "Lieferungen",
+          "value": "18"
+        }
+      },
+      "orders": {
+        "title": "Aktuelle Aufträge",
+        "items": [
+          {
+            "customer": "Grand Hotel Aurora",
+            "status": "Bereit zur Lieferung",
+            "amount": "1.240 €"
+          },
+          {
+            "customer": "Villa Serena Rentals",
+            "status": "In der Endbearbeitung",
+            "amount": "680 €"
+          },
+          {
+            "customer": "CityCare Laundry",
+            "status": "Abholung geplant",
+            "amount": "920 €"
+          }
+        ]
+      },
+      "production": {
+        "title": "Produktionsstatus",
+        "washing": {
+          "label": "Waschen",
+          "value": "82%"
+        },
+        "drying": {
+          "label": "Trocknen",
+          "value": "64%"
+        },
+        "ironing": {
+          "label": "Bügeln",
+          "value": "48%"
+        },
+        "ready": {
+          "label": "Bereit",
+          "value": "76%"
+        }
+      },
+      "delivery": {
+        "title": "Lieferroute",
+        "route": "Route Bezirk Nord",
+        "status": "Im Zeitplan"
+      }
+    }
   }
 }

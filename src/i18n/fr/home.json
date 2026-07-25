@@ -1,15 +1,73 @@
 {
   "hero": {
-    "eyebrow": "Fondation design",
-    "title": "EcoWash Phoenix",
-    "subtitle": "Système visuel executive luxury pour la fondation du site public.",
-    "demoButton": "Demander une démo",
-    "learnMore": "Voir la structure"
-  },
-  "foundationCard": {
-    "logoLabel": "Emplacement réservé au logo EcoWash Phoenix",
-    "logoPlaceholder": "EP",
-    "title": "Site public",
-    "description": "La mise en page globale, la typographie, les couleurs et les composants réutilisables sont en place."
+    "eyebrow": "Opérations réinventées",
+    "title": "La plateforme opérationnelle des blanchisseries modernes.",
+    "description": "Gérez les commandes, la production, les collectes, les livraisons et la facturation depuis une plateforme élégante conçue pour les opérations de blanchisserie professionnelle.",
+    "primaryCta": "Demander une démo",
+    "secondaryCta": "Explorer la plateforme",
+    "trustStatement": "Conçue pour les blanchisseries, hôtels, locations saisonnières et équipes de services professionnels.",
+    "preview": {
+      "logoPlaceholder": "EP",
+      "title": "Centre opérationnel",
+      "subtitle": "Aujourd'hui",
+      "metrics": {
+        "activeOrders": {
+          "label": "Commandes actives",
+          "value": "128"
+        },
+        "inProduction": {
+          "label": "En production",
+          "value": "46"
+        },
+        "deliveries": {
+          "label": "Livraisons",
+          "value": "18"
+        }
+      },
+      "orders": {
+        "title": "Commandes récentes",
+        "items": [
+          {
+            "customer": "Grand Hotel Aurora",
+            "status": "Prête pour livraison",
+            "amount": "1 240 €"
+          },
+          {
+            "customer": "Villa Serena Rentals",
+            "status": "En finition",
+            "amount": "680 €"
+          },
+          {
+            "customer": "CityCare Laundry",
+            "status": "Collecte planifiée",
+            "amount": "920 €"
+          }
+        ]
+      },
+      "production": {
+        "title": "État de production",
+        "washing": {
+          "label": "Lavage",
+          "value": "82%"
+        },
+        "drying": {
+          "label": "Séchage",
+          "value": "64%"
+        },
+        "ironing": {
+          "label": "Repassage",
+          "value": "48%"
+        },
+        "ready": {
+          "label": "Prêt",
+          "value": "76%"
+        }
+      },
+      "delivery": {
+        "title": "Tournée de livraison",
+        "route": "Tournée secteur nord",
+        "status": "Dans les temps"
+      }
+    }
   }
 }

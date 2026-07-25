@@ -1,15 +1,73 @@
 {
   "hero": {
-    "eyebrow": "Design foundation",
-    "title": "EcoWash Phoenix",
-    "subtitle": "Executive luxury visual system for the public website foundation.",
-    "demoButton": "Request a Demo",
-    "learnMore": "View Structure"
-  },
-  "foundationCard": {
-    "logoLabel": "EcoWash Phoenix logo placeholder",
-    "logoPlaceholder": "EP",
-    "title": "Public Website",
-    "description": "Global layout, typography, colors, and reusable components are in place."
+    "eyebrow": "Operations, reimagined",
+    "title": "The operating platform for modern laundry businesses.",
+    "description": "Manage orders, production, pickups, deliveries and billing from one elegant platform built for professional laundry operations.",
+    "primaryCta": "Request a Demo",
+    "secondaryCta": "Explore the Platform",
+    "trustStatement": "Built for laundries, hotels, vacation rentals and professional service teams.",
+    "preview": {
+      "logoPlaceholder": "EP",
+      "title": "Operations Command",
+      "subtitle": "Today",
+      "metrics": {
+        "activeOrders": {
+          "label": "Active orders",
+          "value": "128"
+        },
+        "inProduction": {
+          "label": "In production",
+          "value": "46"
+        },
+        "deliveries": {
+          "label": "Deliveries",
+          "value": "18"
+        }
+      },
+      "orders": {
+        "title": "Recent orders",
+        "items": [
+          {
+            "customer": "Grand Hotel Aurora",
+            "status": "Ready for delivery",
+            "amount": "$1,240"
+          },
+          {
+            "customer": "Villa Serena Rentals",
+            "status": "In finishing",
+            "amount": "$680"
+          },
+          {
+            "customer": "CityCare Laundry",
+            "status": "Pickup scheduled",
+            "amount": "$920"
+          }
+        ]
+      },
+      "production": {
+        "title": "Production status",
+        "washing": {
+          "label": "Washing",
+          "value": "82%"
+        },
+        "drying": {
+          "label": "Drying",
+          "value": "64%"
+        },
+        "ironing": {
+          "label": "Ironing",
+          "value": "48%"
+        },
+        "ready": {
+          "label": "Ready",
+          "value": "76%"
+        }
+      },
+      "delivery": {
+        "title": "Delivery route",
+        "route": "North district route",
+        "status": "On schedule"
+      }
+    }
   }
 }
