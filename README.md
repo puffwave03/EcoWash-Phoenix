@@ -21,11 +21,39 @@ The purpose of EcoWash Phoenix is to establish a clear, approved foundation for 
 
 ## Current Status
 
-| Item | Status |
+| Area | Status |
 | --- | --- |
-| Phase | Planning Phase |
-| Version | 0.1 |
-| Architecture | In progress |
+| DEV-001 | Completed — Next.js public website foundation |
+| DEV-002 | Completed — Executive Luxury design foundation |
+| DEV-002.5 | Completed — Internationalization foundation |
+| DEV-003 | Completed — Multilingual homepage Hero and dashboard preview |
+
+Current technical foundation:
+
+- Next.js App Router
+- React
+- TypeScript
+- Tailwind CSS
+- next-intl
+- ESLint
+- Five locales: English, Italian, Spanish, French, German
+
+Current visual direction:
+
+- Executive Luxury
+- Premium SaaS
+- Hospitality-oriented
+- Dark green, gold, and neutral palette
+- Existing EcoWash logo retained as the brand reference
+- Current website implementation still uses the approved placeholder where applicable
+
+Internationalization rules:
+
+- Locale-prefixed URLs: `/en`, `/it`, `/es`, `/fr`, `/de`
+- English is the default locale
+- Browser-language detection is enabled
+- No user-visible text should be hardcoded in React components
+- Translation files must maintain identical key structures
 
 ## Project Goals
 
@@ -58,9 +86,8 @@ Placeholder (TBD)
 
 ---
 
-Document Status: Draft
+Document Status: Active
 
 Last Updated: 2026-07-25
 
-Next Document:
-Product_Blueprint.md
+Next Development Mission: DEV-004
