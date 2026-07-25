@@ -1,31 +1,39 @@
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { Section } from "@/components/Section";
+import { SectionTitle } from "@/components/SectionTitle";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f6faf8] px-6 py-12 text-slate-950">
-      <section className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8 text-center">
-        <div
-          aria-label="EcoWash Phoenix logo placeholder"
-          className="flex size-20 items-center justify-center rounded-2xl border border-emerald-200 bg-white text-xl font-semibold text-emerald-700 shadow-sm"
+    <Section className="bg-background">
+      <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.72fr]">
+        <SectionTitle
+          eyebrow="Design foundation"
+          title="EcoWash Phoenix"
         >
-          EP
-        </div>
+          Executive luxury visual system for the public website foundation.
+        </SectionTitle>
 
-        <div className="space-y-4">
-          <h1 className="text-4xl font-semibold tracking-normal sm:text-5xl">
-            EcoWash Phoenix
-          </h1>
-          <p className="mx-auto max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            A clean public website foundation for the EcoWash Phoenix planning
-            phase.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          className="inline-flex min-h-12 items-center justify-center rounded-md bg-emerald-700 px-6 text-sm font-medium text-white transition-colors hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
-        >
-          View Project
-        </button>
-      </section>
-    </main>
+        <Card className="mx-auto w-full max-w-sm space-y-5">
+          <div
+            aria-label="EcoWash Phoenix logo placeholder"
+            className="flex size-16 items-center justify-center rounded-logo border border-secondary/40 bg-primary text-lg font-semibold text-white"
+          >
+            EP
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-h3 font-semibold text-text">Public Website</h1>
+            <p className="text-body text-muted">
+              Global layout, typography, colors, and reusable components are in
+              place.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button>Request a Demo</Button>
+            <Button variant="secondary">View Structure</Button>
+          </div>
+        </Card>
+      </div>
+    </Section>
   );
 }
