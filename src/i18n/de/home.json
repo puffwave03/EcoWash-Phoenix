@@ -69,5 +69,102 @@
         "status": "Im Zeitplan"
       }
     }
+  },
+  "solutions": {
+    "eyebrow": "Eine Plattform. Jeder Ablauf.",
+    "title": "Alles, was Ihre Wäscherei braucht, um präzise zu arbeiten.",
+    "description": "EcoWash Phoenix verbindet Aufträge, Produktion, Logistik, Kunden und Abrechnung in einem zentralen Betriebssystem.",
+    "items": {
+      "orderManagement": {
+        "title": "Auftragsverwaltung",
+        "description": "Erfassen, organisieren und verfolgen Sie jeden Auftrag von der Annahme bis zum Abschluss."
+      },
+      "productionControl": {
+        "title": "Produktionssteuerung",
+        "description": "Koordinieren Sie Waschen, Trocknen, Bügeln, Qualitätskontrolle und Verpackung."
+      },
+      "pickupDelivery": {
+        "title": "Abholung und Lieferung",
+        "description": "Planen Sie Abholungen, Routen, Lieferungen und den operativen Status in Echtzeit."
+      },
+      "customerManagement": {
+        "title": "Kundenverwaltung",
+        "description": "Verwalten Sie Privatkunden, Hotels, Ferienvermietungen und Geschäftskonten."
+      },
+      "billingPayments": {
+        "title": "Abrechnung und Zahlungen",
+        "description": "Halten Sie Services, Zahlungen und künftige Rechnungsabläufe miteinander verbunden."
+      },
+      "operationalInsights": {
+        "title": "Operative Einblicke",
+        "description": "Verstehen Sie Arbeitslast, Leistung und Servicestatus auf einen Blick."
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Auf echte Wäschereiabläufe ausgerichtet",
+    "title": "Von der Abholung bis zur Lieferung bleibt jeder Service verbunden.",
+    "description": "Unterstützen Sie professionelle Abläufe für Wäsche, Reinigung, Bügelservice und wiederkehrende Geschäftskundenservices.",
+    "items": {
+      "laundry": {
+        "title": "Wäsche",
+        "description": "Verwalten Sie Waschen, Trocknen, Falten und Endbearbeitung."
+      },
+      "dryCleaning": {
+        "title": "Textilreinigung",
+        "description": "Verfolgen Sie Kleidungsstücke und Spezialbehandlungen getrennt."
+      },
+      "ironing": {
+        "title": "Bügeln",
+        "description": "Koordinieren Sie Bügelaufgaben, Prioritäten und Abschlussstatus."
+      },
+      "pickup": {
+        "title": "Abholung",
+        "description": "Organisieren Sie geplante Abholungen bei Kunden und Partnerstandorten."
+      },
+      "delivery": {
+        "title": "Lieferung",
+        "description": "Verfolgen Sie abgeschlossene Aufträge über Routenplanung bis zur finalen Übergabe."
+      },
+      "recurringBusiness": {
+        "title": "Wiederkehrender Geschäftskundenservice",
+        "description": "Unterstützen Sie regelmäßige Abläufe für Hotels, Vermietungen, Restaurants und Unternehmen."
+      }
+    }
+  },
+  "industries": {
+    "eyebrow": "Entwickelt für Ihren Betrieb",
+    "title": "Eine Plattform für jedes professionelle Wäschereimodell.",
+    "description": "EcoWash Phoenix passt sich täglichen Abläufen in unabhängigen Wäschereien, Hospitality-Gruppen und wiederkehrenden Gewerbeservices an.",
+    "items": {
+      "professionalLaundries": {
+        "title": "Professionelle Wäschereien",
+        "description": "Steuern Sie Annahme, Produktion, Qualitätskontrolle und Lieferung aus einer zentralen Betriebsansicht."
+      },
+      "dryCleaning": {
+        "title": "Textilreinigungen",
+        "description": "Trennen Sie spezielle Kleidungsstückpflege, Behandlungshinweise und Abschlussstatus von Standardwäsche."
+      },
+      "hotels": {
+        "title": "Hotels und Resorts",
+        "description": "Koordinieren Sie große Wäschemengen, Gästewäsche und Abteilungsanfragen mit klarer Verantwortung."
+      },
+      "vacationRentals": {
+        "title": "Ferienvermietungen",
+        "description": "Halten Sie schnelle Wäschewechsel, Reinigungspartner und Lieferfenster aufeinander abgestimmt."
+      },
+      "restaurants": {
+        "title": "Restaurants",
+        "description": "Verwalten Sie Tischwäsche, Uniformen und wiederkehrende Servicezyklen für anspruchsvolle Hospitality-Teams."
+      },
+      "commercialClients": {
+        "title": "Gewerbliche Kunden",
+        "description": "Unterstützen Sie Vertragskunden mit planbaren Terminen, Servicehistorie und vorbereiteter Abrechnung."
+      },
+      "selfService": {
+        "title": "SB-Wäschereien",
+        "description": "Ergänzen Sie strukturierte Abläufe für betreute Services, Abholungen und Geschäftskundenaufträge."
+      }
+    }
   }
 }

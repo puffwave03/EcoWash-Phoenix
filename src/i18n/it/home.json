@@ -69,5 +69,102 @@
         "status": "In orario"
       }
     }
+  },
+  "solutions": {
+    "eyebrow": "Una piattaforma. Ogni operazione.",
+    "title": "Tutto ciò che serve alla tua lavanderia per lavorare con precisione.",
+    "description": "EcoWash Phoenix collega ordini, produzione, logistica, clienti e fatturazione in un unico sistema operativo.",
+    "items": {
+      "orderManagement": {
+        "title": "Gestione ordini",
+        "description": "Acquisisci, organizza e monitora ogni ordine dall'accettazione al completamento."
+      },
+      "productionControl": {
+        "title": "Controllo produzione",
+        "description": "Coordina lavaggio, asciugatura, stiratura, controllo qualità e confezionamento."
+      },
+      "pickupDelivery": {
+        "title": "Ritiro e consegna",
+        "description": "Pianifica ritiri, percorsi, consegne e stato operativo in tempo reale."
+      },
+      "customerManagement": {
+        "title": "Gestione clienti",
+        "description": "Gestisci clienti privati, hotel, affitti brevi e account aziendali."
+      },
+      "billingPayments": {
+        "title": "Fatturazione e pagamenti",
+        "description": "Mantieni collegati servizi, pagamenti e futuri flussi di fatturazione."
+      },
+      "operationalInsights": {
+        "title": "Indicatori operativi",
+        "description": "Comprendi carico di lavoro, performance e stato dei servizi a colpo d'occhio."
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Costruita sui flussi reali della lavanderia",
+    "title": "Dal ritiro alla consegna, ogni servizio resta connesso.",
+    "description": "Supporta operazioni professionali di lavanderia, lavaggio a secco, stiratura e servizi ricorrenti per aziende.",
+    "items": {
+      "laundry": {
+        "title": "Lavanderia",
+        "description": "Gestisci lavaggio, asciugatura, piegatura e finitura."
+      },
+      "dryCleaning": {
+        "title": "Lavaggio a secco",
+        "description": "Traccia capi e trattamenti specialistici in modo separato."
+      },
+      "ironing": {
+        "title": "Stiratura",
+        "description": "Coordina attività di stiratura, priorità e stato di completamento."
+      },
+      "pickup": {
+        "title": "Ritiro",
+        "description": "Organizza ritiri programmati da clienti e sedi partner."
+      },
+      "delivery": {
+        "title": "Consegna",
+        "description": "Segui gli ordini completati dalla pianificazione del percorso alla consegna finale."
+      },
+      "recurringBusiness": {
+        "title": "Servizi ricorrenti business",
+        "description": "Supporta operazioni ripetute per hotel, affitti, ristoranti e aziende."
+      }
+    }
+  },
+  "industries": {
+    "eyebrow": "Pensata per la tua operatività",
+    "title": "Una piattaforma per ogni modello di lavanderia professionale.",
+    "description": "EcoWash Phoenix si adatta ai flussi quotidiani di lavanderie indipendenti, gruppi hospitality e servizi commerciali ricorrenti.",
+    "items": {
+      "professionalLaundries": {
+        "title": "Lavanderie professionali",
+        "description": "Gestisci accettazione, produzione, controllo qualità e consegna da un'unica vista operativa."
+      },
+      "dryCleaning": {
+        "title": "Lavanderie a secco",
+        "description": "Separa cura specialistica dei capi, note di trattamento e stato di completamento dal lavoro standard."
+      },
+      "hotels": {
+        "title": "Hotel e resort",
+        "description": "Coordina grandi volumi di biancheria, lavanderia ospiti e richieste dei reparti con responsabilità chiare."
+      },
+      "vacationRentals": {
+        "title": "Affitti brevi",
+        "description": "Allinea ritiri rapidi della biancheria, partner di pulizia e finestre di consegna."
+      },
+      "restaurants": {
+        "title": "Ristoranti",
+        "description": "Gestisci tovagliato, uniformi e cicli di servizio ricorrenti per team hospitality dinamici."
+      },
+      "commercialClients": {
+        "title": "Clienti commerciali",
+        "description": "Supporta account contrattualizzati con calendari prevedibili, storico servizi e preparazione alla fatturazione."
+      },
+      "selfService": {
+        "title": "Lavanderie self-service",
+        "description": "Aggiungi flussi organizzati per servizi assistiti, ritiri e ordini di clienti business."
+      }
+    }
   }
 }

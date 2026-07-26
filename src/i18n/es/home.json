@@ -69,5 +69,102 @@
         "status": "A tiempo"
       }
     }
+  },
+  "solutions": {
+    "eyebrow": "Una plataforma. Toda la operación.",
+    "title": "Todo lo que tu lavandería necesita para trabajar con precisión.",
+    "description": "EcoWash Phoenix conecta pedidos, producción, logística, clientes y facturación en un único sistema operativo.",
+    "items": {
+      "orderManagement": {
+        "title": "Gestión de pedidos",
+        "description": "Registra, organiza y sigue cada pedido desde la entrada hasta la finalización."
+      },
+      "productionControl": {
+        "title": "Control de producción",
+        "description": "Coordina lavado, secado, planchado, control de calidad y empaquetado."
+      },
+      "pickupDelivery": {
+        "title": "Recogida y entrega",
+        "description": "Planifica recogidas, rutas, entregas y estado operativo en tiempo real."
+      },
+      "customerManagement": {
+        "title": "Gestión de clientes",
+        "description": "Gestiona clientes particulares, hoteles, alquileres vacacionales y cuentas de empresa."
+      },
+      "billingPayments": {
+        "title": "Facturación y pagos",
+        "description": "Mantén conectados los servicios, pagos y futuros flujos de facturación."
+      },
+      "operationalInsights": {
+        "title": "Indicadores operativos",
+        "description": "Comprende carga de trabajo, rendimiento y estado del servicio de un vistazo."
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Creada sobre flujos reales de lavandería",
+    "title": "Desde la recogida hasta la entrega, cada servicio permanece conectado.",
+    "description": "Da soporte a operaciones profesionales de lavandería, limpieza en seco, planchado y servicios recurrentes para empresas.",
+    "items": {
+      "laundry": {
+        "title": "Lavandería",
+        "description": "Gestiona flujos de lavado, secado, doblado y acabado."
+      },
+      "dryCleaning": {
+        "title": "Limpieza en seco",
+        "description": "Sigue prendas y procesos de tratamiento especializado por separado."
+      },
+      "ironing": {
+        "title": "Planchado",
+        "description": "Coordina tareas de planchado, prioridades y estado de finalización."
+      },
+      "pickup": {
+        "title": "Recogida",
+        "description": "Organiza recogidas programadas de clientes y ubicaciones asociadas."
+      },
+      "delivery": {
+        "title": "Entrega",
+        "description": "Sigue los pedidos completados mediante planificación de rutas y entrega final."
+      },
+      "recurringBusiness": {
+        "title": "Servicio recurrente para empresas",
+        "description": "Da soporte a operaciones repetidas para hoteles, alquileres, restaurantes y compañías."
+      }
+    }
+  },
+  "industries": {
+    "eyebrow": "Diseñada para tu operación",
+    "title": "Una plataforma para cada modelo profesional de lavandería.",
+    "description": "EcoWash Phoenix se adapta a los flujos diarios de lavanderías independientes, grupos hoteleros y equipos de servicio comercial recurrente.",
+    "items": {
+      "professionalLaundries": {
+        "title": "Lavanderías profesionales",
+        "description": "Gestiona entrada, producción, control de calidad y entrega desde una única vista operativa."
+      },
+      "dryCleaning": {
+        "title": "Negocios de limpieza en seco",
+        "description": "Separa el cuidado especializado de prendas, las notas de tratamiento y el estado de finalización del trabajo estándar."
+      },
+      "hotels": {
+        "title": "Hoteles y resorts",
+        "description": "Coordina grandes volúmenes de lencería, lavandería de huéspedes y solicitudes de departamentos con responsabilidad clara."
+      },
+      "vacationRentals": {
+        "title": "Alquileres vacacionales",
+        "description": "Mantén alineadas las recogidas rápidas de lencería, los equipos de limpieza y las ventanas de entrega."
+      },
+      "restaurants": {
+        "title": "Restaurantes",
+        "description": "Gestiona mantelería, uniformes y ciclos de servicio recurrentes para equipos de hostelería exigentes."
+      },
+      "commercialClients": {
+        "title": "Clientes comerciales",
+        "description": "Da soporte a cuentas contratadas con calendarios previsibles, historial de servicio y preparación para facturación."
+      },
+      "selfService": {
+        "title": "Lavanderías autoservicio",
+        "description": "Añade flujos organizados para servicios asistidos, recogidas y pedidos de clientes empresariales."
+      }
+    }
   }
 }

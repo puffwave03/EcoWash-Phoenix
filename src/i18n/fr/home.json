@@ -69,5 +69,102 @@
         "status": "Dans les temps"
       }
     }
+  },
+  "solutions": {
+    "eyebrow": "Une plateforme. Toute l'exploitation.",
+    "title": "Tout ce dont votre blanchisserie a besoin pour travailler avec précision.",
+    "description": "EcoWash Phoenix relie commandes, production, logistique, clients et facturation dans un seul système opérationnel.",
+    "items": {
+      "orderManagement": {
+        "title": "Gestion des commandes",
+        "description": "Saisissez, organisez et suivez chaque commande de la réception à la finalisation."
+      },
+      "productionControl": {
+        "title": "Pilotage de la production",
+        "description": "Coordonnez lavage, séchage, repassage, contrôle qualité et conditionnement."
+      },
+      "pickupDelivery": {
+        "title": "Collecte et livraison",
+        "description": "Planifiez collectes, tournées, livraisons et statut opérationnel en temps réel."
+      },
+      "customerManagement": {
+        "title": "Gestion client",
+        "description": "Gérez clients particuliers, hôtels, locations saisonnières et comptes professionnels."
+      },
+      "billingPayments": {
+        "title": "Facturation et paiements",
+        "description": "Gardez connectés les services, les paiements et les futurs flux de facturation."
+      },
+      "operationalInsights": {
+        "title": "Indicateurs opérationnels",
+        "description": "Comprenez charge de travail, performance et état des services en un coup d'oeil."
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Conçue autour des vrais flux de blanchisserie",
+    "title": "De la collecte à la livraison, chaque service reste connecté.",
+    "description": "Accompagnez les opérations professionnelles de blanchisserie, nettoyage à sec, repassage et services récurrents aux entreprises.",
+    "items": {
+      "laundry": {
+        "title": "Blanchisserie",
+        "description": "Gérez les flux de lavage, séchage, pliage et finition."
+      },
+      "dryCleaning": {
+        "title": "Nettoyage à sec",
+        "description": "Suivez séparément les vêtements et les traitements spécialisés."
+      },
+      "ironing": {
+        "title": "Repassage",
+        "description": "Coordonnez les tâches de repassage, les priorités et l'état d'avancement."
+      },
+      "pickup": {
+        "title": "Collecte",
+        "description": "Organisez les collectes planifiées auprès des clients et lieux partenaires."
+      },
+      "delivery": {
+        "title": "Livraison",
+        "description": "Suivez les commandes terminées jusqu'à la planification de tournée et la remise finale."
+      },
+      "recurringBusiness": {
+        "title": "Service professionnel récurrent",
+        "description": "Soutenez les opérations répétées pour hôtels, locations, restaurants et entreprises."
+      }
+    }
+  },
+  "industries": {
+    "eyebrow": "Pensée pour votre exploitation",
+    "title": "Une plateforme pour chaque modèle de blanchisserie professionnelle.",
+    "description": "EcoWash Phoenix s'adapte aux flux quotidiens des blanchisseries indépendantes, groupes hôteliers et équipes de service commercial récurrent.",
+    "items": {
+      "professionalLaundries": {
+        "title": "Blanchisseries professionnelles",
+        "description": "Pilotez réception, production, contrôle qualité et livraison depuis une seule vue opérationnelle."
+      },
+      "dryCleaning": {
+        "title": "Pressings",
+        "description": "Séparez le soin spécialisé des vêtements, les consignes de traitement et l'état d'avancement du travail standard."
+      },
+      "hotels": {
+        "title": "Hôtels et resorts",
+        "description": "Coordonnez les gros volumes de linge, la blanchisserie client et les demandes des services avec des responsabilités claires."
+      },
+      "vacationRentals": {
+        "title": "Locations saisonnières",
+        "description": "Alignez les collectes rapides de linge, les partenaires de ménage et les créneaux de livraison."
+      },
+      "restaurants": {
+        "title": "Restaurants",
+        "description": "Gérez nappage, uniformes et cycles de service récurrents pour des équipes d'hospitalité exigeantes."
+      },
+      "commercialClients": {
+        "title": "Clients commerciaux",
+        "description": "Accompagnez les comptes sous contrat avec plannings prévisibles, historique de service et préparation à la facturation."
+      },
+      "selfService": {
+        "title": "Laveries libre-service",
+        "description": "Ajoutez des flux organisés pour services assistés, collectes et commandes de clients professionnels."
+      }
+    }
   }
 }

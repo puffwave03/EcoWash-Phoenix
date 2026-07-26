@@ -69,5 +69,102 @@
         "status": "On schedule"
       }
     }
+  },
+  "solutions": {
+    "eyebrow": "One platform. Every operation.",
+    "title": "Everything your laundry business needs to run with precision.",
+    "description": "EcoWash Phoenix brings orders, production, logistics, customers and billing into one connected operating system.",
+    "items": {
+      "orderManagement": {
+        "title": "Order Management",
+        "description": "Capture, organize and track every order from intake to completion."
+      },
+      "productionControl": {
+        "title": "Production Control",
+        "description": "Coordinate washing, drying, ironing, quality control and packaging."
+      },
+      "pickupDelivery": {
+        "title": "Pickup & Delivery",
+        "description": "Plan collections, routes, deliveries and real-time operational status."
+      },
+      "customerManagement": {
+        "title": "Customer Management",
+        "description": "Manage private clients, hotels, vacation rentals and business accounts."
+      },
+      "billingPayments": {
+        "title": "Billing & Payments",
+        "description": "Keep services, payments and future invoicing workflows connected."
+      },
+      "operationalInsights": {
+        "title": "Operational Insights",
+        "description": "Understand workload, performance and service status at a glance."
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Built around real laundry workflows",
+    "title": "From collection to delivery, every service stays connected.",
+    "description": "Support professional operations across laundry, dry cleaning, ironing and recurring business services.",
+    "items": {
+      "laundry": {
+        "title": "Laundry",
+        "description": "Manage wash, dry, fold and finishing workflows."
+      },
+      "dryCleaning": {
+        "title": "Dry Cleaning",
+        "description": "Track garments and specialist treatment processes separately."
+      },
+      "ironing": {
+        "title": "Ironing",
+        "description": "Coordinate ironing tasks, priorities and completion status."
+      },
+      "pickup": {
+        "title": "Pickup",
+        "description": "Organize scheduled collections from customers and partner locations."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "description": "Track completed orders through route planning and final handoff."
+      },
+      "recurringBusiness": {
+        "title": "Recurring Business Service",
+        "description": "Support repeat operations for hotels, rentals, restaurants and companies."
+      }
+    }
+  },
+  "industries": {
+    "eyebrow": "Designed for your operation",
+    "title": "One platform for every professional laundry model.",
+    "description": "EcoWash Phoenix adapts to daily workflows across independent laundries, hospitality groups and recurring commercial service teams.",
+    "items": {
+      "professionalLaundries": {
+        "title": "Professional Laundries",
+        "description": "Run intake, production, quality control and delivery from one operational view."
+      },
+      "dryCleaning": {
+        "title": "Dry Cleaning Businesses",
+        "description": "Separate specialist garment care, treatment notes and completion status from standard laundry work."
+      },
+      "hotels": {
+        "title": "Hotels & Resorts",
+        "description": "Coordinate high-volume linen, guest laundry and department requests with clear accountability."
+      },
+      "vacationRentals": {
+        "title": "Vacation Rentals",
+        "description": "Keep fast-turnover linen collections, cleaning partners and delivery windows aligned."
+      },
+      "restaurants": {
+        "title": "Restaurants",
+        "description": "Manage table linen, uniforms and recurring service cycles for busy hospitality teams."
+      },
+      "commercialClients": {
+        "title": "Commercial Clients",
+        "description": "Support contracted accounts with predictable schedules, service history and billing readiness."
+      },
+      "selfService": {
+        "title": "Self-Service Laundries",
+        "description": "Add organized staff workflows for assisted services, pickups and business customer orders."
+      }
+    }
   }
 }
