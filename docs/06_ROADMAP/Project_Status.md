@@ -4,7 +4,7 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-25
+Last Updated: 2026-07-26
 
 ---
 
@@ -22,8 +22,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | --- | --- |
 | Project | EcoWash Phoenix |
 | Current phase | Public Website Development |
-| Current milestone | Multilingual Homepage |
-| Last completed mission | DEV-003 — Multilingual Homepage Hero |
+| Current milestone | Public Website Pages |
+| Last completed mission | DEV-007 — Multilingual Contact and Demo Request Page |
+| Latest commit | 076d473 |
+| Remote status | main synchronized with origin/main |
 
 ## Development Status
 
@@ -33,7 +35,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-002 | Executive Luxury design foundation | Completed |
 | DEV-002.5 | Internationalization foundation | Completed |
 | DEV-003 | Multilingual homepage Hero | Completed |
-| DEV-004 | Homepage solutions and services sections | Next |
+| DEV-004 | Solutions, Services and Industries sections | Completed |
+| DEV-005 | Complete multilingual public homepage | Completed |
+| DEV-006 | Integrate official EcoWash logo | Completed |
+| DEV-007 | Multilingual Contact and Demo Request page | Completed |
+| DEV-008 | Public website navigation and page strategy | Next |
 
 ## Commit History
 
@@ -43,75 +49,98 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-002 | 2a68b72 |
 | DEV-002.5 | d6e7692 |
 | DEV-003 | 4dd528d |
+| DEV-004 | 5d692f0 |
+| DEV-005 | 68dd15e |
+| DEV-006 | f13938f |
+| DEV-007 | 076d473 |
 
 ## Known Validated State
 
 - `npm run build` passes
 - `npm run lint` passes
-- Production routes verified for all five locales
-- Responsive checks completed at `1440px`, `1024px`, `768px`, `375px`, and `320px`
+- `git diff --check` passes
+- Homepage routes work in all five locales
+- Contact routes work in all five locales
+- Each localized Contact page has one `h1` and one form
+- Development-stage notice is visible
+- Homepage Contact and Demo links point to localized contact routes
 - No missing translation keys
 - No horizontal overflow
-- Exactly one `h1` on each localized homepage
-- Desktop and mobile Hero previews were reviewed
-- Development-only Turbopack shutdown panic was observed previously, while production build and `next start` remained clean
+- No new dependencies added during DEV-007
+- No Docker files or configuration added
+- Local `main` and `origin/main` point to `076d473`
 
-## Current Architecture
+## Current Route Architecture
 
 - `src/app/[locale]/`
+- `src/app/[locale]/contact/`
+
+## Current Component Areas
+
 - `src/components/`
 - `src/components/home/`
-- `src/i18n/`
-- `src/layouts/`
-- `src/styles/`
+- `src/components/contact/`
 
-## Current Homepage Components
+## Current i18n Areas
 
-- Hero
-- DashboardPreview
-- HeroMetric
-- ProductionProgress
+- `src/i18n/en/`
+- `src/i18n/it/`
+- `src/i18n/es/`
+- `src/i18n/fr/`
+- `src/i18n/de/`
+
+## Current Public Website Status
+
+- Homepage: complete first version
+- Contact page: complete presentation layer
+- Demo form backend: not implemented
+- Public secondary pages: not implemented
+- Deployment: not configured
 
 ## Important Project Rules
 
-- Documentation first, but no unnecessary Markdown files
 - One mission per commit
 - Codex implements
-- ChatGPT reviews
+- ChatGPT performs architectural review
 - Product Owner approves
-- No feature is committed before review
-- No hardcoded user-visible strings
-- Design tokens remain centralized
-- Avoid unnecessary dependencies
-- No backend, database, authentication, or Supabase yet
+- No commit before approval
+- No unnecessary Markdown files
+- No Docker unless explicitly approved
+- No new dependencies without justification
+- No unsupported marketing claims
+- No fake backend behavior
+- No hardcoded visible strings
+- Centralized design tokens must be reused
+- Prior approved sections should not be redesigned without a verified defect
 
 ## Next Session
 
 Next mission:
-DEV-004 — Multilingual Homepage Solutions and Services
+
+DEV-008 — Public Website Navigation and Page Strategy
 
 Objective:
-Continue the public homepage directly below the approved Hero.
 
-Expected scope:
+Decide and implement the next public-site structure without prematurely creating many empty pages.
 
-- Solutions overview
-- Services overview
-- Target-business categories
-- Executive Luxury styling
-- Full support for en, it, es, fr, and de
-- Reuse existing components and design tokens
-- No backend or business logic
-- No new external UI libraries
+Expected review topics:
 
-Before implementation:
+- Which public pages are genuinely needed
+- Whether Solutions, Services and Industries should become dedicated pages
+- Navigation behavior
+- Localized page routes
+- Placeholder-link removal
+- SEO page structure
+- Whether Pricing should remain hidden until a real pricing model exists
+- Whether Resources should remain hidden until real content exists
 
-1. Review the current homepage in the browser.
-2. Confirm the Git working tree is clean.
-3. Confirm the active branch.
-4. Read README.md and Project_Status.md.
-5. Do not change the Hero unless a verified defect is found.
+Initial recommendation:
 
-Restart phrase:
+- Create only pages with approved content
+- Avoid empty or generic pages
+- Remove or disable navigation destinations that do not yet exist
+- Do not implement backend, platform dashboard or authentication during DEV-008
 
-“Buongiorno, riprendiamo EcoWash Phoenix da DEV-004.”
+Startup phrase:
+
+“Buongiorno, riprendiamo EcoWash Phoenix da DEV-008.”

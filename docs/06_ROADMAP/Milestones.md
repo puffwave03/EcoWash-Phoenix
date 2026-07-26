@@ -4,7 +4,7 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-25
+Last Updated: 2026-07-26
 
 ---
 
@@ -35,26 +35,34 @@ Includes:
 
 ## Milestone 3 — Public Homepage
 
+Status: Completed
+
+Includes:
+
+- DEV-003
+- DEV-004
+- DEV-005
+- DEV-006
+
+## Milestone 4 — Public Website Pages
+
 Status: In Progress
 
 Completed:
 
-- DEV-003 multilingual Hero
+- DEV-007 Contact and Demo Request page
 
 Next:
 
-- DEV-004 Solutions and Services sections
+- DEV-008 Navigation and page strategy
 
-Later:
+Later, only after approval:
 
-- industries
-- trust/value section
-- contact CTA
-- final homepage integration
-
-## Milestone 4 — Public Website Pages
-
-Status: Planned
+- Solutions page
+- Services page
+- Industries page
+- legal pages
+- real contact integration
 
 ## Milestone 5 — SaaS Platform Foundation
 
