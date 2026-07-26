@@ -166,5 +166,67 @@
         "description": "Ergänzen Sie strukturierte Abläufe für betreute Services, Abholungen und Geschäftskundenaufträge."
       }
     }
+  },
+  "value": {
+    "eyebrow": "Klarheit in jedem Ablauf",
+    "title": "Weniger Fragmentierung. Mehr Kontrolle.",
+    "description": "Ersetzen Sie verstreute Nachrichten, Papierunterlagen und manuelle Nachverfolgung durch einen klaren Betriebsablauf.",
+    "items": {
+      "sourceOfTruth": {
+        "title": "Eine zentrale Informationsquelle",
+        "description": "Halten Sie Kunden, Aufträge, Produktion, Logistik und Zahlungen in einem System verbunden."
+      },
+      "orderVisibility": {
+        "title": "Vollständige Auftragstransparenz",
+        "description": "Wissen Sie, wo jeder Auftrag steht, was er benötigt und welcher Schritt als Nächstes ansteht."
+      },
+      "teamWorkflows": {
+        "title": "Einheitliche Teamabläufe",
+        "description": "Geben Sie Mitarbeitenden einen gemeinsamen Prozess von der Annahme über die Produktion bis zur Lieferung."
+      },
+      "customerService": {
+        "title": "Besserer Kundenservice",
+        "description": "Reagieren Sie schneller mit präzisem Auftragsstatus und vollständiger Servicehistorie."
+      }
+    }
+  },
+  "trust": {
+    "eyebrow": "Für professionelle Abläufe entwickelt",
+    "title": "Zuverlässig durch Design.",
+    "description": "EcoWash Phoenix wird rund um echte Wäschereiabläufe, klare Verantwortlichkeiten und skalierbare Betriebsstrukturen entwickelt.",
+    "items": {
+      "workflowFirst": {
+        "title": "Workflow zuerst",
+        "description": "Die Plattform folgt dem realen Weg eines Auftrags von der Annahme bis zur Lieferung."
+      },
+      "modularDesign": {
+        "title": "Modular durch Design",
+        "description": "Nutzen Sie die operativen Module, die zum jeweiligen Geschäftsmodell passen."
+      },
+      "internationalReady": {
+        "title": "International vorbereitet",
+        "description": "Die Website und die künftige Plattform werden von Anfang an für mehrsprachige Nutzung aufgebaut."
+      },
+      "secureFoundations": {
+        "title": "Sichere Grundlagen",
+        "description": "Architektur und Zugriffskontrollen werden für professionelle Geschäftsdaten konzipiert."
+      },
+      "clearResponsibilities": {
+        "title": "Klare Verantwortlichkeiten",
+        "description": "Jede Aufgabe, jeder Status und jede Übergabe sollte eine verständliche zuständige Person haben."
+      },
+      "scalableOperations": {
+        "title": "Skalierbare Abläufe",
+        "description": "Dieselbe Grundlage kann einen Standort oder ein wachsendes Unternehmen mit mehreren Standorten unterstützen."
+      }
+    }
+  },
+  "finalCta": {
+    "eyebrow": "Bereit für die nächste Generation von Wäschereiabläufen?",
+    "title": "Führen Sie Ihren gesamten Betrieb in einer intelligenten Plattform zusammen.",
+    "description": "Entdecken Sie, wie EcoWash Phoenix Kunden, Aufträge, Produktion und Lieferungen verbinden kann.",
+    "primaryCta": "Demo anfragen",
+    "secondaryCta": "Plattform ansehen",
+    "supportingNote": "Entwickelt für professionelle Wäschereien, Hospitality-Betriebe und wiederkehrende Gewerbeservices."
   }
 }

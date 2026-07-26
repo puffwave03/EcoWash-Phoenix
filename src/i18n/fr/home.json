@@ -166,5 +166,67 @@
         "description": "Ajoutez des flux organisés pour services assistés, collectes et commandes de clients professionnels."
       }
     }
+  },
+  "value": {
+    "eyebrow": "De la clarté dans chaque opération",
+    "title": "Moins de fragmentation. Plus de contrôle.",
+    "description": "Remplacez les messages dispersés, les dossiers papier et les relances manuelles par un flux opérationnel clair.",
+    "items": {
+      "sourceOfTruth": {
+        "title": "Une source unique de vérité",
+        "description": "Gardez clients, commandes, production, logistique et paiements connectés dans un seul système."
+      },
+      "orderVisibility": {
+        "title": "Visibilité complète des commandes",
+        "description": "Sachez où se trouve chaque commande, ce dont elle a besoin et quelle est la prochaine étape."
+      },
+      "teamWorkflows": {
+        "title": "Flux d'équipe cohérents",
+        "description": "Donnez au personnel un processus partagé de la réception à la production et à la livraison."
+      },
+      "customerService": {
+        "title": "Meilleur service client",
+        "description": "Répondez plus vite avec un statut de commande précis et un historique de service complet."
+      }
+    }
+  },
+  "trust": {
+    "eyebrow": "Conçue pour les opérations professionnelles",
+    "title": "Fiable par conception.",
+    "description": "EcoWash Phoenix est conçue autour des vrais flux de blanchisserie, de responsabilités claires et d'opérations évolutives.",
+    "items": {
+      "workflowFirst": {
+        "title": "Le flux d'abord",
+        "description": "La plateforme suit le parcours réel d'une commande, de la réception à la livraison."
+      },
+      "modularDesign": {
+        "title": "Modulaire par conception",
+        "description": "Utilisez les modules opérationnels adaptés à chaque modèle d'entreprise."
+      },
+      "internationalReady": {
+        "title": "Prête pour l'international",
+        "description": "Le site web et la future plateforme sont construits dès le départ pour un usage multilingue."
+      },
+      "secureFoundations": {
+        "title": "Fondations sécurisées",
+        "description": "L'architecture et les contrôles d'accès seront conçus pour des données professionnelles d'entreprise."
+      },
+      "clearResponsibilities": {
+        "title": "Responsabilités claires",
+        "description": "Chaque tâche, statut et transfert devrait avoir un responsable compréhensible."
+      },
+      "scalableOperations": {
+        "title": "Opérations évolutives",
+        "description": "La même base peut soutenir un site unique ou une entreprise multi-sites en croissance."
+      }
+    }
+  },
+  "finalCta": {
+    "eyebrow": "Prêt pour la nouvelle génération d'opérations de blanchisserie ?",
+    "title": "Rassemblez toute votre exploitation dans une seule plateforme intelligente.",
+    "description": "Découvrez comment EcoWash Phoenix peut connecter vos clients, commandes, production et livraisons.",
+    "primaryCta": "Demander une démo",
+    "secondaryCta": "Explorer la plateforme",
+    "supportingNote": "Conçue pour les blanchisseries professionnelles, les entreprises d'hospitalité et les services commerciaux récurrents."
   }
 }

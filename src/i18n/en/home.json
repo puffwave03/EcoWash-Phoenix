@@ -166,5 +166,67 @@
         "description": "Add organized staff workflows for assisted services, pickups and business customer orders."
       }
     }
+  },
+  "value": {
+    "eyebrow": "Clarity across every operation",
+    "title": "Less fragmentation. More control.",
+    "description": "Replace disconnected messages, paper records and manual follow-up with one clear operating workflow.",
+    "items": {
+      "sourceOfTruth": {
+        "title": "One Source of Truth",
+        "description": "Keep customers, orders, production, logistics and payments connected in one system."
+      },
+      "orderVisibility": {
+        "title": "Complete Order Visibility",
+        "description": "Know where every order is, what it needs and what must happen next."
+      },
+      "teamWorkflows": {
+        "title": "Consistent Team Workflows",
+        "description": "Give staff a shared process from acceptance through production and delivery."
+      },
+      "customerService": {
+        "title": "Better Customer Service",
+        "description": "Respond faster with accurate order status and complete service history."
+      }
+    }
+  },
+  "trust": {
+    "eyebrow": "Built for professional operations",
+    "title": "Reliable by design.",
+    "description": "EcoWash Phoenix is being designed around real laundry workflows, clear responsibilities and scalable operations.",
+    "items": {
+      "workflowFirst": {
+        "title": "Workflow First",
+        "description": "The platform follows the real journey of an order from intake to delivery."
+      },
+      "modularDesign": {
+        "title": "Modular by Design",
+        "description": "Use the operational modules that fit each business model."
+      },
+      "internationalReady": {
+        "title": "International Ready",
+        "description": "The website and future platform are built for multilingual use from the beginning."
+      },
+      "secureFoundations": {
+        "title": "Secure Foundations",
+        "description": "Architecture and access controls will be designed for professional business data."
+      },
+      "clearResponsibilities": {
+        "title": "Clear Responsibilities",
+        "description": "Every task, status and handoff should have an understandable owner."
+      },
+      "scalableOperations": {
+        "title": "Scalable Operations",
+        "description": "The same foundation can support one location or a growing multi-location business."
+      }
+    }
+  },
+  "finalCta": {
+    "eyebrow": "Ready for the next generation of laundry operations?",
+    "title": "Bring your entire operation into one intelligent platform.",
+    "description": "Discover how EcoWash Phoenix can connect your customers, orders, production and deliveries.",
+    "primaryCta": "Request a Demo",
+    "secondaryCta": "Explore the Platform",
+    "supportingNote": "Designed for professional laundries, hospitality businesses and recurring commercial services."
   }
 }

@@ -16,7 +16,7 @@ export function SolutionsSection() {
   const t = useTranslations("home.solutions");
 
   return (
-    <Section className="bg-background pt-0">
+    <Section className="bg-background pt-0" id="solutions">
       <SectionTitle eyebrow={t("eyebrow")} title={t("title")}>
         {t("description")}
       </SectionTitle>
