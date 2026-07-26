@@ -8,6 +8,12 @@
     "title": "EcoWash Phoenix | Betriebsplattform für Wäschereien",
     "description": "Eine mehrsprachige Betriebsplattform für professionelle Wäschereien, Hotels und Serviceteams."
   },
+  "notFound": {
+    "eyebrow": "Seite nicht gefunden",
+    "title": "Diese Seite ist nicht verfügbar.",
+    "description": "Die Seite wurde möglicherweise verschoben, oder die öffentliche Website enthält diese Route noch nicht.",
+    "homeLink": "Zur Startseite"
+  },
   "navigation": {
     "home": "Startseite",
     "solutions": "Lösungen",

@@ -8,6 +8,12 @@
     "title": "EcoWash Phoenix | Piattaforma operativa per lavanderie",
     "description": "Una piattaforma operativa multilingue per lavanderie professionali, hotel e team di servizi."
   },
+  "notFound": {
+    "eyebrow": "Pagina non trovata",
+    "title": "Questa pagina non è disponibile.",
+    "description": "La pagina potrebbe essere stata spostata oppure il sito pubblico potrebbe non includere ancora questa rotta.",
+    "homeLink": "Torna alla home"
+  },
   "navigation": {
     "home": "Home",
     "solutions": "Soluzioni",

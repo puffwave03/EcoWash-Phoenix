@@ -8,6 +8,12 @@
     "title": "EcoWash Phoenix | Plateforme opérationnelle pour blanchisseries",
     "description": "Une plateforme opérationnelle multilingue pour blanchisseries professionnelles, hôtels et équipes de services."
   },
+  "notFound": {
+    "eyebrow": "Page introuvable",
+    "title": "Cette page n'est pas disponible.",
+    "description": "La page a peut-être été déplacée, ou le site public n'inclut peut-être pas encore cette route.",
+    "homeLink": "Retour à l'accueil"
+  },
   "navigation": {
     "home": "Accueil",
     "solutions": "Solutions",

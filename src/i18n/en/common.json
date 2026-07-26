@@ -8,6 +8,12 @@
     "title": "EcoWash Phoenix | Laundry Operations Platform",
     "description": "A multilingual operations platform for professional laundry businesses, hotels and service teams."
   },
+  "notFound": {
+    "eyebrow": "Page not found",
+    "title": "This page is not available.",
+    "description": "The page may have moved, or the public website may not include this route yet.",
+    "homeLink": "Return home"
+  },
   "navigation": {
     "home": "Home",
     "solutions": "Solutions",

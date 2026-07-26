@@ -3,6 +3,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
+import { siteConfig, type SiteLocale } from "@/config/site";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { routing } from "@/i18n/routing";
 import "@/styles/globals.css";
@@ -23,8 +24,20 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "common.metadata" });
 
   return {
-    title: t("title"),
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: t("title"),
+      template: siteConfig.titleTemplate,
+    },
     description: t("description"),
+    applicationName: siteConfig.name,
+    openGraph: {
+      description: t("description"),
+      locale: siteConfig.openGraphLocales[locale as SiteLocale],
+      siteName: siteConfig.name,
+      title: t("title"),
+      type: "website",
+    },
   };
 }
 
