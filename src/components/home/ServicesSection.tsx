@@ -15,7 +15,7 @@ export function ServicesSection() {
   const t = useTranslations("home.services");
 
   return (
-    <Section className="bg-primary text-white">
+    <Section className="bg-primary text-white" id="services">
       <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <div className="max-w-2xl">
           <p className="text-small font-semibold uppercase tracking-[0.14em] text-accent">

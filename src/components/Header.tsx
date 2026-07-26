@@ -5,22 +5,24 @@ import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Container } from "@/components/Container";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 
 const navigationItems = [
-  "home",
-  "solutions",
-  "services",
-  "industries",
-  "pricing",
-  "resources",
-  "contact",
-];
+  { href: "/", key: "home" },
+  { href: "/#solutions", key: "solutions" },
+  { href: "/#services", key: "services" },
+  { href: "/#industries", key: "industries" },
+  { href: "/contact", key: "contact" },
+] as const;
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
   const brand = useTranslations("common.brand");
   const navigation = useTranslations("common.navigation");
+  const isActive = (key: (typeof navigationItems)[number]["key"]) =>
+    (key === "home" && pathname === "/") ||
+    (key === "contact" && pathname === "/contact");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
@@ -44,20 +46,17 @@ export function Header() {
             aria-label={navigation("primaryLabel")}
           >
             {navigationItems.map((item) => (
-              <button
-                className={`${item === "contact" ? "hidden" : ""} text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
-                key={item}
-                type="button"
+              <Link
+                aria-current={isActive(item.key) ? "page" : undefined}
+                className={`text-sm font-medium transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  isActive(item.key) ? "text-primary" : "text-muted"
+                }`}
+                href={item.href}
+                key={item.key}
               >
-                {navigation(item)}
-              </button>
+                {navigation(item.key)}
+              </Link>
             ))}
-            <Link
-              className="text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              href="/contact"
-            >
-              {navigation("contact")}
-            </Link>
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
@@ -94,25 +93,17 @@ export function Header() {
           >
             <div className="flex flex-col gap-1">
               {navigationItems.map((item) => (
-                item === "contact" ? (
-                  <Link
-                    className="rounded-control px-3 py-3 text-left text-sm font-medium text-muted transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                    href="/contact"
-                    key={item}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {navigation(item)}
-                  </Link>
-                ) : (
-                  <button
-                    className="rounded-control px-3 py-3 text-left text-sm font-medium text-muted transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                    key={item}
-                    onClick={() => setIsOpen(false)}
-                    type="button"
-                  >
-                    {navigation(item)}
-                  </button>
-                )
+                <Link
+                  aria-current={isActive(item.key) ? "page" : undefined}
+                  className={`rounded-control px-3 py-3 text-left text-sm font-medium transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                    isActive(item.key) ? "text-primary" : "text-muted"
+                  }`}
+                  href={item.href}
+                  key={item.key}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {navigation(item.key)}
+                </Link>
               ))}
               <div className="mt-4 flex flex-col gap-3">
                 <LanguageSwitcher />

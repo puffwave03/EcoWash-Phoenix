@@ -17,7 +17,7 @@ export function IndustriesSection() {
   const t = useTranslations("home.industries");
 
   return (
-    <Section className="bg-secondary-soft">
+    <Section className="bg-secondary-soft" id="industries">
       <SectionTitle eyebrow={t("eyebrow")} title={t("title")}>
         {t("description")}
       </SectionTitle>

@@ -6,26 +6,32 @@ import { Link } from "@/i18n/navigation";
 const footerSections = [
   {
     title: "platform.title",
-    links: ["platform.links.overview", "platform.links.features", "platform.links.operations"],
+    links: [
+      { href: "/", label: "platform.links.overview" },
+      { href: "/#solutions", label: "platform.links.solutions" },
+      { href: "/#services", label: "platform.links.services" },
+    ],
   },
   {
-    title: "solutions.title",
-    links: ["solutions.links.hotels", "solutions.links.vacationRentals", "solutions.links.laundries"],
+    title: "industries.title",
+    links: [
+      { href: "/#industries", label: "industries.links.professionalLaundries" },
+      { href: "/#industries", label: "industries.links.hotels" },
+      { href: "/#industries", label: "industries.links.vacationRentals" },
+    ],
   },
   {
     title: "company.title",
-    links: ["company.links.about", "company.links.resources", "company.links.contact"],
+    links: [
+      { href: "/contact", label: "company.links.contact" },
+      { href: "/contact", label: "company.links.requestDemo" },
+    ],
   },
-  {
-    title: "legal.title",
-    links: ["legal.links.privacy", "legal.links.terms", "legal.links.compliance"],
-  },
-];
+] as const;
 
 export function Footer() {
   const brand = useTranslations("common.brand");
   const footer = useTranslations("common.footer");
-  const socialKeys = ["linkedin", "x", "youtube"];
 
   return (
     <footer className="border-t border-border bg-surface" aria-labelledby="footer-title">
@@ -40,16 +46,6 @@ export function Footer() {
                 {brand("name")}
               </p>
             </div>
-            <div className="flex gap-3" aria-label={footer("socialLabel")}>
-              {socialKeys.map((key) => (
-                <span
-                  className="flex size-9 items-center justify-center rounded-control border border-border bg-background text-xs font-semibold text-muted"
-                  key={key}
-                >
-                  {footer(`social.${key}`)}
-                </span>
-              ))}
-            </div>
           </div>
 
           <nav
@@ -63,24 +59,24 @@ export function Footer() {
                 </h3>
                 <ul className="space-y-3">
                   {section.links.map((link) => (
-                    <li key={link}>
-                      {link === "company.links.contact" ? (
-                        <Link
-                          className="text-sm text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                          href="/contact"
-                        >
-                          {footer(link)}
-                        </Link>
-                      ) : (
-                        <span className="text-sm text-muted">
-                          {footer(link)}
-                        </span>
-                      )}
+                    <li key={link.label}>
+                      <Link
+                        className="text-sm text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        href={link.href}
+                      >
+                        {footer(link.label)}
+                      </Link>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-text">
+                {footer("legal.title")}
+              </h3>
+              <p className="text-sm leading-6 text-muted">{footer("legal.note")}</p>
+            </div>
           </nav>
         </div>
       </Container>

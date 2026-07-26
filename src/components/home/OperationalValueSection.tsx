@@ -13,7 +13,7 @@ export function OperationalValueSection() {
   const t = useTranslations("home.value");
 
   return (
-    <Section className="bg-background">
+    <Section className="bg-background" id="value">
       <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div className="max-w-2xl">
           <p className="text-small font-semibold uppercase tracking-[0.14em] text-secondary">

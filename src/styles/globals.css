@@ -63,7 +63,15 @@ html {
   color: var(--color-text);
   font-family: var(--font-inter);
   overflow-x: clip;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
   text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {

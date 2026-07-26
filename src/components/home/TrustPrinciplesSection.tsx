@@ -15,7 +15,7 @@ export function TrustPrinciplesSection() {
   const t = useTranslations("home.trust");
 
   return (
-    <Section className="bg-primary-strong text-white">
+    <Section className="bg-primary-strong text-white" id="principles">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-small font-semibold uppercase tracking-[0.14em] text-accent">
           {t("eyebrow")}

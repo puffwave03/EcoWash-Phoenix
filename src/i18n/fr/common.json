@@ -13,8 +13,6 @@
     "solutions": "Solutions",
     "services": "Services",
     "industries": "Secteurs",
-    "pricing": "Tarifs",
-    "resources": "Ressources",
     "contact": "Contact",
     "requestDemo": "Demander une démo",
     "toggleMenu": "Ouvrir ou fermer le menu de navigation",
@@ -26,41 +24,30 @@
       "title": "Plateforme",
       "links": {
         "overview": "Vue d'ensemble",
-        "features": "Fonctionnalités",
-        "operations": "Opérations"
+        "solutions": "Solutions",
+        "services": "Services"
       }
     },
-    "solutions": {
-      "title": "Solutions",
+    "industries": {
+      "title": "Secteurs",
       "links": {
-        "hotels": "Hôtels",
-        "vacationRentals": "Locations saisonnières",
-        "laundries": "Blanchisseries"
+        "professionalLaundries": "Blanchisseries professionnelles",
+        "hotels": "Hôtels et resorts",
+        "vacationRentals": "Locations saisonnières"
       }
     },
     "company": {
       "title": "Entreprise",
       "links": {
-        "about": "À propos",
-        "resources": "Ressources",
-        "contact": "Contact"
+        "contact": "Contact",
+        "requestDemo": "Demander une démo"
       }
     },
     "legal": {
       "title": "Légal",
-      "links": {
-        "privacy": "Confidentialité",
-        "terms": "Conditions",
-        "compliance": "Conformité"
-      }
+      "note": "Les pages légales seront ajoutées une fois leur contenu approuvé."
     },
-    "navigationLabel": "Navigation du pied de page",
-    "socialLabel": "Liens sociaux",
-    "social": {
-      "linkedin": "IN",
-      "x": "X",
-      "youtube": "YT"
-    }
+    "navigationLabel": "Navigation du pied de page"
   },
   "language": {
     "label": "Langue",
