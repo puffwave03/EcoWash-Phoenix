@@ -33,7 +33,7 @@ Includes:
 - DEV-002
 - DEV-002.5
 
-## Milestone 3 — Public Homepage
+## Milestone 3 — Public Homepage Foundation
 
 Status: Completed
 
@@ -44,26 +44,51 @@ Includes:
 - DEV-005
 - DEV-006
 
-## Milestone 4 — Public Website Pages
+## Milestone 4 — Public Website Pages and Technical Readiness
+
+Status: Completed
+
+Includes:
+
+- DEV-007
+- DEV-008
+- DEV-009
+
+## Milestone 5 — Public Website Visual Completion
 
 Status: In Progress
 
-Completed:
+Current:
 
-- DEV-007 Contact and Demo Request page
+- DEV-009.5 technical implementation completed locally
+- DEV-009.5 technical validation passed
+- DEV-009.5 technical implementation approved
 
-Next:
+Pending:
 
-- DEV-008 Navigation and page strategy
+- Copy ten approved images into final paths
+- Integrate final images
+- Remove visible placeholders
+- Tune crop, overlays and object-position
+- Review desktop, tablet and mobile
+- Validate all five locales
+- Obtain Product Owner approval
+- Commit and push DEV-009.5
 
-Later, only after approval:
+## Milestone 6 — Public Website Final Review
 
-- Solutions page
-- Services page
-- Industries page
-- legal pages
-- real contact integration
+Status: Planned
 
-## Milestone 5 — SaaS Platform Foundation
+Expected scope after DEV-009.5:
+
+- Complete browser review
+- Visual consistency review
+- Accessibility check
+- Performance check
+- Final content review
+- Publication decision
+- Documentation update
+
+## Milestone 7 — SaaS Platform Foundation
 
 Status: Planned
