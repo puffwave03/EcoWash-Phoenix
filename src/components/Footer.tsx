@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Container } from "@/components/Container";
 
 const footerSections = [
@@ -31,11 +32,8 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.2fr_2fr]">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div
-                aria-label={brand("logoLabel")}
-                className="flex size-10 items-center justify-center rounded-logo border border-secondary/40 bg-primary text-sm font-semibold text-white"
-              >
-                {brand("logoPlaceholder")}
+              <div className="flex items-center justify-center rounded-logo border border-border bg-surface px-2 py-1">
+                <BrandLogo alt="" size="footer" />
               </div>
               <p id="footer-title" className="text-sm font-semibold text-text">
                 {brand("name")}

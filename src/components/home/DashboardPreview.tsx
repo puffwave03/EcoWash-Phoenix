@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { BrandLogo } from "@/components/BrandLogo";
 import { HeroMetric } from "@/components/home/HeroMetric";
 import { ProductionProgress } from "@/components/home/ProductionProgress";
 
@@ -33,8 +34,8 @@ export function DashboardPreview() {
         <div className="grid min-h-[34rem] grid-cols-1 xl:grid-cols-[9rem_1fr]">
           <aside className="hidden border-r border-border bg-primary px-4 py-6 text-white xl:block">
             <div className="mb-8 flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-logo bg-white/10 text-small font-semibold">
-                {t("logoPlaceholder")}
+              <div className="flex items-center justify-center rounded-logo bg-white px-2 py-1">
+                <BrandLogo alt="" size="dashboard" />
               </div>
               <div className="h-2 w-16 rounded-full bg-white/40" />
             </div>

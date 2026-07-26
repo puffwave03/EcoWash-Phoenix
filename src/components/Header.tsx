@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -31,8 +32,8 @@ export function Header() {
             href="/"
             aria-label={brand("logoLabel")}
           >
-            <span className="flex size-11 items-center justify-center rounded-logo border border-secondary/40 bg-primary text-sm font-semibold text-white shadow-card">
-              {brand("logoPlaceholder")}
+            <span className="flex items-center justify-center rounded-logo border border-border bg-surface px-2 py-1 shadow-card">
+              <BrandLogo alt="" priority />
             </span>
             <span className="text-sm font-semibold tracking-wide text-text">
               {brand("name")}
