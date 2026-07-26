@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "title": "EcoWash Phoenix kontaktieren | Demo anfragen",
+    "description": "Kontaktieren Sie EcoWash Phoenix, um professionelle Wäschereiabläufe zu besprechen und eine künftige Produktdemo anzufragen."
+  },
+  "hero": {
+    "eyebrow": "Beginnen wir ein Gespräch",
+    "title": "Erfahren Sie, wie EcoWash Phoenix Ihren Betrieb unterstützen kann.",
+    "description": "Erzählen Sie uns von Ihrem Unternehmen, Ihren Abläufen und den Herausforderungen, die Sie lösen möchten."
+  },
+  "form": {
+    "title": "Demo anfragen",
+    "description": "Teilen Sie einige Details, damit das künftige EcoWash Phoenix Team Ihren Betrieb verstehen kann.",
+    "fields": {
+      "fullName": {
+        "label": "Vollständiger Name",
+        "placeholder": "Ihr Vor- und Nachname"
+      },
+      "businessName": {
+        "label": "Unternehmensname",
+        "placeholder": "Name Ihres Unternehmens oder Standorts"
+      },
+      "email": {
+        "label": "E-Mail-Adresse",
+        "placeholder": "sie@beispiel.com"
+      },
+      "phone": {
+        "label": "Telefonnummer",
+        "placeholder": "Optional"
+      },
+      "country": {
+        "label": "Land",
+        "placeholder": "Wo Ihr Betrieb ansässig ist"
+      },
+      "businessType": {
+        "label": "Art des Unternehmens"
+      },
+      "locations": {
+        "label": "Anzahl der Standorte"
+      },
+      "message": {
+        "label": "Nachricht",
+        "placeholder": "Beschreiben Sie Ihre Abläufe, Services und operativen Prioritäten."
+      },
+      "language": {
+        "label": "Bevorzugte Sprache"
+      },
+      "consent": {
+        "label": "Ich verstehe, dass dieses Formular nur eine Entwicklungsvorschau ist und noch keine Daten sendet."
+      }
+    },
+    "submit": "Demo anfragen",
+    "developmentNotice": "Das Absenden dieses Formulars sendet noch keine Daten. Die Integration wird in einer künftigen Mission ergänzt.",
+    "validation": {
+      "required": "Bitte füllen Sie dieses Pflichtfeld aus.",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+    },
+    "notAvailableMessage": "Die Backend-Übermittlung ist noch nicht aktiv, daher wurde diese Anfrage nicht gesendet."
+  },
+  "businessTypes": {
+    "professionalLaundry": "Professionelle Wäscherei",
+    "dryCleaning": "Textilreinigung",
+    "hotel": "Hotel oder Resort",
+    "vacationRental": "Ferienvermietungsmanagement",
+    "restaurant": "Restaurant",
+    "commercialClient": "Gewerblicher Kunde",
+    "selfService": "SB-Wäscherei",
+    "other": "Sonstiges"
+  },
+  "locations": {
+    "one": "1",
+    "twoToFive": "2-5",
+    "sixToTen": "6-10",
+    "moreThanTen": "Mehr als 10"
+  },
+  "languages": {
+    "en": "English",
+    "it": "Italiano",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "info": {
+    "title": "Projektdetails",
+    "product": {
+      "label": "Produkt",
+      "value": "EcoWash Phoenix"
+    },
+    "stage": {
+      "label": "Aktueller Stand",
+      "value": "In Entwicklung"
+    },
+    "users": {
+      "label": "Zielnutzer",
+      "value": "Professionelle Wäschereien und Hospitality-Betriebe"
+    },
+    "languages": {
+      "label": "Unterstützte Sprachen",
+      "value": "Englisch, Italienisch, Spanisch, Französisch und Deutsch"
+    }
+  }
+}

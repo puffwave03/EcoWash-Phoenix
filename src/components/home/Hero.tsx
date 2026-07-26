@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { DashboardPreview } from "@/components/home/DashboardPreview";
+import { Link } from "@/i18n/navigation";
 
 export function Hero() {
   const t = useTranslations("home.hero");
@@ -21,10 +21,18 @@ export function Hero() {
               {t("description")}
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <Button className="w-full sm:w-auto">{t("primaryCta")}</Button>
-              <Button className="w-full sm:w-auto" variant="secondary">
+              <Link
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-luxury transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-auto"
+                href="/contact"
+              >
+                {t("primaryCta")}
+              </Link>
+              <Link
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-control border border-secondary bg-surface px-5 py-2.5 text-sm font-semibold text-primary transition-standard hover:bg-secondary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 sm:w-auto"
+                href="/#solutions"
+              >
                 {t("secondaryCta")}
-              </Button>
+              </Link>
             </div>
             <p className="mt-6 text-small leading-6 text-muted">
               {t("trustStatement")}

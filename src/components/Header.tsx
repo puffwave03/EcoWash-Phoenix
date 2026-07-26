@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
-import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Link } from "@/i18n/navigation";
@@ -46,18 +45,29 @@ export function Header() {
           >
             {navigationItems.map((item) => (
               <button
-                className="text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className={`${item === "contact" ? "hidden" : ""} text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
                 key={item}
                 type="button"
               >
                 {navigation(item)}
               </button>
             ))}
+            <Link
+              className="text-sm font-medium text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              href="/contact"
+            >
+              {navigation("contact")}
+            </Link>
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
             <LanguageSwitcher />
-            <Button>{navigation("requestDemo")}</Button>
+            <Link
+              className="inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-luxury transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              href="/contact"
+            >
+              {navigation("requestDemo")}
+            </Link>
           </div>
 
           <button
@@ -84,18 +94,35 @@ export function Header() {
           >
             <div className="flex flex-col gap-1">
               {navigationItems.map((item) => (
-                <button
-                  className="rounded-control px-3 py-3 text-left text-sm font-medium text-muted transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  key={item}
-                  onClick={() => setIsOpen(false)}
-                  type="button"
-                >
-                  {navigation(item)}
-                </button>
+                item === "contact" ? (
+                  <Link
+                    className="rounded-control px-3 py-3 text-left text-sm font-medium text-muted transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    href="/contact"
+                    key={item}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {navigation(item)}
+                  </Link>
+                ) : (
+                  <button
+                    className="rounded-control px-3 py-3 text-left text-sm font-medium text-muted transition-standard hover:bg-primary-soft hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    key={item}
+                    onClick={() => setIsOpen(false)}
+                    type="button"
+                  >
+                    {navigation(item)}
+                  </button>
+                )
               ))}
               <div className="mt-4 flex flex-col gap-3">
                 <LanguageSwitcher />
-                <Button className="w-full">{navigation("requestDemo")}</Button>
+                <Link
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-luxury transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  href="/contact"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {navigation("requestDemo")}
+                </Link>
               </div>
             </div>
           </nav>

@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "title": "Contacter EcoWash Phoenix | Demander une démo",
+    "description": "Contactez EcoWash Phoenix pour échanger sur les opérations de blanchisserie professionnelle et demander une future démo du produit."
+  },
+  "hero": {
+    "eyebrow": "Engageons la conversation",
+    "title": "Découvrez comment EcoWash Phoenix peut accompagner votre exploitation.",
+    "description": "Parlez-nous de votre activité, de votre flux de travail et des défis que vous souhaitez résoudre."
+  },
+  "form": {
+    "title": "Demander une démo",
+    "description": "Partagez quelques informations afin que la future équipe EcoWash Phoenix comprenne votre exploitation.",
+    "fields": {
+      "fullName": {
+        "label": "Nom complet",
+        "placeholder": "Votre prénom et votre nom"
+      },
+      "businessName": {
+        "label": "Nom de l'entreprise",
+        "placeholder": "Nom de votre entreprise ou de votre site"
+      },
+      "email": {
+        "label": "Adresse email",
+        "placeholder": "vous@exemple.com"
+      },
+      "phone": {
+        "label": "Numéro de téléphone",
+        "placeholder": "Facultatif"
+      },
+      "country": {
+        "label": "Pays",
+        "placeholder": "Où votre exploitation est basée"
+      },
+      "businessType": {
+        "label": "Type d'activité"
+      },
+      "locations": {
+        "label": "Nombre de sites"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Décrivez votre flux de travail, vos services et vos priorités opérationnelles."
+      },
+      "language": {
+        "label": "Langue préférée"
+      },
+      "consent": {
+        "label": "Je comprends que ce formulaire est une prévisualisation de développement et qu'il n'enverra pas encore de données."
+      }
+    },
+    "submit": "Demander une démo",
+    "developmentNotice": "L'envoi de ce formulaire ne transmettra pas encore de données. L'intégration sera ajoutée lors d'une future mission.",
+    "validation": {
+      "required": "Veuillez compléter ce champ obligatoire.",
+      "email": "Veuillez saisir une adresse email valide."
+    },
+    "notAvailableMessage": "L'envoi backend n'est pas encore actif ; cette demande n'a donc pas été envoyée."
+  },
+  "businessTypes": {
+    "professionalLaundry": "Blanchisserie professionnelle",
+    "dryCleaning": "Pressing",
+    "hotel": "Hôtel ou resort",
+    "vacationRental": "Gestion de locations saisonnières",
+    "restaurant": "Restaurant",
+    "commercialClient": "Client commercial",
+    "selfService": "Laverie libre-service",
+    "other": "Autre"
+  },
+  "locations": {
+    "one": "1",
+    "twoToFive": "2-5",
+    "sixToTen": "6-10",
+    "moreThanTen": "Plus de 10"
+  },
+  "languages": {
+    "en": "English",
+    "it": "Italiano",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "info": {
+    "title": "Détails du projet",
+    "product": {
+      "label": "Produit",
+      "value": "EcoWash Phoenix"
+    },
+    "stage": {
+      "label": "Étape actuelle",
+      "value": "En développement"
+    },
+    "users": {
+      "label": "Utilisateurs cibles",
+      "value": "Blanchisseries professionnelles et opérations d'hospitalité"
+    },
+    "languages": {
+      "label": "Langues prises en charge",
+      "value": "Anglais, italien, espagnol, français et allemand"
+    }
+  }
+}

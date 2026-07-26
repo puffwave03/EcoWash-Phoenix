@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "title": "Contact EcoWash Phoenix | Request a Demo",
+    "description": "Contact EcoWash Phoenix to discuss professional laundry operations and request a future product demo."
+  },
+  "hero": {
+    "eyebrow": "Start a conversation",
+    "title": "See how EcoWash Phoenix can support your operation.",
+    "description": "Tell us about your business, your workflow and the challenges you want to solve."
+  },
+  "form": {
+    "title": "Request a Demo",
+    "description": "Share a few details so the future EcoWash Phoenix team can understand your operation.",
+    "fields": {
+      "fullName": {
+        "label": "Full name",
+        "placeholder": "Your name and surname"
+      },
+      "businessName": {
+        "label": "Business name",
+        "placeholder": "Your company or location name"
+      },
+      "email": {
+        "label": "Email address",
+        "placeholder": "you@example.com"
+      },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "Optional"
+      },
+      "country": {
+        "label": "Country",
+        "placeholder": "Where your operation is based"
+      },
+      "businessType": {
+        "label": "Business type"
+      },
+      "locations": {
+        "label": "Number of locations"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Tell us about your workflow, services and operational priorities."
+      },
+      "language": {
+        "label": "Preferred language"
+      },
+      "consent": {
+        "label": "I understand this form is for development preview only and will not send data yet."
+      }
+    },
+    "submit": "Request a Demo",
+    "developmentNotice": "Submitting this form will not send data yet. Integration will be added in a future mission.",
+    "validation": {
+      "required": "Please complete this required field.",
+      "email": "Please enter a valid email address."
+    },
+    "notAvailableMessage": "Backend submission is not active yet, so this request has not been sent."
+  },
+  "businessTypes": {
+    "professionalLaundry": "Professional Laundry",
+    "dryCleaning": "Dry Cleaning Business",
+    "hotel": "Hotel or Resort",
+    "vacationRental": "Vacation Rental Management",
+    "restaurant": "Restaurant",
+    "commercialClient": "Commercial Client",
+    "selfService": "Self-Service Laundry",
+    "other": "Other"
+  },
+  "locations": {
+    "one": "1",
+    "twoToFive": "2-5",
+    "sixToTen": "6-10",
+    "moreThanTen": "More than 10"
+  },
+  "languages": {
+    "en": "English",
+    "it": "Italiano",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "info": {
+    "title": "Project details",
+    "product": {
+      "label": "Product",
+      "value": "EcoWash Phoenix"
+    },
+    "stage": {
+      "label": "Current stage",
+      "value": "In development"
+    },
+    "users": {
+      "label": "Target users",
+      "value": "Professional laundries and hospitality operations"
+    },
+    "languages": {
+      "label": "Supported languages",
+      "value": "English, Italian, Spanish, French and German"
+    }
+  }
+}

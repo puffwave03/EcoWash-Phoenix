@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Section } from "@/components/Section";
+import { Link } from "@/i18n/navigation";
 
 export function FinalCtaSection() {
   const t = useTranslations("home.finalCta");
@@ -17,18 +18,18 @@ export function FinalCtaSection() {
           {t("description")}
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <a
+          <Link
             className="inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-luxury transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            href="#contact"
+            href="/contact"
           >
             {t("primaryCta")}
-          </a>
-          <a
+          </Link>
+          <Link
             className="inline-flex min-h-11 items-center justify-center rounded-control border border-secondary bg-surface px-5 py-2.5 text-sm font-semibold text-primary transition-standard hover:bg-secondary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
-            href="#solutions"
+            href="/#solutions"
           >
             {t("secondaryCta")}
-          </a>
+          </Link>
         </div>
         <p className="mx-auto mt-6 max-w-2xl text-small leading-6 text-muted">
           {t("supportingNote")}

@@ -3,13 +3,15 @@ import { getRequestConfig } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
 async function getMessages(locale: string) {
-  const [{ default: common }, { default: home }] = await Promise.all([
+  const [{ default: common }, { default: contact }, { default: home }] = await Promise.all([
     import(`@/i18n/${locale}/common.json`),
+    import(`@/i18n/${locale}/contact.json`),
     import(`@/i18n/${locale}/home.json`),
   ]);
 
   return {
     common,
+    contact,
     home,
   };
 }

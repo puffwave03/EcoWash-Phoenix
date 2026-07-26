@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Container } from "@/components/Container";
+import { Link } from "@/i18n/navigation";
 
 const footerSections = [
   {
@@ -63,9 +64,18 @@ export function Footer() {
                 <ul className="space-y-3">
                   {section.links.map((link) => (
                     <li key={link}>
-                      <span className="text-sm text-muted">
-                        {footer(link)}
-                      </span>
+                      {link === "company.links.contact" ? (
+                        <Link
+                          className="text-sm text-muted transition-standard hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                          href="/contact"
+                        >
+                          {footer(link)}
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-muted">
+                          {footer(link)}
+                        </span>
+                      )}
                     </li>
                   ))}
                 </ul>
