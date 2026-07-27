@@ -74,18 +74,18 @@
     "items": {
       "operationalClarity": {
         "title": "Operative Klarheit",
-        "description": "Geben Sie jedem Team eine gemeinsame Sicht auf Auftrage, Status und nachste Schritte."
+        "description": "Geben Sie jedem Team eine gemeinsame Sicht auf Aufträge, Status und nächste Schritte."
       },
       "reducedFragmentation": {
         "title": "Weniger manuelle Fragmentierung",
         "description": "Halten Sie weniger Details in Papiernotizen, Nachrichten und separaten Dateien verteilt."
       },
       "qualityControl": {
-        "title": "Qualitatskontrolle",
-        "description": "Machen Sie Prufungen, Finish und Ubergaben im Ablauf leichter nachvollziehbar."
+        "title": "Qualitätskontrolle",
+        "description": "Machen Sie Prüfungen, Finish und Übergaben im Ablauf leichter nachvollziehbar."
       },
       "scalableWorkflows": {
-        "title": "Skalierbare Ablaufe",
+        "title": "Skalierbare Abläufe",
         "description": "Nutzen Sie ein konsistentes Betriebsmodell, wenn Services, Teams oder Standorte wachsen."
       }
     }

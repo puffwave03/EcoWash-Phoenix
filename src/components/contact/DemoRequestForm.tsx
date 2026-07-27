@@ -182,6 +182,7 @@ export function DemoRequestForm() {
               className="mt-1 size-4 rounded border-border text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               id={fieldIds.consent}
               name="consent"
+              required
               type="checkbox"
               value="accepted"
             />
@@ -258,6 +259,7 @@ function TextField({
         id={id}
         name={name}
         placeholder={placeholder}
+        required={required}
         type={type}
       />
       {error ? (
@@ -304,6 +306,7 @@ function SelectField({
         defaultValue=""
         id={id}
         name={name}
+        required={required}
       >
         <option value="" />
         {options.map((option) => (
@@ -356,6 +359,7 @@ function TextAreaField({
         id={id}
         name={name}
         placeholder={placeholder}
+        required={required}
       />
       {error ? (
         <p className="mt-2 text-sm font-medium text-primary" id={`${id}-error`}>

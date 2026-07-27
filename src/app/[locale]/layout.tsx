@@ -54,7 +54,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className="h-full antialiased">
+    <html lang={locale} className="h-full antialiased" data-scroll-behavior="smooth">
       <body className="min-h-full">
         <NextIntlClientProvider>
           <SiteLayout>{children}</SiteLayout>

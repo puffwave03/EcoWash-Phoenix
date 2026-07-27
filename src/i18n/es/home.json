@@ -28,7 +28,7 @@
         "title": "Pedidos recientes",
         "items": [
           {
-            "customer": "Cuenta de hosteleria",
+            "customer": "Cuenta de hostelería",
             "status": "Listo para entrega",
             "amount": "1.240 €"
           },
@@ -38,7 +38,7 @@
             "amount": "680 €"
           },
           {
-            "customer": "Cuenta de lavanderia",
+            "customer": "Cuenta de lavandería",
             "status": "Recogida programada",
             "amount": "920 €"
           }
@@ -77,16 +77,16 @@
         "description": "Ofrece a cada equipo una vista compartida de pedidos, estados y siguientes pasos."
       },
       "reducedFragmentation": {
-        "title": "Menos fragmentacion manual",
+        "title": "Menos fragmentación manual",
         "description": "Reduce los detalles dispersos entre notas en papel, mensajes y archivos separados."
       },
       "qualityControl": {
         "title": "Control de calidad",
-        "description": "Haz que controles, acabados y traspasos sean mas faciles de seguir."
+        "description": "Haz que controles, acabados y traspasos sean más fáciles de seguir."
       },
       "scalableWorkflows": {
         "title": "Flujos escalables",
-        "description": "Usa un patron operativo consistente cuando crezcan servicios, equipos o sedes."
+        "description": "Usa un patrón operativo consistente cuando crezcan servicios, equipos o sedes."
       }
     }
   },
@@ -129,7 +129,7 @@
       "laundry": {
         "title": "Lavandería",
         "description": "Gestiona flujos de lavado, secado, doblado y acabado.",
-        "imageAlt": "Equipos profesionales de lavanderia industrial en un espacio de produccion limpio."
+        "imageAlt": "Equipos profesionales de lavandería industrial en un espacio de producción limpio."
       },
       "dryCleaning": {
         "title": "Limpieza en seco",
@@ -163,7 +163,7 @@
       "professionalLaundries": {
         "title": "Lavanderías profesionales",
         "description": "Gestiona entrada, producción, control de calidad y entrega desde una única vista operativa.",
-        "imageAlt": "Flujo de trabajo de lavanderia profesional en un entorno industrial."
+        "imageAlt": "Flujo de trabajo de lavandería profesional en un entorno industrial."
       },
       "dryCleaning": {
         "title": "Negocios de limpieza en seco",

@@ -73,20 +73,20 @@
   "benefits": {
     "items": {
       "operationalClarity": {
-        "title": "Clarite operationnelle",
-        "description": "Donnez a chaque equipe une vue partagee des commandes, statuts et prochaines etapes."
+        "title": "Clarté opérationnelle",
+        "description": "Donnez à chaque équipe une vue partagée des commandes, statuts et prochaines étapes."
       },
       "reducedFragmentation": {
         "title": "Moins de fragmentation manuelle",
-        "description": "Gardez moins de details disperses entre papier, messages et fichiers separes."
+        "description": "Gardez moins de détails dispersés entre papier, messages et fichiers séparés."
       },
       "qualityControl": {
-        "title": "Controle qualite",
-        "description": "Rendez les controles, finitions et passages de relais plus faciles a suivre."
+        "title": "Contrôle qualité",
+        "description": "Rendez les contrôles, finitions et passages de relais plus faciles à suivre."
       },
       "scalableWorkflows": {
-        "title": "Flux de travail evolutifs",
-        "description": "Utilisez un modele operationnel coherent quand services, equipes ou sites grandissent."
+        "title": "Flux de travail évolutifs",
+        "description": "Utilisez un modèle opérationnel cohérent quand services, équipes ou sites grandissent."
       }
     }
   },
