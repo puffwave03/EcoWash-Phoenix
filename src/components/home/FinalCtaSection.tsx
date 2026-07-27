@@ -15,7 +15,7 @@ export function FinalCtaSection() {
           fill
           objectPosition="center center"
           sizes="100vw"
-          src="/images/home/cta/green-linen-texture.png"
+          src="/images/home/cta/green-linen-texture.webp"
         />
         <div className="absolute inset-0 -z-10 bg-primary-strong/78" />
         <p className="text-small font-semibold uppercase tracking-[0.14em] text-gold">

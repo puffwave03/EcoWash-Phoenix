@@ -6,17 +6,17 @@ import { PhotoSlot } from "@/components/home/PhotoSlot";
 const primaryIndustries = [
   {
     key: "hotels",
-    image: "/images/home/industries/hotel-resort.png",
+    image: "/images/home/industries/hotel-resort.webp",
     objectPosition: "52% center",
   },
   {
     key: "vacationRentals",
-    image: "/images/home/industries/vacation-rental.png",
+    image: "/images/home/industries/vacation-rental.webp",
     objectPosition: "52% center",
   },
   {
     key: "professionalLaundries",
-    image: "/images/home/industries/professional-laundry.png",
+    image: "/images/home/industries/professional-laundry.webp",
     objectPosition: "48% center",
   },
 ] as const;

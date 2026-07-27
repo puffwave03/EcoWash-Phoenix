@@ -17,7 +17,7 @@ export function Hero() {
         objectPosition="center center"
         priority
         sizes="100vw"
-        src="/images/home/hero/industrial-laundry-background.png"
+        src="/images/home/hero/industrial-laundry-background.webp"
         width={1400}
       />
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(246_241_231/_0.98)_0%,rgb(246_241_231/_0.92)_40%,rgb(246_241_231/_0.36)_72%,rgb(6_31_24/_0.18)_100%)]" />
@@ -31,7 +31,7 @@ export function Hero() {
               height={360}
               objectPosition="center bottom"
               sizes="16rem"
-              src="/images/home/hero/folded-white-linen.png"
+              src="/images/home/hero/folded-white-linen.webp"
               width={420}
             />
             <p className="text-small font-semibold uppercase tracking-[0.14em] text-gold">
@@ -69,7 +69,7 @@ export function Hero() {
               height={560}
               objectPosition="65% center"
               sizes="9rem"
-              src="/images/home/hero/folded-green-textiles.png"
+              src="/images/home/hero/folded-green-textiles.webp"
               width={448}
             />
             <DashboardPreview />

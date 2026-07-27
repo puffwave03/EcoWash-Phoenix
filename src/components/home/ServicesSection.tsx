@@ -5,17 +5,17 @@ import { PhotoSlot } from "@/components/home/PhotoSlot";
 const primaryServices = [
   {
     key: "laundry",
-    image: "/images/home/services/industrial-laundry.png",
+    image: "/images/home/services/industrial-laundry.webp",
     objectPosition: "42% center",
   },
   {
     key: "dryCleaning",
-    image: "/images/home/services/dry-cleaning.png",
+    image: "/images/home/services/dry-cleaning.webp",
     objectPosition: "35% center",
   },
   {
     key: "ironing",
-    image: "/images/home/services/ironing-finishing.png",
+    image: "/images/home/services/ironing-finishing.webp",
     objectPosition: "48% center",
   },
 ] as const;
