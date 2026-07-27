@@ -4,11 +4,21 @@ type SectionTitleProps = {
   eyebrow?: string;
   title: string;
   children?: ReactNode;
+  align?: "center" | "left";
 };
 
-export function SectionTitle({ eyebrow, title, children }: SectionTitleProps) {
+export function SectionTitle({
+  eyebrow,
+  title,
+  children,
+  align = "center",
+}: SectionTitleProps) {
   return (
-    <div className="mx-auto max-w-3xl space-y-4 text-center">
+    <div
+      className={`max-w-3xl space-y-4 ${
+        align === "center" ? "mx-auto text-center" : "text-left"
+      }`}
+    >
       {eyebrow ? (
         <p className="text-small font-semibold uppercase tracking-[0.14em] text-secondary">
           {eyebrow}

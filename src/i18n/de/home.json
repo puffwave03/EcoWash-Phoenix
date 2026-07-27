@@ -28,17 +28,17 @@
         "title": "Aktuelle Aufträge",
         "items": [
           {
-            "customer": "Grand Hotel Aurora",
+            "customer": "Hospitality-Konto",
             "status": "Bereit zur Lieferung",
             "amount": "1.240 €"
           },
           {
-            "customer": "Villa Serena Rentals",
+            "customer": "Vermietungskonto",
             "status": "In der Endbearbeitung",
             "amount": "680 €"
           },
           {
-            "customer": "CityCare Laundry",
+            "customer": "Wascherei-Konto",
             "status": "Abholung geplant",
             "amount": "920 €"
           }
@@ -67,6 +67,26 @@
         "title": "Lieferroute",
         "route": "Route Bezirk Nord",
         "status": "Im Zeitplan"
+      }
+    }
+  },
+  "benefits": {
+    "items": {
+      "operationalClarity": {
+        "title": "Operative Klarheit",
+        "description": "Geben Sie jedem Team eine gemeinsame Sicht auf Auftrage, Status und nachste Schritte."
+      },
+      "reducedFragmentation": {
+        "title": "Weniger manuelle Fragmentierung",
+        "description": "Halten Sie weniger Details in Papiernotizen, Nachrichten und separaten Dateien verteilt."
+      },
+      "qualityControl": {
+        "title": "Qualitatskontrolle",
+        "description": "Machen Sie Prufungen, Finish und Ubergaben im Ablauf leichter nachvollziehbar."
+      },
+      "scalableWorkflows": {
+        "title": "Skalierbare Ablaufe",
+        "description": "Nutzen Sie ein konsistentes Betriebsmodell, wenn Services, Teams oder Standorte wachsen."
       }
     }
   },
@@ -108,15 +128,18 @@
     "items": {
       "laundry": {
         "title": "Wäsche",
-        "description": "Verwalten Sie Waschen, Trocknen, Falten und Endbearbeitung."
+        "description": "Verwalten Sie Waschen, Trocknen, Falten und Endbearbeitung.",
+        "imageAlt": "Professionelle industrielle Wäschereiausstattung in einem sauberen Produktionsbereich."
       },
       "dryCleaning": {
         "title": "Textilreinigung",
-        "description": "Verfolgen Sie Kleidungsstücke und Spezialbehandlungen getrennt."
+        "description": "Verfolgen Sie Kleidungsstücke und Spezialbehandlungen getrennt.",
+        "imageAlt": "Kleidungsstücke für die chemische Reinigung vor der Spezialpflege."
       },
       "ironing": {
         "title": "Bügeln",
-        "description": "Koordinieren Sie Bügelaufgaben, Prioritäten und Abschlussstatus."
+        "description": "Koordinieren Sie Bügelaufgaben, Prioritäten und Abschlussstatus.",
+        "imageAlt": "Fertig bearbeitete Wäsche für Bügeln und Falten vorbereitet."
       },
       "pickup": {
         "title": "Abholung",
@@ -139,7 +162,8 @@
     "items": {
       "professionalLaundries": {
         "title": "Professionelle Wäschereien",
-        "description": "Steuern Sie Annahme, Produktion, Qualitätskontrolle und Lieferung aus einer zentralen Betriebsansicht."
+        "description": "Steuern Sie Annahme, Produktion, Qualitätskontrolle und Lieferung aus einer zentralen Betriebsansicht.",
+        "imageAlt": "Professioneller Wäschereiablauf in einer industriellen Produktionsumgebung."
       },
       "dryCleaning": {
         "title": "Textilreinigungen",
@@ -147,11 +171,13 @@
       },
       "hotels": {
         "title": "Hotels und Resorts",
-        "description": "Koordinieren Sie große Wäschemengen, Gästewäsche und Abteilungsanfragen mit klarer Verantwortung."
+        "description": "Koordinieren Sie große Wäschemengen, Gästewäsche und Abteilungsanfragen mit klarer Verantwortung.",
+        "imageAlt": "Premium-Hotelzimmer mit sauberer weißer Bettwäsche."
       },
       "vacationRentals": {
         "title": "Ferienvermietungen",
-        "description": "Halten Sie schnelle Wäschewechsel, Reinigungspartner und Lieferfenster aufeinander abgestimmt."
+        "description": "Halten Sie schnelle Wäschewechsel, Reinigungspartner und Lieferfenster aufeinander abgestimmt.",
+        "imageAlt": "Heller Innenraum einer Ferienunterkunft mit frischer Bettwäsche."
       },
       "restaurants": {
         "title": "Restaurants",

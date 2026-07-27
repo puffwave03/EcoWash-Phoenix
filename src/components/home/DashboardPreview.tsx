@@ -19,7 +19,7 @@ export function DashboardPreview() {
     <div
       aria-hidden="true"
       data-dashboard-preview="true"
-      className="relative mx-auto w-full min-w-0 max-w-xl rounded-[1.5rem] border border-border bg-surface p-3 shadow-luxury"
+      className="relative mx-auto w-full min-w-0 max-w-2xl rounded-[1.5rem] border border-white/70 bg-white/82 p-3 shadow-editorial backdrop-blur"
     >
       <div className="overflow-hidden rounded-[1.25rem] border border-border bg-background">
         <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
@@ -31,8 +31,8 @@ export function DashboardPreview() {
           <div className="h-2 w-24 rounded-full bg-primary-soft" />
         </div>
 
-        <div className="grid min-h-[34rem] grid-cols-1 xl:grid-cols-[9rem_1fr]">
-          <aside className="hidden border-r border-border bg-primary px-4 py-6 text-white xl:block">
+        <div className="grid min-h-[34rem] grid-cols-1 xl:grid-cols-[8.5rem_1fr]">
+          <aside className="hidden border-r border-border bg-primary-strong px-4 py-6 text-white xl:block">
             <div className="mb-8 flex items-center gap-3">
               <div className="flex items-center justify-center rounded-logo bg-white px-2 py-1">
                 <BrandLogo alt="" size="dashboard" />
@@ -74,7 +74,7 @@ export function DashboardPreview() {
               ))}
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-[1fr_0.8fr]">
+            <div className="grid gap-4 xl:grid-cols-[1fr_0.76fr]">
               <div className="rounded-card border border-border bg-surface p-4 shadow-card">
                 <h3 className="text-sm font-semibold text-text">
                   {t("orders.title")}

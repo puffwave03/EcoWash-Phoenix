@@ -28,17 +28,17 @@
         "title": "Pedidos recientes",
         "items": [
           {
-            "customer": "Grand Hotel Aurora",
+            "customer": "Cuenta de hosteleria",
             "status": "Listo para entrega",
             "amount": "1.240 €"
           },
           {
-            "customer": "Villa Serena Rentals",
+            "customer": "Cuenta de alquileres",
             "status": "En acabado",
             "amount": "680 €"
           },
           {
-            "customer": "CityCare Laundry",
+            "customer": "Cuenta de lavanderia",
             "status": "Recogida programada",
             "amount": "920 €"
           }
@@ -67,6 +67,26 @@
         "title": "Ruta de entrega",
         "route": "Ruta distrito norte",
         "status": "A tiempo"
+      }
+    }
+  },
+  "benefits": {
+    "items": {
+      "operationalClarity": {
+        "title": "Claridad operativa",
+        "description": "Ofrece a cada equipo una vista compartida de pedidos, estados y siguientes pasos."
+      },
+      "reducedFragmentation": {
+        "title": "Menos fragmentacion manual",
+        "description": "Reduce los detalles dispersos entre notas en papel, mensajes y archivos separados."
+      },
+      "qualityControl": {
+        "title": "Control de calidad",
+        "description": "Haz que controles, acabados y traspasos sean mas faciles de seguir."
+      },
+      "scalableWorkflows": {
+        "title": "Flujos escalables",
+        "description": "Usa un patron operativo consistente cuando crezcan servicios, equipos o sedes."
       }
     }
   },
@@ -108,15 +128,18 @@
     "items": {
       "laundry": {
         "title": "Lavandería",
-        "description": "Gestiona flujos de lavado, secado, doblado y acabado."
+        "description": "Gestiona flujos de lavado, secado, doblado y acabado.",
+        "imageAlt": "Equipos profesionales de lavanderia industrial en un espacio de produccion limpio."
       },
       "dryCleaning": {
         "title": "Limpieza en seco",
-        "description": "Sigue prendas y procesos de tratamiento especializado por separado."
+        "description": "Sigue prendas y procesos de tratamiento especializado por separado.",
+        "imageAlt": "Prendas de limpieza en seco preparadas para cuidado especializado."
       },
       "ironing": {
         "title": "Planchado",
-        "description": "Coordina tareas de planchado, prioridades y estado de finalización."
+        "description": "Coordina tareas de planchado, prioridades y estado de finalización.",
+        "imageAlt": "Ropa terminada preparada para planchado y doblado."
       },
       "pickup": {
         "title": "Recogida",
@@ -139,7 +162,8 @@
     "items": {
       "professionalLaundries": {
         "title": "Lavanderías profesionales",
-        "description": "Gestiona entrada, producción, control de calidad y entrega desde una única vista operativa."
+        "description": "Gestiona entrada, producción, control de calidad y entrega desde una única vista operativa.",
+        "imageAlt": "Flujo de trabajo de lavanderia profesional en un entorno industrial."
       },
       "dryCleaning": {
         "title": "Negocios de limpieza en seco",
@@ -147,11 +171,13 @@
       },
       "hotels": {
         "title": "Hoteles y resorts",
-        "description": "Coordina grandes volúmenes de lencería, lavandería de huéspedes y solicitudes de departamentos con responsabilidad clara."
+        "description": "Coordina grandes volúmenes de lencería, lavandería de huéspedes y solicitudes de departamentos con responsabilidad clara.",
+        "imageAlt": "Habitacion de hotel premium con ropa de cama blanca limpia."
       },
       "vacationRentals": {
         "title": "Alquileres vacacionales",
-        "description": "Mantén alineadas las recogidas rápidas de lencería, los equipos de limpieza y las ventanas de entrega."
+        "description": "Mantén alineadas las recogidas rápidas de lencería, los equipos de limpieza y las ventanas de entrega.",
+        "imageAlt": "Interior luminoso de alquiler vacacional preparado con ropa de cama fresca."
       },
       "restaurants": {
         "title": "Restaurantes",

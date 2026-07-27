@@ -16,11 +16,14 @@ export function SolutionsSection() {
   const t = useTranslations("home.solutions");
 
   return (
-    <Section className="bg-background pt-0" id="solutions">
-      <SectionTitle eyebrow={t("eyebrow")} title={t("title")}>
-        {t("description")}
-      </SectionTitle>
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+    <Section className="bg-cream" id="solutions">
+      <div className="grid gap-10 lg:grid-cols-[0.62fr_1.38fr] lg:gap-12">
+      <div className="max-w-xl lg:pt-3">
+        <SectionTitle eyebrow={t("eyebrow")} title={t("title")} align="left">
+          {t("description")}
+        </SectionTitle>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
         {solutionItems.map((item) => (
           <SolutionCard
             description={t(`items.${item.key}.description`)}
@@ -29,6 +32,7 @@ export function SolutionsSection() {
             title={t(`items.${item.key}.title`)}
           />
         ))}
+      </div>
       </div>
     </Section>
   );

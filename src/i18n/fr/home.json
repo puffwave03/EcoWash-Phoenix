@@ -28,17 +28,17 @@
         "title": "Commandes récentes",
         "items": [
           {
-            "customer": "Grand Hotel Aurora",
+            "customer": "Compte hospitality",
             "status": "Prête pour livraison",
             "amount": "1 240 €"
           },
           {
-            "customer": "Villa Serena Rentals",
+            "customer": "Compte location",
             "status": "En finition",
             "amount": "680 €"
           },
           {
-            "customer": "CityCare Laundry",
+            "customer": "Compte blanchisserie",
             "status": "Collecte planifiée",
             "amount": "920 €"
           }
@@ -67,6 +67,26 @@
         "title": "Tournée de livraison",
         "route": "Tournée secteur nord",
         "status": "Dans les temps"
+      }
+    }
+  },
+  "benefits": {
+    "items": {
+      "operationalClarity": {
+        "title": "Clarite operationnelle",
+        "description": "Donnez a chaque equipe une vue partagee des commandes, statuts et prochaines etapes."
+      },
+      "reducedFragmentation": {
+        "title": "Moins de fragmentation manuelle",
+        "description": "Gardez moins de details disperses entre papier, messages et fichiers separes."
+      },
+      "qualityControl": {
+        "title": "Controle qualite",
+        "description": "Rendez les controles, finitions et passages de relais plus faciles a suivre."
+      },
+      "scalableWorkflows": {
+        "title": "Flux de travail evolutifs",
+        "description": "Utilisez un modele operationnel coherent quand services, equipes ou sites grandissent."
       }
     }
   },
@@ -108,15 +128,18 @@
     "items": {
       "laundry": {
         "title": "Blanchisserie",
-        "description": "Gérez les flux de lavage, séchage, pliage et finition."
+        "description": "Gérez les flux de lavage, séchage, pliage et finition.",
+        "imageAlt": "Equipement professionnel de blanchisserie industrielle dans un espace de production propre."
       },
       "dryCleaning": {
         "title": "Nettoyage à sec",
-        "description": "Suivez séparément les vêtements et les traitements spécialisés."
+        "description": "Suivez séparément les vêtements et les traitements spécialisés.",
+        "imageAlt": "Vetements de nettoyage a sec prepares pour un soin specialise."
       },
       "ironing": {
         "title": "Repassage",
-        "description": "Coordonnez les tâches de repassage, les priorités et l'état d'avancement."
+        "description": "Coordonnez les tâches de repassage, les priorités et l'état d'avancement.",
+        "imageAlt": "Linge fini prepare pour le repassage et le pliage."
       },
       "pickup": {
         "title": "Collecte",
@@ -139,7 +162,8 @@
     "items": {
       "professionalLaundries": {
         "title": "Blanchisseries professionnelles",
-        "description": "Pilotez réception, production, contrôle qualité et livraison depuis une seule vue opérationnelle."
+        "description": "Pilotez réception, production, contrôle qualité et livraison depuis une seule vue opérationnelle.",
+        "imageAlt": "Flux de blanchisserie professionnelle dans un environnement de production industriel."
       },
       "dryCleaning": {
         "title": "Pressings",
@@ -147,11 +171,13 @@
       },
       "hotels": {
         "title": "Hôtels et resorts",
-        "description": "Coordonnez les gros volumes de linge, la blanchisserie client et les demandes des services avec des responsabilités claires."
+        "description": "Coordonnez les gros volumes de linge, la blanchisserie client et les demandes des services avec des responsabilités claires.",
+        "imageAlt": "Chambre d'hotel premium avec linge blanc propre."
       },
       "vacationRentals": {
         "title": "Locations saisonnières",
-        "description": "Alignez les collectes rapides de linge, les partenaires de ménage et les créneaux de livraison."
+        "description": "Alignez les collectes rapides de linge, les partenaires de ménage et les créneaux de livraison.",
+        "imageAlt": "Interieur lumineux de location de vacances prepare avec du linge frais."
       },
       "restaurants": {
         "title": "Restaurants",

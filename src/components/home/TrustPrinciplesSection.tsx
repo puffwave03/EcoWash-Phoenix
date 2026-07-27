@@ -15,15 +15,15 @@ export function TrustPrinciplesSection() {
   const t = useTranslations("home.trust");
 
   return (
-    <Section className="bg-primary-strong text-white" id="principles">
+    <Section className="bg-cream text-text" id="principles">
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-small font-semibold uppercase tracking-[0.14em] text-accent">
+        <p className="text-small font-semibold uppercase tracking-[0.14em] text-gold">
           {t("eyebrow")}
         </p>
-        <h2 className="mt-5 text-h2 font-semibold leading-tight text-white">
+        <h2 className="mt-5 text-h2 font-semibold leading-tight text-primary-strong">
           {t("title")}
         </h2>
-        <p className="mt-5 text-body leading-8 text-white/75">
+        <p className="mt-5 text-body leading-8 text-muted">
           {t("description")}
         </p>
       </div>

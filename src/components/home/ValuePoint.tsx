@@ -6,15 +6,17 @@ type ValuePointProps = {
 
 export function ValuePoint({ marker, title, description }: ValuePointProps) {
   return (
-    <article className="grid gap-4 border-t border-border py-6 sm:grid-cols-[4rem_1fr]">
+    <article className="rounded-card border border-border bg-surface p-5 shadow-card">
       <span
         aria-hidden="true"
-        className="flex size-12 items-center justify-center rounded-logo border border-secondary/40 bg-secondary-soft text-sm font-semibold text-primary"
+        className="flex size-12 items-center justify-center rounded-logo border border-gold/40 bg-gold-soft text-sm font-semibold text-primary"
       >
         {marker}
       </span>
       <div>
-        <h3 className="text-xl font-semibold leading-tight text-text">{title}</h3>
+        <h3 className="mt-5 text-xl font-semibold leading-tight text-text">
+          {title}
+        </h3>
         <p className="mt-3 text-sm leading-6 text-muted sm:text-body">
           {description}
         </p>

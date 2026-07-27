@@ -28,17 +28,17 @@
         "title": "Ordini recenti",
         "items": [
           {
-            "customer": "Grand Hotel Aurora",
+            "customer": "Account hospitality",
             "status": "Pronto per la consegna",
             "amount": "1.240 €"
           },
           {
-            "customer": "Villa Serena Rentals",
+            "customer": "Account affitti",
             "status": "In finitura",
             "amount": "680 €"
           },
           {
-            "customer": "CityCare Laundry",
+            "customer": "Account lavanderia",
             "status": "Ritiro programmato",
             "amount": "920 €"
           }
@@ -67,6 +67,26 @@
         "title": "Giro consegne",
         "route": "Percorso zona nord",
         "status": "In orario"
+      }
+    }
+  },
+  "benefits": {
+    "items": {
+      "operationalClarity": {
+        "title": "Chiarezza operativa",
+        "description": "Offri a ogni team una vista condivisa su ordini, stati e prossimi passaggi."
+      },
+      "reducedFragmentation": {
+        "title": "Meno frammentazione manuale",
+        "description": "Riduci i dettagli dispersi tra note cartacee, messaggi e file separati."
+      },
+      "qualityControl": {
+        "title": "Controllo qualita",
+        "description": "Rendi piu semplici da seguire controlli, finitura e passaggi di consegna."
+      },
+      "scalableWorkflows": {
+        "title": "Flussi scalabili",
+        "description": "Usa un modello operativo coerente quando crescono servizi, team o sedi."
       }
     }
   },
@@ -108,15 +128,18 @@
     "items": {
       "laundry": {
         "title": "Lavanderia",
-        "description": "Gestisci lavaggio, asciugatura, piegatura e finitura."
+        "description": "Gestisci lavaggio, asciugatura, piegatura e finitura.",
+        "imageAlt": "Attrezzature professionali di lavanderia industriale in uno spazio produttivo pulito."
       },
       "dryCleaning": {
         "title": "Lavaggio a secco",
-        "description": "Traccia capi e trattamenti specialistici in modo separato."
+        "description": "Traccia capi e trattamenti specialistici in modo separato.",
+        "imageAlt": "Capi per lavaggio a secco preparati per trattamenti specialistici."
       },
       "ironing": {
         "title": "Stiratura",
-        "description": "Coordina attività di stiratura, priorità e stato di completamento."
+        "description": "Coordina attività di stiratura, priorità e stato di completamento.",
+        "imageAlt": "Biancheria rifinita preparata per stiratura e piegatura."
       },
       "pickup": {
         "title": "Ritiro",
@@ -139,7 +162,8 @@
     "items": {
       "professionalLaundries": {
         "title": "Lavanderie professionali",
-        "description": "Gestisci accettazione, produzione, controllo qualità e consegna da un'unica vista operativa."
+        "description": "Gestisci accettazione, produzione, controllo qualità e consegna da un'unica vista operativa.",
+        "imageAlt": "Flusso operativo di lavanderia professionale in un ambiente produttivo industriale."
       },
       "dryCleaning": {
         "title": "Lavanderie a secco",
@@ -147,11 +171,13 @@
       },
       "hotels": {
         "title": "Hotel e resort",
-        "description": "Coordina grandi volumi di biancheria, lavanderia ospiti e richieste dei reparti con responsabilità chiare."
+        "description": "Coordina grandi volumi di biancheria, lavanderia ospiti e richieste dei reparti con responsabilità chiare.",
+        "imageAlt": "Camera d'hotel premium con biancheria bianca pulita."
       },
       "vacationRentals": {
         "title": "Affitti brevi",
-        "description": "Allinea ritiri rapidi della biancheria, partner di pulizia e finestre di consegna."
+        "description": "Allinea ritiri rapidi della biancheria, partner di pulizia e finestre di consegna.",
+        "imageAlt": "Interno luminoso di affitto breve preparato con biancheria fresca."
       },
       "restaurants": {
         "title": "Ristoranti",

@@ -28,17 +28,17 @@
         "title": "Recent orders",
         "items": [
           {
-            "customer": "Grand Hotel Aurora",
+            "customer": "Hospitality account",
             "status": "Ready for delivery",
             "amount": "$1,240"
           },
           {
-            "customer": "Villa Serena Rentals",
+            "customer": "Rental account",
             "status": "In finishing",
             "amount": "$680"
           },
           {
-            "customer": "CityCare Laundry",
+            "customer": "Laundry account",
             "status": "Pickup scheduled",
             "amount": "$920"
           }
@@ -67,6 +67,26 @@
         "title": "Delivery route",
         "route": "North district route",
         "status": "On schedule"
+      }
+    }
+  },
+  "benefits": {
+    "items": {
+      "operationalClarity": {
+        "title": "Operational clarity",
+        "description": "Give every team a shared view of orders, status and next steps."
+      },
+      "reducedFragmentation": {
+        "title": "Reduced manual fragmentation",
+        "description": "Keep fewer details scattered across paper notes, messages and separate files."
+      },
+      "qualityControl": {
+        "title": "Quality control",
+        "description": "Make checks, finishing and handoffs easier to follow across the workflow."
+      },
+      "scalableWorkflows": {
+        "title": "Scalable workflows",
+        "description": "Use a consistent operating pattern as services, teams or locations grow."
       }
     }
   },
@@ -108,15 +128,18 @@
     "items": {
       "laundry": {
         "title": "Laundry",
-        "description": "Manage wash, dry, fold and finishing workflows."
+        "description": "Manage wash, dry, fold and finishing workflows.",
+        "imageAlt": "Professional industrial laundry equipment in a clean production space."
       },
       "dryCleaning": {
         "title": "Dry Cleaning",
-        "description": "Track garments and specialist treatment processes separately."
+        "description": "Track garments and specialist treatment processes separately.",
+        "imageAlt": "Dry cleaning garments prepared for specialist care."
       },
       "ironing": {
         "title": "Ironing",
-        "description": "Coordinate ironing tasks, priorities and completion status."
+        "description": "Coordinate ironing tasks, priorities and completion status.",
+        "imageAlt": "Freshly finished laundry prepared for ironing and folding."
       },
       "pickup": {
         "title": "Pickup",
@@ -139,7 +162,8 @@
     "items": {
       "professionalLaundries": {
         "title": "Professional Laundries",
-        "description": "Run intake, production, quality control and delivery from one operational view."
+        "description": "Run intake, production, quality control and delivery from one operational view.",
+        "imageAlt": "Professional laundry workflow in an industrial production setting."
       },
       "dryCleaning": {
         "title": "Dry Cleaning Businesses",
@@ -147,11 +171,13 @@
       },
       "hotels": {
         "title": "Hotels & Resorts",
-        "description": "Coordinate high-volume linen, guest laundry and department requests with clear accountability."
+        "description": "Coordinate high-volume linen, guest laundry and department requests with clear accountability.",
+        "imageAlt": "Premium hotel room with clean white linen."
       },
       "vacationRentals": {
         "title": "Vacation Rentals",
-        "description": "Keep fast-turnover linen collections, cleaning partners and delivery windows aligned."
+        "description": "Keep fast-turnover linen collections, cleaning partners and delivery windows aligned.",
+        "imageAlt": "Bright vacation rental interior prepared with fresh linen."
       },
       "restaurants": {
         "title": "Restaurants",

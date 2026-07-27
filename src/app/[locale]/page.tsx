@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FinalCtaSection } from "@/components/home/FinalCtaSection";
 import { Hero } from "@/components/home/Hero";
 import { IndustriesSection } from "@/components/home/IndustriesSection";
+import { OperationalBenefitBand } from "@/components/home/OperationalBenefitBand";
 import { OperationalValueSection } from "@/components/home/OperationalValueSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { SolutionsSection } from "@/components/home/SolutionsSection";
@@ -33,6 +34,7 @@ export default function Home({ params }: HomeProps) {
   return (
     <>
       <Hero />
+      <OperationalBenefitBand />
       <SolutionsSection />
       <ServicesSection />
       <IndustriesSection />
