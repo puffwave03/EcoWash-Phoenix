@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: DEV-010
+Current Mission: APP-002
 
-Next Action: Release-ready, deployment deferred; next macro-task is APP-001
+Next Action: APP-002 documentation review; next implementation step after approval is APP-003
 
 ---
 
@@ -25,16 +25,19 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Item | Status |
 | --- | --- |
 | Project | EcoWash Phoenix |
-| Current phase | Public Website — Release Preparation |
-| Current milestone | Milestone 6 — Public Website Final Review and Release Decision |
-| Current mission | DEV-010 — Public Website Final Audit and Release Preparation |
-| Last completed mission | DEV-010.4 — Site icons and EcoWash water mark social preview |
-| Latest approved and pushed development commit | 6ef5344 |
+| Current phase | SaaS Platform Foundation — Documentation |
+| Current milestone | Milestone 7 — SaaS Platform Foundation |
+| Current mission | APP-002 — Order Domain and Database Design |
+| Last completed documentation mission | DOCS-005 — Public website release preparation closure |
+| Latest approved and pushed commit | 56e5125 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
+| APP-001 status | Approved architecture and MVP definition |
+| APP-002 status | In review |
+| APP-003 status | Next after APP-002 approval |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Next macro-task | APP-001 — EcoWash Application Architecture and MVP Definition |
+| Backend/SaaS implementation | Not started |
 
 ## Development Status
 
@@ -56,6 +59,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-010.3 | Homepage image optimization | Completed |
 | DEV-010.4 | Favicon, app icons and social preview water mark | Completed |
 | DEV-010 | Public Website Final Audit and Release Preparation | Release-ready, deployment deferred |
+| APP-001 | EcoWash Application Architecture and MVP Definition | Approved |
+| APP-002 | Order Domain and Database Design | In review |
+| APP-003 | Supabase foundation and security | Next after APP-002 approval |
 
 ## Commit History
 
@@ -85,6 +91,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DOCS-002 | aa0f210 |
 | DOCS-003 | eed5bcf |
 | DOCS-004 | 038c9ff |
+| DOCS-005 | 56e5125 |
 
 ## Known Validated State
 
@@ -117,7 +124,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `6ef5344`
+- Local `main` and `origin/main` point to `56e5125`
 
 ## DEV-009.5 Completed State
 
@@ -154,7 +161,25 @@ Current DEV-010 state:
 - Lint and build have passed in the validated DEV-010 state.
 - Production deployment is deferred until domain selection and purchase.
 - No backend, database, authentication, Supabase or SaaS platform is implemented.
-- Next macro-task after documentation closure is `APP-001 — EcoWash Application Architecture and MVP Definition`.
+- APP-001 is approved.
+- APP-002 is in documentation review.
+- Next step after APP-002 approval is `APP-003 — Supabase foundation and security`.
+
+## APP-002 Documentation State
+
+APP-002 defines the initial order domain and database design for the future EcoWash MVP. It documents:
+
+- organization-scoped, multi-tenant-ready data ownership
+- owner, manager and staff roles for the MVP
+- customers, properties, services, prices, orders and order items
+- separated production, fulfillment, payment and issue models
+- optional pickup and delivery per order
+- manual payments and derived payment state
+- order photos and private storage ownership principles
+- RLS strategy and APP-003 security invariants
+- audit log boundaries
+
+APP-002 does not implement code, migrations, Supabase configuration, authentication, database tables or a SaaS dashboard.
 
 ## Current Route Architecture
 
@@ -317,7 +342,9 @@ Exact starting state:
 - Favicon, app icons and social preview assets integrated
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
-- Next macro-task is `APP-001 — EcoWash Application Architecture and MVP Definition`
+- APP-001 is approved
+- APP-002 is in review
+- Next step after APP-002 approval is `APP-003 — Supabase foundation and security`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -350,4 +377,5 @@ First checks:
    - `/icon.png`
    - `/apple-icon.png`
    - `/social/ecowash-og.png`
-6. Do not begin APP-001 until its architecture and MVP definition scope is confirmed.
+6. Review APP-002 documentation before any backend or database implementation.
+7. Do not begin APP-003 until APP-002 is approved.

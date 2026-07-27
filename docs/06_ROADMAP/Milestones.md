@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: DEV-010
+Current Mission: APP-002
 
-Next Action: Release-ready, deployment deferred; next macro-task is APP-001
+Next Action: APP-002 documentation review; next implementation step after approval is APP-003
 
 ---
 
@@ -84,17 +84,12 @@ Expected scope:
 
 ## Milestone 7 — SaaS Platform Foundation
 
-Status: Planned
+Status: In Review
 
-Future areas:
+Approved and current areas:
 
-- App shell
-- Authentication architecture
-- Organization and user model
-- Dashboard
-- Customers
-- Orders
-- Production
-- Pickup and delivery
-- Billing
-- Reporting
+- APP-001 — EcoWash Application Architecture and MVP Definition: Approved
+- APP-002 — Order Domain and Database Design: In review
+- APP-003 — Supabase foundation and security: Next after APP-002 approval
+
+APP-002 remains documentation only. No backend, database, authentication, Supabase project, migrations, app dashboard or SaaS implementation has been created yet.
