@@ -8,7 +8,7 @@ Last Updated: 2026-07-27
 
 Current Mission: DEV-010
 
-Next Action: Public website final audit and release preparation
+Next Action: Release-ready, deployment deferred; next macro-task is APP-001
 
 ---
 
@@ -25,13 +25,16 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Item | Status |
 | --- | --- |
 | Project | EcoWash Phoenix |
-| Current phase | Public Website — First Complete Visual Version |
+| Current phase | Public Website — Release Preparation |
 | Current milestone | Milestone 6 — Public Website Final Review and Release Decision |
 | Current mission | DEV-010 — Public Website Final Audit and Release Preparation |
-| Last completed mission | DEV-009.5 — Homepage visual enrichment and photographic asset integration |
-| Latest approved and pushed development commit | 2834289 |
+| Last completed mission | DEV-010.4 — Site icons and EcoWash water mark social preview |
+| Latest approved and pushed development commit | 6ef5344 |
 | Remote status | main synchronized with origin/main |
-| DEV-009.5 status | Completed, committed and pushed |
+| DEV-010.4 status | Completed, committed and pushed |
+| Public website release state | Release-ready, deployment deferred |
+| Production domain | Not selected or purchased yet |
+| Next macro-task | APP-001 — EcoWash Application Architecture and MVP Definition |
 
 ## Development Status
 
@@ -48,7 +51,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-008 | Public website navigation refinement | Completed |
 | DEV-009 | Multilingual SEO and production readiness | Completed |
 | DEV-009.5 | Visual Enrichment and Homepage Layout Upgrade | Completed |
-| DEV-010 | Public Website Final Audit and Release Preparation | Next |
+| DEV-010.1 | Verified public release issue fixes | Completed |
+| DEV-010.2 | SaaS preview and contact-form clarity fixes | Completed |
+| DEV-010.3 | Homepage image optimization | Completed |
+| DEV-010.4 | Favicon, app icons and social preview water mark | Completed |
+| DEV-010 | Public Website Final Audit and Release Preparation | Release-ready, deployment deferred |
 
 ## Commit History
 
@@ -65,6 +72,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-008 | 22a6075 |
 | DEV-009 | 2026943 |
 | DEV-009.5 | 2834289 |
+| DEV-010.1 | 4b89250 |
+| DEV-010.2 | d89b443 |
+| DEV-010.3 | aeb9268 |
+| DEV-010.4 | 6ef5344 |
 
 ## Documentation Commit History
 
@@ -73,6 +84,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DOCS-001 | 5d509b8 |
 | DOCS-002 | aa0f210 |
 | DOCS-003 | eed5bcf |
+| DOCS-004 | 038c9ff |
 
 ## Known Validated State
 
@@ -90,9 +102,12 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - Localized not-found experience exists
 - Environment-based public site URL configuration exists
 - Executive Luxury visual system is integrated
-- Real photographic imagery is integrated in Hero, Services, Industries and Final CTA
+- Optimized WebP photographic imagery is integrated in Hero, Services, Industries and Final CTA
 - Operational benefit band is integrated
-- Final homepage image assets are real non-empty PNG files
+- Final homepage image assets are real non-empty WebP files
+- Favicon, site icon, Apple icon and Open Graph/Twitter preview image exist
+- EcoWash product mark master SVG exists at `public/brand/ecowash-product-mark.svg`
+- DEV-010.4 water mark is the current approved committed branding asset baseline pending any future visual revision request
 - Decorative homepage imagery uses empty alt text where appropriate
 - Content-bearing images use translated alt text
 - Next.js Image is used for the final homepage photographic imagery
@@ -100,9 +115,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No visible photographic placeholders remain on the approved homepage
 - No missing translation keys
 - No horizontal overflow
-- No new dependencies added during DEV-009.5
+- No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `2834289`
+- Local `main` and `origin/main` point to `6ef5344`
 
 ## DEV-009.5 Completed State
 
@@ -119,6 +134,27 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No broken image requests were found during review
 - No hydration or console errors were found during review
 - Commit `2834289` is pushed to `origin/main`
+
+## DEV-010 Completed Work To Date
+
+DEV-010 is the public website final audit and release-preparation phase. The following scoped follow-up missions are completed, committed and pushed:
+
+- `DEV-010.1` fixed verified public release issues in metadata, contact-form clarity and localized content.
+- `DEV-010.2` clarified SaaS preview claims and contact/demo behavior so the public site does not imply that backend, billing, payments, live data or a real submission endpoint already exist.
+- `DEV-010.3` optimized homepage photographic assets to WebP and kept runtime image references aligned.
+- `DEV-010.4` finalized favicon, app icons, Apple icon and Open Graph/Twitter preview assets using the EcoWash water mark.
+
+Latest completed DEV-010 commit:
+
+- `6ef5344 DEV-010.4 feat: replace site icons with EcoWash water mark`
+
+Current DEV-010 state:
+
+- Release-ready, deployment deferred.
+- Lint and build have passed in the validated DEV-010 state.
+- Production deployment is deferred until domain selection and purchase.
+- No backend, database, authentication, Supabase or SaaS platform is implemented.
+- Next macro-task after documentation closure is `APP-001 — EcoWash Application Architecture and MVP Definition`.
 
 ## Current Route Architecture
 
@@ -152,15 +188,16 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - Header and Footer: responsive and localized
 - Navigation: localized homepage anchors and contact route
 - Homepage anchors: `solutions`, `services`, `industries`, `value`, `principles`, `contact`
-- Hero, Services, Industries and Final CTA: real photographic imagery integrated
+- Hero, Services, Industries and Final CTA: optimized WebP photographic imagery integrated
 - Operational benefit band: integrated
 - SEO metadata: multilingual metadata, canonical and alternate links configured
+- Brand/social assets: favicon, site icon, Apple icon and Open Graph/Twitter preview configured
 - Sitemap: configured
 - Robots: configured
 - Not-found: localized experience configured
 - Demo form backend: not implemented
 - Public secondary pages: not implemented
-- Deployment: not configured
+- Deployment: deferred until production domain selection and purchase
 
 Current routes:
 
@@ -189,27 +226,40 @@ The approved homepage image set is present, integrated and committed at these fi
 
 Hero:
 
-- `public/images/home/hero/industrial-laundry-background.png`
-- `public/images/home/hero/folded-white-linen.png`
-- `public/images/home/hero/folded-green-textiles.png`
+- `public/images/home/hero/industrial-laundry-background.webp`
+- `public/images/home/hero/folded-white-linen.webp`
+- `public/images/home/hero/folded-green-textiles.webp`
 
 Services:
 
-- `public/images/home/services/industrial-laundry.png`
-- `public/images/home/services/dry-cleaning.png`
-- `public/images/home/services/ironing-finishing.png`
+- `public/images/home/services/industrial-laundry.webp`
+- `public/images/home/services/dry-cleaning.webp`
+- `public/images/home/services/ironing-finishing.webp`
 
 Industries:
 
-- `public/images/home/industries/hotel-resort.png`
-- `public/images/home/industries/vacation-rental.png`
-- `public/images/home/industries/professional-laundry.png`
+- `public/images/home/industries/hotel-resort.webp`
+- `public/images/home/industries/vacation-rental.webp`
+- `public/images/home/industries/professional-laundry.webp`
 
 Final CTA:
 
-- `public/images/home/cta/green-linen-texture.png`
+- `public/images/home/cta/green-linen-texture.webp`
 
-These assets are real non-empty PNG files. They are integrated through Next.js Image with preserved aspect ratios. Decorative Hero imagery uses empty alt text. Services and Industries imagery uses translated alt text. Crop and object-position choices are deliberate for desktop, tablet and mobile layouts. Placeholder SVGs are not used as visible replacements where final photographic assets exist.
+These assets are real non-empty WebP files. They are integrated through Next.js Image with preserved aspect ratios. Decorative Hero imagery uses empty alt text. Services and Industries imagery uses translated alt text. Crop and object-position choices are deliberate for desktop, tablet and mobile layouts. Placeholder SVGs are not used as visible replacements where final photographic assets exist.
+
+## Current Brand and Social Assets
+
+The current site icon and social-preview set is committed at:
+
+- `public/brand/ecowash-logo.png` — official full EcoWash logo used in Header, Footer and DashboardPreview
+- `public/brand/ecowash-product-mark.svg` — master vector water mark for favicon/app/social assets
+- `src/app/favicon.ico` — multi-size favicon
+- `src/app/icon.png` — 512x512 site icon
+- `src/app/apple-icon.png` — 180x180 Apple touch icon
+- `public/social/ecowash-og.png` — 1200x630 Open Graph and Twitter preview image
+
+The DEV-010.4 mark follows the Product Owner reference direction: green side form, blue central drop, blue lower wave and three bubbles. It does not use the old "EcoWash La Tejita" lockup, the old URL, or embedded raster artwork. Metadata paths are configured and verified for `/favicon.ico`, `/icon.png`, `/apple-icon.png` and `/social/ecowash-og.png`.
 
 ## Current Limitations
 
@@ -223,10 +273,10 @@ These assets are real non-empty PNG files. They are integrated through Next.js I
 - No billing
 - No live dashboard
 - No production deployment
+- No production domain selected or purchased
 - No completed SaaS platform
 - No Docker
 - No pricing, legal or social pages
-- Final Open Graph branding asset may still be pending
 - No unsupported metrics, customer logos, certifications or marketing claims
 
 ## Important Project Rules
@@ -255,16 +305,19 @@ These assets are real non-empty PNG files. They are integrated through Next.js I
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da DEV-010.”
+“Buongiorno, riprendiamo EcoWash Phoenix da DEV-010 dopo DEV-010.4.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree clean
 - `main` synchronized with `origin/main`
-- DEV-009.5 completed, committed and pushed at `2834289`
-- All ten final homepage assets integrated
-- Next task is public website final audit and release preparation
+- DEV-010.4 completed, committed and pushed at `6ef5344`
+- All ten final homepage assets optimized to WebP and integrated
+- Favicon, app icons and social preview assets integrated
+- Current release state is Release-ready, deployment deferred
+- Production domain selection and purchase are still pending
+- Next macro-task is `APP-001 — EcoWash Application Architecture and MVP Definition`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -292,4 +345,9 @@ First checks:
    - `/es/contact`
    - `/fr/contact`
    - `/de/contact`
-5. Do not begin implementation until the DEV-010 audit scope is confirmed.
+5. Review brand/social assets:
+   - `/favicon.ico`
+   - `/icon.png`
+   - `/apple-icon.png`
+   - `/social/ecowash-og.png`
+6. Do not begin APP-001 until its architecture and MVP definition scope is confirmed.

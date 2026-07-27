@@ -34,7 +34,11 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | DEV-008 | Completed — Public website navigation refinement |
 | DEV-009 | Completed — Multilingual SEO and production readiness |
 | DEV-009.5 | Completed — Homepage visual enrichment and photographic asset integration |
-| DEV-010 | Next — Public Website Final Audit and Release Preparation |
+| DEV-010.1 | Completed — Verified public release issue fixes |
+| DEV-010.2 | Completed — SaaS preview and contact-form clarity fixes |
+| DEV-010.3 | Completed — Homepage image optimization |
+| DEV-010.4 | Completed — Site icons and EcoWash water mark social preview |
+| DEV-010 | Release-ready, deployment deferred — Public Website Final Audit and Release Preparation |
 
 Current public website includes:
 
@@ -44,7 +48,7 @@ Current public website includes:
 - Responsive Header and Footer
 - Multilingual navigation and homepage anchors
 - Executive Luxury design system
-- Real photographic imagery in Hero, Services, Industries and Final CTA sections
+- Optimized WebP photographic imagery in Hero, Services, Industries and Final CTA sections
 - Operational benefit band
 - Static dashboard product preview
 - Presentation-only demo request form
@@ -54,6 +58,7 @@ Current public website includes:
 - Sitemap and robots configuration
 - Localized not-found experience
 - Environment-based public site URL configuration
+- Site favicon, app icons and Open Graph/Twitter social preview image
 - No backend submission yet
 
 Current routes:
@@ -98,18 +103,19 @@ Important limitations:
 - No billing
 - No live dashboard
 - No production deployment yet
+- Production domain not selected or purchased yet
 - No completed SaaS platform
 - No pricing, legal or social pages
-- Final Open Graph branding asset may still be pending
 - No unsupported metrics, customer logos, certifications or marketing claims
 
 Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `2834289`
+- Latest approved and pushed development commit: `6ef5344`
 - Current mission: `DEV-010`
-- Next action: public website final audit and release preparation
+- Current release state: Release-ready, deployment deferred
+- Next macro-task: `APP-001 — EcoWash Application Architecture and MVP Definition`
 
 Current visual direction:
 
@@ -168,4 +174,4 @@ Last Updated: 2026-07-27
 
 Current Mission: DEV-010
 
-Next Action: Public website final audit and release preparation
+Next Action: Release-ready, deployment deferred; next macro-task is APP-001

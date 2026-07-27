@@ -8,7 +8,7 @@ Last Updated: 2026-07-27
 
 Current Mission: DEV-010
 
-Next Action: Public website final audit and release preparation
+Next Action: Release-ready, deployment deferred; next macro-task is APP-001
 
 ---
 
@@ -68,17 +68,17 @@ Includes:
 
 ## Milestone 6 — Public Website Final Review and Release Decision
 
-Status: Next
+Status: Release-ready, deployment deferred
 
 Expected scope:
 
 - Final desktop, tablet and mobile review
 - Content and translation review
 - Accessibility review
-- Image performance and oversized PNG optimization if justified
-- Favicon and Open Graph decision
+- Image performance and oversized asset optimization — completed in DEV-010.3
+- Favicon, app icons and Open Graph/Twitter preview assets — completed in DEV-010.4
 - Environment configuration review
-- Deployment target confirmation
+- Deployment target confirmation deferred until production domain selection and purchase
 - Release checklist
 - Documentation update after final approval
 
