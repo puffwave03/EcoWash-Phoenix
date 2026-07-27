@@ -4,7 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-26
+Last Updated: 2026-07-27
+
+Current Mission: DEV-010
+
+Next Action: Public website final audit and release preparation
 
 ---
 
@@ -54,41 +58,44 @@ Includes:
 
 ## Milestone 5 — Public Website Visual Completion
 
-Status: In Progress
+Status: Completed
 
-Current:
+Includes:
 
-- DEV-009.5 technical implementation completed locally
-- DEV-009.5 technical validation passed
-- DEV-009.5 technical implementation approved
+- DEV-009.5
 
-Pending:
+## Milestone 6 — Public Website Final Review and Release Decision
 
-- Copy ten approved images into final paths
-- Integrate final images
-- Remove visible placeholders
-- Tune crop, overlay, object-position, responsive behavior and accessibility
-- Review desktop, tablet and mobile
-- Validate all five locales
-- Obtain Product Owner approval
-- Commit and push DEV-009.5
+Status: Next
 
-## Milestone 6 — Public Website Final Review
+Expected scope:
 
-Status: Planned
-
-Expected scope after DEV-009.5:
-
-- Complete browser review
-- Visual consistency review
-- Accessibility check
-- Performance check
+- Final desktop, tablet and mobile review
+- Content and translation review
+- Accessibility review
+- Image performance and oversized PNG optimization if justified
+- Favicon and Open Graph decision
+- Environment configuration review
+- Deployment target confirmation
+- Release checklist
+- Documentation update after final approval
 - Final content review
-- Publication decision
-- Documentation update
 
 ## Milestone 7 — SaaS Platform Foundation
 
 Status: Planned
+
+Future areas:
+
+- App shell
+- Authentication architecture
+- Organization and user model
+- Dashboard
+- Customers
+- Orders
+- Production
+- Pickup and delivery
+- Billing
+- Reporting
 
 No backend, database, authentication, Supabase, analytics, production deployment or SaaS platform implementation has been completed yet.

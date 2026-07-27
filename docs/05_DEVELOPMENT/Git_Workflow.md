@@ -4,7 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-26
+Last Updated: 2026-07-27
+
+Current Mission: DEV-010
+
+Next Action: Public website final audit and release preparation
 
 ---
 
@@ -37,6 +41,6 @@ Define the current Git workflow for EcoWash Phoenix so application work, review,
 
 The latest approved and pushed development commit is:
 
-`2026943 DEV-009 feat: add multilingual SEO and production readiness`
+`2834289 DEV-009.5 feat: complete homepage visual enrichment`
 
-DEV-009.5 technical implementation is present locally and remains uncommitted. A documentation-only commit must not include those application changes.
+DEV-010 is the next mission. Before starting implementation, confirm `main` is clean and synchronized with `origin/main`, review the documentation entry points, start the existing local Next.js environment with `npm run dev`, and confirm the final audit scope. A documentation-only commit must stage only Markdown files.
