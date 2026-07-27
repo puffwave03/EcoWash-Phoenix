@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">EcoWash water leaf mark</title>
+  <desc id="desc">A blue water drop, green leaf, wave and bubbles mark for EcoWash Phoenix.</desc>
+  <path
+    fill="#6dbb35"
+    d="M170 111c-54 50-84 118-91 205-6 78 17 143 68 196 20 21 47 33 82 36-23-61-28-119-16-174 15-72 57-136 126-193-67 12-124 46-169 102 7-64 34-121 80-172-29 2-55 10-80 0Z"
+  />
+  <path
+    fill="none"
+    stroke="#f7f3ea"
+    stroke-linecap="round"
+    stroke-width="15"
+    d="M128 382c36 54 84 87 145 101"
+  />
+
+  <path
+    fill="#28a3d8"
+    d="M274 46c57 70 116 151 116 235 0 87-54 144-118 144s-118-57-118-144c0-84 62-165 120-235Z"
+  />
+  <path
+    fill="#0f6ea9"
+    d="M303 75c49 68 78 130 79 193 1 61-26 111-73 135 30-47 41-92 34-137-8-56-31-114-40-191Z"
+    opacity="0.92"
+  />
+  <path
+    fill="none"
+    stroke="#f7f3ea"
+    stroke-linecap="round"
+    stroke-width="16"
+    d="M323 164c40 59 51 119 25 176"
+  />
+
+  <path
+    fill="#2aa6d9"
+    d="M116 435c52 20 111 18 177-4 61-21 121-27 183-11-51 58-121 88-210 89-72 1-134-17-187-54 10-12 22-19 37-20Z"
+  />
+  <path
+    fill="none"
+    stroke="#f7f3ea"
+    stroke-linecap="round"
+    stroke-width="17"
+    d="M89 428c71 42 148 44 229 11 51-21 97-26 137-13"
+  />
+
+  <circle cx="394" cy="112" r="30" fill="#72cdee" />
+  <path
+    fill="none"
+    stroke="#f7f3ea"
+    stroke-linecap="round"
+    stroke-width="8"
+    d="M379 101c7-9 18-12 29-6"
+  />
+  <circle cx="435" cy="181" r="18" fill="#72cdee" />
+  <path
+    fill="none"
+    stroke="#f7f3ea"
+    stroke-linecap="round"
+    stroke-width="5"
+    d="M427 174c5-5 11-6 17-3"
+  />
+  <circle cx="458" cy="260" r="15" fill="#72cdee" />
+</svg>

@@ -39,6 +39,7 @@ export function buildPageMetadata({
   title,
 }: MetadataInput): Metadata {
   const localizedUrl = absoluteUrl(pathFor(locale, pathname));
+  const socialImageUrl = absoluteUrl(siteConfig.socialImage.path);
 
   return {
     title,
@@ -50,10 +51,30 @@ export function buildPageMetadata({
     openGraph: {
       title,
       description,
+      images: [
+        {
+          alt: siteConfig.socialImage.alt,
+          height: siteConfig.socialImage.height,
+          type: siteConfig.socialImage.type,
+          url: socialImageUrl,
+          width: siteConfig.socialImage.width,
+        },
+      ],
       locale: siteConfig.openGraphLocales[locale],
       siteName: siteConfig.name,
       type: "website",
       url: localizedUrl,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [
+        {
+          alt: siteConfig.socialImage.alt,
+          url: socialImageUrl,
+        },
+      ],
     },
   };
 }
