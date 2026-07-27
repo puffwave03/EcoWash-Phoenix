@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: APP-002
+Current Mission: APP-003
 
 ---
 
@@ -18,7 +18,14 @@ Define the MVP PostgreSQL/Supabase data design before migrations are written.
 
 ## Contents
 
-This document is design only. It intentionally contains no final SQL.
+APP-003 adds the first versioned Supabase migration for tenant foundation tables only:
+
+- `organizations`
+- `locations`
+- `profiles`
+- `organization_memberships`
+
+No customer, property, service, order, payment, photo, pickup or delivery tables are implemented yet.
 
 ## Database Principles
 
@@ -54,6 +61,8 @@ This document is design only. It intentionally contains no final SQL.
 | `audit_logs` | Security/business audit | Direct via `organization_id` |
 
 ## Order Number
+
+Order tables are not implemented in APP-003.
 
 Orders use:
 

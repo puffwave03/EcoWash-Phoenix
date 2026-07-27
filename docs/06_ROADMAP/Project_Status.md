@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: APP-002
+Current Mission: APP-003
 
-Next Action: APP-002 documentation review; next implementation step after approval is APP-003
+Next Action: APP-003 implementation review; next step after approval is APP-004
 
 ---
 
@@ -27,17 +27,18 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Documentation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-002 — Order Domain and Database Design |
-| Last completed documentation mission | DOCS-005 — Public website release preparation closure |
-| Latest approved and pushed commit | 56e5125 |
+| Current mission | APP-003 — Supabase Tenant Foundation and Security Baseline |
+| Last completed mission | APP-002 — Order Domain and Database Design |
+| Latest approved and pushed commit | 24e392d |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
-| APP-002 status | In review |
-| APP-003 status | Next after APP-002 approval |
+| APP-002 status | Completed and pushed |
+| APP-003 status | In implementation review |
+| APP-004 status | Next after APP-003 approval |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Not started |
+| Backend/SaaS implementation | Supabase tenant foundation started; operational SaaS not implemented |
 
 ## Development Status
 
@@ -60,8 +61,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-010.4 | Favicon, app icons and social preview water mark | Completed |
 | DEV-010 | Public Website Final Audit and Release Preparation | Release-ready, deployment deferred |
 | APP-001 | EcoWash Application Architecture and MVP Definition | Approved |
-| APP-002 | Order Domain and Database Design | In review |
-| APP-003 | Supabase foundation and security | Next after APP-002 approval |
+| APP-002 | Order Domain and Database Design | Completed |
+| APP-003 | Supabase Tenant Foundation and Security Baseline | In implementation review |
+| APP-004 | Authentication and roles | Next after APP-003 approval |
 
 ## Commit History
 
@@ -82,6 +84,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-010.2 | d89b443 |
 | DEV-010.3 | aeb9268 |
 | DEV-010.4 | 6ef5344 |
+| APP-002 | 24e392d |
 
 ## Documentation Commit History
 
@@ -124,7 +127,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `56e5125`
+- Local `main` and `origin/main` point to `24e392d`
 
 ## DEV-009.5 Completed State
 
@@ -162,12 +165,13 @@ Current DEV-010 state:
 - Production deployment is deferred until domain selection and purchase.
 - No backend, database, authentication, Supabase or SaaS platform is implemented.
 - APP-001 is approved.
-- APP-002 is in documentation review.
-- Next step after APP-002 approval is `APP-003 — Supabase foundation and security`.
+- APP-002 is completed and pushed.
+- APP-003 is in implementation review.
+- Next step after APP-003 approval is `APP-004 — Authentication and roles`.
 
 ## APP-002 Documentation State
 
-APP-002 defines the initial order domain and database design for the future EcoWash MVP. It documents:
+APP-002 defined the initial order domain and database design for the future EcoWash MVP. It documents:
 
 - organization-scoped, multi-tenant-ready data ownership
 - owner, manager and staff roles for the MVP
@@ -179,7 +183,24 @@ APP-002 defines the initial order domain and database design for the future EcoW
 - RLS strategy and APP-003 security invariants
 - audit log boundaries
 
-APP-002 does not implement code, migrations, Supabase configuration, authentication, database tables or a SaaS dashboard.
+APP-002 did not implement code, migrations, Supabase configuration, authentication, database tables or a SaaS dashboard.
+
+## APP-003 Implementation State
+
+APP-003 implements the Supabase tenant foundation only:
+
+- versioned Supabase local configuration
+- environment variables for Supabase URL and anon key
+- browser and server Supabase client factories
+- PostgreSQL tenant root table `organizations`
+- operating site table `locations`
+- application profile table `profiles`
+- organization membership table `organization_memberships`
+- MVP role enum for `owner`, `manager` and `staff`
+- PostgreSQL helper functions for membership and role checks
+- initial RLS policies for foundation tables
+
+APP-003 does not implement login UI, signup UI, reset password, protected dashboard, customers, properties, services, orders, order items, payments, order photos, operational Storage buckets, pickup/delivery, notifications, OCR, PDF, Realtime, Edge Functions, customer portal or mobile app.
 
 ## Current Route Architecture
 
@@ -288,10 +309,11 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 ## Current Limitations
 
-- No backend
-- No database
-- No authentication
-- No Supabase
+- Supabase tenant foundation exists
+- No login UI
+- No protected dashboard
+- No operational database tables beyond tenant foundation
+- No authentication flow implemented in UI
 - No real contact-form transmission
 - No email sending
 - No analytics
@@ -343,8 +365,9 @@ Exact starting state:
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
-- APP-002 is in review
-- Next step after APP-002 approval is `APP-003 — Supabase foundation and security`
+- APP-002 is completed and pushed
+- APP-003 is in implementation review
+- Next step after APP-003 approval is `APP-004 — Authentication and roles`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -377,5 +400,5 @@ First checks:
    - `/icon.png`
    - `/apple-icon.png`
    - `/social/ecowash-og.png`
-6. Review APP-002 documentation before any backend or database implementation.
-7. Do not begin APP-003 until APP-002 is approved.
+6. Review APP-003 implementation before any authentication UI or operational data implementation.
+7. Do not begin APP-004 until APP-003 is approved.

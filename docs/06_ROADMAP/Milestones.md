@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: APP-002
+Current Mission: APP-003
 
-Next Action: APP-002 documentation review; next implementation step after approval is APP-003
+Next Action: APP-003 implementation review; next step after approval is APP-004
 
 ---
 
@@ -89,7 +89,8 @@ Status: In Review
 Approved and current areas:
 
 - APP-001 — EcoWash Application Architecture and MVP Definition: Approved
-- APP-002 — Order Domain and Database Design: In review
-- APP-003 — Supabase foundation and security: Next after APP-002 approval
+- APP-002 — Order Domain and Database Design: Completed and pushed
+- APP-003 — Supabase Tenant Foundation and Security Baseline: In implementation review
+- APP-004 — Authentication and roles: Next after APP-003 approval
 
-APP-002 remains documentation only. No backend, database, authentication, Supabase project, migrations, app dashboard or SaaS implementation has been created yet.
+APP-003 implements only the Supabase tenant foundation. Login UI, signup UI, protected dashboard, customers, properties, orders, payments, operational Storage buckets and SaaS workflows are not implemented yet.

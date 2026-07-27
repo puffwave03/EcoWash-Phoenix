@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: APP-002
+Current Mission: APP-003
 
 ---
 
@@ -27,7 +27,19 @@ Supabase remains the candidate backend for:
 - Storage
 - Row Level Security
 
-APP-002 does not create a Supabase project, write migrations, configure clients or add dependencies.
+APP-003 adds versioned local Supabase configuration, the first tenant-foundation migration and Supabase client factories for browser and server code.
+
+Installed dependencies:
+
+- `@supabase/supabase-js`
+- `@supabase/ssr`
+
+Environment variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+The anon key may be used by browser/server clients only with RLS enabled. The service-role key remains server-only and is not required by APP-003 client code.
 
 ## Initial Backend Responsibilities
 
@@ -37,6 +49,14 @@ APP-002 does not create a Supabase project, write migrations, configure clients 
 - Store normalized operational records.
 - Store private order photos with ownership checks.
 - Record audit events for sensitive actions.
+
+Implemented in APP-003:
+
+- `src/lib/supabase/browser.ts`
+- `src/lib/supabase/server.ts`
+- `src/lib/supabase/env.ts`
+- `supabase/config.toml`
+- initial migration for `organizations`, `locations`, `profiles` and `organization_memberships`
 
 ## Server Boundary
 
@@ -61,6 +81,15 @@ The client must never receive service-role credentials.
 - PDF/fiscal invoice generation
 - Customer portal backend
 - Native mobile backend assumptions
+
+Also not implemented in APP-003:
+
+- login UI
+- signup UI
+- reset password
+- protected dashboard
+- customers, properties, services, orders or payments
+- operational Storage buckets
 
 ## Data Ownership Boundary
 
