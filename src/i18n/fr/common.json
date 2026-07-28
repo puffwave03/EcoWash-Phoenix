@@ -64,5 +64,39 @@
       "fr": "Français",
       "de": "Deutsch"
     }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Accès sécurisé",
+      "title": "Connexion à EcoWash",
+      "description": "Utilisez votre compte EcoWash approuvé pour accéder à la base du tableau de bord opérationnel.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nom@example.com",
+      "passwordLabel": "Mot de passe",
+      "submit": "Se connecter",
+      "submitting": "Connexion...",
+      "errors": {
+        "missingFields": "Saisissez votre e-mail et votre mot de passe.",
+        "invalidCredentials": "Connexion impossible avec ces identifiants.",
+        "configuration": "L'authentification n'est pas disponible pour le moment."
+      }
+    },
+    "dashboard": {
+      "foundation": "Base du tableau de bord opérationnel",
+      "title": "Vue d'ensemble",
+      "description": "L'authentification et les contrôles de rôle sont actifs. Les modules opérationnels seront ajoutés après approbation.",
+      "logout": "Se déconnecter",
+      "navigationLabel": "Navigation du tableau de bord",
+      "overview": "Vue d'ensemble",
+      "userLabel": "Utilisateur",
+      "organizationLabel": "Organisation",
+      "roleLabel": "Rôle"
+    },
+    "accessDenied": {
+      "eyebrow": "Accès refusé",
+      "title": "Ce compte n'a pas d'accès opérationnel.",
+      "description": "Demandez à un administrateur EcoWash de confirmer votre appartenance active à l'organisation.",
+      "logout": "Se déconnecter"
+    }
   }
 }

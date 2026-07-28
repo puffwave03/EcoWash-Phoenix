@@ -64,5 +64,39 @@
       "fr": "Français",
       "de": "Deutsch"
     }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Acceso seguro",
+      "title": "Accede a EcoWash",
+      "description": "Usa tu cuenta EcoWash aprobada para acceder a la base del panel operativo.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nombre@example.com",
+      "passwordLabel": "Contraseña",
+      "submit": "Acceder",
+      "submitting": "Accediendo...",
+      "errors": {
+        "missingFields": "Introduce tu email y contraseña.",
+        "invalidCredentials": "No pudimos iniciar sesión con esas credenciales.",
+        "configuration": "La autenticación no está disponible ahora mismo."
+      }
+    },
+    "dashboard": {
+      "foundation": "Base del panel operativo",
+      "title": "Resumen",
+      "description": "La autenticación y los controles de rol están activos. Los módulos operativos se añadirán tras la aprobación.",
+      "logout": "Cerrar sesión",
+      "navigationLabel": "Navegación del panel",
+      "overview": "Resumen",
+      "userLabel": "Usuario",
+      "organizationLabel": "Organización",
+      "roleLabel": "Rol"
+    },
+    "accessDenied": {
+      "eyebrow": "Acceso denegado",
+      "title": "Esta cuenta no tiene acceso operativo.",
+      "description": "Pide a un administrador de EcoWash que confirme tu membresía activa en la organización.",
+      "logout": "Cerrar sesión"
+    }
   }
 }

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-27
 
-Current Mission: APP-003
+Current Mission: APP-004
 
 ---
 
@@ -89,6 +89,22 @@ APP-003 status:
 - Membership and role changes are restricted to `owner` policies at the database layer.
 - Client hard delete policies are intentionally not added.
 - Service-role credentials are not used by the new browser/server client factories.
+
+## APP-004 Authentication Controls
+
+APP-004 adds real email/password login and logout through Supabase SSR.
+
+Security rules:
+
+- No public signup is exposed.
+- No user can self-assign `owner`.
+- Roles are read from database memberships, not browser state, query strings or user metadata.
+- Middleware refreshes session cookies and handles initial redirects, but dashboard authorization is still verified server-side.
+- Users without an active membership are sent to access denied.
+- Users with more than one active membership are blocked until a future tenant switcher is approved.
+- Inactive organizations are blocked.
+- Service-role credentials are not used in frontend or Server Actions.
+- Login errors are generic and do not enumerate users.
 
 ## Storage Security
 

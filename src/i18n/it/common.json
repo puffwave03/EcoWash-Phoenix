@@ -64,5 +64,39 @@
       "fr": "Français",
       "de": "Deutsch"
     }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Accesso sicuro",
+      "title": "Accedi a EcoWash",
+      "description": "Usa il tuo account EcoWash approvato per accedere alla base della dashboard operativa.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nome@example.com",
+      "passwordLabel": "Password",
+      "submit": "Accedi",
+      "submitting": "Accesso in corso...",
+      "errors": {
+        "missingFields": "Inserisci email e password.",
+        "invalidCredentials": "Non è stato possibile accedere con queste credenziali.",
+        "configuration": "L'autenticazione non è disponibile in questo momento."
+      }
+    },
+    "dashboard": {
+      "foundation": "Base dashboard operativa",
+      "title": "Panoramica",
+      "description": "Autenticazione e controlli ruolo sono attivi. I moduli operativi saranno aggiunti dopo approvazione.",
+      "logout": "Esci",
+      "navigationLabel": "Navigazione dashboard",
+      "overview": "Panoramica",
+      "userLabel": "Utente",
+      "organizationLabel": "Organizzazione",
+      "roleLabel": "Ruolo"
+    },
+    "accessDenied": {
+      "eyebrow": "Accesso negato",
+      "title": "Questo account non ha accesso operativo.",
+      "description": "Chiedi a un amministratore EcoWash di confermare la tua membership organizzativa attiva.",
+      "logout": "Esci"
+    }
   }
 }

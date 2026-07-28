@@ -64,5 +64,39 @@
       "fr": "Français",
       "de": "Deutsch"
     }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Sicherer Zugang",
+      "title": "Bei EcoWash anmelden",
+      "description": "Verwenden Sie Ihr freigegebenes EcoWash-Konto, um auf die Grundlage des operativen Dashboards zuzugreifen.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "name@example.com",
+      "passwordLabel": "Passwort",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung läuft...",
+      "errors": {
+        "missingFields": "Geben Sie E-Mail und Passwort ein.",
+        "invalidCredentials": "Die Anmeldung mit diesen Zugangsdaten war nicht möglich.",
+        "configuration": "Authentifizierung ist derzeit nicht verfügbar."
+      }
+    },
+    "dashboard": {
+      "foundation": "Grundlage des operativen Dashboards",
+      "title": "Übersicht",
+      "description": "Authentifizierung und Rollenprüfungen sind aktiv. Operative Module werden nach Freigabe ergänzt.",
+      "logout": "Abmelden",
+      "navigationLabel": "Dashboard-Navigation",
+      "overview": "Übersicht",
+      "userLabel": "Benutzer",
+      "organizationLabel": "Organisation",
+      "roleLabel": "Rolle"
+    },
+    "accessDenied": {
+      "eyebrow": "Zugriff verweigert",
+      "title": "Dieses Konto hat keinen operativen Zugriff.",
+      "description": "Bitten Sie einen EcoWash-Administrator, Ihre aktive Organisationsmitgliedschaft zu bestätigen.",
+      "logout": "Abmelden"
+    }
   }
 }
