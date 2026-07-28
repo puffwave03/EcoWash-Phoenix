@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-003
+Current Mission: APP-005
 
 ---
 
@@ -18,14 +18,19 @@ Define the MVP PostgreSQL/Supabase data design before migrations are written.
 
 ## Contents
 
-APP-003 adds the first versioned Supabase migration for tenant foundation tables only:
+APP-003 added the first versioned Supabase migration for tenant foundation tables:
 
 - `organizations`
 - `locations`
 - `profiles`
 - `organization_memberships`
 
-No customer, property, service, order, payment, photo, pickup or delivery tables are implemented yet.
+APP-005 adds the first operational master-data tables:
+
+- `customers`
+- `properties`
+
+Service, order, payment, photo, pickup and delivery tables are not implemented yet.
 
 ## Database Principles
 
@@ -70,6 +75,24 @@ Orders use:
 - `order_number`: human-readable number unique within organization.
 
 The final generation strategy is deferred to APP-003 implementation design, but uniqueness must be scoped to `organization_id`.
+
+## Customers And Properties
+
+APP-005 implements:
+
+- `customer_type`: `individual`, `business`
+- `property_type`: `apartment`, `holiday_home`, `hotel`, `business`, `other`
+- `customers.organization_id` as the direct tenant boundary
+- `properties.organization_id` as the direct tenant boundary
+- `properties.customer_id` linked to `customers.id`
+- a composite foreign key from `properties(organization_id, customer_id)` to `customers(organization_id, id)` to prevent cross-tenant property/customer links
+- `is_active` for logical deactivation
+- `created_by` and `updated_by` references to `profiles(id)`
+- indexes for tenant-scoped search and customer/property lookup
+- update triggers for `updated_at`
+- triggers protecting immutable tenant and creator fields
+
+Application CRUD is logical only: APP-005 does not add client delete policies or application hard delete flows for customers or properties.
 
 ## Order Totals
 

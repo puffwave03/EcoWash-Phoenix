@@ -2,12 +2,14 @@ import type { ReactNode } from "react";
 import { Card } from "@/components/Card";
 import { Container } from "@/components/Container";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import { Link } from "@/i18n/navigation";
 import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
   foundation: string;
   logout: string;
   navigationLabel: string;
+  customers: string;
   organizationLabel: string;
   overview: string;
   roleLabel: string;
@@ -47,10 +49,21 @@ export function DashboardShell({
             aria-label={text.navigationLabel}
             className="rounded-card border border-border bg-white p-4 shadow-card"
           >
-            <nav>
-              <span className="block rounded-control bg-primary-soft px-4 py-3 text-sm font-semibold text-primary">
+            <nav className="space-y-2">
+              <Link
+                className="block rounded-control bg-primary-soft px-4 py-3 text-sm font-semibold text-primary"
+                href="/app"
+                locale={locale}
+              >
                 {text.overview}
-              </span>
+              </Link>
+              <Link
+                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                href="/app/customers"
+                locale={locale}
+              >
+                {text.customers}
+              </Link>
             </nav>
           </aside>
 

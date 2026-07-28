@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-004
+Current Mission: APP-005
 
 ---
 
@@ -105,6 +105,21 @@ Security rules:
 - Inactive organizations are blocked.
 - Service-role credentials are not used in frontend or Server Actions.
 - Login errors are generic and do not enumerate users.
+
+## APP-005 Customer And Property Controls
+
+APP-005 adds RLS-protected customer and property tables.
+
+Security rules:
+
+- Active organization members can read customers and properties in their organization.
+- `owner`, `manager` and `staff` can create and update customers and properties in their organization.
+- `organization_id`, `created_by` and `updated_by` are set by server-side application context for normal mutations.
+- Customer and property Server Actions do not accept tenant ownership from browser form input.
+- Property records use a composite tenant/customer foreign key so they cannot point to a customer in another organization.
+- Client hard delete policies and grants are intentionally not added.
+- Deactivation uses `is_active = false` and remains tenant-scoped.
+- The Supabase service role is not used by APP-005 UI, queries or Server Actions.
 
 ## Storage Security
 

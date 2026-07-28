@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-004
+Current Mission: APP-005
 
 ---
 
@@ -68,6 +68,17 @@ Implemented in APP-004:
 - protected dashboard route foundation under `/[locale]/app`
 - access-denied route for authenticated users without operational access
 
+Implemented in APP-005:
+
+- versioned migration for `customers` and `properties`
+- customer and property CRUD through Server Actions
+- server-side validation without adding new dependencies
+- tenant context derived from the authenticated membership, not from form input
+- customer search and active/inactive filtering
+- customer detail with linked properties
+- property detail and edit routes
+- logical deactivation for customers and properties
+
 ## Server Boundary
 
 Future Next.js server actions or API routes may be used for operations that require extra validation beyond direct RLS-protected data access, especially:
@@ -79,7 +90,7 @@ Future Next.js server actions or API routes may be used for operations that requ
 - signed URL creation
 - audit log writes
 
-APP-004 uses Server Actions for login/logout. It does not expose Supabase tokens or service-role credentials to the browser.
+APP-004 uses Server Actions for login/logout. APP-005 uses Server Actions for customer and property mutations. Neither exposes Supabase tokens or service-role credentials to the browser.
 
 The client must never receive service-role credentials.
 
@@ -101,6 +112,17 @@ Also not implemented in APP-003:
 - reset password
 - customers, properties, services, orders or payments
 - operational Storage buckets
+
+Also not implemented in APP-005:
+
+- services
+- orders
+- order items
+- prices
+- payments
+- photos or operational Storage buckets
+- pickup/delivery workflows
+- customer portal access
 
 ## Data Ownership Boundary
 

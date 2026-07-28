@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-002
+Current Mission: APP-005
 
 ---
 
@@ -26,8 +26,8 @@ List MVP domain entities with fields, relations, constraints and sensitivity.
 | `locations` | `id`, `organization_id`, `name`, `created_at` | address, phone, active flag | multi-location scheduling | Soft delete/deactivate if referenced | Address/contact |
 | `profiles` | `id`, `auth_user_id`, `display_name`, `created_at` | phone, locale | avatar | Soft delete/deactivate; auth deletion handled separately | Personal identity |
 | `organization_memberships` | `id`, `organization_id`, `profile_id`, `role`, `created_at` | active flag, invited_by | invitation workflow | Unique organization/profile; owner/manager changes audited | Role and access |
-| `customers` | `id`, `organization_id`, `display_name`, `created_at` | phone, email, billing note, tags | customer portal login | Soft delete/archive if orders exist | Contact data |
-| `properties` | `id`, `organization_id`, `customer_id`, `name`, `created_at` | address, access note, active flag | property groups | Soft delete/archive if orders exist | Address/access notes |
+| `customers` | `id`, `organization_id`, `customer_type`, `display_name`, `is_active`, `created_by`, `created_at` | customer code, first/last name, company name, tax id, email, phones, billing address, preferred locale, notes | customer portal login, tags | Deactivate instead of hard delete; immutable organization and creator | Contact and billing data |
+| `properties` | `id`, `organization_id`, `customer_id`, `name`, `is_active`, `created_by`, `created_at` | property code, property type, address, access instructions, contact name/phone, notes | property groups | Deactivate instead of hard delete; customer link must remain within same organization | Address/access notes |
 | `services` | `id`, `organization_id`, `name`, `unit_type`, `active` | description, category, sort order | tax profile | Deactivate instead of delete when priced/ordered | Low |
 | `service_prices` | `id`, `organization_id`, `service_id`, `unit_price`, `currency`, `effective_from` | `location_id`, `effective_to` | tax fields | Keep historical records; no destructive overwrite | Commercial pricing |
 | `customer_service_prices` | `id`, `organization_id`, `service_id`, `unit_price`, `currency`, `effective_from` | `customer_id`, `property_id`, `effective_to` | contract approval flow | Use only for approved overrides; keep history | Commercial pricing |

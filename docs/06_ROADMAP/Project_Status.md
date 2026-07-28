@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-004
+Current Mission: APP-005
 
-Next Action: APP-004 implementation review; next step after approval is APP-005
+Next Action: APP-005 implementation review; next step after approval is APP-006
 
 ---
 
@@ -25,21 +25,21 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Item | Status |
 | --- | --- |
 | Project | EcoWash Phoenix |
-| Current phase | SaaS Platform Foundation — Documentation |
+| Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-004 — Authentication and Roles |
-| Last completed mission | APP-003 — Supabase Tenant Foundation and Security Baseline |
-| Latest approved and pushed commit | d3e1f44 |
+| Current mission | APP-005 — Customers and Properties |
+| Last completed mission | APP-004 — Authentication and Roles |
+| Latest approved and pushed commit | d7e903b |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
 | APP-003 status | Completed and pushed |
-| APP-004 status | In implementation review |
-| APP-005 status | Next after APP-004 approval |
+| APP-004 status | Completed and pushed |
+| APP-005 status | In implementation review |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Authentication foundation started; operational SaaS modules not implemented |
+| Backend/SaaS implementation | Authentication foundation completed; customers/properties module in implementation review |
 
 ## Development Status
 
@@ -64,8 +64,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-001 | EcoWash Application Architecture and MVP Definition | Approved |
 | APP-002 | Order Domain and Database Design | Completed |
 | APP-003 | Supabase Tenant Foundation and Security Baseline | Completed |
-| APP-004 | Authentication and Roles | In implementation review |
-| APP-005 | Customers and Properties | Next after APP-004 approval |
+| APP-004 | Authentication and Roles | Completed |
+| APP-005 | Customers and Properties | In implementation review |
 
 ## Commit History
 
@@ -88,6 +88,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DEV-010.4 | 6ef5344 |
 | APP-002 | 24e392d |
 | APP-003 | d3e1f44 |
+| APP-004 | d7e903b |
 
 ## Documentation Commit History
 
@@ -130,7 +131,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `d3e1f44`
+- Local `main` and `origin/main` point to `d7e903b`
 
 ## DEV-009.5 Completed State
 
@@ -170,8 +171,9 @@ Current DEV-010 state:
 - APP-001 is approved.
 - APP-002 is completed and pushed.
 - APP-003 is completed and pushed.
-- APP-004 is in implementation review.
-- Next step after APP-004 approval is `APP-005 — Customers and Properties`.
+- APP-004 is completed and pushed.
+- APP-005 is in implementation review.
+- Next step after APP-005 approval is `APP-006`.
 
 ## APP-002 Documentation State
 
@@ -221,6 +223,23 @@ APP-004 implements authentication and role guards only:
 - manual first-owner bootstrap documentation
 
 APP-004 does not implement public signup, reset password, magic link, OAuth, MFA, customers, properties, services, orders, payments, order photos, pickup/delivery, Realtime, Edge Functions, customer portal or mobile app.
+
+## APP-005 Implementation State
+
+APP-005 implements the customers and properties module only:
+
+- versioned migration for `customers` and `properties`
+- customer type enum for `individual` and `business`
+- property type enum for `apartment`, `holiday_home`, `hotel`, `business` and `other`
+- tenant-scoped customer and property tables with RLS
+- composite property/customer tenant foreign key
+- logical deactivation through `is_active`
+- protected customer list, create, detail and edit routes
+- protected property create, detail and edit routes
+- customer search and active/inactive filtering
+- localized UI text in all five existing locales
+
+APP-005 does not implement services, pricing, orders, order items, payments, order photos, operational Storage buckets, pickup/delivery, notifications, OCR, PDF, Realtime, Edge Functions, customer portal or mobile app.
 
 ## Current Route Architecture
 
@@ -332,9 +351,9 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Supabase tenant foundation exists
 - Login UI exists
 - Protected dashboard shell exists
-- No operational database tables beyond tenant foundation
 - No public signup
-- No operational modules implemented
+- Customers/properties module is in implementation review
+- No services, pricing, orders, payments or operational workflows implemented
 - No real contact-form transmission
 - No email sending
 - No analytics
@@ -388,8 +407,9 @@ Exact starting state:
 - APP-001 is approved
 - APP-002 is completed and pushed
 - APP-003 is completed and pushed
-- APP-004 is in implementation review
-- Next step after APP-004 approval is `APP-005 — Customers and Properties`
+- APP-004 is completed and pushed
+- APP-005 is in implementation review
+- Next step after APP-005 approval is `APP-006`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -422,5 +442,5 @@ First checks:
    - `/icon.png`
    - `/apple-icon.png`
    - `/social/ecowash-og.png`
-6. Review APP-004 implementation before any customer, property or order implementation.
-7. Do not begin APP-005 until APP-004 is approved.
+6. Review APP-005 implementation before any service, order, payment or operational workflow implementation.
+7. Do not begin APP-006 until APP-005 is approved.

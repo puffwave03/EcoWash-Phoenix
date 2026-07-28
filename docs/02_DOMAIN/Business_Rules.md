@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-002
+Current Mission: APP-005
 
 ---
 
@@ -24,6 +24,15 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - The first UI may behave as a single EcoWash business, but the data model must be multi-tenant-ready from day one.
 - Users access operational data only through organization membership.
 - Staff cannot change memberships, global roles or catalog pricing.
+
+## Customer And Property Rules
+
+- Customers are organization-scoped records for individual or business clients.
+- Properties are organization-scoped records linked to exactly one customer in the same organization.
+- Customer and property records are deactivated, not hard-deleted, from the application.
+- Customer and property create/update operations use server-side membership context for `organization_id`, `created_by` and `updated_by`.
+- Property records must not be linked to a customer from another organization.
+- Customer and property notes may contain operational details and must be treated as sensitive free text.
 
 ## Order Rules
 
