@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -54,7 +54,15 @@ APP-006 adds protected routes for:
 - `/[locale]/app/orders/[orderId]`
 - `/[locale]/app/orders/[orderId]/edit`
 
-Payments, logistics and photos are not shown yet.
+APP-007 adds sections to the existing order detail route:
+
+- pickup and delivery scheduling/status controls
+- manual payment summary and payment record list
+- private order photo upload, preview by signed URL and logical removal
+
+The APP-007 photo form accepts JPEG, PNG and WebP images up to 1 MB. The UI does not claim full image decoding or antivirus scanning; server validation checks MIME, derived extension and basic binary signatures before upload.
+
+No additional analytics dashboard, customer portal, mobile UI or public website changes are included in APP-007.
 
 ## Dashboard Shell
 
@@ -73,4 +81,4 @@ No module navigation is shown for unavailable features.
 
 ## Localization
 
-Login, logout, dashboard foundation, access-denied, customer and property text live in the existing locale files under `src/i18n/*/common.json`.
+Login, logout, dashboard foundation, access-denied, customer, property, order, logistics, payment and photo text live in the existing locale files under `src/i18n/*/common.json`.

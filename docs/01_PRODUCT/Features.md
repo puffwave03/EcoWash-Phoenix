@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -18,7 +18,7 @@ Define the approved MVP feature boundary for the future EcoWash operations platf
 
 ## Contents
 
-APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. Logistics, payments and photos remain deferred.
+APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. APP-007 adds pickup, delivery, private order photos and manual payments in implementation review.
 
 ## MVP Must Have
 

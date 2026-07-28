@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -34,10 +34,10 @@ List MVP domain entities with fields, relations, constraints and sensitivity.
 | `orders` | `id`, `organization_id`, `location_id`, `order_number`, `customer_id`, `production_status`, `fulfillment_type`, totals, `currency`, `created_by`, timestamps | `property_id`, `due_at`, notes, `assigned_to` | invoice references | Soft delete/archive; cancellation preferred | Customer/order details |
 | `order_items` | `id`, `order_id`, `service_id`, `description_snapshot`, `unit_type`, quantity, `unit_price_snapshot`, `line_total` | article/category, weight_initial, weight_final | tax snapshot | Delete only while order draft or with audit correction | Service details |
 | `order_status_history` | `id`, `order_id`, `from_status`, `to_status`, `changed_by`, `changed_at` | reason, correction flag | workflow version | Append-only | Operational history |
-| `pickups` | `id`, `order_id`, `status`, address snapshot, `scheduled_at` | `completed_at`, `assigned_to`, note, fee, proof photo | route optimization | Soft delete/cancel with audit | Address/logistics |
-| `deliveries` | `id`, `order_id`, `status`, address snapshot, `scheduled_at` | `completed_at`, `assigned_to`, note, fee, proof photo | route optimization | Soft delete/cancel with audit | Address/logistics |
-| `payments` | `id`, `order_id`, `amount`, `method`, `status`, `recorded_by`, `created_at` | `paid_at`, reference, note, proof photo | online provider ids | Void/refund records instead of deletion | Financial data |
-| `order_photos` | `id`, `order_id`, `category`, `storage_path`, `uploaded_by`, `created_at` | issue/payment/delivery references, caption | retention policy | Soft delete metadata; storage cleanup audited | Images may contain PII |
+| `pickups` | `id`, `organization_id`, `order_id`, `status`, address snapshot, `scheduled_at`, `created_by`, `updated_by` | `completed_at`, `started_at`, `assigned_to`, notes, fee, cancellation reason | route optimization | Cancel instead of delete; one active pickup per order in MVP | Address/logistics |
+| `deliveries` | `id`, `organization_id`, `order_id`, `status`, address snapshot, `scheduled_at`, `created_by`, `updated_by` | `completed_at`, `started_at`, `assigned_to`, notes, fee, cancellation reason | route optimization | Cancel instead of delete; one active delivery per order in MVP | Address/logistics |
+| `payments` | `id`, `organization_id`, `order_id`, `amount`, `method`, `status`, `paid_at`, `recorded_by`, `created_at` | reference, notes, proof photo, void/refund actor and reason fields | online provider ids, invoices | Void/refund records instead of deletion; no overpayment in MVP | Financial data |
+| `order_photos` | `id`, `organization_id`, `order_id`, `category`, `storage_bucket`, `storage_path`, `mime_type`, `size_bytes`, `uploaded_by`, `created_at`, `is_active` | original filename, caption | retention policy | Logical deactivation; no public URL persisted | Images may contain PII |
 | `notes` | `id`, `organization_id`, `entity_type`, `entity_id`, `body`, `visibility`, `created_by`, `created_at` | edited_at | customer portal visibility | Soft delete or version edits | Free text may contain PII |
 | `order_issues` | `id`, `order_id`, `category`, `status`, `description`, `created_by`, `created_at` | resolution, resolved_by, resolved_at, photo reference | SLA/escalation | Resolve instead of delete | Disputes/damage details |
 | `audit_logs` | `id`, `organization_id`, `actor_profile_id`, `action`, `entity_type`, `entity_id`, `created_at` | before/after summary, request metadata | sensitive access events | Append-only; no client update/delete | Security-sensitive |

@@ -279,6 +279,93 @@
       "change": "Changer le statut",
       "history": "Historique des statuts",
       "reason": "Motif"
+    },
+    "logistics": {
+      "title": "Collecte et livraison",
+      "pickup": "Collecte",
+      "delivery": "Livraison",
+      "empty": "Non planifié",
+      "scheduledAt": "Date planifiée",
+      "assignedTo": "Assigné à",
+      "addressLine1": "Adresse ligne 1",
+      "addressLine2": "Adresse ligne 2",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "countryCode": "Pays",
+      "contactName": "Nom du contact",
+      "contactPhone": "Téléphone du contact",
+      "notes": "Notes",
+      "fee": "Frais",
+      "save": "Enregistrer la logistique",
+      "saving": "Enregistrement...",
+      "error": "La logistique n'a pas pu être enregistrée.",
+      "cancelledReason": "Motif d'annulation",
+      "statuses": {
+        "not_required": "Non requis",
+        "scheduled": "Planifié",
+        "in_progress": "En cours",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      }
+    },
+    "payments": {
+      "title": "Paiements",
+      "totalDue": "Total dû",
+      "totalPaid": "Total payé",
+      "balanceDue": "Solde dû",
+      "paymentStatus": "Statut du paiement",
+      "amount": "Montant",
+      "method": "Méthode",
+      "paidAt": "Payé le",
+      "reference": "Référence",
+      "notes": "Notes",
+      "proof": "Justificatif",
+      "record": "Enregistrer le paiement",
+      "saving": "Enregistrement...",
+      "empty": "Aucun paiement enregistré.",
+      "error": "Le paiement n'a pas pu être enregistré.",
+      "date": "Date",
+      "actor": "Enregistré par",
+      "void": "Annuler",
+      "voidReason": "Motif d'annulation",
+      "refund": "Rembourser",
+      "refundReason": "Motif du remboursement",
+      "methods": {
+        "cash": "Espèces",
+        "card": "Carte",
+        "bank_transfer": "Virement bancaire",
+        "other": "Autre"
+      },
+      "statuses": {
+        "pending": "En attente",
+        "confirmed": "Confirmé",
+        "void": "Annulé",
+        "refunded": "Remboursé",
+        "unpaid": "Impayé",
+        "partially_paid": "Partiellement payé",
+        "paid": "Payé"
+      }
+    },
+    "photos": {
+      "title": "Photos de la commande",
+      "file": "Photo",
+      "fileHelp": "JPEG, PNG ou WebP jusqu'à 1 Mo.",
+      "category": "Catégorie",
+      "caption": "Légende",
+      "upload": "Importer la photo",
+      "uploading": "Import...",
+      "empty": "Aucune photo de commande.",
+      "error": "La photo n'a pas pu être traitée.",
+      "deactivate": "Retirer",
+      "inactive": "Inactive",
+      "categories": {
+        "intake": "Réception",
+        "processing": "Traitement",
+        "quality": "Qualité",
+        "issue": "Incident",
+        "delivery": "Livraison",
+        "payment_proof": "Justificatif de paiement"
+      }
     }
   },
   "properties": {

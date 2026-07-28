@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -133,16 +133,32 @@ Security rules:
 
 ## Storage Security
 
-Order photos use private storage.
+APP-007 order photos use the private `order-media` Storage bucket.
 
 Required controls:
 
 - MIME allowlist for supported image types.
-- File size limit.
-- Path includes organization/order ownership context and unpredictable file name.
+- File size limit of 1 MB for the Server Action upload path.
+- Path format `organization_id/order_id/random_uuid.ext`.
 - No PII in file names.
 - Short-lived signed URLs only.
-- Upload/delete actions audited.
+- Metadata is tenant-scoped in `order_photos`.
+- Client hard delete is not exposed; photo removal is logical deactivation.
+
+APP-007 Storage policies allow authenticated owner/manager/staff members of the same organization to upload and read order media for orders in their tenant. Anonymous access, cross-tenant paths, arbitrary path shapes, direct object updates and direct object deletes are denied.
+
+## APP-007 Logistics, Photos And Payment Controls
+
+- Pickup and delivery records are tenant-scoped through their parent order.
+- Logistics create/update and status transitions use narrow RPCs.
+- Pickup and delivery statuses are independent from production status.
+- Staff can record manual payments but cannot void or refund them.
+- Owner and manager can void or refund payments only with a reason.
+- Payment summary is derived from confirmed/refunded/void records and `orders.total`; the browser cannot submit a trusted payment status.
+- MVP overpayment is rejected.
+- A confirmed payment with refund records cannot be voided; corrections after refund require additional refund/accounting records, not destructive mutation.
+- Payment proof is optional and must reference an active `payment_proof` order photo in the same tenant and order.
+- Direct table updates and hard deletes for APP-007 operational tables are blocked by grants and controlled triggers.
 
 ## Audit Scope
 

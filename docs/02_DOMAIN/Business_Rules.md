@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -38,7 +38,7 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 
 - Orders use an internal UUID and a human-readable order number scoped to organization.
 - Production status, fulfillment state, payment state and issues are separate concerns.
-- APP-006 implements production status only. Fulfillment, payment and issues remain separate future dimensions.
+- APP-006 implements production status only. APP-007 implements fulfillment records and manual payments as separate dimensions; issues remain a future dimension.
 - Production phases may be skipped when services do not require them.
 - Status changes are recorded in immutable production status history.
 - Order creation must atomically create initial status history.
@@ -66,7 +66,11 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - Supported methods are `cash`, `card`, `bank_transfer` and `other`.
 - One order can have multiple payment records.
 - Payment status is derived from order total and valid payment records.
-- Refund handling is documented as a future extension, not an online payment provider integration.
+- Confirmed payments count toward `total_paid`; refunds subtract; void payments do not count.
+- MVP overpayment is rejected.
+- Staff can register manual payments.
+- Owner/manager can void or refund payments only with a reason.
+- Refund handling is manual and does not introduce an online payment provider integration.
 
 ## Logistics Rules
 
@@ -81,6 +85,9 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - File names and paths must not contain PII.
 - Photos must use short-lived signed URLs, not long-lived public URLs.
 - Photo categories are intake, processing, quality, issue, delivery and payment_proof.
+- APP-007 stores order photo metadata in `order_photos` and files in private Storage.
+- Signed URLs are generated on demand and short-lived.
+- Removing a photo is logical deactivation; client hard delete is not exposed.
 
 ## Notes And Issues Rules
 

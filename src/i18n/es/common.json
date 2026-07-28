@@ -279,6 +279,93 @@
       "change": "Cambiar estado",
       "history": "Historial de estados",
       "reason": "Motivo"
+    },
+    "logistics": {
+      "title": "Recogida y entrega",
+      "pickup": "Recogida",
+      "delivery": "Entrega",
+      "empty": "No programado",
+      "scheduledAt": "Fecha programada",
+      "assignedTo": "Asignado a",
+      "addressLine1": "Dirección línea 1",
+      "addressLine2": "Dirección línea 2",
+      "city": "Ciudad",
+      "postalCode": "Código postal",
+      "countryCode": "País",
+      "contactName": "Nombre de contacto",
+      "contactPhone": "Teléfono de contacto",
+      "notes": "Notas",
+      "fee": "Cargo",
+      "save": "Guardar logística",
+      "saving": "Guardando...",
+      "error": "No se pudo guardar la logística.",
+      "cancelledReason": "Motivo de cancelación",
+      "statuses": {
+        "not_required": "No requerido",
+        "scheduled": "Programado",
+        "in_progress": "En curso",
+        "completed": "Completado",
+        "cancelled": "Cancelado"
+      }
+    },
+    "payments": {
+      "title": "Pagos",
+      "totalDue": "Total adeudado",
+      "totalPaid": "Total pagado",
+      "balanceDue": "Saldo pendiente",
+      "paymentStatus": "Estado de pago",
+      "amount": "Importe",
+      "method": "Método",
+      "paidAt": "Pagado el",
+      "reference": "Referencia",
+      "notes": "Notas",
+      "proof": "Comprobante",
+      "record": "Registrar pago",
+      "saving": "Guardando...",
+      "empty": "Aún no hay pagos registrados.",
+      "error": "No se pudo registrar el pago.",
+      "date": "Fecha",
+      "actor": "Registrado por",
+      "void": "Anular",
+      "voidReason": "Motivo de anulación",
+      "refund": "Reembolsar",
+      "refundReason": "Motivo de reembolso",
+      "methods": {
+        "cash": "Efectivo",
+        "card": "Tarjeta",
+        "bank_transfer": "Transferencia bancaria",
+        "other": "Otro"
+      },
+      "statuses": {
+        "pending": "Pendiente",
+        "confirmed": "Confirmado",
+        "void": "Anulado",
+        "refunded": "Reembolsado",
+        "unpaid": "Sin pagar",
+        "partially_paid": "Parcialmente pagado",
+        "paid": "Pagado"
+      }
+    },
+    "photos": {
+      "title": "Fotos del pedido",
+      "file": "Foto",
+      "fileHelp": "JPEG, PNG o WebP hasta 1 MB.",
+      "category": "Categoría",
+      "caption": "Descripción",
+      "upload": "Subir foto",
+      "uploading": "Subiendo...",
+      "empty": "Aún no hay fotos del pedido.",
+      "error": "No se pudo procesar la foto.",
+      "deactivate": "Quitar",
+      "inactive": "Inactiva",
+      "categories": {
+        "intake": "Recepción",
+        "processing": "Proceso",
+        "quality": "Calidad",
+        "issue": "Incidencia",
+        "delivery": "Entrega",
+        "payment_proof": "Comprobante de pago"
+      }
     }
   },
   "properties": {

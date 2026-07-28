@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
-Next Action: APP-006 implementation review; next step after approval is APP-007
+Next Action: APP-007 implementation review; next step after approval is APP-008
 
 ---
 
@@ -93,6 +93,7 @@ Approved and current areas:
 - APP-003 — Supabase Tenant Foundation and Security Baseline: Completed and pushed
 - APP-004 — Authentication and Roles: Completed and pushed
 - APP-005 — Customers and Properties: Completed and pushed
-- APP-006 — Orders and Workflow: In implementation review
+- APP-006 — Orders and Workflow: Completed
+- APP-007 — Photos, Pickup, Delivery and Payments: In implementation review
 
-APP-006 implements services, standard prices, orders, order items and production workflow only. Signup UI, payments, logistics, operational Storage buckets and broader SaaS workflows are not implemented yet.
+APP-007 adds pickup, delivery, order photos, private order media Storage and manual payments only. It does not add online payments, invoices, QR, OCR, PDF, Realtime, notifications, customer portal, mobile app or dashboard analytics.

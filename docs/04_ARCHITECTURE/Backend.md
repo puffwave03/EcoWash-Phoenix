@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -87,6 +87,14 @@ Implemented in APP-006:
 - read-only service catalog access for staff
 - protected order CRUD and production workflow UI
 
+Implemented in APP-007 and pending review:
+
+- migration for pickup, delivery, payment and order photo metadata tables
+- private `order-media` Storage bucket and tenant-scoped Storage policies
+- RPCs for logistics save/transition, payment record/void/refund and photo metadata registration/deactivation
+- read-only derived payment summary from order total and valid payment records
+- order detail integration for logistics, payments and photos
+
 ## Server Boundary
 
 Future Next.js server actions or API routes may be used for operations that require extra validation beyond direct RLS-protected data access, especially:
@@ -99,6 +107,8 @@ Future Next.js server actions or API routes may be used for operations that requ
 - audit log writes
 
 APP-004 uses Server Actions for login/logout. APP-005 uses Server Actions for customer and property mutations. Neither exposes Supabase tokens or service-role credentials to the browser.
+
+APP-007 uses Server Actions for operational forms and file uploads. Tenant, actor and Storage path authority are derived server-side from the active membership and database checks, not from browser-submitted organization IDs.
 
 The client must never receive service-role credentials.
 
@@ -138,6 +148,14 @@ Also not implemented in APP-006:
 - payments
 - photos and operational Storage buckets
 - OCR, PDF, Realtime and Edge Functions
+
+Also not implemented in APP-007:
+
+- online payment providers
+- fiscal invoices or PDFs
+- QR, OCR, notifications, Realtime or Edge Functions
+- customer portal or mobile app
+- dashboard analytics
 
 ## Data Ownership Boundary
 

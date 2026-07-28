@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -79,6 +79,12 @@ Future order closure should be derived from production, fulfillment and payment 
 ## Fulfillment
 
 Fulfillment is modeled by an order-level fulfillment type plus optional pickup and delivery records.
+
+APP-007 implements pickup and delivery records as separate logistics dimensions. Pickup/delivery completion does not change production status, and production `completed` does not imply customer collection or delivery completion.
+
+APP-007 implements manual payments. Payment state is derived from valid payment records and order totals; staff can record payments, while only owner/manager can void or refund with a reason.
+
+APP-007 implements order photos through private Storage and active/inactive metadata. Photos can document intake, processing, quality, issues, delivery and payment proof, but no public media URL is stored.
 
 Supported patterns:
 

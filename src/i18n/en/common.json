@@ -279,6 +279,93 @@
       "change": "Change status",
       "history": "Status history",
       "reason": "Reason"
+    },
+    "logistics": {
+      "title": "Pickup and delivery",
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "empty": "Not scheduled",
+      "scheduledAt": "Scheduled date",
+      "assignedTo": "Assigned to",
+      "addressLine1": "Address line 1",
+      "addressLine2": "Address line 2",
+      "city": "City",
+      "postalCode": "Postal code",
+      "countryCode": "Country code",
+      "contactName": "Contact name",
+      "contactPhone": "Contact phone",
+      "notes": "Notes",
+      "fee": "Fee",
+      "save": "Save logistics",
+      "saving": "Saving...",
+      "error": "Logistics could not be saved.",
+      "cancelledReason": "Cancellation reason",
+      "statuses": {
+        "not_required": "Not required",
+        "scheduled": "Scheduled",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "payments": {
+      "title": "Payments",
+      "totalDue": "Total due",
+      "totalPaid": "Total paid",
+      "balanceDue": "Balance due",
+      "paymentStatus": "Payment status",
+      "amount": "Amount",
+      "method": "Method",
+      "paidAt": "Paid at",
+      "reference": "Reference",
+      "notes": "Notes",
+      "proof": "Proof",
+      "record": "Record payment",
+      "saving": "Saving...",
+      "empty": "No payments recorded yet.",
+      "error": "The payment could not be recorded.",
+      "date": "Date",
+      "actor": "Recorded by",
+      "void": "Void",
+      "voidReason": "Void reason",
+      "refund": "Refund",
+      "refundReason": "Refund reason",
+      "methods": {
+        "cash": "Cash",
+        "card": "Card",
+        "bank_transfer": "Bank transfer",
+        "other": "Other"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "void": "Void",
+        "refunded": "Refunded",
+        "unpaid": "Unpaid",
+        "partially_paid": "Partially paid",
+        "paid": "Paid"
+      }
+    },
+    "photos": {
+      "title": "Order photos",
+      "file": "Photo",
+      "fileHelp": "JPEG, PNG or WebP up to 1 MB.",
+      "category": "Category",
+      "caption": "Caption",
+      "upload": "Upload photo",
+      "uploading": "Uploading...",
+      "empty": "No order photos yet.",
+      "error": "The photo could not be processed.",
+      "deactivate": "Remove",
+      "inactive": "Inactive",
+      "categories": {
+        "intake": "Intake",
+        "processing": "Processing",
+        "quality": "Quality",
+        "issue": "Issue",
+        "delivery": "Delivery",
+        "payment_proof": "Payment proof"
+      }
     }
   },
   "properties": {

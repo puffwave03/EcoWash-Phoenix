@@ -4,7 +4,25 @@ import { Card } from "@/components/Card";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
 import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
+import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
+import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
+import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
 import { Link } from "@/i18n/navigation";
+import {
+  saveDeliveryAction,
+  savePickupAction,
+  transitionDeliveryAction,
+  transitionPickupAction,
+} from "@/features/logistics/server/actions";
+import {
+  getOrderLogistics,
+  listAssignableStaff,
+} from "@/features/logistics/server/queries";
+import {
+  deactivateOrderPhotoAction,
+  uploadOrderPhotoAction,
+} from "@/features/order-photos/server/actions";
+import { getOrderPhotos } from "@/features/order-photos/server/queries";
 import {
   removeOrderItemAction,
   saveOrderItemAction,
@@ -16,6 +34,15 @@ import {
   getOrderHistory,
   listOrderItems,
 } from "@/features/orders/server/queries";
+import {
+  recordPaymentAction,
+  refundPaymentAction,
+  voidPaymentAction,
+} from "@/features/payments/server/actions";
+import {
+  getOrderPaymentSummary,
+  getOrderPayments,
+} from "@/features/payments/server/queries";
 import { listActiveServicesForOrder } from "@/features/services/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
 import { canEditCatalog } from "@/features/orders/workflow";
@@ -31,15 +58,21 @@ function formatMoney(amount: number, currency: string, locale: string) {
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, t] = await Promise.all([
+  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, t] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
     getOrderHistory(locale, orderId),
     listActiveServicesForOrder(locale),
+    getOrderLogistics(locale, orderId),
+    listAssignableStaff(locale),
+    getOrderPayments(locale, orderId),
+    getOrderPaymentSummary(locale, orderId),
+    getOrderPhotos(locale, orderId),
     getTranslations({ locale, namespace: "common.orders" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
+  const canManagePaymentCorrections = access.membership.role === "owner" || access.membership.role === "manager";
 
   return (
     <div className="space-y-6">
@@ -140,6 +173,97 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </form>
         </Card>
       ) : null}
+
+      <LogisticsPanel
+        actions={{
+          saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
+          savePickup: savePickupAction.bind(null, locale, order.id),
+          transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id),
+          transitionPickup: transitionPickupAction.bind(null, locale, order.id),
+        }}
+        assignments={assignments}
+        logistics={logistics}
+        text={{
+          addressLine1: t("logistics.addressLine1"),
+          addressLine2: t("logistics.addressLine2"),
+          assignedTo: t("logistics.assignedTo"),
+          cancelledReason: t("logistics.cancelledReason"),
+          city: t("logistics.city"),
+          contactName: t("logistics.contactName"),
+          contactPhone: t("logistics.contactPhone"),
+          countryCode: t("logistics.countryCode"),
+          delivery: t("logistics.delivery"),
+          empty: t("logistics.empty"),
+          error: t("logistics.error"),
+          fee: t("logistics.fee"),
+          inProgress: t("logistics.title"),
+          notes: t("logistics.notes"),
+          pickup: t("logistics.pickup"),
+          postalCode: t("logistics.postalCode"),
+          save: t("logistics.save"),
+          saving: t("logistics.saving"),
+          scheduledAt: t("logistics.scheduledAt"),
+          statuses: t.raw("logistics.statuses"),
+        }}
+      />
+
+      <PaymentsPanel
+        actions={{
+          record: recordPaymentAction.bind(null, locale, order.id),
+          refund: refundPaymentAction.bind(null, locale, order.id),
+          void: voidPaymentAction.bind(null, locale, order.id),
+        }}
+        canManageCorrections={canManagePaymentCorrections}
+        currency={order.currency}
+        locale={locale}
+        payments={payments}
+        summary={paymentSummary}
+        text={{
+          actor: t("payments.actor"),
+          amount: t("payments.amount"),
+          balanceDue: t("payments.balanceDue"),
+          date: t("payments.date"),
+          empty: t("payments.empty"),
+          error: t("payments.error"),
+          method: t("payments.method"),
+          methods: t.raw("payments.methods"),
+          notes: t("payments.notes"),
+          paidAt: t("payments.paidAt"),
+          paymentStatus: t("payments.paymentStatus"),
+          proof: t("payments.proof"),
+          record: t("payments.record"),
+          reference: t("payments.reference"),
+          refund: t("payments.refund"),
+          refundReason: t("payments.refundReason"),
+          saving: t("payments.saving"),
+          statuses: t.raw("payments.statuses"),
+          title: t("payments.title"),
+          totalDue: t("payments.totalDue"),
+          totalPaid: t("payments.totalPaid"),
+          void: t("payments.void"),
+          voidReason: t("payments.voidReason"),
+        }}
+      />
+
+      <OrderPhotosPanel
+        action={uploadOrderPhotoAction.bind(null, locale, order.id)}
+        deactivateAction={deactivateOrderPhotoAction.bind(null, locale, order.id)}
+        photos={photos}
+        text={{
+          caption: t("photos.caption"),
+          categories: t.raw("photos.categories"),
+          category: t("photos.category"),
+          deactivate: t("photos.deactivate"),
+          empty: t("photos.empty"),
+          error: t("photos.error"),
+          file: t("photos.file"),
+          fileHelp: t("photos.fileHelp"),
+          inactive: t("photos.inactive"),
+          title: t("photos.title"),
+          upload: t("photos.upload"),
+          uploading: t("photos.uploading"),
+        }}
+      />
 
       <Card>
         <StatusTransitionForm

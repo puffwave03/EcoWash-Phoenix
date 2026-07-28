@@ -279,6 +279,93 @@
       "change": "Status ändern",
       "history": "Statushistorie",
       "reason": "Grund"
+    },
+    "logistics": {
+      "title": "Abholung und Lieferung",
+      "pickup": "Abholung",
+      "delivery": "Lieferung",
+      "empty": "Nicht geplant",
+      "scheduledAt": "Geplantes Datum",
+      "assignedTo": "Zugewiesen an",
+      "addressLine1": "Adresszeile 1",
+      "addressLine2": "Adresszeile 2",
+      "city": "Stadt",
+      "postalCode": "Postleitzahl",
+      "countryCode": "Land",
+      "contactName": "Kontaktname",
+      "contactPhone": "Kontakttelefon",
+      "notes": "Notizen",
+      "fee": "Gebühr",
+      "save": "Logistik speichern",
+      "saving": "Speichern...",
+      "error": "Logistik konnte nicht gespeichert werden.",
+      "cancelledReason": "Stornierungsgrund",
+      "statuses": {
+        "not_required": "Nicht erforderlich",
+        "scheduled": "Geplant",
+        "in_progress": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert"
+      }
+    },
+    "payments": {
+      "title": "Zahlungen",
+      "totalDue": "Fälliger Gesamtbetrag",
+      "totalPaid": "Bezahlt gesamt",
+      "balanceDue": "Offener Betrag",
+      "paymentStatus": "Zahlungsstatus",
+      "amount": "Betrag",
+      "method": "Methode",
+      "paidAt": "Bezahlt am",
+      "reference": "Referenz",
+      "notes": "Notizen",
+      "proof": "Nachweis",
+      "record": "Zahlung erfassen",
+      "saving": "Speichern...",
+      "empty": "Noch keine Zahlungen erfasst.",
+      "error": "Die Zahlung konnte nicht erfasst werden.",
+      "date": "Datum",
+      "actor": "Erfasst von",
+      "void": "Stornieren",
+      "voidReason": "Stornierungsgrund",
+      "refund": "Erstatten",
+      "refundReason": "Erstattungsgrund",
+      "methods": {
+        "cash": "Bar",
+        "card": "Karte",
+        "bank_transfer": "Banküberweisung",
+        "other": "Andere"
+      },
+      "statuses": {
+        "pending": "Ausstehend",
+        "confirmed": "Bestätigt",
+        "void": "Storniert",
+        "refunded": "Erstattet",
+        "unpaid": "Unbezahlt",
+        "partially_paid": "Teilweise bezahlt",
+        "paid": "Bezahlt"
+      }
+    },
+    "photos": {
+      "title": "Auftragsfotos",
+      "file": "Foto",
+      "fileHelp": "JPEG, PNG oder WebP bis 1 MB.",
+      "category": "Kategorie",
+      "caption": "Beschriftung",
+      "upload": "Foto hochladen",
+      "uploading": "Hochladen...",
+      "empty": "Noch keine Auftragsfotos.",
+      "error": "Das Foto konnte nicht verarbeitet werden.",
+      "deactivate": "Entfernen",
+      "inactive": "Inaktiv",
+      "categories": {
+        "intake": "Annahme",
+        "processing": "Bearbeitung",
+        "quality": "Qualität",
+        "issue": "Problem",
+        "delivery": "Lieferung",
+        "payment_proof": "Zahlungsnachweis"
+      }
     }
   },
   "properties": {

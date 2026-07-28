@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
-Next Action: APP-006 implementation review; next step after approval is APP-007
+Next Action: APP-007 implementation review; next step after approval is APP-008
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-006 — Orders and Workflow |
-| Last completed mission | APP-005 — Customers and Properties |
-| Latest approved and pushed commit | 5639183 |
+| Current mission | APP-007 — Photos, Pickup, Delivery and Payments |
+| Last completed mission | APP-006 — Orders and Workflow |
+| Latest approved and pushed commit | b5a1c7c |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -37,10 +37,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-003 status | Completed and pushed |
 | APP-004 status | Completed and pushed |
 | APP-005 status | Completed and pushed |
-| APP-006 status | In implementation review |
+| APP-006 status | Completed and pushed |
+| APP-007 status | In implementation review |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Customers/properties completed; orders/workflow module in implementation review |
+| Backend/SaaS implementation | Customers/properties/services/orders completed; logistics, photos and manual payments in implementation review |
 
 ## Development Status
 
@@ -67,7 +68,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-003 | Supabase Tenant Foundation and Security Baseline | Completed |
 | APP-004 | Authentication and Roles | Completed |
 | APP-005 | Customers and Properties | Completed |
-| APP-006 | Orders and Workflow | In implementation review |
+| APP-006 | Orders and Workflow | Completed |
+| APP-007 | Photos, Pickup, Delivery and Payments | In implementation review |
 
 ## Commit History
 
@@ -176,8 +178,29 @@ Current DEV-010 state:
 - APP-003 is completed and pushed.
 - APP-004 is completed and pushed.
 - APP-005 is completed and pushed.
-- APP-006 is in implementation review.
-- Next step after APP-006 approval is `APP-007`.
+- APP-006 is completed and pushed.
+- APP-007 is in implementation review.
+- Next step after APP-007 approval is `APP-008`.
+
+## APP-007 Implementation State
+
+APP-007 implements photos, pickup, delivery and manual payment foundations in implementation review:
+
+- versioned migration for `pickups`, `deliveries`, `payments` and `order_photos`
+- private Supabase Storage bucket `order-media`
+- tenant-scoped Storage policies using `organization_id/order_id/random_uuid.ext`
+- short-lived signed URLs generated on demand
+- 1 MB JPEG/PNG/WebP upload path through Server Actions
+- narrow PostgreSQL RPCs for logistics save/transition, payment record/void/refund and photo metadata registration/deactivation
+- derived read-only payment summary from order total and valid payment records
+- order detail sections for pickup/delivery, payments and order photos
+- translation keys for English, Spanish, Italian, French and German
+
+APP-007 keeps production, fulfillment and payment separate. `production_status = completed` still means only that production work is finished; delivery and payment can remain pending. Manual payment status is derived from confirmed and refunded payment records, void payments do not count, and overpayment is rejected for the MVP.
+
+APP-007 does not implement analytics, push notifications, QR, OCR, fiscal invoices, PDF generation, online payment providers, customer portal, mobile app, Realtime, Edge Functions or APP-008 dashboard analytics.
+
+Next task after APP-007 approval is `APP-008 — Dashboard and Operational Overview`.
 
 ## APP-002 Documentation State
 
@@ -428,8 +451,9 @@ Exact starting state:
 - APP-003 is completed and pushed
 - APP-004 is completed and pushed
 - APP-005 is completed and pushed
-- APP-006 is in implementation review
-- Next step after APP-006 approval is `APP-007`
+- APP-006 is completed and pushed
+- APP-007 is in implementation review
+- Next step after APP-007 approval is `APP-008`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -30,7 +30,7 @@ APP-005 adds the first operational master-data tables:
 - `customers`
 - `properties`
 
-Service and order tables are implemented in APP-006; payment, photo, pickup and delivery tables are not implemented yet.
+Service and order tables are implemented in APP-006. Pickup, delivery, manual payment and order photo tables are implemented in APP-007 and are in implementation review.
 
 APP-006 adds:
 
@@ -40,7 +40,7 @@ APP-006 adds:
 - `order_items`
 - `order_status_history`
 
-Pickup, delivery, payment, photo, issue, invoice and notification tables are not implemented in APP-006.
+Issue, invoice and notification tables are not implemented in APP-007.
 
 ## Database Principles
 
@@ -113,9 +113,9 @@ Stored values:
 
 Derived values:
 
-- future `total_paid` from valid payment records.
-- future `balance_due` as `total - total_paid`.
-- future `payment_status` from totals and payment records.
+- `total_paid` from valid payment records.
+- `balance_due` as `total - total_paid`.
+- `payment_status` from totals and payment records: `unpaid`, `partially_paid`, `paid`, `refunded` or `void`.
 - future order closure, if needed, from production, fulfillment and payment conditions.
 
 Totals require audit when changed after the order leaves `draft`.
@@ -172,7 +172,7 @@ Price records require effective dates. Existing order items must not depend on c
 
 ## Logistics
 
-The order stores intended fulfillment type. Pickup and delivery details are held in separate records only when needed.
+APP-007 stores pickup and delivery details in separate records only when needed. There is no duplicated global logistics status that can contradict pickup or delivery records.
 
 Pickup/delivery records include:
 
@@ -182,20 +182,41 @@ Pickup/delivery records include:
 - completed time
 - assigned staff
 - notes
-- optional proof photo
 - optional fee
+
+Pickup and delivery status values are `not_required`, `scheduled`, `in_progress`, `completed` and `cancelled`. The MVP normally represents not-required logistics by the absence of an active pickup or delivery row. Standard transitions are `scheduled -> in_progress`, `in_progress -> completed`, `scheduled -> cancelled` and `in_progress -> cancelled`. A completed pickup or delivery requires a completion timestamp; cancellation requires a reason.
+
+Production completion does not complete pickup or delivery, and delivery completion does not imply payment.
+
+APP-007 logistics fees are informational only and do not contribute to `orders.total`. APP-006 order totals remain `subtotal - discount_amount`; any future decision to charge logistics fees must add an atomic server-side recalculation.
+
+## Manual Payments
+
+APP-007 stores manual payment records only. There is no online payment provider, card token, invoice or fiscal document table.
+
+Payment records include:
+
+- amount, method, paid timestamp and optional reference
+- `recorded_by`, `confirmed_by`, `voided_by` and refund source fields for audit
+- optional payment proof photo
+- status values `pending`, `confirmed`, `void` and `refunded`
+
+The order payment summary is read-only and derived from `orders.total` and payment records. Confirmed payments add to `total_paid`; refunded records subtract from it; void and pending records do not count toward `total_paid`. MVP overpayment is rejected. Fully refunded orders derive `payment_status = refunded`; orders with only voided payment attempts derive `payment_status = void`.
 
 ## Photos And Storage
 
-Expected storage bucket: private order photo bucket scoped by policy. Final bucket names are deferred to APP-003.
+APP-007 creates `order_photos` metadata and the private `order-media` Storage bucket.
 
 Path strategy:
 
-- Include organization and order identifiers for ownership checks.
-- Include unpredictable file component.
-- Do not include names, phone numbers, addresses or other PII.
+- `organization_id/order_id/random_uuid.ext`
+- organization and order identifiers are used for ownership checks.
+- the file component is unpredictable.
+- names, phone numbers, addresses and other PII are not allowed in the path.
 
-Signed URLs must be short-lived.
+Stored metadata keeps the bucket/path, category, MIME type, size, caption, uploaded user and active flag. Public URLs are not persisted. Signed URLs are generated on demand and must be short-lived.
+
+APP-007 uses a 1 MB image limit for the Server Action upload path. The bucket and database enforce the same limit. The server checks browser-declared MIME type, path extension derived from MIME type and basic binary signatures for JPEG, PNG and WebP without adding image-processing dependencies. SVG, GIF, PDF and other formats are denied.
 
 ## Deletion Strategy
 

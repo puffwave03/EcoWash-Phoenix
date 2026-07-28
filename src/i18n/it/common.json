@@ -279,6 +279,93 @@
       "change": "Cambia stato",
       "history": "Storico stati",
       "reason": "Motivo"
+    },
+    "logistics": {
+      "title": "Ritiro e consegna",
+      "pickup": "Ritiro",
+      "delivery": "Consegna",
+      "empty": "Non programmato",
+      "scheduledAt": "Data programmata",
+      "assignedTo": "Assegnato a",
+      "addressLine1": "Indirizzo riga 1",
+      "addressLine2": "Indirizzo riga 2",
+      "city": "Città",
+      "postalCode": "CAP",
+      "countryCode": "Paese",
+      "contactName": "Nome contatto",
+      "contactPhone": "Telefono contatto",
+      "notes": "Note",
+      "fee": "Costo",
+      "save": "Salva logistica",
+      "saving": "Salvataggio...",
+      "error": "La logistica non può essere salvata.",
+      "cancelledReason": "Motivo annullamento",
+      "statuses": {
+        "not_required": "Non richiesto",
+        "scheduled": "Programmato",
+        "in_progress": "In corso",
+        "completed": "Completato",
+        "cancelled": "Annullato"
+      }
+    },
+    "payments": {
+      "title": "Pagamenti",
+      "totalDue": "Totale dovuto",
+      "totalPaid": "Totale pagato",
+      "balanceDue": "Saldo dovuto",
+      "paymentStatus": "Stato pagamento",
+      "amount": "Importo",
+      "method": "Metodo",
+      "paidAt": "Pagato il",
+      "reference": "Riferimento",
+      "notes": "Note",
+      "proof": "Prova",
+      "record": "Registra pagamento",
+      "saving": "Salvataggio...",
+      "empty": "Nessun pagamento registrato.",
+      "error": "Il pagamento non può essere registrato.",
+      "date": "Data",
+      "actor": "Registrato da",
+      "void": "Annulla",
+      "voidReason": "Motivo annullamento",
+      "refund": "Rimborsa",
+      "refundReason": "Motivo rimborso",
+      "methods": {
+        "cash": "Contanti",
+        "card": "Carta",
+        "bank_transfer": "Bonifico",
+        "other": "Altro"
+      },
+      "statuses": {
+        "pending": "In attesa",
+        "confirmed": "Confermato",
+        "void": "Annullato",
+        "refunded": "Rimborsato",
+        "unpaid": "Non pagato",
+        "partially_paid": "Parzialmente pagato",
+        "paid": "Pagato"
+      }
+    },
+    "photos": {
+      "title": "Foto ordine",
+      "file": "Foto",
+      "fileHelp": "JPEG, PNG o WebP fino a 1 MB.",
+      "category": "Categoria",
+      "caption": "Didascalia",
+      "upload": "Carica foto",
+      "uploading": "Caricamento...",
+      "empty": "Nessuna foto ordine.",
+      "error": "La foto non può essere elaborata.",
+      "deactivate": "Rimuovi",
+      "inactive": "Inattiva",
+      "categories": {
+        "intake": "Ingresso",
+        "processing": "Lavorazione",
+        "quality": "Qualità",
+        "issue": "Problema",
+        "delivery": "Consegna",
+        "payment_proof": "Prova pagamento"
+      }
     }
   },
   "properties": {

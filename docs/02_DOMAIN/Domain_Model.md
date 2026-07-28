@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-006
+Current Mission: APP-007
 
 ---
 
@@ -52,7 +52,7 @@ Tenant strategy: single-tenant UX for EcoWash initially, multi-tenant-ready data
 
 `orders` is the aggregate root for order items, production history, pickup/delivery, payments, photos, notes and issues.
 
-APP-006 implements the order aggregate only for services, order items, production status and status history. Pickup, delivery, payments, photos and issues are not implemented yet.
+APP-006 implements the order aggregate for services, order items, production status and status history. APP-007 adds pickup, delivery, manual payments and order photos. Issues are not implemented yet.
 
 Required order fields:
 
@@ -119,5 +119,13 @@ Avoid duplicating a second master fulfillment enum that can contradict pickup an
 ## Payment Model
 
 Payments are append-friendly records. Order payment state is derived from successful, non-void payment records against `orders.total_amount`.
+
+APP-007 keeps payment status derived rather than mutable on `orders`. Manual payment corrections use void/refund records with actor and reason fields; online payments are not implemented.
+
+## Order Photos
+
+Order photos belong to the order aggregate through tenant-scoped metadata. The file is private in Storage, while `order_photos` stores category, bucket/path, MIME type, size, caption, uploader and active state.
+
+Storage paths use `organization_id/order_id/random_uuid.ext` and must not contain customer names, phone numbers, addresses or other PII. Signed URLs are generated on demand and are short-lived.
 
 Payment records can be voided or refunded later, but no online provider is included in the MVP.
