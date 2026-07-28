@@ -89,6 +89,8 @@
       "navigationLabel": "Navigation du tableau de bord",
       "overview": "Vue d'ensemble",
       "customers": "Clients",
+      "orders": "Commandes",
+      "services": "Services",
       "userLabel": "Utilisateur",
       "organizationLabel": "Organisation",
       "roleLabel": "Rôle"
@@ -155,6 +157,128 @@
       "save": "Enregistrer le client",
       "saving": "Enregistrement...",
       "error": "Le client n'a pas pu être enregistré."
+    }
+  },
+  "services": {
+    "title": "Services",
+    "description": "Gérer le catalogue actif des services et les prix standard.",
+    "newService": "Nouveau service",
+    "status": "Statut",
+    "filter": "Filtrer",
+    "all": "Tous",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "service": "Service",
+    "price": "Prix",
+    "edit": "Modifier",
+    "empty": "Aucun service ne correspond aux filtres.",
+    "unitTypes": {
+      "weight": "Poids",
+      "piece": "Pièce"
+    },
+    "form": {
+      "newTitle": "Nouveau service",
+      "editTitle": "Modifier le service",
+      "name": "Nom du service",
+      "code": "Code service",
+      "unitType": "Type d'unité",
+      "category": "Catégorie",
+      "description": "Description",
+      "amount": "Prix standard",
+      "currency": "Devise",
+      "validFrom": "Valide depuis",
+      "validTo": "Valide jusqu'à",
+      "save": "Enregistrer le service",
+      "saving": "Enregistrement...",
+      "error": "Le service n'a pas pu être enregistré.",
+      "unitTypes": {
+        "weight": "Poids",
+        "piece": "Pièce"
+      }
+    }
+  },
+  "orders": {
+    "title": "Commandes",
+    "description": "Gérer les commandes de production, les lignes et l'historique du workflow.",
+    "newOrder": "Nouvelle commande",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher un numéro de commande",
+    "filter": "Filtrer",
+    "all": "Tous",
+    "active": "Actif",
+    "activeState": "État",
+    "order": "Commande",
+    "customer": "Client",
+    "property": "Propriété",
+    "status": "Statut de production",
+    "priority": "Priorité",
+    "total": "Total",
+    "subtotal": "Sous-total",
+    "discount": "Remise",
+    "updateDiscount": "Mettre à jour la remise",
+    "due": "Échéance",
+    "assigned": "Assigné",
+    "created": "Créé",
+    "view": "Voir",
+    "edit": "Modifier",
+    "empty": "Aucune commande ne correspond aux filtres.",
+    "unitTypes": {
+      "weight": "Poids",
+      "piece": "Pièce"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Brouillon",
+      "received": "Reçu",
+      "washing": "Lavage",
+      "drying": "Séchage",
+      "ironing": "Repassage",
+      "quality_check": "Contrôle qualité",
+      "packing": "Emballage",
+      "ready": "Prêt",
+      "completed": "Production terminée",
+      "on_hold": "En attente",
+      "cancelled": "Annulé"
+    },
+    "form": {
+      "newTitle": "Nouvelle commande",
+      "editTitle": "Modifier la commande",
+      "customer": "Client",
+      "property": "Propriété",
+      "priority": "Priorité",
+      "normal": "Normal",
+      "express": "Express",
+      "dueAt": "Échéance",
+      "customerNotes": "Notes client",
+      "internalNotes": "Notes internes",
+      "save": "Enregistrer la commande",
+      "saving": "Enregistrement...",
+      "error": "La commande n'a pas pu être enregistrée."
+    },
+    "items": {
+      "title": "Lignes de commande",
+      "add": "Enregistrer la ligne",
+      "save": "Enregistrer la ligne",
+      "edit": "Modifier les lignes",
+      "service": "Service",
+      "description": "Description",
+      "unitType": "Type d'unité",
+      "quantity": "Quantité",
+      "unitPrice": "Prix unitaire",
+      "lineTotal": "Total ligne",
+      "notes": "Notes",
+      "remove": "Retirer",
+      "removing": "Retrait...",
+      "saving": "Enregistrement...",
+      "error": "La ligne n'a pas pu être enregistrée."
+    },
+    "workflow": {
+      "change": "Changer le statut",
+      "history": "Historique des statuts",
+      "reason": "Motif"
     }
   },
   "properties": {

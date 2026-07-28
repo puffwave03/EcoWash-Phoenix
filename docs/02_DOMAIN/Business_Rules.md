@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -38,8 +38,12 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 
 - Orders use an internal UUID and a human-readable order number scoped to organization.
 - Production status, fulfillment state, payment state and issues are separate concerns.
+- APP-006 implements production status only. Fulfillment, payment and issues remain separate future dimensions.
 - Production phases may be skipped when services do not require them.
 - Status changes are recorded in immutable production status history.
+- Order creation must atomically create initial status history.
+- Item changes must atomically recalculate order subtotal and total.
+- Order items snapshot description, unit type, quantity, unit price and line total.
 - `completed` means production work is complete, not that delivery, customer collection or payment is complete.
 - `cancelled` requires reason and audit.
 - `on_hold` is temporary, requires reason and audit, and must preserve the previous production context through `order_status_history`.

@@ -89,6 +89,8 @@
       "navigationLabel": "Dashboard navigation",
       "overview": "Overview",
       "customers": "Customers",
+      "orders": "Orders",
+      "services": "Services",
       "userLabel": "User",
       "organizationLabel": "Organization",
       "roleLabel": "Role"
@@ -155,6 +157,128 @@
       "save": "Save customer",
       "saving": "Saving...",
       "error": "The customer could not be saved."
+    }
+  },
+  "services": {
+    "title": "Services",
+    "description": "Manage the active service catalog and standard prices.",
+    "newService": "New service",
+    "status": "Status",
+    "filter": "Filter",
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive",
+    "service": "Service",
+    "price": "Price",
+    "edit": "Edit",
+    "empty": "No services match the current filters.",
+    "unitTypes": {
+      "weight": "Weight",
+      "piece": "Piece"
+    },
+    "form": {
+      "newTitle": "New service",
+      "editTitle": "Edit service",
+      "name": "Service name",
+      "code": "Service code",
+      "unitType": "Unit type",
+      "category": "Category",
+      "description": "Description",
+      "amount": "Standard price",
+      "currency": "Currency",
+      "validFrom": "Valid from",
+      "validTo": "Valid to",
+      "save": "Save service",
+      "saving": "Saving...",
+      "error": "The service could not be saved.",
+      "unitTypes": {
+        "weight": "Weight",
+        "piece": "Piece"
+      }
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "description": "Manage production orders, items and workflow history.",
+    "newOrder": "New order",
+    "search": "Search",
+    "searchPlaceholder": "Search order number",
+    "filter": "Filter",
+    "all": "All",
+    "active": "Active",
+    "activeState": "State",
+    "order": "Order",
+    "customer": "Customer",
+    "property": "Property",
+    "status": "Production status",
+    "priority": "Priority",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "updateDiscount": "Update discount",
+    "due": "Due",
+    "assigned": "Assigned",
+    "created": "Created",
+    "view": "View",
+    "edit": "Edit",
+    "empty": "No orders match the current filters.",
+    "unitTypes": {
+      "weight": "Weight",
+      "piece": "Piece"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "received": "Received",
+      "washing": "Washing",
+      "drying": "Drying",
+      "ironing": "Ironing",
+      "quality_check": "Quality check",
+      "packing": "Packing",
+      "ready": "Ready",
+      "completed": "Production completed",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled"
+    },
+    "form": {
+      "newTitle": "New order",
+      "editTitle": "Edit order",
+      "customer": "Customer",
+      "property": "Property",
+      "priority": "Priority",
+      "normal": "Normal",
+      "express": "Express",
+      "dueAt": "Due date",
+      "customerNotes": "Customer notes",
+      "internalNotes": "Internal notes",
+      "save": "Save order",
+      "saving": "Saving...",
+      "error": "The order could not be saved."
+    },
+    "items": {
+      "title": "Order items",
+      "add": "Save item",
+      "save": "Save item",
+      "edit": "Edit items",
+      "service": "Service",
+      "description": "Description",
+      "unitType": "Unit type",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "lineTotal": "Line total",
+      "notes": "Notes",
+      "remove": "Remove",
+      "removing": "Removing...",
+      "saving": "Saving...",
+      "error": "The item could not be saved."
+    },
+    "workflow": {
+      "change": "Change status",
+      "history": "Status history",
+      "reason": "Reason"
     }
   },
   "properties": {

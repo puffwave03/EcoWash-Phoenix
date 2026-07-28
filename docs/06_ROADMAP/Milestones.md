@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
-Next Action: APP-005 implementation review; next step after approval is APP-006
+Next Action: APP-006 implementation review; next step after approval is APP-007
 
 ---
 
@@ -92,6 +92,7 @@ Approved and current areas:
 - APP-002 — Order Domain and Database Design: Completed and pushed
 - APP-003 — Supabase Tenant Foundation and Security Baseline: Completed and pushed
 - APP-004 — Authentication and Roles: Completed and pushed
-- APP-005 — Customers and Properties: In implementation review
+- APP-005 — Customers and Properties: Completed and pushed
+- APP-006 — Orders and Workflow: In implementation review
 
-APP-005 implements customers and properties only. Signup UI, services, orders, payments, operational Storage buckets and broader SaaS workflows are not implemented yet.
+APP-006 implements services, standard prices, orders, order items and production workflow only. Signup UI, payments, logistics, operational Storage buckets and broader SaaS workflows are not implemented yet.

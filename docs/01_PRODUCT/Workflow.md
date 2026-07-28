@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-002
+Current Mission: APP-006
 
 ---
 
@@ -53,9 +53,9 @@ Production, fulfillment, payment and issues are separate dimensions. The MVP mus
 ## Transition Rules
 
 - Every production status change creates immutable `order_status_history`.
-- Owner and manager can correct statuses with a reason.
+- APP-006 enforces normal transitions through a dedicated workflow RPC, not through direct status updates.
 - Staff can move assigned or operational orders through normal production states.
-- Arbitrary jumps require audit and should be limited to owner/manager.
+- Generic rollback and workflow builder behavior is not implemented.
 - `completed` means production work is finished. It does not mean delivery, customer collection or payment is complete.
 - `cancelled` requires a reason and should not erase order history.
 - `on_hold` requires a reason and should preserve the previous production context.

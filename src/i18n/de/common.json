@@ -89,6 +89,8 @@
       "navigationLabel": "Dashboard-Navigation",
       "overview": "Übersicht",
       "customers": "Kunden",
+      "orders": "Aufträge",
+      "services": "Services",
       "userLabel": "Benutzer",
       "organizationLabel": "Organisation",
       "roleLabel": "Rolle"
@@ -155,6 +157,128 @@
       "save": "Kunde speichern",
       "saving": "Speichern...",
       "error": "Der Kunde konnte nicht gespeichert werden."
+    }
+  },
+  "services": {
+    "title": "Services",
+    "description": "Aktiven Servicekatalog und Standardpreise verwalten.",
+    "newService": "Neuer Service",
+    "status": "Status",
+    "filter": "Filtern",
+    "all": "Alle",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "service": "Service",
+    "price": "Preis",
+    "edit": "Bearbeiten",
+    "empty": "Keine Services passen zu den aktuellen Filtern.",
+    "unitTypes": {
+      "weight": "Gewicht",
+      "piece": "Stück"
+    },
+    "form": {
+      "newTitle": "Neuer Service",
+      "editTitle": "Service bearbeiten",
+      "name": "Servicename",
+      "code": "Servicecode",
+      "unitType": "Einheitstyp",
+      "category": "Kategorie",
+      "description": "Beschreibung",
+      "amount": "Standardpreis",
+      "currency": "Währung",
+      "validFrom": "Gültig ab",
+      "validTo": "Gültig bis",
+      "save": "Service speichern",
+      "saving": "Speichern...",
+      "error": "Der Service konnte nicht gespeichert werden.",
+      "unitTypes": {
+        "weight": "Gewicht",
+        "piece": "Stück"
+      }
+    }
+  },
+  "orders": {
+    "title": "Aufträge",
+    "description": "Produktionsaufträge, Positionen und Workflow-Historie verwalten.",
+    "newOrder": "Neuer Auftrag",
+    "search": "Suchen",
+    "searchPlaceholder": "Auftragsnummer suchen",
+    "filter": "Filtern",
+    "all": "Alle",
+    "active": "Aktiv",
+    "activeState": "Status",
+    "order": "Auftrag",
+    "customer": "Kunde",
+    "property": "Objekt",
+    "status": "Produktionsstatus",
+    "priority": "Priorität",
+    "total": "Gesamt",
+    "subtotal": "Zwischensumme",
+    "discount": "Rabatt",
+    "updateDiscount": "Rabatt aktualisieren",
+    "due": "Fällig",
+    "assigned": "Zugewiesen",
+    "created": "Erstellt",
+    "view": "Ansehen",
+    "edit": "Bearbeiten",
+    "empty": "Keine Aufträge passen zu den aktuellen Filtern.",
+    "unitTypes": {
+      "weight": "Gewicht",
+      "piece": "Stück"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Entwurf",
+      "received": "Angenommen",
+      "washing": "Waschen",
+      "drying": "Trocknen",
+      "ironing": "Bügeln",
+      "quality_check": "Qualitätskontrolle",
+      "packing": "Verpacken",
+      "ready": "Bereit",
+      "completed": "Produktion abgeschlossen",
+      "on_hold": "Pausiert",
+      "cancelled": "Storniert"
+    },
+    "form": {
+      "newTitle": "Neuer Auftrag",
+      "editTitle": "Auftrag bearbeiten",
+      "customer": "Kunde",
+      "property": "Objekt",
+      "priority": "Priorität",
+      "normal": "Normal",
+      "express": "Express",
+      "dueAt": "Fälligkeitsdatum",
+      "customerNotes": "Kundennotizen",
+      "internalNotes": "Interne Notizen",
+      "save": "Auftrag speichern",
+      "saving": "Speichern...",
+      "error": "Der Auftrag konnte nicht gespeichert werden."
+    },
+    "items": {
+      "title": "Auftragspositionen",
+      "add": "Position speichern",
+      "save": "Position speichern",
+      "edit": "Positionen bearbeiten",
+      "service": "Service",
+      "description": "Beschreibung",
+      "unitType": "Einheitstyp",
+      "quantity": "Menge",
+      "unitPrice": "Stückpreis",
+      "lineTotal": "Positionssumme",
+      "notes": "Notizen",
+      "remove": "Entfernen",
+      "removing": "Entfernen...",
+      "saving": "Speichern...",
+      "error": "Die Position konnte nicht gespeichert werden."
+    },
+    "workflow": {
+      "change": "Status ändern",
+      "history": "Statushistorie",
+      "reason": "Grund"
     }
   },
   "properties": {

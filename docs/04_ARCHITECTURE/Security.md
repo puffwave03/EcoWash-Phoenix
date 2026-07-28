@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -120,6 +120,16 @@ Security rules:
 - Client hard delete policies and grants are intentionally not added.
 - Deactivation uses `is_active = false` and remains tenant-scoped.
 - The Supabase service role is not used by APP-005 UI, queries or Server Actions.
+
+## APP-006 Order Workflow Controls
+
+- Staff can read services and prices but cannot create or update the catalog.
+- Orders and order items are tenant-scoped by `organization_id`.
+- Order creation, item mutation, discount update and status transitions use narrow PostgreSQL RPCs for atomicity.
+- Direct production status updates are blocked outside the workflow RPC.
+- Direct order total and item mutation are blocked outside controlled RPC paths.
+- Status history is append-only and cannot be inserted, updated or deleted directly by the client.
+- `completed` remains production-only and does not imply fulfillment or payment.
 
 ## Storage Security
 

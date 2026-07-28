@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
-Next Action: APP-005 implementation review; next step after approval is APP-006
+Next Action: APP-006 implementation review; next step after approval is APP-007
 
 ---
 
@@ -27,19 +27,20 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-005 — Customers and Properties |
-| Last completed mission | APP-004 — Authentication and Roles |
-| Latest approved and pushed commit | d7e903b |
+| Current mission | APP-006 — Orders and Workflow |
+| Last completed mission | APP-005 — Customers and Properties |
+| Latest approved and pushed commit | 5639183 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
 | APP-003 status | Completed and pushed |
 | APP-004 status | Completed and pushed |
-| APP-005 status | In implementation review |
+| APP-005 status | Completed and pushed |
+| APP-006 status | In implementation review |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Authentication foundation completed; customers/properties module in implementation review |
+| Backend/SaaS implementation | Customers/properties completed; orders/workflow module in implementation review |
 
 ## Development Status
 
@@ -65,7 +66,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-002 | Order Domain and Database Design | Completed |
 | APP-003 | Supabase Tenant Foundation and Security Baseline | Completed |
 | APP-004 | Authentication and Roles | Completed |
-| APP-005 | Customers and Properties | In implementation review |
+| APP-005 | Customers and Properties | Completed |
+| APP-006 | Orders and Workflow | In implementation review |
 
 ## Commit History
 
@@ -89,6 +91,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-002 | 24e392d |
 | APP-003 | d3e1f44 |
 | APP-004 | d7e903b |
+| APP-005 | 5639183 |
 
 ## Documentation Commit History
 
@@ -172,8 +175,9 @@ Current DEV-010 state:
 - APP-002 is completed and pushed.
 - APP-003 is completed and pushed.
 - APP-004 is completed and pushed.
-- APP-005 is in implementation review.
-- Next step after APP-005 approval is `APP-006`.
+- APP-005 is completed and pushed.
+- APP-006 is in implementation review.
+- Next step after APP-006 approval is `APP-007`.
 
 ## APP-002 Documentation State
 
@@ -240,6 +244,21 @@ APP-005 implements the customers and properties module only:
 - localized UI text in all five existing locales
 
 APP-005 does not implement services, pricing, orders, order items, payments, order photos, operational Storage buckets, pickup/delivery, notifications, OCR, PDF, Realtime, Edge Functions, customer portal or mobile app.
+
+## APP-006 Implementation State
+
+APP-006 implements orders and production workflow only:
+
+- versioned migration for `services`, `service_prices`, `orders`, `order_items` and `order_status_history`
+- service unit types for weight and piece services
+- standard service pricing with order item snapshots
+- server-side order number generation
+- atomic RPCs for order creation, item mutation, discount update and production status transitions
+- append-only production status history
+- protected services and orders dashboard routes
+- localized UI text in all five existing locales
+
+APP-006 does not implement pickup, delivery, payments, order photos, proof photos, QR, OCR, notifications, invoices, PDFs, Realtime, Edge Functions, customer portal, mobile app or advanced analytics.
 
 ## Current Route Architecture
 
@@ -408,8 +427,9 @@ Exact starting state:
 - APP-002 is completed and pushed
 - APP-003 is completed and pushed
 - APP-004 is completed and pushed
-- APP-005 is in implementation review
-- Next step after APP-005 approval is `APP-006`
+- APP-005 is completed and pushed
+- APP-006 is in implementation review
+- Next step after APP-006 approval is `APP-007`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -442,5 +462,5 @@ First checks:
    - `/icon.png`
    - `/apple-icon.png`
    - `/social/ecowash-og.png`
-6. Review APP-005 implementation before any service, order, payment or operational workflow implementation.
-7. Do not begin APP-006 until APP-005 is approved.
+6. Review APP-006 implementation before any payment, logistics, photo or operational Storage implementation.
+7. Do not begin APP-007 until APP-006 is approved.

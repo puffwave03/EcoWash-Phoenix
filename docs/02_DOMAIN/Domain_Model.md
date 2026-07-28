@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-002
+Current Mission: APP-006
 
 ---
 
@@ -51,6 +51,8 @@ Tenant strategy: single-tenant UX for EcoWash initially, multi-tenant-ready data
 ## Order Aggregate
 
 `orders` is the aggregate root for order items, production history, pickup/delivery, payments, photos, notes and issues.
+
+APP-006 implements the order aggregate only for services, order items, production status and status history. Pickup, delivery, payments, photos and issues are not implemented yet.
 
 Required order fields:
 

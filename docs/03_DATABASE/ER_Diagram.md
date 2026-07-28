@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
-Current Mission: APP-002
+Current Mission: APP-006
 
 ---
 
@@ -74,4 +74,6 @@ Diagram notes:
 - `organizations` is the tenant boundary.
 - Some child tables inherit tenant access through `orders`.
 - `notes` uses scoped entity references and must still carry `organization_id`.
+- APP-006 implements `services`, `service_prices`, `orders`, `order_items` and `order_status_history`.
+- Pickup, delivery, payment, photo, issue, note and audit-log operational tables remain future scope.
 - The diagram omits detailed fields; full field requirements live in Domain Model, Entities and Database Design.

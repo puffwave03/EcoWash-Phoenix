@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -27,4 +27,4 @@ Run before APP implementation review:
 - `git diff --check`
 - translation key parity check across `src/i18n/en`, `src/i18n/it`, `src/i18n/es`, `src/i18n/fr` and `src/i18n/de`
 
-APP-005 does not run remote Supabase migrations, Docker or production deployment checks.
+APP-006 does not run remote Supabase migrations, Docker or production deployment checks. Database behavior for RLS/RPC requires a real Supabase/PostgreSQL environment for execution testing.

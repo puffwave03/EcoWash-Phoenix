@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -44,6 +44,18 @@ APP-005 adds the first protected operational module:
 
 Orders, payments, photos, services and operational metrics are not shown yet.
 
+APP-006 adds protected routes for:
+
+- `/[locale]/app/services`
+- `/[locale]/app/services/new`
+- `/[locale]/app/services/[serviceId]/edit`
+- `/[locale]/app/orders`
+- `/[locale]/app/orders/new`
+- `/[locale]/app/orders/[orderId]`
+- `/[locale]/app/orders/[orderId]/edit`
+
+Payments, logistics and photos are not shown yet.
+
 ## Dashboard Shell
 
 The dashboard shell displays:
@@ -54,6 +66,8 @@ The dashboard shell displays:
 - logout button
 - Overview navigation
 - Customers navigation
+- Orders navigation
+- Services navigation
 
 No module navigation is shown for unavailable features.
 

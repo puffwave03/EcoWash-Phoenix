@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -30,7 +30,17 @@ APP-005 adds the first operational master-data tables:
 - `customers`
 - `properties`
 
-Service, order, payment, photo, pickup and delivery tables are not implemented yet.
+Service and order tables are implemented in APP-006; payment, photo, pickup and delivery tables are not implemented yet.
+
+APP-006 adds:
+
+- `services`
+- `service_prices`
+- `orders`
+- `order_items`
+- `order_status_history`
+
+Pickup, delivery, payment, photo, issue, invoice and notification tables are not implemented in APP-006.
 
 ## Database Principles
 
@@ -67,14 +77,12 @@ Service, order, payment, photo, pickup and delivery tables are not implemented y
 
 ## Order Number
 
-Order tables are not implemented in APP-003.
-
 Orders use:
 
 - `id`: internal UUID.
 - `order_number`: human-readable number unique within organization.
 
-The final generation strategy is deferred to APP-003 implementation design, but uniqueness must be scoped to `organization_id`.
+APP-006 generates order numbers server-side through a PostgreSQL sequence with format `EW-000001`. The value is unique within organization and is not accepted from browser form input.
 
 ## Customers And Properties
 
@@ -98,17 +106,16 @@ Application CRUD is logical only: APP-005 does not add client delete policies or
 
 Stored values:
 
-- `subtotal_amount`
+- `subtotal`
 - `discount_amount`
-- `delivery_fee_amount`
-- `total_amount`
+- `total`
 - `currency`
 
 Derived values:
 
-- `total_paid` from valid payment records.
-- `balance_due` as `total_amount - total_paid`.
-- `payment_status` from totals and payment records.
+- future `total_paid` from valid payment records.
+- future `balance_due` as `total - total_paid`.
+- future `payment_status` from totals and payment records.
 - future order closure, if needed, from production, fulfillment and payment conditions.
 
 Totals require audit when changed after the order leaves `draft`.
@@ -127,9 +134,11 @@ Database design should not require a duplicated `previous_status` column on `ord
 
 ## Order Items
 
+APP-006 stores item snapshots and recalculates totals through order item RPCs. Direct item mutation is blocked by trigger outside the controlled RPC path.
+
 Weight item:
 
-- unit type `kg`
+- unit type `weight`
 - decimal quantity
 - price per kg snapshot
 - optional initial/final weight fields
@@ -152,7 +161,7 @@ All order items snapshot:
 
 ## Pricing Priority
 
-Use the first active matching price in this order:
+APP-006 uses the first active standard price matching organization/location. Future pricing priority remains:
 
 1. Property override
 2. Customer override

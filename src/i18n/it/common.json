@@ -89,6 +89,8 @@
       "navigationLabel": "Navigazione dashboard",
       "overview": "Panoramica",
       "customers": "Clienti",
+      "orders": "Ordini",
+      "services": "Servizi",
       "userLabel": "Utente",
       "organizationLabel": "Organizzazione",
       "roleLabel": "Ruolo"
@@ -155,6 +157,128 @@
       "save": "Salva cliente",
       "saving": "Salvataggio...",
       "error": "Impossibile salvare il cliente."
+    }
+  },
+  "services": {
+    "title": "Servizi",
+    "description": "Gestisci il catalogo servizi attivo e i prezzi standard.",
+    "newService": "Nuovo servizio",
+    "status": "Stato",
+    "filter": "Filtra",
+    "all": "Tutti",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "service": "Servizio",
+    "price": "Prezzo",
+    "edit": "Modifica",
+    "empty": "Nessun servizio corrisponde ai filtri.",
+    "unitTypes": {
+      "weight": "Peso",
+      "piece": "Pezzo"
+    },
+    "form": {
+      "newTitle": "Nuovo servizio",
+      "editTitle": "Modifica servizio",
+      "name": "Nome servizio",
+      "code": "Codice servizio",
+      "unitType": "Tipo unità",
+      "category": "Categoria",
+      "description": "Descrizione",
+      "amount": "Prezzo standard",
+      "currency": "Valuta",
+      "validFrom": "Valido da",
+      "validTo": "Valido fino a",
+      "save": "Salva servizio",
+      "saving": "Salvataggio...",
+      "error": "Il servizio non può essere salvato.",
+      "unitTypes": {
+        "weight": "Peso",
+        "piece": "Pezzo"
+      }
+    }
+  },
+  "orders": {
+    "title": "Ordini",
+    "description": "Gestisci ordini produttivi, righe e storico workflow.",
+    "newOrder": "Nuovo ordine",
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca numero ordine",
+    "filter": "Filtra",
+    "all": "Tutti",
+    "active": "Attivo",
+    "activeState": "Stato",
+    "order": "Ordine",
+    "customer": "Cliente",
+    "property": "Proprietà",
+    "status": "Stato produzione",
+    "priority": "Priorità",
+    "total": "Totale",
+    "subtotal": "Subtotale",
+    "discount": "Sconto",
+    "updateDiscount": "Aggiorna sconto",
+    "due": "Scadenza",
+    "assigned": "Assegnato",
+    "created": "Creato",
+    "view": "Vedi",
+    "edit": "Modifica",
+    "empty": "Nessun ordine corrisponde ai filtri.",
+    "unitTypes": {
+      "weight": "Peso",
+      "piece": "Pezzo"
+    },
+    "priorities": {
+      "normal": "Normale",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Bozza",
+      "received": "Ricevuto",
+      "washing": "Lavaggio",
+      "drying": "Asciugatura",
+      "ironing": "Stiratura",
+      "quality_check": "Controllo qualità",
+      "packing": "Imballaggio",
+      "ready": "Pronto",
+      "completed": "Produzione completata",
+      "on_hold": "In pausa",
+      "cancelled": "Annullato"
+    },
+    "form": {
+      "newTitle": "Nuovo ordine",
+      "editTitle": "Modifica ordine",
+      "customer": "Cliente",
+      "property": "Proprietà",
+      "priority": "Priorità",
+      "normal": "Normale",
+      "express": "Express",
+      "dueAt": "Scadenza",
+      "customerNotes": "Note cliente",
+      "internalNotes": "Note interne",
+      "save": "Salva ordine",
+      "saving": "Salvataggio...",
+      "error": "L'ordine non può essere salvato."
+    },
+    "items": {
+      "title": "Righe ordine",
+      "add": "Salva riga",
+      "save": "Salva riga",
+      "edit": "Modifica righe",
+      "service": "Servizio",
+      "description": "Descrizione",
+      "unitType": "Tipo unità",
+      "quantity": "Quantità",
+      "unitPrice": "Prezzo unitario",
+      "lineTotal": "Totale riga",
+      "notes": "Note",
+      "remove": "Rimuovi",
+      "removing": "Rimozione...",
+      "saving": "Salvataggio...",
+      "error": "La riga non può essere salvata."
+    },
+    "workflow": {
+      "change": "Cambia stato",
+      "history": "Storico stati",
+      "reason": "Motivo"
     }
   },
   "properties": {

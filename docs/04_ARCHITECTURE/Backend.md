@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-005
+Current Mission: APP-006
 
 ---
 
@@ -79,6 +79,14 @@ Implemented in APP-005:
 - property detail and edit routes
 - logical deactivation for customers and properties
 
+Implemented in APP-006:
+
+- migration for services, standard prices, orders, order items and status history
+- RPCs for atomic order creation, item mutation, discount update and status transition
+- service catalog management for owner/manager
+- read-only service catalog access for staff
+- protected order CRUD and production workflow UI
+
 ## Server Boundary
 
 Future Next.js server actions or API routes may be used for operations that require extra validation beyond direct RLS-protected data access, especially:
@@ -123,6 +131,13 @@ Also not implemented in APP-005:
 - photos or operational Storage buckets
 - pickup/delivery workflows
 - customer portal access
+
+Also not implemented in APP-006:
+
+- pickup/delivery
+- payments
+- photos and operational Storage buckets
+- OCR, PDF, Realtime and Edge Functions
 
 ## Data Ownership Boundary
 

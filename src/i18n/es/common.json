@@ -89,6 +89,8 @@
       "navigationLabel": "Navegación del panel",
       "overview": "Resumen",
       "customers": "Clientes",
+      "orders": "Pedidos",
+      "services": "Servicios",
       "userLabel": "Usuario",
       "organizationLabel": "Organización",
       "roleLabel": "Rol"
@@ -155,6 +157,128 @@
       "save": "Guardar cliente",
       "saving": "Guardando...",
       "error": "No se pudo guardar el cliente."
+    }
+  },
+  "services": {
+    "title": "Servicios",
+    "description": "Gestiona el catálogo activo de servicios y precios estándar.",
+    "newService": "Nuevo servicio",
+    "status": "Estado",
+    "filter": "Filtrar",
+    "all": "Todos",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "service": "Servicio",
+    "price": "Precio",
+    "edit": "Editar",
+    "empty": "No hay servicios para los filtros actuales.",
+    "unitTypes": {
+      "weight": "Peso",
+      "piece": "Pieza"
+    },
+    "form": {
+      "newTitle": "Nuevo servicio",
+      "editTitle": "Editar servicio",
+      "name": "Nombre del servicio",
+      "code": "Código del servicio",
+      "unitType": "Tipo de unidad",
+      "category": "Categoría",
+      "description": "Descripción",
+      "amount": "Precio estándar",
+      "currency": "Moneda",
+      "validFrom": "Válido desde",
+      "validTo": "Válido hasta",
+      "save": "Guardar servicio",
+      "saving": "Guardando...",
+      "error": "No se pudo guardar el servicio.",
+      "unitTypes": {
+        "weight": "Peso",
+        "piece": "Pieza"
+      }
+    }
+  },
+  "orders": {
+    "title": "Pedidos",
+    "description": "Gestiona pedidos de producción, líneas e historial de workflow.",
+    "newOrder": "Nuevo pedido",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar número de pedido",
+    "filter": "Filtrar",
+    "all": "Todos",
+    "active": "Activo",
+    "activeState": "Estado",
+    "order": "Pedido",
+    "customer": "Cliente",
+    "property": "Propiedad",
+    "status": "Estado de producción",
+    "priority": "Prioridad",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "discount": "Descuento",
+    "updateDiscount": "Actualizar descuento",
+    "due": "Vencimiento",
+    "assigned": "Asignado",
+    "created": "Creado",
+    "view": "Ver",
+    "edit": "Editar",
+    "empty": "No hay pedidos para los filtros actuales.",
+    "unitTypes": {
+      "weight": "Peso",
+      "piece": "Pieza"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Exprés"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "received": "Recibido",
+      "washing": "Lavado",
+      "drying": "Secado",
+      "ironing": "Planchado",
+      "quality_check": "Control de calidad",
+      "packing": "Empaquetado",
+      "ready": "Listo",
+      "completed": "Producción completada",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado"
+    },
+    "form": {
+      "newTitle": "Nuevo pedido",
+      "editTitle": "Editar pedido",
+      "customer": "Cliente",
+      "property": "Propiedad",
+      "priority": "Prioridad",
+      "normal": "Normal",
+      "express": "Exprés",
+      "dueAt": "Vencimiento",
+      "customerNotes": "Notas del cliente",
+      "internalNotes": "Notas internas",
+      "save": "Guardar pedido",
+      "saving": "Guardando...",
+      "error": "No se pudo guardar el pedido."
+    },
+    "items": {
+      "title": "Líneas del pedido",
+      "add": "Guardar línea",
+      "save": "Guardar línea",
+      "edit": "Editar líneas",
+      "service": "Servicio",
+      "description": "Descripción",
+      "unitType": "Tipo de unidad",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio unitario",
+      "lineTotal": "Total línea",
+      "notes": "Notas",
+      "remove": "Quitar",
+      "removing": "Quitando...",
+      "saving": "Guardando...",
+      "error": "No se pudo guardar la línea."
+    },
+    "workflow": {
+      "change": "Cambiar estado",
+      "history": "Historial de estados",
+      "reason": "Motivo"
     }
   },
   "properties": {

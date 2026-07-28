@@ -10,9 +10,11 @@ type DashboardShellText = {
   logout: string;
   navigationLabel: string;
   customers: string;
+  orders: string;
   organizationLabel: string;
   overview: string;
   roleLabel: string;
+  services: string;
   userLabel: string;
 };
 
@@ -63,6 +65,20 @@ export function DashboardShell({
                 locale={locale}
               >
                 {text.customers}
+              </Link>
+              <Link
+                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                href="/app/orders"
+                locale={locale}
+              >
+                {text.orders}
+              </Link>
+              <Link
+                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                href="/app/services"
+                locale={locale}
+              >
+                {text.services}
               </Link>
             </nav>
           </aside>
