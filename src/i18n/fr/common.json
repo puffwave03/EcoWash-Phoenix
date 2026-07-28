@@ -102,6 +102,104 @@
       "logout": "Se déconnecter"
     }
   },
+  "dashboard": {
+    "summary": {
+      "title": "Vue opérationnelle",
+      "open": "Commandes ouvertes",
+      "late": "Commandes en retard",
+      "express": "Express ouvertes",
+      "onHold": "En pause",
+      "ready": "Prêtes",
+      "balanceDue": "Solde dû"
+    },
+    "production": {
+      "title": "File de production",
+      "readyTitle": "File des commandes prêtes",
+      "readyAt": "Prête le",
+      "empty": "Aucune commande ne requiert d'attention ici."
+    },
+    "onHold": {
+      "title": "Commandes en pause",
+      "holdAt": "En pause depuis",
+      "reason": "Motif",
+      "empty": "Aucune commande en pause."
+    },
+    "logistics": {
+      "todayPickups": "Collectes du jour",
+      "todayDeliveries": "Livraisons du jour",
+      "attention": "Attention logistique",
+      "pickup": "Collecte",
+      "delivery": "Livraison",
+      "empty": "Aucune tâche logistique dans cette file."
+    },
+    "payments": {
+      "title": "Vue des paiements",
+      "unpaid": "Commandes impayées",
+      "partiallyPaid": "Partiellement payées",
+      "paymentsToday": "Paiements aujourd'hui",
+      "recentCorrections": "Annulations/remboursements récents"
+    },
+    "balances": {
+      "title": "Soldes à traiter",
+      "total": "Total",
+      "totalPaid": "Payé",
+      "balanceDue": "Solde dû",
+      "paymentStatus": "Statut du paiement",
+      "empty": "Aucun solde ne requiert d'attention."
+    },
+    "activity": {
+      "title": "Activité récente",
+      "actorFallback": "Système",
+      "empty": "Aucune activité récente disponible.",
+      "events": {
+        "status": "Statut de production modifié",
+        "payment": "Paiement enregistré",
+        "pickup": "Collecte terminée",
+        "delivery": "Livraison terminée",
+        "photo": "Photo importée"
+      }
+    },
+    "labels": {
+      "order": "Commande",
+      "customer": "Client",
+      "property": "Propriété",
+      "status": "Statut",
+      "priority": "Priorité",
+      "due": "Échéance",
+      "late": "En retard",
+      "assigned": "Non assigné",
+      "view": "Voir"
+    },
+    "statuses": {
+      "production": {
+        "draft": "Brouillon",
+        "received": "Reçue",
+        "washing": "Lavage",
+        "drying": "Séchage",
+        "ironing": "Repassage",
+        "quality_check": "Contrôle qualité",
+        "packing": "Emballage",
+        "ready": "Prête",
+        "completed": "Production terminée",
+        "on_hold": "En pause",
+        "cancelled": "Annulée"
+      },
+      "fulfillment": {
+        "not_required": "Non requis",
+        "scheduled": "Planifié",
+        "in_progress": "En cours",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      },
+      "payment": {
+        "unpaid": "Impayé",
+        "partially_paid": "Partiellement payé",
+        "paid": "Payé",
+        "refunded": "Remboursé",
+        "void": "Annulé"
+      }
+    }
+  },
   "customers": {
     "title": "Clients",
     "description": "Gérez les clients et les propriétés liées pour l'organisation active.",

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -159,6 +159,18 @@ APP-007 Storage policies allow authenticated owner/manager/staff members of the 
 - A confirmed payment with refund records cannot be voided; corrections after refund require additional refund/accounting records, not destructive mutation.
 - Payment proof is optional and must reference an active `payment_proof` order photo in the same tenant and order.
 - Direct table updates and hard deletes for APP-007 operational tables are blocked by grants and controlled triggers.
+
+## APP-008 Dashboard Security
+
+- Dashboard metrics are queried server-side after `requireMembership`.
+- Every query is scoped to the active membership organization.
+- No dashboard query accepts `organization_id` from the browser.
+- The dashboard reads existing RLS-protected tables and does not introduce new mutation paths.
+- Payment balances are derived from valid payment records; pending and void payments are not counted as collected.
+- Owner and manager can receive global financial aggregates.
+- Staff receives only per-order balance/payment status and collection attention records; global financial totals and reserved payment counts are omitted in the server payload.
+- Dashboard currency totals are grouped by currency and are not converted or combined.
+- Recent activity is built only from existing operational records and does not create a new audit table.
 
 ## Audit Scope
 

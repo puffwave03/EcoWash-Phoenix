@@ -102,6 +102,104 @@
       "logout": "Log out"
     }
   },
+  "dashboard": {
+    "summary": {
+      "title": "Operational overview",
+      "open": "Open orders",
+      "late": "Late orders",
+      "express": "Open express",
+      "onHold": "On hold",
+      "ready": "Ready",
+      "balanceDue": "Balance due"
+    },
+    "production": {
+      "title": "Production queue",
+      "readyTitle": "Ready queue",
+      "readyAt": "Ready at",
+      "empty": "No orders require attention here."
+    },
+    "onHold": {
+      "title": "On-hold queue",
+      "holdAt": "Hold at",
+      "reason": "Reason",
+      "empty": "No orders are on hold."
+    },
+    "logistics": {
+      "todayPickups": "Today's pickups",
+      "todayDeliveries": "Today's deliveries",
+      "attention": "Logistics attention",
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "empty": "No logistics tasks in this queue."
+    },
+    "payments": {
+      "title": "Payment overview",
+      "unpaid": "Unpaid orders",
+      "partiallyPaid": "Partially paid",
+      "paymentsToday": "Payments today",
+      "recentCorrections": "Recent voids/refunds"
+    },
+    "balances": {
+      "title": "Balances requiring attention",
+      "total": "Total",
+      "totalPaid": "Paid",
+      "balanceDue": "Balance due",
+      "paymentStatus": "Payment status",
+      "empty": "No balances require attention."
+    },
+    "activity": {
+      "title": "Recent activity",
+      "actorFallback": "System",
+      "empty": "No recent activity is available.",
+      "events": {
+        "status": "Production status changed",
+        "payment": "Payment recorded",
+        "pickup": "Pickup completed",
+        "delivery": "Delivery completed",
+        "photo": "Photo uploaded"
+      }
+    },
+    "labels": {
+      "order": "Order",
+      "customer": "Customer",
+      "property": "Property",
+      "status": "Status",
+      "priority": "Priority",
+      "due": "Due",
+      "late": "Late",
+      "assigned": "Unassigned",
+      "view": "View"
+    },
+    "statuses": {
+      "production": {
+        "draft": "Draft",
+        "received": "Received",
+        "washing": "Washing",
+        "drying": "Drying",
+        "ironing": "Ironing",
+        "quality_check": "Quality check",
+        "packing": "Packing",
+        "ready": "Ready",
+        "completed": "Production completed",
+        "on_hold": "On hold",
+        "cancelled": "Cancelled"
+      },
+      "fulfillment": {
+        "not_required": "Not required",
+        "scheduled": "Scheduled",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "payment": {
+        "unpaid": "Unpaid",
+        "partially_paid": "Partially paid",
+        "paid": "Paid",
+        "refunded": "Refunded",
+        "void": "Void"
+      }
+    }
+  },
   "customers": {
     "title": "Customers",
     "description": "Manage customer records and linked properties for the active organization.",

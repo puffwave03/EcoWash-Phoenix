@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
-Next Action: APP-007 implementation review; next step after approval is APP-008
+Next Action: APP-008 implementation review; next step after approval is APP-009
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-007 — Photos, Pickup, Delivery and Payments |
-| Last completed mission | APP-006 — Orders and Workflow |
-| Latest approved and pushed commit | b5a1c7c |
+| Current mission | APP-008 — Dashboard and Operational Overview |
+| Last completed mission | APP-007 — Photos, Pickup, Delivery and Payments |
+| Latest approved and pushed commit | 22f6cf0 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -38,10 +38,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-004 status | Completed and pushed |
 | APP-005 status | Completed and pushed |
 | APP-006 status | Completed and pushed |
-| APP-007 status | In implementation review |
+| APP-007 status | Completed and pushed |
+| APP-008 status | In implementation review |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Customers/properties/services/orders completed; logistics, photos and manual payments in implementation review |
+| Backend/SaaS implementation | Customers/properties/services/orders/logistics/photos/payments completed; operational dashboard in implementation review |
 
 ## Development Status
 
@@ -69,7 +70,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-004 | Authentication and Roles | Completed |
 | APP-005 | Customers and Properties | Completed |
 | APP-006 | Orders and Workflow | Completed |
-| APP-007 | Photos, Pickup, Delivery and Payments | In implementation review |
+| APP-007 | Photos, Pickup, Delivery and Payments | Completed |
+| APP-008 | Dashboard and Operational Overview | In implementation review |
 
 ## Commit History
 
@@ -94,6 +96,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-003 | d3e1f44 |
 | APP-004 | d7e903b |
 | APP-005 | 5639183 |
+| APP-006 | b5a1c7c |
+| APP-007 | 22f6cf0 |
 
 ## Documentation Commit History
 
@@ -179,8 +183,9 @@ Current DEV-010 state:
 - APP-004 is completed and pushed.
 - APP-005 is completed and pushed.
 - APP-006 is completed and pushed.
-- APP-007 is in implementation review.
-- Next step after APP-007 approval is `APP-008`.
+- APP-007 is completed and pushed.
+- APP-008 is in implementation review.
+- Next step after APP-008 approval is `APP-009`.
 
 ## APP-007 Implementation State
 
@@ -200,7 +205,26 @@ APP-007 keeps production, fulfillment and payment separate. `production_status =
 
 APP-007 does not implement analytics, push notifications, QR, OCR, fiscal invoices, PDF generation, online payment providers, customer portal, mobile app, Realtime, Edge Functions or APP-008 dashboard analytics.
 
-Next task after APP-007 approval is `APP-008 — Dashboard and Operational Overview`.
+APP-008 is now the current implementation review task after APP-007 approval.
+
+## APP-008 Implementation State
+
+APP-008 implements a protected operational dashboard overview in implementation review:
+
+- tenant-scoped summary metrics for open, late, express, on-hold and ready orders
+- derived balance due total from valid manual payment records
+- production, ready and on-hold queues with links to real orders
+- pickup and delivery tasks scheduled for the current server-day window
+- logistics attention for overdue scheduled/in-progress pickup and delivery tasks
+- payment overview and balances requiring attention
+- recent activity from status history, payments, completed logistics tasks and photo uploads
+- localized dashboard copy in English, Spanish, Italian, French and German
+
+APP-008 does not add migrations, analytics forecasts, BI charts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
+
+The current schema does not store an organization timezone. APP-008 therefore uses the server runtime day window consistently for “today” logistics and payment counts until `organizations.timezone` is added before real Supabase connection. The expected EcoWash timezone is `Atlantic/Canary`.
+
+APP-008 financial aggregates are role-limited in the server payload: owner/manager receive global balance and payment counts, while staff receives only per-order collection balances and statuses. Cross-currency totals remain separated by currency.
 
 ## APP-002 Documentation State
 
@@ -452,8 +476,9 @@ Exact starting state:
 - APP-004 is completed and pushed
 - APP-005 is completed and pushed
 - APP-006 is completed and pushed
-- APP-007 is in implementation review
-- Next step after APP-007 approval is `APP-008`
+- APP-007 is completed and pushed
+- APP-008 is in implementation review
+- Next step after APP-008 approval is `APP-009`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:

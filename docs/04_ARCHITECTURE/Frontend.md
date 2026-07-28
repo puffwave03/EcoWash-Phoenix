@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -63,6 +63,8 @@ APP-007 adds sections to the existing order detail route:
 The APP-007 photo form accepts JPEG, PNG and WebP images up to 1 MB. The UI does not claim full image decoding or antivirus scanning; server validation checks MIME, derived extension and basic binary signatures before upload.
 
 No additional analytics dashboard, customer portal, mobile UI or public website changes are included in APP-007.
+
+APP-008 replaces the protected `/[locale]/app` placeholder with a real operational overview. The page uses existing dashboard shell navigation and shows summary cards, short work queues, logistics tasks, payment balances and recent activity. It links to existing order detail routes and does not alter homepage or marketing routes.
 
 ## Dashboard Shell
 

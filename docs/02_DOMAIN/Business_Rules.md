@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -88,6 +88,17 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - APP-007 stores order photo metadata in `order_photos` and files in private Storage.
 - Signed URLs are generated on demand and short-lived.
 - Removing a photo is logical deactivation; client hard delete is not exposed.
+
+## Dashboard Rules
+
+- Dashboard metrics must be scoped to the active organization.
+- Open orders exclude `completed` and `cancelled` production statuses.
+- Late orders are active open orders with `due_at` before the current time window.
+- Balance due is derived from order totals and valid payment records.
+- Global financial aggregates are visible only to `owner` and `manager`.
+- `staff` can see per-order balance and payment status for operational collection, but must not receive global balance, unpaid/partially-paid counts, today's payment count or recent void/refund totals.
+- Dashboard financial totals must not combine different currencies into a single amount.
+- Dashboard queues must link to real records and must not include demo or invented data.
 
 ## Notes And Issues Rules
 

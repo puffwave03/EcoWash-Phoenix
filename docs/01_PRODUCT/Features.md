@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -18,7 +18,7 @@ Define the approved MVP feature boundary for the future EcoWash operations platf
 
 ## Contents
 
-APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. APP-007 adds pickup, delivery, private order photos and manual payments in implementation review.
+APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. APP-007 adds pickup, delivery, private order photos and manual payments. APP-008 adds the protected operational overview dashboard in implementation review.
 
 ## MVP Must Have
 
@@ -37,6 +37,20 @@ APP-006 implements the first operational order workflow slice: services, standar
 - Order issues/discrepancies separated from production status
 - Search across orders, customers, properties and service status
 - Base dashboard metrics from real operational records
+
+## APP-008 Operational Dashboard
+
+The protected dashboard overview shows real tenant-scoped operational data:
+
+- open, late, express, on-hold and ready orders
+- total balance due from valid manual payment records
+- production, ready and on-hold queues
+- pickup and delivery tasks for today
+- overdue logistics attention
+- balances requiring attention
+- recent activity from status history, payments, completed logistics tasks and photo uploads
+
+APP-008 is not a business intelligence module and does not add advanced analytics, forecasts, exports, fiscal reporting or invented KPIs.
 
 ## Post-Core Should Have
 

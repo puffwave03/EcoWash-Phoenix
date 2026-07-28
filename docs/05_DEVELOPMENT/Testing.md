@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -28,6 +28,10 @@ Run before APP implementation review:
 - translation key parity check across `src/i18n/en`, `src/i18n/it`, `src/i18n/es`, `src/i18n/fr` and `src/i18n/de`
 
 APP-007 does not run remote Supabase migrations, Docker or production deployment checks. Database behavior for RLS/RPC and Storage policies requires a real Supabase/PostgreSQL environment for execution testing.
+
+APP-008 does not add a migration. Dashboard query behavior still requires a real Supabase/PostgreSQL environment with tenant data for full execution testing.
+
+Before real Supabase connection for APP-008, add and validate `organizations.timezone` with expected EcoWash value `Atlantic/Canary`. Until then, “today” uses the runtime server day window and is not multi-timezone accurate.
 
 ## APP-007 Static Security Simulation
 

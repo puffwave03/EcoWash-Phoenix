@@ -102,6 +102,104 @@
       "logout": "Esci"
     }
   },
+  "dashboard": {
+    "summary": {
+      "title": "Panoramica operativa",
+      "open": "Ordini aperti",
+      "late": "Ordini in ritardo",
+      "express": "Express aperti",
+      "onHold": "In pausa",
+      "ready": "Pronti",
+      "balanceDue": "Saldo dovuto"
+    },
+    "production": {
+      "title": "Coda produzione",
+      "readyTitle": "Coda pronti",
+      "readyAt": "Pronto il",
+      "empty": "Nessun ordine richiede attenzione qui."
+    },
+    "onHold": {
+      "title": "Ordini in pausa",
+      "holdAt": "In pausa dal",
+      "reason": "Motivo",
+      "empty": "Nessun ordine in pausa."
+    },
+    "logistics": {
+      "todayPickups": "Ritiri di oggi",
+      "todayDeliveries": "Consegne di oggi",
+      "attention": "Attenzione logistica",
+      "pickup": "Ritiro",
+      "delivery": "Consegna",
+      "empty": "Nessuna attività logistica in questa coda."
+    },
+    "payments": {
+      "title": "Panoramica pagamenti",
+      "unpaid": "Ordini non pagati",
+      "partiallyPaid": "Parzialmente pagati",
+      "paymentsToday": "Pagamenti oggi",
+      "recentCorrections": "Void/rimborsi recenti"
+    },
+    "balances": {
+      "title": "Saldi da incassare",
+      "total": "Totale",
+      "totalPaid": "Pagato",
+      "balanceDue": "Saldo dovuto",
+      "paymentStatus": "Stato pagamento",
+      "empty": "Nessun saldo richiede attenzione."
+    },
+    "activity": {
+      "title": "Attività recente",
+      "actorFallback": "Sistema",
+      "empty": "Nessuna attività recente disponibile.",
+      "events": {
+        "status": "Stato produzione cambiato",
+        "payment": "Pagamento registrato",
+        "pickup": "Ritiro completato",
+        "delivery": "Consegna completata",
+        "photo": "Foto caricata"
+      }
+    },
+    "labels": {
+      "order": "Ordine",
+      "customer": "Cliente",
+      "property": "Proprietà",
+      "status": "Stato",
+      "priority": "Priorità",
+      "due": "Scadenza",
+      "late": "In ritardo",
+      "assigned": "Non assegnato",
+      "view": "Vedi"
+    },
+    "statuses": {
+      "production": {
+        "draft": "Bozza",
+        "received": "Ricevuto",
+        "washing": "Lavaggio",
+        "drying": "Asciugatura",
+        "ironing": "Stiratura",
+        "quality_check": "Controllo qualità",
+        "packing": "Imballaggio",
+        "ready": "Pronto",
+        "completed": "Produzione completata",
+        "on_hold": "In pausa",
+        "cancelled": "Annullato"
+      },
+      "fulfillment": {
+        "not_required": "Non richiesto",
+        "scheduled": "Programmato",
+        "in_progress": "In corso",
+        "completed": "Completato",
+        "cancelled": "Annullato"
+      },
+      "payment": {
+        "unpaid": "Non pagato",
+        "partially_paid": "Parzialmente pagato",
+        "paid": "Pagato",
+        "refunded": "Rimborsato",
+        "void": "Annullato"
+      }
+    }
+  },
   "customers": {
     "title": "Clienti",
     "description": "Gestisci clienti e proprietà collegate per l'organizzazione attiva.",

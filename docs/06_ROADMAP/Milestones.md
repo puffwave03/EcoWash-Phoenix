@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
-Next Action: APP-007 implementation review; next step after approval is APP-008
+Next Action: APP-008 implementation review; next step after approval is APP-009
 
 ---
 
@@ -94,6 +94,7 @@ Approved and current areas:
 - APP-004 — Authentication and Roles: Completed and pushed
 - APP-005 — Customers and Properties: Completed and pushed
 - APP-006 — Orders and Workflow: Completed
-- APP-007 — Photos, Pickup, Delivery and Payments: In implementation review
+- APP-007 — Photos, Pickup, Delivery and Payments: Completed
+- APP-008 — Dashboard and Operational Overview: In implementation review
 
-APP-007 adds pickup, delivery, order photos, private order media Storage and manual payments only. It does not add online payments, invoices, QR, OCR, PDF, Realtime, notifications, customer portal, mobile app or dashboard analytics.
+APP-008 adds a real protected operational overview based on implemented customers, properties, services, orders, workflow, logistics, photos and manual payments. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.

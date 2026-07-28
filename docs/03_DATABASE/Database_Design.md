@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -217,6 +217,21 @@ Path strategy:
 Stored metadata keeps the bucket/path, category, MIME type, size, caption, uploaded user and active flag. Public URLs are not persisted. Signed URLs are generated on demand and must be short-lived.
 
 APP-007 uses a 1 MB image limit for the Server Action upload path. The bucket and database enforce the same limit. The server checks browser-declared MIME type, path extension derived from MIME type and basic binary signatures for JPEG, PNG and WebP without adding image-processing dependencies. SVG, GIF, PDF and other formats are denied.
+
+## Dashboard Reporting
+
+APP-008 does not add reporting tables, materialized views or migrations. Dashboard values are read-time projections over existing tenant-scoped tables:
+
+- `orders`
+- `order_status_history`
+- `pickups`
+- `deliveries`
+- `payments`
+- `order_photos`
+
+Payment balances use the same derived payment rules as APP-007. Cross-currency balances are kept as separate currency amounts and are not converted or summed into a single figure.
+
+Logistics “today” windows use the server runtime day until an organization timezone column is approved. Before connecting APP-008 to a real Supabase organization, add `organizations.timezone`; the expected EcoWash timezone is `Atlantic/Canary`.
 
 ## Deletion Strategy
 

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-007
+Current Mission: APP-008
 
 ---
 
@@ -85,6 +85,8 @@ APP-007 implements pickup and delivery records as separate logistics dimensions.
 APP-007 implements manual payments. Payment state is derived from valid payment records and order totals; staff can record payments, while only owner/manager can void or refund with a reason.
 
 APP-007 implements order photos through private Storage and active/inactive metadata. Photos can document intake, processing, quality, issues, delivery and payment proof, but no public media URL is stored.
+
+APP-008 summarizes the existing operational workflow in the protected dashboard. It does not create new workflow states; it derives attention queues from production status, due dates, logistics schedules and payment balances.
 
 Supported patterns:
 

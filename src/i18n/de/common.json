@@ -102,6 +102,104 @@
       "logout": "Abmelden"
     }
   },
+  "dashboard": {
+    "summary": {
+      "title": "Operative Übersicht",
+      "open": "Offene Aufträge",
+      "late": "Überfällige Aufträge",
+      "express": "Offene Express",
+      "onHold": "Pausiert",
+      "ready": "Bereit",
+      "balanceDue": "Offener Betrag"
+    },
+    "production": {
+      "title": "Produktionswarteschlange",
+      "readyTitle": "Bereit-Warteschlange",
+      "readyAt": "Bereit am",
+      "empty": "Hier benötigen keine Aufträge Aufmerksamkeit."
+    },
+    "onHold": {
+      "title": "Pausierte Aufträge",
+      "holdAt": "Pausiert seit",
+      "reason": "Grund",
+      "empty": "Keine Aufträge pausiert."
+    },
+    "logistics": {
+      "todayPickups": "Heutige Abholungen",
+      "todayDeliveries": "Heutige Lieferungen",
+      "attention": "Logistik-Aufmerksamkeit",
+      "pickup": "Abholung",
+      "delivery": "Lieferung",
+      "empty": "Keine Logistikaufgaben in dieser Warteschlange."
+    },
+    "payments": {
+      "title": "Zahlungsübersicht",
+      "unpaid": "Unbezahlte Aufträge",
+      "partiallyPaid": "Teilweise bezahlt",
+      "paymentsToday": "Zahlungen heute",
+      "recentCorrections": "Aktuelle Stornos/Erstattungen"
+    },
+    "balances": {
+      "title": "Offene Beträge mit Handlungsbedarf",
+      "total": "Gesamt",
+      "totalPaid": "Bezahlt",
+      "balanceDue": "Offener Betrag",
+      "paymentStatus": "Zahlungsstatus",
+      "empty": "Keine offenen Beträge benötigen Aufmerksamkeit."
+    },
+    "activity": {
+      "title": "Aktuelle Aktivität",
+      "actorFallback": "System",
+      "empty": "Keine aktuelle Aktivität verfügbar.",
+      "events": {
+        "status": "Produktionsstatus geändert",
+        "payment": "Zahlung erfasst",
+        "pickup": "Abholung abgeschlossen",
+        "delivery": "Lieferung abgeschlossen",
+        "photo": "Foto hochgeladen"
+      }
+    },
+    "labels": {
+      "order": "Auftrag",
+      "customer": "Kunde",
+      "property": "Objekt",
+      "status": "Status",
+      "priority": "Priorität",
+      "due": "Fällig",
+      "late": "Überfällig",
+      "assigned": "Nicht zugewiesen",
+      "view": "Ansehen"
+    },
+    "statuses": {
+      "production": {
+        "draft": "Entwurf",
+        "received": "Angenommen",
+        "washing": "Waschen",
+        "drying": "Trocknen",
+        "ironing": "Bügeln",
+        "quality_check": "Qualitätskontrolle",
+        "packing": "Verpacken",
+        "ready": "Bereit",
+        "completed": "Produktion abgeschlossen",
+        "on_hold": "Pausiert",
+        "cancelled": "Storniert"
+      },
+      "fulfillment": {
+        "not_required": "Nicht erforderlich",
+        "scheduled": "Geplant",
+        "in_progress": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert"
+      },
+      "payment": {
+        "unpaid": "Unbezahlt",
+        "partially_paid": "Teilweise bezahlt",
+        "paid": "Bezahlt",
+        "refunded": "Erstattet",
+        "void": "Storniert"
+      }
+    }
+  },
   "customers": {
     "title": "Kunden",
     "description": "Verwalten Sie Kunden und verknüpfte Objekte für die aktive Organisation.",
