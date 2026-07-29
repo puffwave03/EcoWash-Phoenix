@@ -98,7 +98,8 @@
         "sent": "If the email belongs to an approved account, a recovery link has been sent.",
         "missingEmail": "Enter your email address.",
         "configuration": "Password recovery is not available right now.",
-        "rateLimited": "Too many recovery emails were requested. Wait a few minutes before trying again."
+        "rateLimited": "Too many recovery emails were requested. Wait a few minutes before trying again.",
+        "temporaryError": "We could not send the email. Wait a few minutes and try again."
       }
     },
     "updatePassword": {

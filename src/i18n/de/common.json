@@ -98,7 +98,8 @@
         "sent": "Wenn die E-Mail zu einem freigegebenen Konto gehört, wurde ein Wiederherstellungslink gesendet.",
         "missingEmail": "Geben Sie Ihre E-Mail-Adresse ein.",
         "configuration": "Passwort-Wiederherstellung ist derzeit nicht verfügbar.",
-        "rateLimited": "Es wurden zu viele Wiederherstellungs-E-Mails angefordert. Warten Sie einige Minuten, bevor Sie es erneut versuchen."
+        "rateLimited": "Es wurden zu viele Wiederherstellungs-E-Mails angefordert. Warten Sie einige Minuten, bevor Sie es erneut versuchen.",
+        "temporaryError": "Die E-Mail konnte nicht gesendet werden. Warten Sie einige Minuten und versuchen Sie es erneut."
       }
     },
     "updatePassword": {

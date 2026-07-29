@@ -98,7 +98,8 @@
         "sent": "Si el email pertenece a una cuenta aprobada, se ha enviado un enlace de recuperación.",
         "missingEmail": "Introduce tu dirección de email.",
         "configuration": "La recuperación de contraseña no está disponible ahora mismo.",
-        "rateLimited": "Se han solicitado demasiados emails de recuperación. Espera unos minutos antes de intentarlo de nuevo."
+        "rateLimited": "Se han solicitado demasiados emails de recuperación. Espera unos minutos antes de intentarlo de nuevo.",
+        "temporaryError": "No se pudo enviar el email. Espera unos minutos e inténtalo de nuevo."
       }
     },
     "updatePassword": {

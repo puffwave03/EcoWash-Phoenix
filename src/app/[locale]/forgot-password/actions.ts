@@ -20,12 +20,36 @@ function resetRedirectUrl(locale: string) {
   return new URL(`/${locale}/update-password`, siteUrl).toString();
 }
 
-function isEmailRateLimitError(error: { code?: string; message?: string; status?: number }) {
+type PasswordResetError = {
+  code?: string;
+  error_code?: string;
+  message?: string;
+  name?: string;
+  status?: number;
+  statusCode?: number;
+};
+
+function isEmailRateLimitError(error: PasswordResetError) {
+  const code = error.code ?? error.error_code ?? "";
+  const message = error.message?.toLowerCase() ?? "";
+  const status = error.status ?? error.statusCode;
+
   return (
-    error.code === "over_email_send_rate_limit"
-    || error.status === 429
-    || error.message?.toLowerCase().includes("email rate limit") === true
+    code === "over_email_send_rate_limit"
+    || status === 429
+    || (message.includes("email") && message.includes("rate limit"))
+    || message.includes("email rate limit exceeded")
+    || message.includes("rate limit exceeded")
+    || message.includes("too many")
   );
+}
+
+function passwordResetErrorMeta(error: PasswordResetError) {
+  return {
+    code: error.code ?? error.error_code,
+    name: error.name,
+    status: error.status ?? error.statusCode,
+  };
 }
 
 export async function requestPasswordResetAction(formData: FormData) {
@@ -52,11 +76,15 @@ export async function requestPasswordResetAction(formData: FormData) {
   });
 
   if (error) {
-    console.error("Password reset request failed", error.code);
+    const errorMeta = passwordResetErrorMeta(error);
+
+    console.error("Password reset request failed", errorMeta);
 
     if (isEmailRateLimitError(error)) {
       redirect(`/${locale}/forgot-password?status=rateLimited`);
     }
+
+    redirect(`/${locale}/forgot-password?status=temporaryError`);
   }
 
   redirect(`/${locale}/forgot-password?status=sent`);

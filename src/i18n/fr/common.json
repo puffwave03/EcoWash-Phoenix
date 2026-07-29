@@ -98,7 +98,8 @@
         "sent": "Si l'e-mail appartient à un compte approuvé, un lien de récupération a été envoyé.",
         "missingEmail": "Saisissez votre adresse e-mail.",
         "configuration": "La récupération du mot de passe n'est pas disponible pour le moment.",
-        "rateLimited": "Trop d'e-mails de récupération ont été demandés. Attendez quelques minutes avant de réessayer."
+        "rateLimited": "Trop d'e-mails de récupération ont été demandés. Attendez quelques minutes avant de réessayer.",
+        "temporaryError": "L'e-mail n'a pas pu être envoyé. Attendez quelques minutes puis réessayez."
       }
     },
     "updatePassword": {

@@ -9,7 +9,7 @@ type ForgotPasswordPageProps = {
   searchParams: Promise<{ status?: string }>;
 };
 
-const resetResultKeys = ["sent", "missingEmail", "configuration", "rateLimited"] as const;
+const resetResultKeys = ["sent", "missingEmail", "configuration", "rateLimited", "temporaryError"] as const;
 
 type ResetResultKey = (typeof resetResultKeys)[number];
 

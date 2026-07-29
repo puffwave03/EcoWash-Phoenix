@@ -98,7 +98,8 @@
         "sent": "Se l'email appartiene a un account approvato, è stato inviato un link di recupero.",
         "missingEmail": "Inserisci il tuo indirizzo email.",
         "configuration": "Il recupero password non è disponibile in questo momento.",
-        "rateLimited": "Sono state richieste troppe email di recupero. Attendi qualche minuto prima di riprovare."
+        "rateLimited": "Sono state richieste troppe email di recupero. Attendi qualche minuto prima di riprovare.",
+        "temporaryError": "Non è stato possibile inviare l'email. Attendi qualche minuto e riprova."
       }
     },
     "updatePassword": {
