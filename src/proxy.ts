@@ -5,8 +5,9 @@ import { routing } from "@/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 const authPathPattern = new RegExp(
-  `^/(${routing.locales.join("|")})/(app|login)(/|$)`,
+  `^/(${routing.locales.join("|")})/(app|login|update-password)(/|$)`,
 );
+const recoveryCookieName = "ecowash-password-recovery";
 
 type SupabaseCookie = {
   name: string;
@@ -72,6 +73,38 @@ export default async function proxy(request: NextRequest) {
 
   const isAppRoute = new RegExp(`^/${locale}/app(/|$)`).test(pathname);
   const isLoginRoute = pathname === `/${locale}/login`;
+  const isUpdatePasswordRoute = pathname === `/${locale}/update-password`;
+
+  if (isUpdatePasswordRoute && request.nextUrl.searchParams.has("code")) {
+    const code = request.nextUrl.searchParams.get("code");
+    const cleanUrl = new URL(`/${locale}/update-password`, request.url);
+
+    if (!code) {
+      cleanUrl.searchParams.set("error", "recovery");
+
+      return copySupabaseCookies(NextResponse.redirect(cleanUrl), cookiesToSet);
+    }
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      cleanUrl.searchParams.set("error", "recovery");
+    }
+
+    const redirectResponse = copySupabaseCookies(NextResponse.redirect(cleanUrl), cookiesToSet);
+
+    if (!error) {
+      redirectResponse.cookies.set(recoveryCookieName, "1", {
+        httpOnly: true,
+        maxAge: 15 * 60,
+        path: "/",
+        sameSite: "lax",
+        secure: request.nextUrl.protocol === "https:",
+      });
+    }
+
+    return redirectResponse;
+  }
 
   if (isAppRoute && !user) {
     const loginUrl = new URL(`/${locale}/login`, request.url);

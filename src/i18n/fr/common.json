@@ -73,12 +73,51 @@
       "emailLabel": "E-mail",
       "emailPlaceholder": "nom@example.com",
       "passwordLabel": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
       "submit": "Se connecter",
       "submitting": "Connexion...",
+      "messages": {
+        "passwordUpdated": "Votre mot de passe a été mis à jour. Connectez-vous avec le nouveau mot de passe."
+      },
       "errors": {
         "missingFields": "Saisissez votre e-mail et votre mot de passe.",
         "invalidCredentials": "Connexion impossible avec ces identifiants.",
         "configuration": "L'authentification n'est pas disponible pour le moment."
+      }
+    },
+    "forgotPassword": {
+      "eyebrow": "Récupération du mot de passe",
+      "title": "Réinitialiser votre mot de passe",
+      "description": "Saisissez l'e-mail de votre compte EcoWash et nous enverrons un lien de récupération sécurisé.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nom@example.com",
+      "submit": "Envoyer l'e-mail de récupération",
+      "submitting": "Envoi...",
+      "backToLogin": "Retour à la connexion",
+      "messages": {
+        "sent": "Si l'e-mail appartient à un compte approuvé, un lien de récupération a été envoyé.",
+        "missingEmail": "Saisissez votre adresse e-mail.",
+        "configuration": "La récupération du mot de passe n'est pas disponible pour le moment.",
+        "rateLimited": "Trop d'e-mails de récupération ont été demandés. Attendez quelques minutes avant de réessayer."
+      }
+    },
+    "updatePassword": {
+      "eyebrow": "Récupération sécurisée",
+      "title": "Créer un nouveau mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte EcoWash.",
+      "passwordLabel": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Confirmer le nouveau mot de passe",
+      "passwordHelp": "Utilisez au moins 8 caractères avec une lettre et un chiffre.",
+      "submit": "Mettre à jour le mot de passe",
+      "submitting": "Mise à jour...",
+      "requestNewLink": "Demander un nouveau lien de récupération",
+      "errors": {
+        "missingFields": "Saisissez et confirmez le nouveau mot de passe.",
+        "mismatch": "Les mots de passe ne correspondent pas.",
+        "weakPassword": "Utilisez au moins 8 caractères avec une lettre et un chiffre.",
+        "expired": "Ce lien de récupération est invalide ou expiré.",
+        "configuration": "La mise à jour du mot de passe n'est pas disponible pour le moment.",
+        "updateFailed": "Le mot de passe n'a pas pu être mis à jour. Demandez un nouveau lien de récupération et réessayez."
       }
     },
     "dashboard": {

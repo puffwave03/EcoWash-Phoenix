@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-Current Mission: APP-008.1
+Current Mission: AUTH-001
 
 ---
 
@@ -32,6 +32,17 @@ APP-007 does not run remote Supabase migrations, Docker or production deployment
 APP-008.1 adds the `organizations.timezone` migration. Dashboard query behavior still requires a real Supabase/PostgreSQL environment with tenant data for full execution testing.
 
 Validate dashboard “today” windows against the active organization timezone. The EcoWash default is `Atlantic/Canary`.
+
+AUTH-001 also requires manual staging validation with Supabase Auth redirect URLs configured:
+
+- forgot-password form sends a recovery email
+- Supabase `over_email_send_rate_limit` / email rate-limit responses show a safe retry-later message
+- recovery link opens `/{locale}/update-password`
+- invalid or expired recovery links show a safe error
+- mismatched or weak passwords are rejected
+- successful update signs out the recovery session and redirects to login
+- login succeeds with the new password
+- no service-role key is used in browser or Server Actions
 
 ## APP-007 Static Security Simulation
 

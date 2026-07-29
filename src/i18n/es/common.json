@@ -73,12 +73,51 @@
       "emailLabel": "Email",
       "emailPlaceholder": "nombre@example.com",
       "passwordLabel": "Contraseña",
+      "forgotPassword": "¿Olvidaste la contraseña?",
       "submit": "Acceder",
       "submitting": "Accediendo...",
+      "messages": {
+        "passwordUpdated": "Tu contraseña se ha actualizado. Accede con la nueva contraseña."
+      },
       "errors": {
         "missingFields": "Introduce tu email y contraseña.",
         "invalidCredentials": "No pudimos iniciar sesión con esas credenciales.",
         "configuration": "La autenticación no está disponible ahora mismo."
+      }
+    },
+    "forgotPassword": {
+      "eyebrow": "Recuperación de contraseña",
+      "title": "Restablece tu contraseña",
+      "description": "Introduce el email de tu cuenta EcoWash y enviaremos un enlace seguro de recuperación.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nombre@example.com",
+      "submit": "Enviar email de recuperación",
+      "submitting": "Enviando...",
+      "backToLogin": "Volver al acceso",
+      "messages": {
+        "sent": "Si el email pertenece a una cuenta aprobada, se ha enviado un enlace de recuperación.",
+        "missingEmail": "Introduce tu dirección de email.",
+        "configuration": "La recuperación de contraseña no está disponible ahora mismo.",
+        "rateLimited": "Se han solicitado demasiados emails de recuperación. Espera unos minutos antes de intentarlo de nuevo."
+      }
+    },
+    "updatePassword": {
+      "eyebrow": "Recuperación segura",
+      "title": "Crea una nueva contraseña",
+      "description": "Elige una nueva contraseña para tu cuenta EcoWash.",
+      "passwordLabel": "Nueva contraseña",
+      "confirmPasswordLabel": "Confirmar nueva contraseña",
+      "passwordHelp": "Usa al menos 8 caracteres con una letra y un número.",
+      "submit": "Actualizar contraseña",
+      "submitting": "Actualizando...",
+      "requestNewLink": "Solicitar un nuevo enlace de recuperación",
+      "errors": {
+        "missingFields": "Introduce y confirma la nueva contraseña.",
+        "mismatch": "Las contraseñas no coinciden.",
+        "weakPassword": "Usa al menos 8 caracteres con una letra y un número.",
+        "expired": "Este enlace de recuperación no es válido o ha caducado.",
+        "configuration": "La actualización de contraseña no está disponible ahora mismo.",
+        "updateFailed": "No se pudo actualizar la contraseña. Solicita un nuevo enlace e inténtalo de nuevo."
       }
     },
     "dashboard": {

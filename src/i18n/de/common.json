@@ -73,12 +73,51 @@
       "emailLabel": "E-Mail",
       "emailPlaceholder": "name@example.com",
       "passwordLabel": "Passwort",
+      "forgotPassword": "Passwort vergessen?",
       "submit": "Anmelden",
       "submitting": "Anmeldung läuft...",
+      "messages": {
+        "passwordUpdated": "Ihr Passwort wurde aktualisiert. Melden Sie sich mit dem neuen Passwort an."
+      },
       "errors": {
         "missingFields": "Geben Sie E-Mail und Passwort ein.",
         "invalidCredentials": "Die Anmeldung mit diesen Zugangsdaten war nicht möglich.",
         "configuration": "Authentifizierung ist derzeit nicht verfügbar."
+      }
+    },
+    "forgotPassword": {
+      "eyebrow": "Passwort-Wiederherstellung",
+      "title": "Passwort zurücksetzen",
+      "description": "Geben Sie die E-Mail-Adresse Ihres EcoWash-Kontos ein. Wir senden einen sicheren Wiederherstellungslink.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Wiederherstellungs-E-Mail senden",
+      "submitting": "Wird gesendet...",
+      "backToLogin": "Zurück zur Anmeldung",
+      "messages": {
+        "sent": "Wenn die E-Mail zu einem freigegebenen Konto gehört, wurde ein Wiederherstellungslink gesendet.",
+        "missingEmail": "Geben Sie Ihre E-Mail-Adresse ein.",
+        "configuration": "Passwort-Wiederherstellung ist derzeit nicht verfügbar.",
+        "rateLimited": "Es wurden zu viele Wiederherstellungs-E-Mails angefordert. Warten Sie einige Minuten, bevor Sie es erneut versuchen."
+      }
+    },
+    "updatePassword": {
+      "eyebrow": "Sichere Wiederherstellung",
+      "title": "Neues Passwort erstellen",
+      "description": "Wählen Sie ein neues Passwort für Ihr EcoWash-Konto.",
+      "passwordLabel": "Neues Passwort",
+      "confirmPasswordLabel": "Neues Passwort bestätigen",
+      "passwordHelp": "Verwenden Sie mindestens 8 Zeichen mit einem Buchstaben und einer Zahl.",
+      "submit": "Passwort aktualisieren",
+      "submitting": "Wird aktualisiert...",
+      "requestNewLink": "Neuen Wiederherstellungslink anfordern",
+      "errors": {
+        "missingFields": "Geben Sie das neue Passwort ein und bestätigen Sie es.",
+        "mismatch": "Die Passwörter stimmen nicht überein.",
+        "weakPassword": "Verwenden Sie mindestens 8 Zeichen mit einem Buchstaben und einer Zahl.",
+        "expired": "Dieser Wiederherstellungslink ist ungültig oder abgelaufen.",
+        "configuration": "Passwortaktualisierung ist derzeit nicht verfügbar.",
+        "updateFailed": "Das Passwort konnte nicht aktualisiert werden. Fordern Sie einen neuen Wiederherstellungslink an und versuchen Sie es erneut."
       }
     },
     "dashboard": {

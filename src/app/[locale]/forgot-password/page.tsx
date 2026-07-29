@@ -1,20 +1,36 @@
 import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { Container } from "@/components/Container";
-import { loginAction } from "@/app/[locale]/login/actions";
-import { LoginForm } from "@/components/auth/LoginForm";
 import { Link } from "@/i18n/navigation";
+import { ForgotPasswordForm } from "@/app/[locale]/forgot-password/ForgotPasswordForm";
 
-type LoginPageProps = {
+type ForgotPasswordPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ status?: string }>;
 };
 
-export default async function LoginPage({ params, searchParams }: LoginPageProps) {
+const resetResultKeys = ["sent", "missingEmail", "configuration", "rateLimited"] as const;
+
+type ResetResultKey = (typeof resetResultKeys)[number];
+
+function isResetResultKey(value: string | undefined): value is ResetResultKey {
+  return resetResultKeys.includes(value as ResetResultKey);
+}
+
+function messageClass(status: string) {
+  return status === "sent"
+    ? "border-green-200 bg-green-50 text-green-700"
+    : "border-red-200 bg-red-50 text-red-700";
+}
+
+export default async function ForgotPasswordPage({
+  params,
+  searchParams,
+}: ForgotPasswordPageProps) {
   const { locale } = await params;
-  const { status } = await searchParams;
-  const t = await getTranslations({ locale, namespace: "common.auth.login" });
-  const passwordUpdated = status === "passwordUpdated";
+  const { status: rawStatus } = await searchParams;
+  const status = isResetResultKey(rawStatus) ? rawStatus : null;
+  const t = await getTranslations({ locale, namespace: "common.auth.forgotPassword" });
 
   return (
     <main className="bg-background py-16 sm:py-24">
@@ -28,22 +44,20 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
             <p className="text-base leading-7 text-muted">{t("description")}</p>
           </div>
 
-          {passwordUpdated ? (
-            <p className="rounded-control border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-              {t("messages.passwordUpdated")}
+          {status ? (
+            <p
+              className={`rounded-control border px-4 py-3 text-sm ${messageClass(status)}`}
+              role="status"
+            >
+              {t(`messages.${status}`)}
             </p>
           ) : null}
 
-          <LoginForm
-            action={loginAction}
+          <ForgotPasswordForm
             locale={locale}
             text={{
               emailLabel: t("emailLabel"),
               emailPlaceholder: t("emailPlaceholder"),
-              errorConfiguration: t("errors.configuration"),
-              errorInvalidCredentials: t("errors.invalidCredentials"),
-              errorMissingFields: t("errors.missingFields"),
-              passwordLabel: t("passwordLabel"),
               submit: t("submit"),
               submitting: t("submitting"),
             }}
@@ -51,10 +65,10 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
 
           <Link
             className="inline-flex text-sm font-semibold text-primary underline-offset-4 transition-standard hover:text-secondary hover:underline"
-            href="/forgot-password"
+            href="/login"
             locale={locale}
           >
-            {t("forgotPassword")}
+            {t("backToLogin")}
           </Link>
         </Card>
       </Container>

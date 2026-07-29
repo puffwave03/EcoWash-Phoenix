@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-Current Mission: APP-008.1
+Current Mission: AUTH-001
 
 ---
 
@@ -105,6 +105,18 @@ Security rules:
 - Inactive organizations are blocked.
 - Service-role credentials are not used in frontend or Server Actions.
 - Login errors are generic and do not enumerate users.
+
+## AUTH-001 Password Recovery Controls
+
+- Password recovery uses Supabase Auth anon client capabilities only.
+- Recovery email requests use a server-built redirect based on `NEXT_PUBLIC_SITE_URL` and a validated locale.
+- Browser-provided redirect URLs are not accepted.
+- Supabase Auth email rate-limit responses are shown as safe retry-later messages without exposing whether the email belongs to an account.
+- The recovery code is exchanged through the SSR proxy for `/[locale]/update-password`, then the URL is cleaned before rendering the form.
+- Password update requires an active Supabase recovery session.
+- New password and confirmation must match and meet the minimum project policy.
+- The recovery session is signed out after a successful password update before redirecting to login.
+- Passwords, tokens and recovery URLs must not be logged.
 
 ## APP-005 Customer And Property Controls
 

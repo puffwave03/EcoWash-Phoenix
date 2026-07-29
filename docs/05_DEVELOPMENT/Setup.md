@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-Current Mission: APP-004
+Current Mission: AUTH-001
 
 ---
 
@@ -34,6 +34,23 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
 ```
 
 Do not put service-role keys in variables with the `NEXT_PUBLIC_` prefix.
+
+## Supabase Password Recovery URLs
+
+AUTH-001 uses Supabase Auth password recovery with a locale-aware redirect to:
+
+```text
+${NEXT_PUBLIC_SITE_URL}/{locale}/update-password
+```
+
+Authorize the following redirect URL patterns in the Supabase Dashboard before manual staging validation:
+
+```text
+http://localhost:3000/**
+http://localhost:3000/*/update-password
+```
+
+For staging or production, add the equivalent canonical HTTPS site URL. Do not add service-role keys to browser-visible variables.
 
 ## First Owner Bootstrap
 

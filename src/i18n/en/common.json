@@ -73,12 +73,51 @@
       "emailLabel": "Email",
       "emailPlaceholder": "name@example.com",
       "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
       "submit": "Sign in",
       "submitting": "Signing in...",
+      "messages": {
+        "passwordUpdated": "Your password has been updated. Sign in with the new password."
+      },
       "errors": {
         "missingFields": "Enter your email and password.",
         "invalidCredentials": "We could not sign you in with those credentials.",
         "configuration": "Authentication is not available right now."
+      }
+    },
+    "forgotPassword": {
+      "eyebrow": "Password recovery",
+      "title": "Reset your password",
+      "description": "Enter your EcoWash account email and we will send a secure recovery link.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Send recovery email",
+      "submitting": "Sending...",
+      "backToLogin": "Back to sign in",
+      "messages": {
+        "sent": "If the email belongs to an approved account, a recovery link has been sent.",
+        "missingEmail": "Enter your email address.",
+        "configuration": "Password recovery is not available right now.",
+        "rateLimited": "Too many recovery emails were requested. Wait a few minutes before trying again."
+      }
+    },
+    "updatePassword": {
+      "eyebrow": "Secure recovery",
+      "title": "Create a new password",
+      "description": "Choose a new password for your EcoWash account.",
+      "passwordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "passwordHelp": "Use at least 8 characters with a letter and a number.",
+      "submit": "Update password",
+      "submitting": "Updating...",
+      "requestNewLink": "Request a new recovery link",
+      "errors": {
+        "missingFields": "Enter and confirm the new password.",
+        "mismatch": "The passwords do not match.",
+        "weakPassword": "Use at least 8 characters with a letter and a number.",
+        "expired": "This recovery link is invalid or expired.",
+        "configuration": "Password update is not available right now.",
+        "updateFailed": "The password could not be updated. Request a new recovery link and try again."
       }
     },
     "dashboard": {
