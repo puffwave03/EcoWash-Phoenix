@@ -69,7 +69,7 @@
     "login": {
       "eyebrow": "Sicherer Zugang",
       "title": "Bei EcoWash anmelden",
-      "description": "Verwenden Sie Ihr freigegebenes EcoWash-Konto, um auf die Grundlage des operativen Dashboards zuzugreifen.",
+      "description": "Verwenden Sie Ihr freigegebenes EcoWash-Konto, um auf den Betrieb zuzugreifen.",
       "emailLabel": "E-Mail",
       "emailPlaceholder": "name@example.com",
       "passwordLabel": "Passwort",
@@ -122,9 +122,9 @@
       }
     },
     "dashboard": {
-      "foundation": "Grundlage des operativen Dashboards",
+      "foundation": "EcoWash Betrieb",
       "title": "Übersicht",
-      "description": "Authentifizierung und Rollenprüfungen sind aktiv. Operative Module werden nach Freigabe ergänzt.",
+      "description": "Verwalten Sie reale Kunden, Services, Aufträge, Logistik, Zahlungen und Dashboard-Aktivitäten.",
       "logout": "Abmelden",
       "navigationLabel": "Dashboard-Navigation",
       "overview": "Übersicht",

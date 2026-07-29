@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: AUTH-001-E2E
+Current Mission: UX-001
 
-Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login
+Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test
 
 ---
 
@@ -99,16 +99,18 @@ Approved and current areas:
 - APP-008.1 — Organization Timezone Foundation: Completed and pushed
 - INFRA-001 — Supabase project connection and migration bootstrap: Completed for staging
 - AUTH-001 — Password recovery and update flow: Completed and pushed
-- AUTH-001-E2E — Complete real password recovery and first owner login: Pending
+- AUTH-001.1 — Password reset error handling correction: Completed and pushed
+- AUTH-001-E2E — Complete real password recovery and first owner login: Completed
+- UX-001 — Protected app shell refinement and session handover: In progress
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- AUTH-001-E2E — Complete real password recovery and first owner login
+- UX-001 — Protected app shell refinement and session handover
 
-AUTH-001-E2E must wait for Supabase email rate limiting to clear. Request one recovery email, use only the latest message, set the owner password, log in, then verify dashboard access. Do not begin the operational smoke test before owner login succeeds.
+UX-001 refines the protected `/[locale]/app` shell, separates the app experience from the public website, removes provisional dashboard copy and updates handover documentation. It does not change application logic, database schema, migrations, Supabase remote state or dependencies.
 
-Next phase after owner login:
+Next phase after UX-001 review and commit:
 
 - INFRA-001-SMOKE — First real operational smoke test

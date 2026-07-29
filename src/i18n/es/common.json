@@ -69,7 +69,7 @@
     "login": {
       "eyebrow": "Acceso seguro",
       "title": "Accede a EcoWash",
-      "description": "Usa tu cuenta EcoWash aprobada para acceder a la base del panel operativo.",
+      "description": "Usa tu cuenta EcoWash aprobada para acceder a las operaciones.",
       "emailLabel": "Email",
       "emailPlaceholder": "nombre@example.com",
       "passwordLabel": "Contraseña",
@@ -122,9 +122,9 @@
       }
     },
     "dashboard": {
-      "foundation": "Base del panel operativo",
+      "foundation": "Operaciones EcoWash",
       "title": "Resumen",
-      "description": "La autenticación y los controles de rol están activos. Los módulos operativos se añadirán tras la aprobación.",
+      "description": "Gestiona clientes, servicios, pedidos, logística, pagos y actividad real del panel.",
       "logout": "Cerrar sesión",
       "navigationLabel": "Navegación del panel",
       "overview": "Resumen",

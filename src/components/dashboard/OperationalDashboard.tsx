@@ -262,17 +262,19 @@ export function OperationalDashboard({ data, locale, text }: OperationalDashboar
 
   return (
     <div className="space-y-6">
-      <Card className="space-y-4">
-        <h2 className="text-xl font-semibold text-primary">{text.summary.title}</h2>
+      <section className="space-y-4" aria-labelledby="dashboard-summary-title">
+        <h2 className="text-xl font-semibold text-primary" id="dashboard-summary-title">
+          {text.summary.title}
+        </h2>
         <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           {summary.map(([label, value]) => (
-            <div className="rounded-card border border-border bg-white p-4" key={label}>
+            <div className="rounded-card border border-border bg-white p-4 shadow-card" key={label}>
               <dt className="text-sm text-muted">{label}</dt>
               <dd className="mt-2 text-2xl font-semibold text-primary">{value}</dd>
             </div>
           ))}
           {data.summary.balanceDueTotals ? (
-            <div className="rounded-card border border-border bg-white p-4 sm:col-span-2 xl:col-span-1">
+            <div className="rounded-card border border-border bg-white p-4 shadow-card sm:col-span-2 xl:col-span-1">
               <dt className="text-sm text-muted">{text.summary.balanceDue}</dt>
               <dd className="mt-2 text-xl font-semibold text-primary">
                 {formatCurrencyAmounts(data.summary.balanceDueTotals, locale)}
@@ -280,7 +282,7 @@ export function OperationalDashboard({ data, locale, text }: OperationalDashboar
             </div>
           ) : null}
         </dl>
-      </Card>
+      </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <Card className="space-y-3">

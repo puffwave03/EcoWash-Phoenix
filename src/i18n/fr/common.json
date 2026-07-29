@@ -69,7 +69,7 @@
     "login": {
       "eyebrow": "Accès sécurisé",
       "title": "Connexion à EcoWash",
-      "description": "Utilisez votre compte EcoWash approuvé pour accéder à la base du tableau de bord opérationnel.",
+      "description": "Utilisez votre compte EcoWash approuvé pour accéder aux opérations.",
       "emailLabel": "E-mail",
       "emailPlaceholder": "nom@example.com",
       "passwordLabel": "Mot de passe",
@@ -122,9 +122,9 @@
       }
     },
     "dashboard": {
-      "foundation": "Base du tableau de bord opérationnel",
+      "foundation": "Opérations EcoWash",
       "title": "Vue d'ensemble",
-      "description": "L'authentification et les contrôles de rôle sont actifs. Les modules opérationnels seront ajoutés après approbation.",
+      "description": "Gérez les clients, services, commandes, logistique, paiements et l'activité réelle du tableau de bord.",
       "logout": "Se déconnecter",
       "navigationLabel": "Navigation du tableau de bord",
       "overview": "Vue d'ensemble",

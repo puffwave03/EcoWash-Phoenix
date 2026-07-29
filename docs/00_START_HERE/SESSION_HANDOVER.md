@@ -4,15 +4,15 @@ Status: Active
 
 Date: 2026-07-29
 
-Session checkpoint: temporary pause before evening recovery test
+Session checkpoint: UX-001 protected app shell refinement and handover update
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Last completed commit: `f2e970a AUTH-001 feat: implement password recovery flow`
+Last completed commit: `6769365 AUTH-001.1 fix: handle password reset errors correctly`
 
-Working tree status: clean at handover start; documentation update pending for `DOCS-007`
+Working tree status: contains only UX-001 changes until committed
 
 ---
 
@@ -28,6 +28,8 @@ Working tree status: clean at handover start; documentation update pending for `
 - APP-008.1 — Organization Timezone Foundation
 - INFRA-001 — Supabase staging connection and migration bootstrap
 - AUTH-001 — Password recovery and update flow
+- AUTH-001.1 — Password reset error fall-through correction
+- AUTH-001-E2E — Real password recovery and first owner login
 
 ## Supabase Staging State
 
@@ -42,19 +44,16 @@ Completed on EcoWash Staging:
 - Five approved migrations applied successfully.
 - Local and remote migration history aligned.
 - 15 tables verified in the Dashboard.
-- `order-media` bucket created.
-- Bucket verified as private.
-- Bucket file size limit: 1 MB.
-- Allowed MIME types:
-  - `image/jpeg`
-  - `image/png`
-  - `image/webp`
+- `order-media` bucket created and verified as private.
 - First owner Auth user created.
 - `auth.users -> profiles` trigger verified.
 - Organization `EcoWash La Tejita` created.
 - Primary location created.
 - Active owner membership created.
 - Bootstrap verification queries passed.
+- Password recovery end-to-end completed.
+- Owner login completed.
+- Real dashboard visible at `/it/app`.
 
 Applied migrations:
 
@@ -66,61 +65,55 @@ Applied migrations:
 
 Do not reapply these migrations.
 
-## AUTH-001 State
+## APP-008 Dashboard State
 
-Real issue found:
+APP-008 implements the real protected operational dashboard:
 
-- Owner login failed because the usable password was not available/correct.
-- Supabase sent the first recovery email.
-- The app did not yet have a UI flow to set a new password from the recovery link.
+- open, overdue, express, on-hold and ready orders
+- production queue
+- pickup and delivery work
+- logistics attention
+- payment overview
+- balances requiring attention
+- recent activity
+- tenant isolation
+- global financial aggregates only for owner/manager
+- per-order operational financial data available to staff
+- amounts separated by currency
+- no demo data
+- no Realtime
 
-AUTH-001 implemented and committed:
+APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary` and uses organization-local day boundaries converted to UTC for today's pickup, delivery and payment metrics.
 
-- localized “Password dimenticata?” link on login
-- `/{locale}/forgot-password`
+## AUTH State
+
+AUTH-001 and AUTH-001.1 are complete:
+
+- localized forgot-password flow
 - Supabase recovery email request
-- `/{locale}/update-password`
+- update-password route
 - recovery code exchange
 - temporary recovery cookie/session guard
 - new password and confirmation form
 - `supabase.auth.updateUser`
 - sign-out after successful update
 - redirect to login after success
+- explicit non-fall-through handling for rate limit and temporary reset errors
 - translations for `en`, `es`, `it`, `fr`, `de`
-- safe error handling
-- explicit handling for:
-  - `over_email_send_rate_limit`
-  - HTTP `429`
-  - `email rate limit` message
-- anti-enumeration copy
 - no password, token or recovery URL logging
 
-Quality gates passed for AUTH-001:
+Real owner password recovery and login have been completed. Do not request unnecessary recovery emails.
 
-- `npm run lint`
-- `npm run build`
-- `git diff --check`
-- translation parity
+## UX-001 State
 
-## Current Blocker
+UX-001 refines the protected application shell and handover documentation only:
 
-The real end-to-end password recovery test is paused because Supabase returned:
-
-```text
-email rate limit exceeded
-```
-
-Do not request more recovery emails in quick succession. Wait for the limit to clear, then request exactly one new recovery email and use only the latest email.
-
-AUTH recovery must not be marked end-to-end complete until these steps pass:
-
-1. Request one new recovery email.
-2. Open only the latest recovery email.
-3. Verify `/{locale}/update-password` opens.
-4. Set the new password.
-5. Verify redirect to login.
-6. Log in as owner.
-7. Open `/{locale}/app`.
+- protected `/[locale]/app` receives a dedicated full-height app layout
+- protected app navigation is visually separated from the public website
+- dashboard KPI summary no longer nests cards inside a parent card
+- provisional dashboard foundation copy is replaced in five locales
+- application data logic remains unchanged
+- no database, migration, Supabase remote or dependency changes
 
 ## Safety Notes
 
@@ -134,29 +127,16 @@ AUTH recovery must not be marked end-to-end complete until these steps pass:
 - Do not commit `.env.local`.
 - Keep `supabase/.temp/` ignored.
 - Keep one task per commit.
-- Evaluate custom SMTP later if Supabase email limits continue to block testing.
+- Do not use Docker unless a new decision explicitly approves it.
+- Do not start new features before the first real operational smoke test.
 
 ## Next Task
 
-`AUTH-001-E2E — Complete real password recovery and first owner login`
+Commit UX-001 after review:
 
-Sequence:
+`UX-001 feat: refine protected app shell and session handover`
 
-1. Check whether the email rate limit has cleared.
-2. Start `npm run dev`.
-3. Send exactly one recovery request.
-4. Use only the latest email.
-5. Complete password update.
-6. Log in as owner.
-7. Verify dashboard access.
-8. Verify menu access:
-   - customers
-   - properties
-   - services
-   - orders
-9. Create first real operational data only after owner login succeeds.
-
-After successful owner login:
+Then start:
 
 `INFRA-001-SMOKE — First real operational smoke test`
 
@@ -172,7 +152,7 @@ Scope:
 - photo
 - populated dashboard
 
-Do not start the smoke test before owner login succeeds.
+Do not create demo data. Use only real staging test records intentionally created for the smoke test.
 
 ## Resume Commands
 
@@ -189,7 +169,8 @@ URLs to verify:
 
 ```text
 http://localhost:3000/it/login
-http://localhost:3000/it/forgot-password
-http://localhost:3000/it/update-password
 http://localhost:3000/it/app
+http://localhost:3000/it/app/customers
+http://localhost:3000/it/app/services
+http://localhost:3000/it/app/orders
 ```

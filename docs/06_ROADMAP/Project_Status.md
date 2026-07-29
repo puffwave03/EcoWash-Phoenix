@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: AUTH-001-E2E
+Current Mission: UX-001
 
-Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login
+Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | AUTH-001-E2E — Complete real password recovery and first owner login |
-| Last completed mission | AUTH-001 — Password recovery and update flow |
-| Latest approved and pushed commit | f2e970a |
+| Current mission | UX-001 — Protected app shell refinement and session handover |
+| Last completed mission | AUTH-001.1 — Password reset error handling correction |
+| Latest approved and pushed commit | 6769365 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -43,10 +43,12 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-008.1 status | Completed and pushed |
 | INFRA-001 status | Completed for EcoWash Staging bootstrap |
 | AUTH-001 status | Completed and pushed |
-| AUTH-001-E2E status | Pending; blocked by Supabase email rate limit |
+| AUTH-001.1 status | Completed and pushed |
+| AUTH-001-E2E status | Completed; owner password recovery/login verified |
+| UX-001 status | In progress |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner recovery/login E2E pending |
+| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test pending |
 
 ## Development Status
 
@@ -79,7 +81,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-008.1 | Organization Timezone Foundation | Completed |
 | INFRA-001 | Supabase project connection and migration bootstrap | Completed for staging |
 | AUTH-001 | Password recovery and update flow | Completed |
-| AUTH-001-E2E | Complete real password recovery and first owner login | Pending |
+| AUTH-001.1 | Password reset error handling correction | Completed |
+| AUTH-001-E2E | Complete real password recovery and first owner login | Completed |
+| UX-001 | Protected app shell refinement and session handover | In progress |
 
 ## Commit History
 
@@ -110,6 +114,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-008.1 | 210e1ad |
 | INFRA-001 temp ignore | f881903 |
 | AUTH-001 | f2e970a |
+| DOCS-007 | 491091b |
+| AUTH-001.1 | 6769365 |
 
 ## Documentation Commit History
 
@@ -152,7 +158,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `f2e970a`
+- Local `main` and `origin/main` point to `6769365` when network is available
 
 ## DEV-009.5 Completed State
 
@@ -205,7 +211,9 @@ Current DEV-010 state:
 - APP-008.1 is completed and pushed.
 - INFRA-001 staging bootstrap is completed.
 - AUTH-001 is completed and pushed.
-- AUTH-001-E2E is pending after Supabase email rate limit clears.
+- AUTH-001.1 is completed and pushed.
+- AUTH-001-E2E is completed; owner password recovery, login and `/it/app` access were verified.
+- UX-001 is in progress for protected app shell refinement and handover documentation.
 
 ## APP-007 Implementation State
 
@@ -301,7 +309,20 @@ AUTH-001 quality gates passed:
 - `git diff --check`
 - translation parity
 
-Real recovery E2E is not complete. Supabase returned `email rate limit exceeded`; wait for the limit to clear before requesting exactly one new recovery email.
+AUTH-001.1 corrected the residual forgot-password fall-through so non-rate-limit Supabase errors redirect to `temporaryError` instead of `sent`.
+
+Real recovery E2E is complete: the owner password was updated, login succeeded and the real dashboard opened at `/it/app`.
+
+## UX-001 Implementation State
+
+UX-001 refines only the protected application shell and handover state:
+
+- dedicated full-height protected app shell under `/[locale]/app`
+- protected navigation visually separated from the public website
+- dashboard KPI summary rendered as top-level metric tiles instead of nested cards
+- provisional dashboard foundation copy removed from `en`, `es`, `it`, `fr` and `de`
+- application data logic unchanged
+- no database, migration, Supabase remote or dependency changes
 
 ## APP-002 Documentation State
 
@@ -496,15 +517,15 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Protected dashboard shell exists
 - Customers/properties/services/orders/workflow/logistics/photos/payments/dashboard foundations exist
 - Supabase Staging is connected and bootstrapped
-- No first real owner login completed yet after password recovery
+- First real owner login after password recovery is complete
 - No full end-to-end test with real Supabase data completed yet
 - No staging deployment completed yet
 - No public signup
 - No real contact-form transmission
-- No email sending
+- No public contact-form email sending
 - No analytics
 - No billing
-- No live dashboard
+- No Realtime dashboard
 - No production deployment
 - No production domain selected or purchased
 - No completed SaaS platform
@@ -538,13 +559,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da AUTH-001-E2E dopo il rate limit Supabase.”
+“Buongiorno, riprendiamo EcoWash Phoenix da UX-001 e prepariamo lo smoke test reale.”
 
 Exact starting state:
 
 - Branch `main`
-- Working tree clean
-- Local `main` synchronized with `origin/main` at `f2e970a` when network is available
+- Working tree contains only UX-001 changes until reviewed and committed
+- Local `main` synchronized with `origin/main` at `6769365` when network is available
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -558,16 +579,17 @@ Exact starting state:
 - APP-008.1 is completed and pushed
 - INFRA-001 staging bootstrap is completed
 - AUTH-001 is completed and pushed
-- AUTH-001-E2E is pending because Supabase returned `email rate limit exceeded`
+- AUTH-001.1 is completed and pushed
+- AUTH-001-E2E is completed; owner login and `/it/app` access succeeded
+- UX-001 is in progress
 - Do not modify approved migrations before real project verification
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations before verifying the target Supabase project and environment
 - Do not reapply already-applied migrations
 - Do not run `supabase db reset --linked`
-- Do not request multiple recovery emails in quick succession
 - Keep one task per commit
-- Do not begin new application features before owner login and smoke testing
+- Do not begin new application features before smoke testing
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -582,10 +604,9 @@ First checks:
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `npm run dev`.
-4. Open `/it/forgot-password`.
-5. Request exactly one recovery email after the rate limit clears.
-6. Use only the latest recovery email.
-7. Complete password update.
-8. Log in as owner.
-9. Verify `/it/app`.
+3. Review UX-001 diff.
+4. Run quality gates.
+5. Commit UX-001 after approval.
+6. Start `npm run dev`.
+7. Open `/it/app`.
+8. Begin `INFRA-001-SMOKE — First real operational smoke test`.

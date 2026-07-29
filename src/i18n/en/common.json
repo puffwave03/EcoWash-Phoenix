@@ -69,7 +69,7 @@
     "login": {
       "eyebrow": "Secure access",
       "title": "Sign in to EcoWash",
-      "description": "Use your approved EcoWash account to access the operational dashboard foundation.",
+      "description": "Use your approved EcoWash account to access operations.",
       "emailLabel": "Email",
       "emailPlaceholder": "name@example.com",
       "passwordLabel": "Password",
@@ -122,9 +122,9 @@
       }
     },
     "dashboard": {
-      "foundation": "Operational dashboard foundation",
+      "foundation": "EcoWash Operations",
       "title": "Overview",
-      "description": "Authentication and role guards are active. Operational modules will be added after approval.",
+      "description": "Manage real customers, services, orders, logistics, payments and dashboard activity.",
       "logout": "Log out",
       "navigationLabel": "Dashboard navigation",
       "overview": "Overview",

@@ -50,6 +50,8 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | APP-008.1 | Completed — Organization Timezone Foundation |
 | INFRA-001 | Completed — Supabase staging connection and migration bootstrap |
 | AUTH-001 | Completed — Password recovery and update flow |
+| AUTH-001.1 | Completed — Password reset error handling correction |
+| UX-001 | In progress — Protected app shell refinement and session handover |
 
 Current public website includes:
 
@@ -105,8 +107,9 @@ Important limitations:
 
 - Supabase Staging is connected and migrations are applied
 - Owner Auth/profile/organization/location/membership bootstrap exists in staging
-- Password recovery code flow is implemented
-- First owner password recovery/login test is paused by Supabase email rate limiting
+- Password recovery code flow is implemented and verified end-to-end
+- Owner login succeeds and the real dashboard is visible at `/it/app`
+- Protected app shell refinement is in progress without application logic changes
 - No complete end-to-end operational smoke test with real data yet
 - No contact-form email sending
 - Contact form does not transmit data
@@ -124,10 +127,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `f2e970a`
-- Current mission: `AUTH-001-E2E — Complete real password recovery and first owner login`
+- Latest approved and pushed development commit: `6769365`
+- Current mission: `UX-001 — Protected app shell refinement and session handover`
 - Current release state: Release-ready, deployment deferred
-- Next macro-task: complete owner password recovery after email rate limit clears, then run the first real operational smoke test
+- Next macro-task: commit UX-001 after review, then run the first real operational smoke test
 
 Current visual direction:
 
@@ -184,6 +187,6 @@ Document Status: Active
 
 Last Updated: 2026-07-29
 
-Current Mission: AUTH-001-E2E
+Current Mission: UX-001
 
-Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login
+Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test

@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import { Card } from "@/components/Card";
-import { Container } from "@/components/Container";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { Link } from "@/i18n/navigation";
 import type { DashboardAccess } from "@/lib/auth/types";
@@ -31,88 +29,101 @@ export function DashboardShell({
   locale,
   text,
 }: DashboardShellProps) {
-  return (
-    <main className="min-h-screen bg-[#f4f7f5] py-8">
-      <Container className="space-y-6">
-        <header className="flex flex-col gap-4 rounded-card border border-border bg-white p-5 shadow-card md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
-              {text.foundation}
-            </p>
-            <h1 className="text-2xl font-semibold text-primary">
-              {access.membership.organization.name}
-            </h1>
-          </div>
-          <LogoutButton label={text.logout} locale={locale} />
-        </header>
+  const navLinkClass = "block rounded-control px-3 py-2.5 text-sm font-semibold text-white/80 transition-standard hover:bg-white/10 hover:text-white";
 
-        <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
-          <aside
-            aria-label={text.navigationLabel}
-            className="rounded-card border border-border bg-white p-4 shadow-card"
-          >
-            <nav className="space-y-2">
+  return (
+    <main className="min-h-screen bg-[#eef1ee] text-foreground">
+      <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
+        <aside
+          aria-label={text.navigationLabel}
+          className="flex flex-col justify-between bg-[#09291f] px-5 py-5 text-white lg:min-h-screen"
+        >
+          <div className="space-y-8">
+            <div className="space-y-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-logo bg-secondary text-base font-semibold text-primary">
+                EW
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase text-white/58">
+                  {text.foundation}
+                </p>
+                <h1 className="mt-1 text-xl font-semibold text-white">
+                  {access.membership.organization.name}
+                </h1>
+              </div>
+            </div>
+
+            <nav className="space-y-1">
               <Link
-                className="block rounded-control bg-primary-soft px-4 py-3 text-sm font-semibold text-primary"
+                className="block rounded-control bg-white px-3 py-2.5 text-sm font-semibold text-primary shadow-card"
                 href="/app"
                 locale={locale}
               >
                 {text.overview}
               </Link>
               <Link
-                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                className={navLinkClass}
                 href="/app/customers"
                 locale={locale}
               >
                 {text.customers}
               </Link>
               <Link
-                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                className={navLinkClass}
                 href="/app/orders"
                 locale={locale}
               >
                 {text.orders}
               </Link>
               <Link
-                className="block rounded-control px-4 py-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
+                className={navLinkClass}
                 href="/app/services"
                 locale={locale}
               >
                 {text.services}
               </Link>
             </nav>
-          </aside>
+          </div>
 
-          <section className="space-y-6">
-            <Card>
-              <dl className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <dt className="text-sm font-medium text-muted">{text.userLabel}</dt>
-                  <dd className="mt-1 text-base font-semibold text-primary">
-                    {access.profile.displayName || access.user.email}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-muted">
-                    {text.organizationLabel}
-                  </dt>
-                  <dd className="mt-1 text-base font-semibold text-primary">
-                    {access.membership.organization.name}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-muted">{text.roleLabel}</dt>
-                  <dd className="mt-1 text-base font-semibold uppercase text-primary">
-                    {access.membership.role}
-                  </dd>
-                </div>
-              </dl>
-            </Card>
+          <div className="mt-8 space-y-4 border-t border-white/12 pt-5">
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-white/54">{text.userLabel}</dt>
+                <dd className="mt-1 font-semibold text-white">
+                  {access.profile.displayName || access.user.email}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/54">{text.roleLabel}</dt>
+                <dd className="mt-1 font-semibold uppercase text-secondary">
+                  {access.membership.role}
+                </dd>
+              </div>
+            </dl>
+            <LogoutButton label={text.logout} locale={locale} />
+          </div>
+        </aside>
 
+        <div className="min-w-0">
+          <header className="border-b border-border bg-white px-5 py-4 lg:px-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted">{text.organizationLabel}</p>
+                <p className="text-2xl font-semibold text-primary">
+                  {access.membership.organization.name}
+                </p>
+              </div>
+              <p className="text-sm font-semibold uppercase text-secondary">
+                {text.overview}
+              </p>
+            </div>
+          </header>
+
+          <section className="px-5 py-6 lg:px-8">
             {children}
           </section>
         </div>
-      </Container>
+      </div>
     </main>
   );
 }
