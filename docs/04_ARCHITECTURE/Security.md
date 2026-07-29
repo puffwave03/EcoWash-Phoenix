@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: AUTH-001
+Current Mission: AUTH-001-E2E
 
 ---
 
@@ -117,6 +117,7 @@ Security rules:
 - New password and confirmation must match and meet the minimum project policy.
 - The recovery session is signed out after a successful password update before redirecting to login.
 - Passwords, tokens and recovery URLs must not be logged.
+- Do not request repeated recovery emails during a Supabase email rate-limit window.
 
 ## APP-005 Customer And Property Controls
 

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: AUTH-001
+Current Mission: AUTH-001-E2E
 
 ---
 
@@ -43,6 +43,26 @@ AUTH-001 also requires manual staging validation with Supabase Auth redirect URL
 - successful update signs out the recovery session and redirects to login
 - login succeeds with the new password
 - no service-role key is used in browser or Server Actions
+
+Current real-test status:
+
+- AUTH-001 quality gates passed.
+- Supabase returned `email rate limit exceeded`.
+- Do not request multiple recovery emails in quick succession.
+- Wait for the limit to clear, then request exactly one new recovery email and use only the latest email.
+- Do not mark password recovery end-to-end complete until owner login and `/[locale]/app` access succeed.
+
+After owner login succeeds, run `INFRA-001-SMOKE` with real staging data:
+
+- first customer
+- first property
+- first service/price
+- first order
+- production transition
+- payment
+- pickup/delivery
+- photo
+- populated dashboard
 
 ## APP-007 Static Security Simulation
 

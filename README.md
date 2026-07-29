@@ -48,6 +48,8 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | APP-007 | Completed — Photos, Pickup, Delivery and Payments |
 | APP-008 | Completed — Dashboard and Operational Overview |
 | APP-008.1 | Completed — Organization Timezone Foundation |
+| INFRA-001 | Completed — Supabase staging connection and migration bootstrap |
+| AUTH-001 | Completed — Password recovery and update flow |
 
 Current public website includes:
 
@@ -101,17 +103,17 @@ Current technical foundation:
 
 Important limitations:
 
-- No Supabase project connected yet
-- No remote environment configured yet
-- No migration has been applied to a real Supabase project yet
-- No real owner user, organization or location created yet
-- No complete end-to-end test with real data yet
-- No email sending
+- Supabase Staging is connected and migrations are applied
+- Owner Auth/profile/organization/location/membership bootstrap exists in staging
+- Password recovery code flow is implemented
+- First owner password recovery/login test is paused by Supabase email rate limiting
+- No complete end-to-end operational smoke test with real data yet
+- No contact-form email sending
 - Contact form does not transmit data
 - No Docker
 - No analytics
 - No billing
-- No live dashboard
+- No Realtime dashboard
 - No production deployment yet
 - Production domain not selected or purchased yet
 - No completed SaaS platform
@@ -122,10 +124,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `210e1ad`
-- Current mission: `INFRA-001 — Supabase project connection and migration bootstrap`
+- Latest approved and pushed development commit: `f2e970a`
+- Current mission: `AUTH-001-E2E — Complete real password recovery and first owner login`
 - Current release state: Release-ready, deployment deferred
-- Next macro-task: connect the real Supabase project, configure environment variables and apply approved migrations after verification
+- Next macro-task: complete owner password recovery after email rate limit clears, then run the first real operational smoke test
 
 Current visual direction:
 
@@ -182,6 +184,6 @@ Document Status: Active
 
 Last Updated: 2026-07-29
 
-Current Mission: INFRA-001
+Current Mission: AUTH-001-E2E
 
-Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation
+Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login

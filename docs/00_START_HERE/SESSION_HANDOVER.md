@@ -4,13 +4,15 @@ Status: Active
 
 Date: 2026-07-29
 
+Session checkpoint: temporary pause before evening recovery test
+
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Last completed commit: `210e1ad APP-008.1 feat: add organization timezone foundation`
+Last completed commit: `f2e970a AUTH-001 feat: implement password recovery flow`
 
-Working tree status: clean at handover start; documentation update pending for `DOCS-006`
+Working tree status: clean at handover start; documentation update pending for `DOCS-007`
 
 ---
 
@@ -24,98 +26,153 @@ Working tree status: clean at handover start; documentation update pending for `
 - APP-007 — Photos, Pickup, Delivery and Payments
 - APP-008 — Dashboard and Operational Overview
 - APP-008.1 — Organization Timezone Foundation
+- INFRA-001 — Supabase staging connection and migration bootstrap
+- AUTH-001 — Password recovery and update flow
 
-## APP-008 Summary
+## Supabase Staging State
 
-APP-008 implemented the real protected operational dashboard:
+Completed on EcoWash Staging:
 
-- open, overdue, express, on-hold and ready orders
-- production queue
-- pickup and delivery lists
-- logistics attention
-- payment overview
-- balances requiring attention
-- recent activity
-- tenant isolation on every server query
-- global financial aggregates only for owner/manager
-- per-order operational financial data available to staff
-- currency-separated amounts with no cross-currency aggregation
-- no demo data
-- no Realtime
+- Supabase project created and connected.
+- `.env.local` configured locally and ignored by Git.
+- Build with real environment variables passed.
+- Supabase CLI login completed.
+- Repository linked to the staging project.
+- Migration dry-run passed.
+- Five approved migrations applied successfully.
+- Local and remote migration history aligned.
+- 15 tables verified in the Dashboard.
+- `order-media` bucket created.
+- Bucket verified as private.
+- Bucket file size limit: 1 MB.
+- Allowed MIME types:
+  - `image/jpeg`
+  - `image/png`
+  - `image/webp`
+- First owner Auth user created.
+- `auth.users -> profiles` trigger verified.
+- Organization `EcoWash La Tejita` created.
+- Primary location created.
+- Active owner membership created.
+- Bootstrap verification queries passed.
 
-## APP-008.1 Summary
+Applied migrations:
 
-APP-008.1 added the organization timezone foundation:
+- `20260727000100_app_003_tenant_foundation.sql`
+- `20260728000100_app_005_customers_properties.sql`
+- `20260728000200_app_006_orders_workflow.sql`
+- `20260728000300_app_007_logistics_photos_payments.sql`
+- `20260728000400_app_008_1_organization_timezone.sql`
 
-- migration for `organizations.timezone`
-- SQL type `text not null`
-- default `Atlantic/Canary`
-- nonblank database constraint
-- timezone included in server-side membership loading
-- `CurrentMembership` updated with `organization.timezone`
-- runtime validation through `Intl.DateTimeFormat`
-- safe fallback to `Atlantic/Canary`
-- local organization day boundaries converted to UTC
-- pickup, delivery and payments-today windows based on organization timezone
-- `paymentsToday` queried directly by time interval
-- daily financial aggregate query reserved to owner/manager
+Do not reapply these migrations.
 
-No migration has been applied to a real Supabase project yet.
+## AUTH-001 State
 
-## Security Decisions
+Real issue found:
 
-- Tenant scope remains enforced server-side through membership organization.
-- Browser input must not be used as authority for `organization_id` or organization timezone.
-- Staff must not receive global financial aggregates.
-- Service-role keys must never be exposed to browser code or public environment variables.
-- Approved migrations must not be modified before real project verification.
+- Owner login failed because the usable password was not available/correct.
+- Supabase sent the first recovery email.
+- The app did not yet have a UI flow to set a new password from the recovery link.
+
+AUTH-001 implemented and committed:
+
+- localized “Password dimenticata?” link on login
+- `/{locale}/forgot-password`
+- Supabase recovery email request
+- `/{locale}/update-password`
+- recovery code exchange
+- temporary recovery cookie/session guard
+- new password and confirmation form
+- `supabase.auth.updateUser`
+- sign-out after successful update
+- redirect to login after success
+- translations for `en`, `es`, `it`, `fr`, `de`
+- safe error handling
+- explicit handling for:
+  - `over_email_send_rate_limit`
+  - HTTP `429`
+  - `email rate limit` message
+- anti-enumeration copy
+- no password, token or recovery URL logging
+
+Quality gates passed for AUTH-001:
+
+- `npm run lint`
+- `npm run build`
+- `git diff --check`
+- translation parity
+
+## Current Blocker
+
+The real end-to-end password recovery test is paused because Supabase returned:
+
+```text
+email rate limit exceeded
+```
+
+Do not request more recovery emails in quick succession. Wait for the limit to clear, then request exactly one new recovery email and use only the latest email.
+
+AUTH recovery must not be marked end-to-end complete until these steps pass:
+
+1. Request one new recovery email.
+2. Open only the latest recovery email.
+3. Verify `/{locale}/update-password` opens.
+4. Set the new password.
+5. Verify redirect to login.
+6. Log in as owner.
+7. Open `/{locale}/app`.
+
+## Safety Notes
+
+- Do not delete the owner Auth user.
+- Do not recreate organization, location or membership.
+- Do not reapply already-applied migrations.
+- Do not run `supabase db reset --linked`.
+- Do not use `migration repair` without a clear diagnosis.
+- Do not place service-role keys in browser code or `NEXT_PUBLIC_*` variables.
+- Keep `order-media` private.
+- Do not commit `.env.local`.
+- Keep `supabase/.temp/` ignored.
 - Keep one task per commit.
+- Evaluate custom SMTP later if Supabase email limits continue to block testing.
 
-## Supabase Remote State
+## Next Task
 
-Not yet done:
+`AUTH-001-E2E — Complete real password recovery and first owner login`
 
-- real Supabase project created or selected
-- remote environment configured
-- migrations applied
-- real EcoWash organization created
-- primary location created
-- owner user and membership created
-- first real login completed
-- full end-to-end test completed
-- staging deployment completed
+Sequence:
 
-Docker is not required and must not be used unless a new explicit decision changes this.
+1. Check whether the email rate limit has cleared.
+2. Start `npm run dev`.
+3. Send exactly one recovery request.
+4. Use only the latest email.
+5. Complete password update.
+6. Log in as owner.
+7. Verify dashboard access.
+8. Verify menu access:
+   - customers
+   - properties
+   - services
+   - orders
+9. Create first real operational data only after owner login succeeds.
 
-## Next Approved Phase
+After successful owner login:
 
-`INFRA-001 — Supabase project connection and migration bootstrap`
+`INFRA-001-SMOKE — First real operational smoke test`
 
-This is not a new application module and must not be treated as feature work.
+Scope:
 
-Operational sequence:
+- first customer
+- first property
+- first service/price
+- first order
+- production transition
+- payment
+- pickup/delivery
+- photo
+- populated dashboard
 
-1. Create or select the definitive Supabase project.
-2. Retrieve the correct URL and public anon key.
-3. Configure `.env.local` without exposing secrets.
-4. Link Supabase CLI to the verified project.
-5. Verify migration order.
-6. Apply all approved migrations.
-7. Check tables, enums, RLS, RPC, grants and Storage bucket state.
-8. Create the EcoWash organization.
-9. Create the primary location.
-10. Create the owner user and membership.
-11. Perform the first real login.
-12. Test the full end-to-end flow.
-
-## Risks To Avoid
-
-- Do not modify approved migrations unless a verified blocker requires a new corrective migration.
-- Do not apply migrations before verifying the target Supabase project and environment.
-- Do not put service-role keys in browser code or `NEXT_PUBLIC_*` variables.
-- Do not use Docker unless newly approved.
-- Do not start APP-009 or any new application feature before real Supabase validation.
-- Do not mix infrastructure bootstrap, bug fixes and feature work in one commit.
+Do not start the smoke test before owner login succeeds.
 
 ## Resume Commands
 
@@ -123,6 +180,16 @@ Operational sequence:
 cd /Users/cristianomegale/EcoWash-Phoenix
 git status --short
 git branch --show-current
-git log -5 --oneline --decorate
+git log -8 --oneline --decorate
 git ls-remote origin refs/heads/main
+npm run dev
+```
+
+URLs to verify:
+
+```text
+http://localhost:3000/it/login
+http://localhost:3000/it/forgot-password
+http://localhost:3000/it/update-password
+http://localhost:3000/it/app
 ```

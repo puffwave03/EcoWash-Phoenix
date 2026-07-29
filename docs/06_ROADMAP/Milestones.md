@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: INFRA-001
+Current Mission: AUTH-001-E2E
 
-Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation
+Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login
 
 ---
 
@@ -97,11 +97,18 @@ Approved and current areas:
 - APP-007 — Photos, Pickup, Delivery and Payments: Completed and pushed
 - APP-008 — Dashboard and Operational Overview: Completed
 - APP-008.1 — Organization Timezone Foundation: Completed and pushed
+- INFRA-001 — Supabase project connection and migration bootstrap: Completed for staging
+- AUTH-001 — Password recovery and update flow: Completed and pushed
+- AUTH-001-E2E — Complete real password recovery and first owner login: Pending
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
-Next approved phase:
+Current approved task:
 
-- INFRA-001 — Supabase project connection and migration bootstrap
+- AUTH-001-E2E — Complete real password recovery and first owner login
 
-INFRA-001 is not a new application module. It connects the definitive Supabase project, configures environment variables, verifies migration order, applies approved migrations, validates enum/table/RLS/RPC/grant/Storage state, creates the initial EcoWash organization/location/owner membership and runs the first real login and end-to-end checks.
+AUTH-001-E2E must wait for Supabase email rate limiting to clear. Request one recovery email, use only the latest message, set the owner password, log in, then verify dashboard access. Do not begin the operational smoke test before owner login succeeds.
+
+Next phase after owner login:
+
+- INFRA-001-SMOKE — First real operational smoke test

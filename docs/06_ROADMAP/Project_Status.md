@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-29
 
-Current Mission: INFRA-001
+Current Mission: AUTH-001-E2E
 
-Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation
+Next Action: wait for Supabase email rate limit to clear, complete owner password recovery and verify first owner login
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | INFRA-001 — Supabase project connection and migration bootstrap |
-| Last completed mission | APP-008.1 — Organization Timezone Foundation |
-| Latest approved and pushed commit | 210e1ad |
+| Current mission | AUTH-001-E2E — Complete real password recovery and first owner login |
+| Last completed mission | AUTH-001 — Password recovery and update flow |
+| Latest approved and pushed commit | f2e970a |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -41,10 +41,12 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-007 status | Completed and pushed |
 | APP-008 status | Completed and pushed |
 | APP-008.1 status | Completed and pushed |
-| INFRA-001 status | Next approved phase, not started |
+| INFRA-001 status | Completed for EcoWash Staging bootstrap |
+| AUTH-001 status | Completed and pushed |
+| AUTH-001-E2E status | Pending; blocked by Supabase email rate limit |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | APP-008.1 completed; real Supabase project connection and migration bootstrap pending |
+| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner recovery/login E2E pending |
 
 ## Development Status
 
@@ -75,7 +77,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-007 | Photos, Pickup, Delivery and Payments | Completed |
 | APP-008 | Dashboard and Operational Overview | Completed |
 | APP-008.1 | Organization Timezone Foundation | Completed |
-| INFRA-001 | Supabase project connection and migration bootstrap | Next, not started |
+| INFRA-001 | Supabase project connection and migration bootstrap | Completed for staging |
+| AUTH-001 | Password recovery and update flow | Completed |
+| AUTH-001-E2E | Complete real password recovery and first owner login | Pending |
 
 ## Commit History
 
@@ -104,6 +108,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-007 | 22f6cf0 |
 | APP-008 | c62e7a0 |
 | APP-008.1 | 210e1ad |
+| INFRA-001 temp ignore | f881903 |
+| AUTH-001 | f2e970a |
 
 ## Documentation Commit History
 
@@ -146,7 +152,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `210e1ad`
+- Local `main` and `origin/main` point to `f2e970a`
 
 ## DEV-009.5 Completed State
 
@@ -183,8 +189,11 @@ Current DEV-010 state:
 - Lint and build have passed in the validated DEV-010 state.
 - Production deployment is deferred until domain selection and purchase.
 - SaaS foundation through APP-008.1 is implemented locally in the repository.
-- No real Supabase project is connected yet.
-- No migration has been applied to a real Supabase project yet.
+- Supabase EcoWash Staging is connected.
+- The five approved migrations have been applied successfully to staging.
+- Local and remote migration histories are aligned.
+- `order-media` Storage bucket exists and is private with 1 MB image limit.
+- First owner Auth user, profile, organization, location and owner membership exist in staging.
 - APP-001 is approved.
 - APP-002 is completed and pushed.
 - APP-003 is completed and pushed.
@@ -194,7 +203,9 @@ Current DEV-010 state:
 - APP-007 is completed and pushed.
 - APP-008 is completed and pushed.
 - APP-008.1 is completed and pushed.
-- Next approved phase is `INFRA-001 — Supabase project connection and migration bootstrap`.
+- INFRA-001 staging bootstrap is completed.
+- AUTH-001 is completed and pushed.
+- AUTH-001-E2E is pending after Supabase email rate limit clears.
 
 ## APP-007 Implementation State
 
@@ -234,6 +245,63 @@ APP-008 does not add migrations, analytics forecasts, BI charts, exports, fiscal
 APP-008.1 added `organizations.timezone` with default `Atlantic/Canary` and uses it for dashboard “today” windows. The timezone is read server-side from membership context, validated at runtime with `Intl.DateTimeFormat`, falls back to `Atlantic/Canary`, converts local day boundaries to UTC and keeps the daily payment aggregate reserved to owner/manager.
 
 APP-008 financial aggregates are role-limited in the server payload: owner/manager receive global balance and payment counts, while staff receives only per-order collection balances and statuses. Cross-currency totals remain separated by currency.
+
+## INFRA-001 Staging Bootstrap State
+
+INFRA-001 connected EcoWash Phoenix to Supabase EcoWash Staging and completed the initial database/bootstrap work:
+
+- `.env.local` configured locally and ignored by Git.
+- Supabase CLI login completed.
+- Repository linked to staging.
+- Migration dry-run passed.
+- Five approved migrations applied successfully.
+- Local and remote migration history aligned.
+- 15 tables verified in the Dashboard.
+- `order-media` bucket created, private and limited to 1 MB.
+- Bucket MIME allowlist: `image/jpeg`, `image/png`, `image/webp`.
+- First owner Auth user created.
+- `auth.users -> profiles` trigger verified.
+- Organization `EcoWash La Tejita` created.
+- Primary location created.
+- Active owner membership created.
+- Bootstrap verification queries passed.
+
+Applied migrations:
+
+- `20260727000100_app_003_tenant_foundation.sql`
+- `20260728000100_app_005_customers_properties.sql`
+- `20260728000200_app_006_orders_workflow.sql`
+- `20260728000300_app_007_logistics_photos_payments.sql`
+- `20260728000400_app_008_1_organization_timezone.sql`
+
+Do not reapply these migrations. Do not run `supabase db reset --linked`.
+
+## AUTH-001 Implementation State
+
+AUTH-001 implemented password recovery and password update:
+
+- localized forgot-password link from login
+- `/{locale}/forgot-password`
+- Supabase recovery email request
+- `/{locale}/update-password`
+- recovery code exchange through SSR
+- temporary recovery cookie/session guard
+- new password and confirmation form
+- `supabase.auth.updateUser`
+- sign-out after successful update
+- login redirect after success
+- translations for `en`, `es`, `it`, `fr`, `de`
+- explicit handling for Supabase email rate-limit responses
+- anti-enumeration recovery copy
+
+AUTH-001 quality gates passed:
+
+- `npm run lint`
+- `npm run build`
+- `git diff --check`
+- translation parity
+
+Real recovery E2E is not complete. Supabase returned `email rate limit exceeded`; wait for the limit to clear before requesting exactly one new recovery email.
 
 ## APP-002 Documentation State
 
@@ -427,11 +495,8 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Login UI exists
 - Protected dashboard shell exists
 - Customers/properties/services/orders/workflow/logistics/photos/payments/dashboard foundations exist
-- No real Supabase project connected yet
-- No remote environment configured yet
-- No migration has been applied to a real Supabase project yet
-- No real EcoWash organization, location or owner membership created yet
-- No first real login completed yet
+- Supabase Staging is connected and bootstrapped
+- No first real owner login completed yet after password recovery
 - No full end-to-end test with real Supabase data completed yet
 - No staging deployment completed yet
 - No public signup
@@ -473,13 +538,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da INFRA-001 dopo APP-008.1.”
+“Buongiorno, riprendiamo EcoWash Phoenix da AUTH-001-E2E dopo il rate limit Supabase.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree clean
-- Local `main` synchronized with `origin/main` at `210e1ad` when network is available
+- Local `main` synchronized with `origin/main` at `f2e970a` when network is available
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -491,13 +556,18 @@ Exact starting state:
 - APP-007 is completed and pushed
 - APP-008 is completed and pushed
 - APP-008.1 is completed and pushed
-- Next approved phase is `INFRA-001 — Supabase project connection and migration bootstrap`
+- INFRA-001 staging bootstrap is completed
+- AUTH-001 is completed and pushed
+- AUTH-001-E2E is pending because Supabase returned `email rate limit exceeded`
 - Do not modify approved migrations before real project verification
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations before verifying the target Supabase project and environment
+- Do not reapply already-applied migrations
+- Do not run `supabase db reset --linked`
+- Do not request multiple recovery emails in quick succession
 - Keep one task per commit
-- Do not begin new application features before the real end-to-end test
+- Do not begin new application features before owner login and smoke testing
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -512,8 +582,10 @@ First checks:
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start INFRA-001 only after confirming local and remote state.
-4. Select or create the definitive Supabase project.
-5. Configure `.env.local` without exposing secrets.
-6. Link Supabase CLI to the verified project.
-7. Verify migration order before applying anything.
+3. Start `npm run dev`.
+4. Open `/it/forgot-password`.
+5. Request exactly one recovery email after the rate limit clears.
+6. Use only the latest recovery email.
+7. Complete password update.
+8. Log in as owner.
+9. Verify `/it/app`.
