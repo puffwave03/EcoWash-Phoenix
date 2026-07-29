@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-Current Mission: APP-008.1
+Current Mission: INFRA-001
 
-Next Action: APP-008.1 implementation review; next step after approval is APP-009
+Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-008.1 — Organization Timezone Foundation |
-| Last completed mission | APP-008 — Dashboard and Operational Overview |
-| Latest approved and pushed commit | c62e7a0 |
+| Current mission | INFRA-001 — Supabase project connection and migration bootstrap |
+| Last completed mission | APP-008.1 — Organization Timezone Foundation |
+| Latest approved and pushed commit | 210e1ad |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -40,10 +40,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-006 status | Completed and pushed |
 | APP-007 status | Completed and pushed |
 | APP-008 status | Completed and pushed |
-| APP-008.1 status | In implementation review |
+| APP-008.1 status | Completed and pushed |
+| INFRA-001 status | Next approved phase, not started |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Operational dashboard completed; organization timezone foundation in implementation review |
+| Backend/SaaS implementation | APP-008.1 completed; real Supabase project connection and migration bootstrap pending |
 
 ## Development Status
 
@@ -73,7 +74,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-006 | Orders and Workflow | Completed |
 | APP-007 | Photos, Pickup, Delivery and Payments | Completed |
 | APP-008 | Dashboard and Operational Overview | Completed |
-| APP-008.1 | Organization Timezone Foundation | In implementation review |
+| APP-008.1 | Organization Timezone Foundation | Completed |
+| INFRA-001 | Supabase project connection and migration bootstrap | Next, not started |
 
 ## Commit History
 
@@ -100,6 +102,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-005 | 5639183 |
 | APP-006 | b5a1c7c |
 | APP-007 | 22f6cf0 |
+| APP-008 | c62e7a0 |
+| APP-008.1 | 210e1ad |
 
 ## Documentation Commit History
 
@@ -142,7 +146,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `d7e903b`
+- Local `main` and `origin/main` point to `210e1ad`
 
 ## DEV-009.5 Completed State
 
@@ -178,7 +182,9 @@ Current DEV-010 state:
 - Release-ready, deployment deferred.
 - Lint and build have passed in the validated DEV-010 state.
 - Production deployment is deferred until domain selection and purchase.
-- No backend, database, authentication, Supabase or SaaS platform is implemented.
+- SaaS foundation through APP-008.1 is implemented locally in the repository.
+- No real Supabase project is connected yet.
+- No migration has been applied to a real Supabase project yet.
 - APP-001 is approved.
 - APP-002 is completed and pushed.
 - APP-003 is completed and pushed.
@@ -187,8 +193,8 @@ Current DEV-010 state:
 - APP-006 is completed and pushed.
 - APP-007 is completed and pushed.
 - APP-008 is completed and pushed.
-- APP-008.1 is in implementation review.
-- Next step after APP-008.1 approval is `APP-009`.
+- APP-008.1 is completed and pushed.
+- Next approved phase is `INFRA-001 — Supabase project connection and migration bootstrap`.
 
 ## APP-007 Implementation State
 
@@ -208,16 +214,16 @@ APP-007 keeps production, fulfillment and payment separate. `production_status =
 
 APP-007 does not implement analytics, push notifications, QR, OCR, fiscal invoices, PDF generation, online payment providers, customer portal, mobile app, Realtime, Edge Functions or APP-008 dashboard analytics.
 
-APP-008 is now the current implementation review task after APP-007 approval.
+APP-008 is completed and pushed.
 
 ## APP-008 Implementation State
 
-APP-008 implements a protected operational dashboard overview in implementation review:
+APP-008 implements a protected operational dashboard overview:
 
 - tenant-scoped summary metrics for open, late, express, on-hold and ready orders
 - derived balance due total from valid manual payment records
 - production, ready and on-hold queues with links to real orders
-- pickup and delivery tasks scheduled for the current server-day window
+- pickup and delivery tasks scheduled for the organization timezone day window after APP-008.1
 - logistics attention for overdue scheduled/in-progress pickup and delivery tasks
 - payment overview and balances requiring attention
 - recent activity from status history, payments, completed logistics tasks and photo uploads
@@ -225,7 +231,7 @@ APP-008 implements a protected operational dashboard overview in implementation 
 
 APP-008 does not add migrations, analytics forecasts, BI charts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
-APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary` and uses it for dashboard “today” windows.
+APP-008.1 added `organizations.timezone` with default `Atlantic/Canary` and uses it for dashboard “today” windows. The timezone is read server-side from membership context, validated at runtime with `Intl.DateTimeFormat`, falls back to `Atlantic/Canary`, converts local day boundaries to UTC and keeps the daily payment aggregate reserved to owner/manager.
 
 APP-008 financial aggregates are role-limited in the server payload: owner/manager receive global balance and payment counts, while staff receives only per-order collection balances and statuses. Cross-currency totals remain separated by currency.
 
@@ -420,9 +426,15 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Supabase tenant foundation exists
 - Login UI exists
 - Protected dashboard shell exists
+- Customers/properties/services/orders/workflow/logistics/photos/payments/dashboard foundations exist
+- No real Supabase project connected yet
+- No remote environment configured yet
+- No migration has been applied to a real Supabase project yet
+- No real EcoWash organization, location or owner membership created yet
+- No first real login completed yet
+- No full end-to-end test with real Supabase data completed yet
+- No staging deployment completed yet
 - No public signup
-- Customers/properties module is in implementation review
-- No services, pricing, orders, payments or operational workflows implemented
 - No real contact-form transmission
 - No email sending
 - No analytics
@@ -461,16 +473,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da DEV-010 dopo DEV-010.4.”
+“Buongiorno, riprendiamo EcoWash Phoenix da INFRA-001 dopo APP-008.1.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree clean
-- `main` synchronized with `origin/main`
-- DEV-010.4 completed, committed and pushed at `6ef5344`
-- All ten final homepage assets optimized to WebP and integrated
-- Favicon, app icons and social preview assets integrated
+- Local `main` synchronized with `origin/main` at `210e1ad` when network is available
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -481,8 +490,14 @@ Exact starting state:
 - APP-006 is completed and pushed
 - APP-007 is completed and pushed
 - APP-008 is completed and pushed
-- APP-008.1 is in implementation review
-- Next step after APP-008.1 approval is `APP-009`
+- APP-008.1 is completed and pushed
+- Next approved phase is `INFRA-001 — Supabase project connection and migration bootstrap`
+- Do not modify approved migrations before real project verification
+- Do not use Docker unless a new decision explicitly approves it
+- Do not put service-role keys in browser-exposed code or env vars
+- Do not apply migrations before verifying the target Supabase project and environment
+- Keep one task per commit
+- Do not begin new application features before the real end-to-end test
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -494,26 +509,11 @@ First checks:
    - `git ls-remote origin refs/heads/main`
 2. Read:
    - `README.md`
-   - `docs/00_START_HERE.md`
-   - `docs/01_PRODUCT/Roadmap.md`
+   - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `npm run dev`.
-4. Review localized home and contact routes:
-   - `/en`
-   - `/it`
-   - `/es`
-   - `/fr`
-   - `/de`
-   - `/en/contact`
-   - `/it/contact`
-   - `/es/contact`
-   - `/fr/contact`
-   - `/de/contact`
-5. Review brand/social assets:
-   - `/favicon.ico`
-   - `/icon.png`
-   - `/apple-icon.png`
-   - `/social/ecowash-og.png`
-6. Review APP-006 implementation before any payment, logistics, photo or operational Storage implementation.
-7. Do not begin APP-007 until APP-006 is approved.
+3. Start INFRA-001 only after confirming local and remote state.
+4. Select or create the definitive Supabase project.
+5. Configure `.env.local` without exposing secrets.
+6. Link Supabase CLI to the verified project.
+7. Verify migration order before applying anything.

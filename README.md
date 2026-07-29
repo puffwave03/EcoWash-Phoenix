@@ -39,6 +39,15 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | DEV-010.3 | Completed — Homepage image optimization |
 | DEV-010.4 | Completed — Site icons and EcoWash water mark social preview |
 | DEV-010 | Release-ready, deployment deferred — Public Website Final Audit and Release Preparation |
+| APP-001 | Approved — EcoWash Application Architecture and MVP Definition |
+| APP-002 | Completed — Order Domain and Database Design |
+| APP-003 | Completed — Supabase Tenant Foundation and Security Baseline |
+| APP-004 | Completed — Authentication and Roles |
+| APP-005 | Completed — Customers and Properties |
+| APP-006 | Completed — Orders and Workflow |
+| APP-007 | Completed — Photos, Pickup, Delivery and Payments |
+| APP-008 | Completed — Dashboard and Operational Overview |
+| APP-008.1 | Completed — Organization Timezone Foundation |
 
 Current public website includes:
 
@@ -92,10 +101,11 @@ Current technical foundation:
 
 Important limitations:
 
-- No backend
-- No database
-- No authentication
-- No Supabase
+- No Supabase project connected yet
+- No remote environment configured yet
+- No migration has been applied to a real Supabase project yet
+- No real owner user, organization or location created yet
+- No complete end-to-end test with real data yet
 - No email sending
 - Contact form does not transmit data
 - No Docker
@@ -112,10 +122,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `6ef5344`
-- Current mission: `DEV-010`
+- Latest approved and pushed development commit: `210e1ad`
+- Current mission: `INFRA-001 — Supabase project connection and migration bootstrap`
 - Current release state: Release-ready, deployment deferred
-- Next macro-task: `APP-001 — EcoWash Application Architecture and MVP Definition`
+- Next macro-task: connect the real Supabase project, configure environment variables and apply approved migrations after verification
 
 Current visual direction:
 
@@ -170,8 +180,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-29
 
-Current Mission: DEV-010
+Current Mission: INFRA-001
 
-Next Action: Release-ready, deployment deferred; next macro-task is APP-001
+Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation

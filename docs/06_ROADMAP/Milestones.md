@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-Current Mission: APP-008.1
+Current Mission: INFRA-001
 
-Next Action: APP-008.1 implementation review; next step after approval is APP-009
+Next Action: Supabase project connection and migration bootstrap; do not start new application features before real environment validation
 
 ---
 
@@ -93,9 +93,15 @@ Approved and current areas:
 - APP-003 — Supabase Tenant Foundation and Security Baseline: Completed and pushed
 - APP-004 — Authentication and Roles: Completed and pushed
 - APP-005 — Customers and Properties: Completed and pushed
-- APP-006 — Orders and Workflow: Completed
-- APP-007 — Photos, Pickup, Delivery and Payments: Completed
+- APP-006 — Orders and Workflow: Completed and pushed
+- APP-007 — Photos, Pickup, Delivery and Payments: Completed and pushed
 - APP-008 — Dashboard and Operational Overview: Completed
-- APP-008.1 — Organization Timezone Foundation: In implementation review
+- APP-008.1 — Organization Timezone Foundation: Completed and pushed
 
-APP-008.1 adds the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
+APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
+
+Next approved phase:
+
+- INFRA-001 — Supabase project connection and migration bootstrap
+
+INFRA-001 is not a new application module. It connects the definitive Supabase project, configures environment variables, verifies migration order, applies approved migrations, validates enum/table/RLS/RPC/grant/Storage state, creates the initial EcoWash organization/location/owner membership and runs the first real login and end-to-end checks.
