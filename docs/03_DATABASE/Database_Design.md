@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-008
+Current Mission: APP-008.1
 
 ---
 
@@ -231,7 +231,7 @@ APP-008 does not add reporting tables, materialized views or migrations. Dashboa
 
 Payment balances use the same derived payment rules as APP-007. Cross-currency balances are kept as separate currency amounts and are not converted or summed into a single figure.
 
-Logistics “today” windows use the server runtime day until an organization timezone column is approved. Before connecting APP-008 to a real Supabase organization, add `organizations.timezone`; the expected EcoWash timezone is `Atlantic/Canary`.
+APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary`. Dashboard “today” windows use the active organization timezone from membership context.
 
 ## Deletion Strategy
 

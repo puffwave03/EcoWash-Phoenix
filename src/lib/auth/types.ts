@@ -19,6 +19,7 @@ export type CurrentMembership = {
     id: string;
     name: string;
     status: "active" | "inactive";
+    timezone: string;
   };
   role: AppRole;
 };

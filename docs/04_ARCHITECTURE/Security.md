@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-008
+Current Mission: APP-008.1
 
 ---
 
@@ -164,6 +164,7 @@ APP-007 Storage policies allow authenticated owner/manager/staff members of the 
 
 - Dashboard metrics are queried server-side after `requireMembership`.
 - Every query is scoped to the active membership organization.
+- The active organization timezone is read server-side from membership context.
 - No dashboard query accepts `organization_id` from the browser.
 - The dashboard reads existing RLS-protected tables and does not introduce new mutation paths.
 - Payment balances are derived from valid payment records; pending and void payments are not counted as collected.

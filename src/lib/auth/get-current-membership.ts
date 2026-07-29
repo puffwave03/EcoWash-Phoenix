@@ -12,6 +12,7 @@ type RawOrganization = {
   id: string;
   name: string;
   status: "active" | "inactive";
+  timezone: string;
 };
 
 type RawMembership = {
@@ -45,7 +46,7 @@ export async function getCurrentMembership(
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("organization_memberships")
-    .select("id, role, is_active, organization:organizations!inner(id, name, status)")
+    .select("id, role, is_active, organization:organizations!inner(id, name, status, timezone)")
     .eq("profile_id", profileId)
     .eq("is_active", true)
     .returns<RawMembership[]>();

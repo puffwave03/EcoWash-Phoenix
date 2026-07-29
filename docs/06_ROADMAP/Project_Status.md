@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-008
+Current Mission: APP-008.1
 
-Next Action: APP-008 implementation review; next step after approval is APP-009
+Next Action: APP-008.1 implementation review; next step after approval is APP-009
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | APP-008 — Dashboard and Operational Overview |
-| Last completed mission | APP-007 — Photos, Pickup, Delivery and Payments |
-| Latest approved and pushed commit | 22f6cf0 |
+| Current mission | APP-008.1 — Organization Timezone Foundation |
+| Last completed mission | APP-008 — Dashboard and Operational Overview |
+| Latest approved and pushed commit | c62e7a0 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -39,10 +39,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-005 status | Completed and pushed |
 | APP-006 status | Completed and pushed |
 | APP-007 status | Completed and pushed |
-| APP-008 status | In implementation review |
+| APP-008 status | Completed and pushed |
+| APP-008.1 status | In implementation review |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Customers/properties/services/orders/logistics/photos/payments completed; operational dashboard in implementation review |
+| Backend/SaaS implementation | Operational dashboard completed; organization timezone foundation in implementation review |
 
 ## Development Status
 
@@ -71,7 +72,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | APP-005 | Customers and Properties | Completed |
 | APP-006 | Orders and Workflow | Completed |
 | APP-007 | Photos, Pickup, Delivery and Payments | Completed |
-| APP-008 | Dashboard and Operational Overview | In implementation review |
+| APP-008 | Dashboard and Operational Overview | Completed |
+| APP-008.1 | Organization Timezone Foundation | In implementation review |
 
 ## Commit History
 
@@ -184,8 +186,9 @@ Current DEV-010 state:
 - APP-005 is completed and pushed.
 - APP-006 is completed and pushed.
 - APP-007 is completed and pushed.
-- APP-008 is in implementation review.
-- Next step after APP-008 approval is `APP-009`.
+- APP-008 is completed and pushed.
+- APP-008.1 is in implementation review.
+- Next step after APP-008.1 approval is `APP-009`.
 
 ## APP-007 Implementation State
 
@@ -222,7 +225,7 @@ APP-008 implements a protected operational dashboard overview in implementation 
 
 APP-008 does not add migrations, analytics forecasts, BI charts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
-The current schema does not store an organization timezone. APP-008 therefore uses the server runtime day window consistently for “today” logistics and payment counts until `organizations.timezone` is added before real Supabase connection. The expected EcoWash timezone is `Atlantic/Canary`.
+APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary` and uses it for dashboard “today” windows.
 
 APP-008 financial aggregates are role-limited in the server payload: owner/manager receive global balance and payment counts, while staff receives only per-order collection balances and statuses. Cross-currency totals remain separated by currency.
 
@@ -477,8 +480,9 @@ Exact starting state:
 - APP-005 is completed and pushed
 - APP-006 is completed and pushed
 - APP-007 is completed and pushed
-- APP-008 is in implementation review
-- Next step after APP-008 approval is `APP-009`
+- APP-008 is completed and pushed
+- APP-008.1 is in implementation review
+- Next step after APP-008.1 approval is `APP-009`
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:

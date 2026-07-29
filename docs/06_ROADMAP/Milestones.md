@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-008
+Current Mission: APP-008.1
 
-Next Action: APP-008 implementation review; next step after approval is APP-009
+Next Action: APP-008.1 implementation review; next step after approval is APP-009
 
 ---
 
@@ -95,6 +95,7 @@ Approved and current areas:
 - APP-005 — Customers and Properties: Completed and pushed
 - APP-006 — Orders and Workflow: Completed
 - APP-007 — Photos, Pickup, Delivery and Payments: Completed
-- APP-008 — Dashboard and Operational Overview: In implementation review
+- APP-008 — Dashboard and Operational Overview: Completed
+- APP-008.1 — Organization Timezone Foundation: In implementation review
 
-APP-008 adds a real protected operational overview based on implemented customers, properties, services, orders, workflow, logistics, photos and manual payments. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
+APP-008.1 adds the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.

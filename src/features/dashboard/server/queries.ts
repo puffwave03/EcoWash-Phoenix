@@ -80,6 +80,20 @@ const OPEN_STATUSES: ProductionStatus[] = [
   "on_hold",
 ];
 
+const DEFAULT_ORGANIZATION_TIME_ZONE = "Atlantic/Canary";
+
+type ZonedDateParts = {
+  day: number;
+  month: number;
+  year: number;
+};
+
+type ZonedDateTimeParts = ZonedDateParts & {
+  hour: number;
+  minute: number;
+  second: number;
+};
+
 function relationOne<T>(value: T | T[] | null): T | null {
   return Array.isArray(value) ? value[0] ?? null : value;
 }
@@ -89,12 +103,99 @@ function displayName(value: { display_name?: string; name?: string } | { display
   return row?.display_name ?? row?.name ?? null;
 }
 
-function nowWindow() {
+function numericDateTimePart(
+  parts: Intl.DateTimeFormatPart[],
+  type: Intl.DateTimeFormatPartTypes,
+) {
+  const part = parts.find((item) => item.type === type);
+  const value = part ? Number(part.value) : NaN;
+
+  if (!Number.isFinite(value)) {
+    throw new Error(`Missing timezone date part: ${type}`);
+  }
+
+  return value;
+}
+
+function zonedParts(value: Date, timeZone: string): ZonedDateTimeParts {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    hourCycle: "h23",
+    minute: "2-digit",
+    month: "2-digit",
+    second: "2-digit",
+    timeZone,
+    year: "numeric",
+  });
+  const parts = formatter.formatToParts(value);
+
+  return {
+    day: numericDateTimePart(parts, "day"),
+    hour: numericDateTimePart(parts, "hour"),
+    minute: numericDateTimePart(parts, "minute"),
+    month: numericDateTimePart(parts, "month"),
+    second: numericDateTimePart(parts, "second"),
+    year: numericDateTimePart(parts, "year"),
+  };
+}
+
+function timeZoneOffsetMs(value: Date, timeZone: string) {
+  const parts = zonedParts(value, timeZone);
+  const asUtc = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+
+  return asUtc - value.getTime();
+}
+
+function zonedLocalDateTimeToUtc(
+  timeZone: string,
+  year: number,
+  month: number,
+  day: number,
+) {
+  const utcGuess = Date.UTC(year, month - 1, day, 0, 0, 0, 0);
+  const firstPass = new Date(utcGuess - timeZoneOffsetMs(new Date(utcGuess), timeZone));
+
+  return new Date(utcGuess - timeZoneOffsetMs(firstPass, timeZone));
+}
+
+function tomorrowParts(year: number, month: number, day: number): ZonedDateParts {
+  const next = new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0));
+
+  return {
+    day: next.getUTCDate(),
+    month: next.getUTCMonth() + 1,
+    year: next.getUTCFullYear(),
+  };
+}
+
+function safeTimeZone(value: string) {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date());
+    return value;
+  } catch {
+    return DEFAULT_ORGANIZATION_TIME_ZONE;
+  }
+}
+
+function nowWindow(timeZone: string) {
+  const resolvedTimeZone = safeTimeZone(timeZone);
   const now = new Date();
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(now);
-  end.setHours(23, 59, 59, 999);
+  const today = zonedParts(now, resolvedTimeZone);
+  const tomorrow = tomorrowParts(today.year, today.month, today.day);
+  const start = zonedLocalDateTimeToUtc(resolvedTimeZone, today.year, today.month, today.day);
+  const end = new Date(
+    zonedLocalDateTimeToUtc(resolvedTimeZone, tomorrow.year, tomorrow.month, tomorrow.day).getTime() - 1,
+  );
+
   return { end, now, start };
 }
 
@@ -201,13 +302,23 @@ function canViewFinancialAggregates(role: string) {
 export async function getDashboardOverview(locale: string): Promise<DashboardOverview> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  const { end, now, start } = nowWindow();
+  const { end, now, start } = nowWindow(membership.organization.timezone);
   const includeFinancialAggregates = canViewFinancialAggregates(membership.role);
+  const paymentsTodayQuery = includeFinancialAggregates
+    ? supabase
+      .from("payments")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", membership.organization.id)
+      .eq("status", "confirmed")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString())
+    : Promise.resolve({ count: 0, error: null });
 
   const [
     ordersResult,
     paymentsResult,
     historyResult,
+    paymentsTodayResult,
     pickupsTodayResult,
     deliveriesTodayResult,
     latePickupsResult,
@@ -238,6 +349,7 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
       .order("changed_at", { ascending: false })
       .limit(80)
       .returns<HistoryRow[]>(),
+    paymentsTodayQuery,
     supabase
       .from("pickups")
       .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
@@ -305,6 +417,7 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
   if (ordersResult.error) console.error("Dashboard orders query failed", ordersResult.error.code);
   if (paymentsResult.error) console.error("Dashboard payments query failed", paymentsResult.error.code);
   if (historyResult.error) console.error("Dashboard history query failed", historyResult.error.code);
+  if (paymentsTodayResult.error) console.error("Dashboard payments today query failed", paymentsTodayResult.error.code);
 
   const orders = ordersResult.data ?? [];
   const payments = paymentsResult.data ?? [];
@@ -410,7 +523,7 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
   const financialSummary: DashboardFinancialSummary | null = includeFinancialAggregates
     ? {
       partiallyPaidOrders: balances.filter((item) => item.paymentStatus === "partially_paid").length,
-      paymentsToday: payments.filter((payment) => new Date(payment.created_at) >= start && new Date(payment.created_at) <= end && payment.status === "confirmed").length,
+      paymentsToday: paymentsTodayResult.count ?? 0,
       recentCorrections: payments.filter((payment) => payment.status === "void" || payment.status === "refunded").slice(0, 20).length,
       unpaidOrders: balances.filter((item) => item.paymentStatus === "unpaid").length,
     }

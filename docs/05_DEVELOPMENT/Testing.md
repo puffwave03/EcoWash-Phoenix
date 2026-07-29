@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-28
 
-Current Mission: APP-008
+Current Mission: APP-008.1
 
 ---
 
@@ -29,9 +29,9 @@ Run before APP implementation review:
 
 APP-007 does not run remote Supabase migrations, Docker or production deployment checks. Database behavior for RLS/RPC and Storage policies requires a real Supabase/PostgreSQL environment for execution testing.
 
-APP-008 does not add a migration. Dashboard query behavior still requires a real Supabase/PostgreSQL environment with tenant data for full execution testing.
+APP-008.1 adds the `organizations.timezone` migration. Dashboard query behavior still requires a real Supabase/PostgreSQL environment with tenant data for full execution testing.
 
-Before real Supabase connection for APP-008, add and validate `organizations.timezone` with expected EcoWash value `Atlantic/Canary`. Until then, “today” uses the runtime server day window and is not multi-timezone accurate.
+Validate dashboard “today” windows against the active organization timezone. The EcoWash default is `Atlantic/Canary`.
 
 ## APP-007 Static Security Simulation
 
