@@ -4,15 +4,21 @@ Status: Active
 
 Date: 2026-07-30
 
-Session checkpoint: INFRA-001-SMOKE closure
+Approximate closeout time: around 18:00 Europe/Madrid
+
+Session checkpoint: INFRA-001-SMOKE completed; INFRA-001.1 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Last completed commit: `a607218 UX-001 feat: refine protected app shell and session handover`
+HEAD: `f94df88 INFRA-001-SMOKE fix: resolve staging smoke test blockers`
 
-Working tree status: contains INFRA-001-SMOKE corrective changes until reviewed and committed
+Origin/main status: local `main` and local `origin/main` point to `f94df88`; verify with network tomorrow.
+
+Working tree status at closeout start: clean
+
+Commit status: INFRA-001-SMOKE already committed and pushed.
 
 ---
 
@@ -37,28 +43,17 @@ Working tree status: contains INFRA-001-SMOKE corrective changes until reviewed 
 
 Completed on EcoWash Staging:
 
-- Supabase project created and connected.
-- `.env.local` configured locally and ignored by Git.
-- Build with real environment variables passed.
-- Supabase CLI login completed.
-- Repository linked to the staging project.
-- Migration dry-run passed.
-- Five approved migrations applied successfully.
-- Local and remote migration history aligned.
-- 15 tables verified in the Dashboard.
-- `order-media` bucket created and verified as private.
-- First owner Auth user created.
-- `auth.users -> profiles` trigger verified.
-- Organization `EcoWash La Tejita` created.
-- Primary location created.
-- Active owner membership created.
-- Bootstrap verification queries passed.
-- Password recovery end-to-end completed.
+- Supabase Staging is connected.
+- `.env.local` is configured locally and ignored by Git.
+- Approved migrations through APP-008.1 were applied before smoke testing.
+- First owner Auth user, profile, organization, location and owner membership exist.
+- Password recovery E2E completed.
 - Owner login completed.
 - Real dashboard visible at `/it/app`.
-- First real operational smoke test completed against staging.
+- UX-001 protected app shell completed.
+- INFRA-001-SMOKE completed end to end.
 
-Applied migrations:
+Applied baseline migrations:
 
 - `20260727000100_app_003_tenant_foundation.sql`
 - `20260728000100_app_005_customers_properties.sql`
@@ -66,137 +61,118 @@ Applied migrations:
 - `20260728000300_app_007_logistics_photos_payments.sql`
 - `20260728000400_app_008_1_organization_timezone.sql`
 
-Smoke-test corrective migration pending local commit:
+Smoke corrective migration now committed locally:
 
 - `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql`
 
-This corrective migration was prepared after staging exposed `app_current_organization_id()` and `create_order()` defects, then validated by the successful order-creation retest. It must remain a forward-only migration. Do not edit already-approved migrations.
+## Migration Warning
 
-Do not reapply approved migrations. Do not run `supabase db reset --linked`.
+REMOTE SQL APPLIED MANUALLY — MIGRATION HISTORY VERIFICATION PENDING
 
-## APP-008 Dashboard State
+During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. The matching local migration is now present in Git, but the remote migration history still needs a controlled CLI verification.
 
-APP-008 implements the real protected operational dashboard:
+Do not rerun the corrective migration blindly. Do not use `supabase migration repair` without diagnosis and explicit approval. Do not run `supabase db reset --linked`, `supabase migration up`, or `supabase db push` during closeout. The next task must compare local and remote migration state before choosing a reconciliation method.
 
-- open, overdue, express, on-hold and ready orders
-- production queue
-- pickup and delivery work
-- logistics attention
-- payment overview
-- balances requiring attention
-- recent activity
-- tenant isolation
-- global financial aggregates only for owner/manager
-- per-order operational financial data available to staff
-- amounts separated by currency
-- no demo data
-- no Realtime
+## INFRA-001-SMOKE Result
 
-APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary` and uses organization-local day boundaries converted to UTC for today's pickup, delivery and payment metrics.
-
-## AUTH State
-
-AUTH-001 and AUTH-001.1 are complete:
-
-- localized forgot-password flow
-- Supabase recovery email request
-- update-password route
-- recovery code exchange
-- temporary recovery cookie/session guard
-- new password and confirmation form
-- `supabase.auth.updateUser`
-- sign-out after successful update
-- redirect to login after success
-- explicit non-fall-through handling for rate limit and temporary reset errors
-- translations for `en`, `es`, `it`, `fr`, `de`
-- no password, token or recovery URL logging
-
-Real owner password recovery and login have been completed. Do not request unnecessary recovery emails.
-
-## UX-001 State
-
-UX-001 is completed and pushed. It refined the protected application shell and handover documentation only:
-
-- protected `/[locale]/app` receives a dedicated full-height app layout
-- protected app navigation is visually separated from the public website
-- dashboard KPI summary no longer nests cards inside a parent card
-- provisional dashboard foundation copy is replaced in five locales
-- application data logic remains unchanged
-- no database, migration, Supabase remote or dependency changes
-
-## INFRA-001-SMOKE State
-
-INFRA-001-SMOKE completed with result:
+Final result:
 
 `PASS WITH NON-BLOCKING ISSUES`
 
-Validated staging flow:
+Validated checkpoints:
 
-- owner logout/login and protected app shell
-- customer creation/access
-- property creation/access linked to the customer
-- service and price visibility
-- order creation and detail redirect
-- item creation, duplicate row removal and total recalculation
-- production workflow through ready state
-- pickup completion
-- delivery completion
-- partial and final cash payments
-- photo upload and signed preview
-- dashboard coherence after real operational activity
-- logout protection and persistence after new login
+| Checkpoint | Area | Result |
+| --- | --- | --- |
+| 1 | Login e app shell | PASS |
+| 2 | Cliente | PASS |
+| 3 | Proprietà | PASS |
+| 4 | Servizio e prezzo | PASS |
+| 5 | Ordine | PASS |
+| 6 | Item e totale | PASS |
+| 7 | Produzione | PASS |
+| 8 | Pickup | PASS |
+| 9 | Delivery | PASS |
+| 10 | Pagamento | PASS |
+| 11 | Foto | PASS |
+| 12 | Dashboard | PASS |
+| 13 | Logout/login | PASS |
 
-Smoke record used:
+Smoke staging records retained:
 
+- `Cliente Smoke Test`
+- `Appartamento Smoke Test`
+- `Lavaggio e asciugatura test`
 - order `EW-000001`
-- final item total `25,00 EUR`
-- final payment state paid with zero balance
-- production state ready
-- pickup and delivery completed
+- one valid order item
+- total `25,00 EUR`
+- production status `Pronto`
+- pickup completed
+- delivery completed
+- two payments totaling `25,00 EUR`
+- balance `0,00 EUR`
+- one intake photo
 
-Corrective issues handled during smoke:
+Do not delete or alter smoke records before migration reconciliation is complete.
 
-- BUG-001: `create_order` failed because `app_current_organization_id()` used `min(uuid)` and `create_order()` had an ambiguous `id` reference.
-- BUG-002: order list PostgREST embed to `profiles` was ambiguous.
-- BUG-003/BUG-004: pickup and delivery embeds to `profiles` were ambiguous.
-- BUG-005: item creation was not idempotent server-side and needed immediate client submit locking.
-- BUG-006: order item editing showed too many simultaneous edit forms.
+## Bugs Resolved During Smoke
 
-Current corrective diff:
+- BUG-001 — `create_order` failed because `app_current_organization_id()` used `min(uuid)` and `create_order()` had an ambiguous `id` reference.
+- BUG-002 — order list query failed with `PGRST201` because the `profiles` embed was ambiguous.
+- BUG-003 — pickup query failed with `PGRST201` because the `profiles` embed was ambiguous.
+- BUG-004 — delivery query failed with `PGRST201` because the `profiles` embed was ambiguous.
+- BUG-005 — order item creation needed immediate submit locking to reduce repeated-submit risk.
+- BUG-006 — order item editing showed too many simultaneous edit forms and save points.
 
-- forward-only SQL migration replacing the affected helper/RPC definitions
-- explicit PostgREST foreign-key embeds for orders, pickups and deliveries
-- production-safe order-create error logging reduced to error code only
-- item form submit lock and one-edit-form-at-a-time order item UI
-- localized item edit/cancel labels
+## Unverified or Non-Final Items
 
-No remote operation, commit or push should be performed without explicit approval.
+- `order-media` bucket privacy was not reverified directly during the final photo checkpoint, though it had been confirmed during INFRA-001.
+- Negative MIME/size upload tests were not executed during smoke.
+- Overpayment behavior was not documented with a definitive result.
+- Payment actor visibility was not documented with a definitive result.
+- Final read-only database verification via CLI was not executed.
+- Remote migration history is not reconciled for the manually applied smoke corrective SQL.
 
-## Safety Notes
+## Security Notes
 
 - Do not delete the owner Auth user.
 - Do not recreate organization, location or membership.
-- Do not reapply already-applied migrations.
-- Do not run `supabase db reset --linked`.
-- Do not use `migration repair` without a clear diagnosis.
-- Do not place service-role keys in browser code or `NEXT_PUBLIC_*` variables.
-- Keep `order-media` private.
+- Do not expose service-role keys in browser code or `NEXT_PUBLIC_*` variables.
 - Do not commit `.env.local`.
+- Keep `order-media` private.
 - Keep `supabase/.temp/` ignored.
-- Keep one task per commit.
 - Do not use Docker unless a new decision explicitly approves it.
-- Do not start new features before reviewing and committing INFRA-001-SMOKE closure.
-- Do not change smoke-test staging data as part of the corrective commit.
+- Keep one task per commit.
+- Do not start UX-002 before INFRA-001.1 is closed or explicitly paused.
 
-## Next Task
+## Next Approved Task
 
-Review and commit the INFRA-001-SMOKE corrective changes:
+`INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
 
-`INFRA-001-SMOKE fix: resolve staging smoke test blockers`
+Scope for tomorrow:
 
-After that, keep any staging data cleanup or additional negative testing as a separate approved task.
+1. Verify Git local/remote state.
+2. Authenticate Supabase CLI in a controlled way if required.
+3. Run `supabase migration list`.
+4. Compare local and remote migration histories.
+5. Verify presence or absence of `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` in remote history.
+6. Do not rerun SQL blindly.
+7. Define the safe reconciliation method.
+8. Verify the `order-media` bucket.
+9. Execute final read-only verification.
+10. Update docs and close INFRA-001.1.
 
-Do not create demo data. Existing smoke records are intentional staging test records.
+## Following Candidate Task
+
+`UX-002 — App landing/dashboard and operational layout refinement`
+
+UX-002 is not started. Likely scope after INFRA-001.1:
+
+- initial dashboard hierarchy
+- visual density and scanning
+- desktop/mobile app layout
+- clearer public-site access to login
+- simpler panels and actions
+- no changes to stable domain logic without a separate approved task
 
 ## Resume Commands
 
@@ -204,14 +180,12 @@ Do not create demo data. Existing smoke records are intentional staging test rec
 cd /Users/cristianomegale/EcoWash-Phoenix
 git status --short
 git branch --show-current
-git log -8 --oneline --decorate
+git log -10 --oneline --decorate
 git ls-remote origin refs/heads/main
-npm run lint
-npm run build
-git diff --check
+npm run dev
 ```
 
-URLs to verify:
+Useful URLs:
 
 ```text
 http://localhost:3000/it/login

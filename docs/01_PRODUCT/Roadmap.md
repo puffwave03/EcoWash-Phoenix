@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-30
 
-Current Mission: DEV-010
+Current Mission: INFRA-001.1
 
-Next Action: Release-ready, deployment deferred; next macro-task is APP-001
+Next Action: Reconcile Supabase migration history and finalize smoke baseline
 
 ---
 
@@ -83,19 +83,29 @@ Expected scope:
 
 ## Milestone 7 — SaaS Platform Foundation
 
-Status: Planned
+Status: In Review
 
-Future areas:
+Completed or validated areas:
 
 - App shell
 - Authentication architecture
 - Organization and user model
-- Dashboard
 - Customers
-- Orders
-- Production
+- Properties
+- Services and prices
+- Orders and order items
+- Production workflow
 - Pickup and delivery
-- Billing
-- Reporting
+- Manual payments
+- Private order photos
+- Operational dashboard
+- First real staging smoke test
 
-No backend, database, authentication, Supabase, analytics, production deployment or SaaS platform implementation has been completed yet.
+Pending areas:
+
+- Supabase migration history reconciliation after the manually applied smoke correction
+- Full security audit
+- UX-002 app landing/dashboard and operational layout refinement
+- Public deployment
+- Production-ready release
+- Reporting beyond the MVP operational dashboard

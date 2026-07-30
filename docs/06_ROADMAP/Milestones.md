@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001-SMOKE
+Current Mission: INFRA-001.1
 
-Next Action: review and commit smoke-test corrective changes
+Next Action: reconcile Supabase migration history and finalize smoke baseline
 
 ---
 
@@ -102,23 +102,49 @@ Approved and current areas:
 - AUTH-001.1 — Password reset error handling correction: Completed and pushed
 - AUTH-001-E2E — Complete real password recovery and first owner login: Completed
 - UX-001 — Protected app shell refinement and session handover: Completed and pushed
-- INFRA-001-SMOKE — First real operational smoke test: Passed with non-blocking issues
+- INFRA-001-SMOKE — First real operational smoke test: Completed and pushed; passed with non-blocking issues
+- INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline: Next
+- UX-002 — App landing/dashboard and operational layout refinement: Candidate follow-up, not started
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- INFRA-001-SMOKE — First real operational smoke test closure
+- INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
-Corrective work pending review and commit:
+Validated operational smoke areas:
+
+- Auth staging
+- Customer
+- Property
+- Service/price
+- Order
+- Order item
+- Production workflow
+- Pickup
+- Delivery
+- Payment
+- Photo
+- Dashboard
+- Session persistence/logout-login
+
+Corrective work committed in `f94df88`:
 
 - forward-only migration for the `app_current_organization_id()` and `create_order()` staging defects
 - explicit PostgREST relationship embeds for order, pickup and delivery reads
 - order item submit locking and simpler one-row edit UI
 - documentation handover after the smoke test
 
-Next phase after corrective review and commit:
+Not yet completed:
+
+- production-ready release
+- remote migration history reconciliation for the smoke corrective SQL
+- full security audit
+- UX-002
+- public deployment
+
+Next phase after INFRA-001.1:
 
 - keep any staging cleanup, negative testing or new feature work as a separate approved task

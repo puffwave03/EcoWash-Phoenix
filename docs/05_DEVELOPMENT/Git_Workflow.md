@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-07-30
 
-Current Mission: DEV-010
+Current Mission: INFRA-001.1
 
-Next Action: Public website final audit and release preparation
+Next Action: Reconcile Supabase migration history and finalize smoke baseline
 
 ---
 
@@ -41,6 +41,8 @@ Define the current Git workflow for EcoWash Phoenix so application work, review,
 
 The latest approved and pushed development commit is:
 
-`2834289 DEV-009.5 feat: complete homepage visual enrichment`
+`f94df88 INFRA-001-SMOKE fix: resolve staging smoke test blockers`
 
-DEV-010 is the next mission. Before starting implementation, confirm `main` is clean and synchronized with `origin/main`, review the documentation entry points, start the existing local Next.js environment with `npm run dev`, and confirm the final audit scope. A documentation-only commit must stage only Markdown files.
+INFRA-001.1 is the next approved mission. Before starting it, confirm `main` is clean and synchronized with `origin/main`, review the documentation entry points, and verify the Supabase target before any migration-history operation.
+
+Do not use `git add .` for documentation-only closeouts. Stage only the Markdown files intentionally updated. Keep UX-002 and any staging cleanup in separate future commits.

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001-SMOKE
+Current Mission: INFRA-001.1
 
 ---
 
@@ -50,6 +50,8 @@ Current real-test status:
 - Password recovery E2E completed.
 - Owner login and `/it/app` access completed.
 - INFRA-001-SMOKE completed with `PASS WITH NON-BLOCKING ISSUES`.
+- INFRA-001-SMOKE corrective work is committed at `f94df88`.
+- INFRA-001.1 is pending for remote migration history reconciliation.
 
 INFRA-001-SMOKE validated with real staging data:
 
@@ -68,19 +70,30 @@ Smoke checkpoints:
 
 | Checkpoint | Area | Result |
 | --- | --- | --- |
-| 1 | Login and app shell | PASS |
-| 2 | Customer | PASS |
-| 3 | Property | PASS |
-| 4 | Service and price | PASS |
-| 5 | Order | PASS after corrective migration |
-| 6 | Item and total | PASS after item UI correction and manual duplicate removal |
-| 7 | Production | PASS |
+| 1 | Login e app shell | PASS |
+| 2 | Cliente | PASS |
+| 3 | Proprietà | PASS |
+| 4 | Servizio e prezzo | PASS |
+| 5 | Ordine | PASS |
+| 6 | Item e totale | PASS |
+| 7 | Produzione | PASS |
 | 8 | Pickup | PASS |
 | 9 | Delivery | PASS |
 | 10 | Payment | PASS |
 | 11 | Photo | PASS |
 | 12 | Dashboard | PASS |
 | 13 | Logout/login | PASS |
+
+Smoke final state:
+
+- order `EW-000001`
+- order total `25,00 EUR`
+- production status `Pronto`
+- pickup completed
+- delivery completed
+- balance zero after two payments
+- one intake photo uploaded and previewed
+- data persisted after logout/login
 
 Smoke bugs resolved in the corrective diff:
 
@@ -94,6 +107,10 @@ Known non-blocking gaps from the smoke run:
 
 - Storage bucket privacy was not directly re-verified during the photo checkpoint, though the private bucket had been confirmed during INFRA-001.
 - Negative MIME/size upload tests were not executed during this smoke run.
+- Overpayment behavior was not documented with a definitive result.
+- Payment actor visibility was not documented with a definitive result.
+- Final read-only database verification via CLI was not executed.
+- Remote migration history is not reconciled for the manually applied smoke corrective SQL.
 - Staging smoke records remain present and should only be cleaned up in a separate approved task.
 
 ## APP-007 Static Security Simulation

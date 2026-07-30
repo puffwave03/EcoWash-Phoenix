@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001-SMOKE
+Current Mission: INFRA-001.1
 
-Next Action: review and commit smoke-test fixes and documentation
+Next Action: reconcile Supabase migration history and finalize smoke baseline
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | INFRA-001-SMOKE — First real operational smoke test closure |
-| Last completed mission | UX-001 — Protected app shell refinement and session handover |
-| Latest approved and pushed commit | a607218 |
+| Current mission | INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline |
+| Last completed mission | INFRA-001-SMOKE — First real operational smoke test |
+| Latest approved and pushed commit | f94df88 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -46,7 +46,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001.1 status | Completed and pushed |
 | AUTH-001-E2E status | Completed; owner password recovery/login verified |
 | UX-001 status | Completed and pushed |
-| INFRA-001-SMOKE status | Passed with non-blocking issues; corrective changes pending review and commit |
+| INFRA-001-SMOKE status | Completed and pushed; passed with non-blocking issues |
+| INFRA-001.1 status | Next approved task; not started |
+| UX-002 status | Candidate follow-up; not started |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
@@ -85,7 +87,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001.1 | Password reset error handling correction | Completed |
 | AUTH-001-E2E | Complete real password recovery and first owner login | Completed |
 | UX-001 | Protected app shell refinement and session handover | Completed |
-| INFRA-001-SMOKE | First real operational smoke test | Passed with non-blocking issues |
+| INFRA-001-SMOKE | First real operational smoke test | Completed and pushed; passed with non-blocking issues |
+| INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Next |
+| UX-002 | App landing/dashboard and operational layout refinement | Candidate, not started |
 
 ## Commit History
 
@@ -119,6 +123,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DOCS-007 | 491091b |
 | AUTH-001.1 | 6769365 |
 | UX-001 | a607218 |
+| INFRA-001-SMOKE | f94df88 |
 
 ## Documentation Commit History
 
@@ -161,7 +166,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `a607218` when network is available
+- Local `main` and local `origin/main` point to `f94df88` at closeout; verify remote with network tomorrow
 
 ## DEV-009.5 Completed State
 
@@ -200,7 +205,8 @@ Current DEV-010 state:
 - SaaS foundation through APP-008.1 is implemented locally in the repository.
 - Supabase EcoWash Staging is connected.
 - The five approved migrations have been applied successfully to staging.
-- Local and remote migration histories are aligned.
+- Local and remote migration histories were aligned through APP-008.1 before smoke.
+- Smoke corrective SQL was applied manually and requires INFRA-001.1 history reconciliation.
 - `order-media` Storage bucket exists and is private with 1 MB image limit.
 - First owner Auth user, profile, organization, location and owner membership exist in staging.
 - APP-001 is approved.
@@ -217,7 +223,8 @@ Current DEV-010 state:
 - AUTH-001.1 is completed and pushed.
 - AUTH-001-E2E is completed; owner password recovery, login and `/it/app` access were verified.
 - UX-001 is completed and pushed.
-- INFRA-001-SMOKE passed on EcoWash Staging with non-blocking corrective changes pending review and commit.
+- INFRA-001-SMOKE passed on EcoWash Staging and is committed at `f94df88`.
+- INFRA-001.1 is the next approved task to reconcile migration history after the manual SQL correction used during smoke.
 
 ## APP-007 Implementation State
 
@@ -267,7 +274,7 @@ INFRA-001 connected EcoWash Phoenix to Supabase EcoWash Staging and completed th
 - Repository linked to staging.
 - Migration dry-run passed.
 - Five approved migrations applied successfully.
-- Local and remote migration history aligned.
+- Local and remote migration history aligned through APP-008.1 before the smoke corrective SQL.
 - 15 tables verified in the Dashboard.
 - `order-media` bucket created, private and limited to 1 MB.
 - Bucket MIME allowlist: `image/jpeg`, `image/png`, `image/webp`.
@@ -347,14 +354,31 @@ Result:
 
 - `PASS WITH NON-BLOCKING ISSUES`
 
-Corrective work pending review and commit:
+Corrective work committed in `f94df88`:
 
 - `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` fixes `app_current_organization_id()` and `create_order()` without editing prior migrations; the retest validated order creation on staging.
 - Order, pickup and delivery Supabase selects now use explicit foreign-key embeds where PostgREST saw multiple relationships to `profiles`.
 - Order item UI blocks repeated submits immediately and shows only one edit form at a time.
 - Diagnostic order-create logging was reduced to a production-safe error code only.
 
-Smoke staging data remains present. Do not clean up or alter staging records as part of this corrective commit.
+Smoke staging data remains present. Do not clean up or alter staging records before INFRA-001.1 reconciliation is complete.
+
+Migration history warning:
+
+- REMOTE SQL APPLIED MANUALLY — MIGRATION HISTORY VERIFICATION PENDING.
+- The corrective SQL was applied manually in Supabase SQL Editor during smoke.
+- The matching local migration is committed, but remote migration history must be checked before any further migration operation.
+- Do not rerun SQL blindly and do not use `migration repair` without diagnosis and approval.
+
+Next approved task:
+
+- `INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
+
+Following candidate task:
+
+- `UX-002 — App landing/dashboard and operational layout refinement`
+
+UX-002 is not started. It will likely cover dashboard hierarchy, visual density, desktop/mobile operational layout, clearer login access from the public site, and simpler panels/actions. It must not change stable domain logic without a separate approved task.
 
 ## APP-002 Documentation State
 
@@ -550,7 +574,8 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Customers/properties/services/orders/workflow/logistics/photos/payments/dashboard foundations exist
 - Supabase Staging is connected and bootstrapped
 - First real owner login after password recovery is complete
-- First real operational smoke test passed on staging with non-blocking corrective changes pending review and commit
+- First real operational smoke test passed on staging and corrective code is committed
+- Remote migration history reconciliation pending after manual SQL correction
 - No staging deployment completed yet
 - No public signup
 - No real contact-form transmission
@@ -591,13 +616,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix dalla chiusura INFRA-001-SMOKE e prepariamo il commit correttivo.”
+“Buongiorno, riprendiamo EcoWash Phoenix da INFRA-001.1 e riconciliamo la migration history Supabase.”
 
 Exact starting state:
 
 - Branch `main`
-- Working tree contains only INFRA-001-SMOKE corrective changes until reviewed and committed
-- Local `main` synchronized with `origin/main` at `a607218` when network is available
+- Working tree expected clean
+- Local `main` and local `origin/main` at `f94df88`; verify remote with network
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -614,7 +639,8 @@ Exact starting state:
 - AUTH-001.1 is completed and pushed
 - AUTH-001-E2E is completed; owner login and `/it/app` access succeeded
 - UX-001 is completed and pushed
-- INFRA-001-SMOKE passed with non-blocking issues
+- INFRA-001-SMOKE passed with non-blocking issues and is committed
+- INFRA-001.1 is next; do not start UX-002 first
 - Do not modify approved migrations before real project verification
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
@@ -622,7 +648,7 @@ Exact starting state:
 - Do not reapply already-applied migrations
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Do not begin new application features before committing or explicitly closing the smoke-test corrective work
+- Do not begin new application features before INFRA-001.1 is closed or explicitly paused
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -637,9 +663,10 @@ First checks:
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Review INFRA-001-SMOKE diff.
-4. Run quality gates.
-5. Commit INFRA-001-SMOKE after approval.
-6. Start `npm run dev` only if a manual retest is requested.
-7. Open `/it/app`.
-8. Keep staging cleanup or negative tests in a separate approved task.
+3. Authenticate Supabase CLI in a controlled way only inside INFRA-001.1.
+4. Run `supabase migration list`.
+5. Compare local and remote migration histories.
+6. Verify whether `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` is present in remote history.
+7. Do not rerun SQL blindly.
+8. Verify `order-media` and run final read-only checks.
+9. Update docs and close INFRA-001.1.
