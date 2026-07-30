@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-29
+Last Updated: 2026-07-30
 
-Current Mission: UX-001
+Current Mission: INFRA-001-SMOKE
 
-Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test
+Next Action: review and commit smoke-test corrective changes
 
 ---
 
@@ -101,16 +101,24 @@ Approved and current areas:
 - AUTH-001 — Password recovery and update flow: Completed and pushed
 - AUTH-001.1 — Password reset error handling correction: Completed and pushed
 - AUTH-001-E2E — Complete real password recovery and first owner login: Completed
-- UX-001 — Protected app shell refinement and session handover: In progress
+- UX-001 — Protected app shell refinement and session handover: Completed and pushed
+- INFRA-001-SMOKE — First real operational smoke test: Passed with non-blocking issues
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- UX-001 — Protected app shell refinement and session handover
+- INFRA-001-SMOKE — First real operational smoke test closure
 
-UX-001 refines the protected `/[locale]/app` shell, separates the app experience from the public website, removes provisional dashboard copy and updates handover documentation. It does not change application logic, database schema, migrations, Supabase remote state or dependencies.
+INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
-Next phase after UX-001 review and commit:
+Corrective work pending review and commit:
 
-- INFRA-001-SMOKE — First real operational smoke test
+- forward-only migration for the `app_current_organization_id()` and `create_order()` staging defects
+- explicit PostgREST relationship embeds for order, pickup and delivery reads
+- order item submit locking and simpler one-row edit UI
+- documentation handover after the smoke test
+
+Next phase after corrective review and commit:
+
+- keep any staging cleanup, negative testing or new feature work as a separate approved task

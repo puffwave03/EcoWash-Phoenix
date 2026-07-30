@@ -398,8 +398,9 @@
     },
     "items": {
       "title": "Order items",
-      "add": "Save item",
+      "add": "Add item",
       "save": "Save item",
+      "cancel": "Cancel",
       "edit": "Edit items",
       "service": "Service",
       "description": "Description",

@@ -2,17 +2,17 @@
 
 Status: Active
 
-Date: 2026-07-29
+Date: 2026-07-30
 
-Session checkpoint: UX-001 protected app shell refinement and handover update
+Session checkpoint: INFRA-001-SMOKE closure
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Last completed commit: `6769365 AUTH-001.1 fix: handle password reset errors correctly`
+Last completed commit: `a607218 UX-001 feat: refine protected app shell and session handover`
 
-Working tree status: contains only UX-001 changes until committed
+Working tree status: contains INFRA-001-SMOKE corrective changes until reviewed and committed
 
 ---
 
@@ -30,6 +30,8 @@ Working tree status: contains only UX-001 changes until committed
 - AUTH-001 — Password recovery and update flow
 - AUTH-001.1 — Password reset error fall-through correction
 - AUTH-001-E2E — Real password recovery and first owner login
+- UX-001 — Protected app shell refinement and session handover
+- INFRA-001-SMOKE — First real operational smoke test: PASS WITH NON-BLOCKING ISSUES
 
 ## Supabase Staging State
 
@@ -54,6 +56,7 @@ Completed on EcoWash Staging:
 - Password recovery end-to-end completed.
 - Owner login completed.
 - Real dashboard visible at `/it/app`.
+- First real operational smoke test completed against staging.
 
 Applied migrations:
 
@@ -63,7 +66,13 @@ Applied migrations:
 - `20260728000300_app_007_logistics_photos_payments.sql`
 - `20260728000400_app_008_1_organization_timezone.sql`
 
-Do not reapply these migrations.
+Smoke-test corrective migration pending local commit:
+
+- `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql`
+
+This corrective migration was prepared after staging exposed `app_current_organization_id()` and `create_order()` defects, then validated by the successful order-creation retest. It must remain a forward-only migration. Do not edit already-approved migrations.
+
+Do not reapply approved migrations. Do not run `supabase db reset --linked`.
 
 ## APP-008 Dashboard State
 
@@ -106,7 +115,7 @@ Real owner password recovery and login have been completed. Do not request unnec
 
 ## UX-001 State
 
-UX-001 refines the protected application shell and handover documentation only:
+UX-001 is completed and pushed. It refined the protected application shell and handover documentation only:
 
 - protected `/[locale]/app` receives a dedicated full-height app layout
 - protected app navigation is visually separated from the public website
@@ -114,6 +123,54 @@ UX-001 refines the protected application shell and handover documentation only:
 - provisional dashboard foundation copy is replaced in five locales
 - application data logic remains unchanged
 - no database, migration, Supabase remote or dependency changes
+
+## INFRA-001-SMOKE State
+
+INFRA-001-SMOKE completed with result:
+
+`PASS WITH NON-BLOCKING ISSUES`
+
+Validated staging flow:
+
+- owner logout/login and protected app shell
+- customer creation/access
+- property creation/access linked to the customer
+- service and price visibility
+- order creation and detail redirect
+- item creation, duplicate row removal and total recalculation
+- production workflow through ready state
+- pickup completion
+- delivery completion
+- partial and final cash payments
+- photo upload and signed preview
+- dashboard coherence after real operational activity
+- logout protection and persistence after new login
+
+Smoke record used:
+
+- order `EW-000001`
+- final item total `25,00 EUR`
+- final payment state paid with zero balance
+- production state ready
+- pickup and delivery completed
+
+Corrective issues handled during smoke:
+
+- BUG-001: `create_order` failed because `app_current_organization_id()` used `min(uuid)` and `create_order()` had an ambiguous `id` reference.
+- BUG-002: order list PostgREST embed to `profiles` was ambiguous.
+- BUG-003/BUG-004: pickup and delivery embeds to `profiles` were ambiguous.
+- BUG-005: item creation was not idempotent server-side and needed immediate client submit locking.
+- BUG-006: order item editing showed too many simultaneous edit forms.
+
+Current corrective diff:
+
+- forward-only SQL migration replacing the affected helper/RPC definitions
+- explicit PostgREST foreign-key embeds for orders, pickups and deliveries
+- production-safe order-create error logging reduced to error code only
+- item form submit lock and one-edit-form-at-a-time order item UI
+- localized item edit/cancel labels
+
+No remote operation, commit or push should be performed without explicit approval.
 
 ## Safety Notes
 
@@ -128,31 +185,18 @@ UX-001 refines the protected application shell and handover documentation only:
 - Keep `supabase/.temp/` ignored.
 - Keep one task per commit.
 - Do not use Docker unless a new decision explicitly approves it.
-- Do not start new features before the first real operational smoke test.
+- Do not start new features before reviewing and committing INFRA-001-SMOKE closure.
+- Do not change smoke-test staging data as part of the corrective commit.
 
 ## Next Task
 
-Commit UX-001 after review:
+Review and commit the INFRA-001-SMOKE corrective changes:
 
-`UX-001 feat: refine protected app shell and session handover`
+`INFRA-001-SMOKE fix: resolve staging smoke test blockers`
 
-Then start:
+After that, keep any staging data cleanup or additional negative testing as a separate approved task.
 
-`INFRA-001-SMOKE — First real operational smoke test`
-
-Scope:
-
-- first customer
-- first property
-- first service/price
-- first order
-- production transition
-- payment
-- pickup/delivery
-- photo
-- populated dashboard
-
-Do not create demo data. Use only real staging test records intentionally created for the smoke test.
+Do not create demo data. Existing smoke records are intentional staging test records.
 
 ## Resume Commands
 
@@ -162,7 +206,9 @@ git status --short
 git branch --show-current
 git log -8 --oneline --decorate
 git ls-remote origin refs/heads/main
-npm run dev
+npm run lint
+npm run build
+git diff --check
 ```
 
 URLs to verify:

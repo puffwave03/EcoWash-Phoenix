@@ -398,8 +398,9 @@
     },
     "items": {
       "title": "Líneas del pedido",
-      "add": "Guardar línea",
+      "add": "Añadir línea",
       "save": "Guardar línea",
+      "cancel": "Cancelar",
       "edit": "Editar líneas",
       "service": "Servicio",
       "description": "Descripción",

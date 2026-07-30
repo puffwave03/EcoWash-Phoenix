@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-29
+Last Updated: 2026-07-30
 
-Current Mission: AUTH-001-E2E
+Current Mission: INFRA-001-SMOKE
 
 ---
 
@@ -47,22 +47,54 @@ AUTH-001 also requires manual staging validation with Supabase Auth redirect URL
 Current real-test status:
 
 - AUTH-001 quality gates passed.
-- Supabase returned `email rate limit exceeded`.
-- Do not request multiple recovery emails in quick succession.
-- Wait for the limit to clear, then request exactly one new recovery email and use only the latest email.
-- Do not mark password recovery end-to-end complete until owner login and `/[locale]/app` access succeed.
+- Password recovery E2E completed.
+- Owner login and `/it/app` access completed.
+- INFRA-001-SMOKE completed with `PASS WITH NON-BLOCKING ISSUES`.
 
-After owner login succeeds, run `INFRA-001-SMOKE` with real staging data:
+INFRA-001-SMOKE validated with real staging data:
 
 - first customer
 - first property
 - first service/price
 - first order
+- pickup/delivery
 - production transition
 - payment
-- pickup/delivery
 - photo
 - populated dashboard
+- logout/login persistence
+
+Smoke checkpoints:
+
+| Checkpoint | Area | Result |
+| --- | --- | --- |
+| 1 | Login and app shell | PASS |
+| 2 | Customer | PASS |
+| 3 | Property | PASS |
+| 4 | Service and price | PASS |
+| 5 | Order | PASS after corrective migration |
+| 6 | Item and total | PASS after item UI correction and manual duplicate removal |
+| 7 | Production | PASS |
+| 8 | Pickup | PASS |
+| 9 | Delivery | PASS |
+| 10 | Payment | PASS |
+| 11 | Photo | PASS |
+| 12 | Dashboard | PASS |
+| 13 | Logout/login | PASS |
+
+Smoke bugs resolved in the corrective diff:
+
+- BUG-001: `create_order` failed on staging due to `min(uuid)` and an ambiguous `id` reference.
+- BUG-002: order list embed used an ambiguous `profiles` relationship.
+- BUG-003/BUG-004: pickup and delivery embeds used ambiguous `profiles` relationships.
+- BUG-005: item creation needed immediate repeated-submit protection.
+- BUG-006: order item editing needed a single active edit form.
+
+Known non-blocking gaps from the smoke run:
+
+- Storage bucket privacy was not directly re-verified during the photo checkpoint, though the private bucket had been confirmed during INFRA-001.
+- Negative MIME/size upload tests were not executed during this smoke run.
+- Staging smoke records remain present and should only be cleaned up in a separate approved task.
 
 ## APP-007 Static Security Simulation
 

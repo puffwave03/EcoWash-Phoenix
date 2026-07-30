@@ -52,7 +52,7 @@ export async function createOrderAction(
     .single<{ id: string; order_number: string }>();
 
   if (error || !data) {
-    console.error("Order create failed", error?.code);
+    console.error("Order create failed", error?.code ?? "unknown");
     return fail("generic");
   }
 

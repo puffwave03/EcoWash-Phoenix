@@ -1,18 +1,29 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/Button";
-import type { Order, OrderItem } from "@/features/orders/types";
+import { OrderItemForm } from "@/components/orders/OrderItemForm";
+import type { Order, OrderActionState, OrderItem } from "@/features/orders/types";
+import type { Service } from "@/features/services/types";
 
 type OrderItemsText = {
+  cancel: string;
   description: string;
+  edit: string;
+  error: string;
   lineTotal: string;
+  piece: string;
   quantity: string;
   remove: string;
   removing: string;
+  saveEdit: string;
+  saving: string;
+  service: string;
   subtotal: string;
   total: string;
   unitPrice: string;
+  unitType: string;
+  weight: string;
 };
 
 function formatMoney(amount: number, currency: string, locale: string) {
@@ -23,16 +34,21 @@ export function OrderItems({
   items,
   locale,
   onRemove,
+  onSave,
   order,
+  services,
   text,
 }: {
   items: OrderItem[];
   locale: string;
   onRemove: (itemId: string) => Promise<void>;
+  onSave: (state: OrderActionState, formData: FormData) => Promise<OrderActionState>;
   order: Order;
+  services: Service[];
   text: OrderItemsText;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
@@ -47,14 +63,49 @@ export function OrderItems({
               <p className="text-sm text-muted">{item.quantity} {item.unitType}</p>
               <p className="text-sm text-muted">{formatMoney(item.unitPrice, order.currency, locale)}</p>
               <p className="text-sm text-muted">{formatMoney(item.lineTotal, order.currency, locale)}</p>
-              <Button
-                disabled={isPending}
-                onClick={() => startTransition(() => { void onRemove(item.id); })}
-                type="button"
-                variant="secondary"
-              >
-                {isPending ? text.removing : text.remove}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  disabled={isPending}
+                  onClick={() => setEditingItemId((current) => current === item.id ? null : item.id)}
+                  type="button"
+                  variant="secondary"
+                >
+                  {text.edit}
+                </Button>
+                <Button
+                  disabled={isPending}
+                  onClick={() => startTransition(() => { void onRemove(item.id); })}
+                  type="button"
+                  variant="secondary"
+                >
+                  {isPending ? text.removing : text.remove}
+                </Button>
+              </div>
+              {editingItemId === item.id ? (
+                <div className="rounded-card border border-border bg-primary-soft/40 p-4 md:col-span-5">
+                  <OrderItemForm
+                    action={onSave}
+                    item={item}
+                    onCancel={() => setEditingItemId(null)}
+                    onSuccess={() => setEditingItemId(null)}
+                    services={services}
+                    text={{
+                      addItem: text.saveEdit,
+                      cancel: text.cancel,
+                      description: text.description,
+                      error: text.error,
+                      notes: "",
+                      piece: text.piece,
+                      quantity: text.quantity,
+                      saving: text.saving,
+                      service: text.service,
+                      unitPrice: text.unitPrice,
+                      unitType: text.unitType,
+                      weight: text.weight,
+                    }}
+                  />
+                </div>
+              ) : null}
             </div>
           ))}
         </div>

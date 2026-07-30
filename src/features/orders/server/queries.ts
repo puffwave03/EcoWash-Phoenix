@@ -71,7 +71,7 @@ export type AssignmentOption = {
 };
 
 const ORDER_SELECT =
-  "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, is_active, created_at, customer:customers!inner(display_name), property:properties(name), assigned_to_profile:profiles(display_name)";
+  "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, is_active, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const ITEM_SELECT =
   "id, service_id, description, unit_type, quantity, unit_price, line_total, notes, is_active";
 const HISTORY_SELECT =

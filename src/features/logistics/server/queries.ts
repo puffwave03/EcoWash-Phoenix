@@ -56,8 +56,10 @@ function mapLogistics(row: LogisticsRow): LogisticsRecord {
   };
 }
 
-const LOGISTICS_SELECT =
-  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, cancellation_reason, fee, assigned_to_profile:profiles(display_name)";
+const PICKUP_SELECT =
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, cancellation_reason, fee, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name)";
+const DELIVERY_SELECT =
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, cancellation_reason, fee, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name)";
 
 export async function getOrderLogistics(locale: string, orderId: string): Promise<OrderLogistics> {
   const { membership } = await requireMembership(locale);
@@ -65,14 +67,14 @@ export async function getOrderLogistics(locale: string, orderId: string): Promis
   const [pickupResult, deliveryResult] = await Promise.all([
     supabase
       .from("pickups")
-      .select(LOGISTICS_SELECT)
+      .select(PICKUP_SELECT)
       .eq("organization_id", membership.organization.id)
       .eq("order_id", orderId)
       .neq("status", "cancelled")
       .maybeSingle<LogisticsRow>(),
     supabase
       .from("deliveries")
-      .select(LOGISTICS_SELECT)
+      .select(DELIVERY_SELECT)
       .eq("organization_id", membership.organization.id)
       .eq("order_id", orderId)
       .neq("status", "cancelled")

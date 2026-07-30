@@ -51,7 +51,8 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | INFRA-001 | Completed — Supabase staging connection and migration bootstrap |
 | AUTH-001 | Completed — Password recovery and update flow |
 | AUTH-001.1 | Completed — Password reset error handling correction |
-| UX-001 | In progress — Protected app shell refinement and session handover |
+| UX-001 | Completed — Protected app shell refinement and session handover |
+| INFRA-001-SMOKE | Passed with non-blocking issues — First real operational smoke test |
 
 Current public website includes:
 
@@ -109,8 +110,9 @@ Important limitations:
 - Owner Auth/profile/organization/location/membership bootstrap exists in staging
 - Password recovery code flow is implemented and verified end-to-end
 - Owner login succeeds and the real dashboard is visible at `/it/app`
-- Protected app shell refinement is in progress without application logic changes
-- No complete end-to-end operational smoke test with real data yet
+- Protected app shell refinement is completed
+- First real operational smoke test passed on EcoWash Staging with non-blocking issues
+- Smoke test corrective work is pending review and commit
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -127,10 +129,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `6769365`
-- Current mission: `UX-001 — Protected app shell refinement and session handover`
+- Latest approved and pushed development commit: `a607218`
+- Current mission: `INFRA-001-SMOKE — First real operational smoke test closure`
 - Current release state: Release-ready, deployment deferred
-- Next macro-task: commit UX-001 after review, then run the first real operational smoke test
+- Next macro-task: review and commit INFRA-001-SMOKE corrective changes, then keep staging cleanup/test follow-up separate
 
 Current visual direction:
 
@@ -185,8 +187,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-07-29
+Last Updated: 2026-07-30
 
-Current Mission: UX-001
+Current Mission: INFRA-001-SMOKE
 
-Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test
+Next Action: review and commit smoke-test fixes and documentation

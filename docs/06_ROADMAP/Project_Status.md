@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-29
+Last Updated: 2026-07-30
 
-Current Mission: UX-001
+Current Mission: INFRA-001-SMOKE
 
-Next Action: review and commit protected app shell refinement, then begin the first real operational smoke test
+Next Action: review and commit smoke-test fixes and documentation
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | UX-001 — Protected app shell refinement and session handover |
-| Last completed mission | AUTH-001.1 — Password reset error handling correction |
-| Latest approved and pushed commit | 6769365 |
+| Current mission | INFRA-001-SMOKE — First real operational smoke test closure |
+| Last completed mission | UX-001 — Protected app shell refinement and session handover |
+| Latest approved and pushed commit | a607218 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -45,10 +45,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001 status | Completed and pushed |
 | AUTH-001.1 status | Completed and pushed |
 | AUTH-001-E2E status | Completed; owner password recovery/login verified |
-| UX-001 status | In progress |
+| UX-001 status | Completed and pushed |
+| INFRA-001-SMOKE status | Passed with non-blocking issues; corrective changes pending review and commit |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test pending |
+| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
 
 ## Development Status
 
@@ -83,7 +84,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001 | Password recovery and update flow | Completed |
 | AUTH-001.1 | Password reset error handling correction | Completed |
 | AUTH-001-E2E | Complete real password recovery and first owner login | Completed |
-| UX-001 | Protected app shell refinement and session handover | In progress |
+| UX-001 | Protected app shell refinement and session handover | Completed |
+| INFRA-001-SMOKE | First real operational smoke test | Passed with non-blocking issues |
 
 ## Commit History
 
@@ -116,6 +118,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001 | f2e970a |
 | DOCS-007 | 491091b |
 | AUTH-001.1 | 6769365 |
+| UX-001 | a607218 |
 
 ## Documentation Commit History
 
@@ -158,7 +161,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `6769365` when network is available
+- Local `main` and `origin/main` point to `a607218` when network is available
 
 ## DEV-009.5 Completed State
 
@@ -213,7 +216,8 @@ Current DEV-010 state:
 - AUTH-001 is completed and pushed.
 - AUTH-001.1 is completed and pushed.
 - AUTH-001-E2E is completed; owner password recovery, login and `/it/app` access were verified.
-- UX-001 is in progress for protected app shell refinement and handover documentation.
+- UX-001 is completed and pushed.
+- INFRA-001-SMOKE passed on EcoWash Staging with non-blocking corrective changes pending review and commit.
 
 ## APP-007 Implementation State
 
@@ -315,7 +319,7 @@ Real recovery E2E is complete: the owner password was updated, login succeeded a
 
 ## UX-001 Implementation State
 
-UX-001 refines only the protected application shell and handover state:
+UX-001 completed and pushed the protected application shell and handover state:
 
 - dedicated full-height protected app shell under `/[locale]/app`
 - protected navigation visually separated from the public website
@@ -323,6 +327,34 @@ UX-001 refines only the protected application shell and handover state:
 - provisional dashboard foundation copy removed from `en`, `es`, `it`, `fr` and `de`
 - application data logic unchanged
 - no database, migration, Supabase remote or dependency changes
+
+## INFRA-001-SMOKE State
+
+INFRA-001-SMOKE validated the first real operational MVP path on EcoWash Staging:
+
+- owner logout/login and protected app shell
+- customer and property flow
+- service price flow
+- order creation and detail access
+- order item creation, edit and removal
+- production transitions through ready
+- pickup and delivery completion
+- partial and final cash payments
+- photo upload and preview
+- dashboard coherence after real activity
+
+Result:
+
+- `PASS WITH NON-BLOCKING ISSUES`
+
+Corrective work pending review and commit:
+
+- `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` fixes `app_current_organization_id()` and `create_order()` without editing prior migrations; the retest validated order creation on staging.
+- Order, pickup and delivery Supabase selects now use explicit foreign-key embeds where PostgREST saw multiple relationships to `profiles`.
+- Order item UI blocks repeated submits immediately and shows only one edit form at a time.
+- Diagnostic order-create logging was reduced to a production-safe error code only.
+
+Smoke staging data remains present. Do not clean up or alter staging records as part of this corrective commit.
 
 ## APP-002 Documentation State
 
@@ -518,7 +550,7 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Customers/properties/services/orders/workflow/logistics/photos/payments/dashboard foundations exist
 - Supabase Staging is connected and bootstrapped
 - First real owner login after password recovery is complete
-- No full end-to-end test with real Supabase data completed yet
+- First real operational smoke test passed on staging with non-blocking corrective changes pending review and commit
 - No staging deployment completed yet
 - No public signup
 - No real contact-form transmission
@@ -559,13 +591,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da UX-001 e prepariamo lo smoke test reale.”
+“Buongiorno, riprendiamo EcoWash Phoenix dalla chiusura INFRA-001-SMOKE e prepariamo il commit correttivo.”
 
 Exact starting state:
 
 - Branch `main`
-- Working tree contains only UX-001 changes until reviewed and committed
-- Local `main` synchronized with `origin/main` at `6769365` when network is available
+- Working tree contains only INFRA-001-SMOKE corrective changes until reviewed and committed
+- Local `main` synchronized with `origin/main` at `a607218` when network is available
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -581,7 +613,8 @@ Exact starting state:
 - AUTH-001 is completed and pushed
 - AUTH-001.1 is completed and pushed
 - AUTH-001-E2E is completed; owner login and `/it/app` access succeeded
-- UX-001 is in progress
+- UX-001 is completed and pushed
+- INFRA-001-SMOKE passed with non-blocking issues
 - Do not modify approved migrations before real project verification
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
@@ -589,7 +622,7 @@ Exact starting state:
 - Do not reapply already-applied migrations
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Do not begin new application features before smoke testing
+- Do not begin new application features before committing or explicitly closing the smoke-test corrective work
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -604,9 +637,9 @@ First checks:
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Review UX-001 diff.
+3. Review INFRA-001-SMOKE diff.
 4. Run quality gates.
-5. Commit UX-001 after approval.
-6. Start `npm run dev`.
+5. Commit INFRA-001-SMOKE after approval.
+6. Start `npm run dev` only if a manual retest is requested.
 7. Open `/it/app`.
-8. Begin `INFRA-001-SMOKE — First real operational smoke test`.
+8. Keep staging cleanup or negative tests in a separate approved task.

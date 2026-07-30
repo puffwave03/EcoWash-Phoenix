@@ -122,45 +122,27 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         onRemove={removeOrderItemAction.bind(null, locale, order.id)}
         order={order}
         text={{
+          cancel: t("items.cancel"),
           description: t("items.description"),
+          edit: t("edit"),
+          error: t("items.error"),
           lineTotal: t("items.lineTotal"),
+          piece: t("unitTypes.piece"),
           quantity: t("items.quantity"),
           remove: t("items.remove"),
           removing: t("items.removing"),
+          saveEdit: t("items.save"),
+          saving: t("items.saving"),
+          service: t("items.service"),
           subtotal: t("subtotal"),
           total: t("total"),
           unitPrice: t("items.unitPrice"),
+          unitType: t("items.unitType"),
+          weight: t("unitTypes.weight"),
         }}
+        onSave={saveOrderItemAction.bind(null, locale, order.id)}
+        services={services}
       />
-
-      {items.length > 0 ? (
-        <Card className="space-y-4">
-          <h3 className="text-xl font-semibold text-primary">{t("items.edit")}</h3>
-          <div className="space-y-4">
-            {items.map((item) => (
-              <OrderItemForm
-                action={saveOrderItemAction.bind(null, locale, order.id)}
-                item={item}
-                key={item.id}
-                services={services}
-                text={{
-                  addItem: t("items.save"),
-                  description: t("items.description"),
-                  error: t("items.error"),
-                  notes: t("items.notes"),
-                  piece: t("unitTypes.piece"),
-                  quantity: t("items.quantity"),
-                  saving: t("items.saving"),
-                  service: t("items.service"),
-                  unitPrice: t("items.unitPrice"),
-                  unitType: t("items.unitType"),
-                  weight: t("unitTypes.weight"),
-                }}
-              />
-            ))}
-          </div>
-        </Card>
-      ) : null}
 
       {canEditCatalog(access.membership.role) ? (
         <Card>

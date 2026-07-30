@@ -398,8 +398,9 @@
     },
     "items": {
       "title": "Auftragspositionen",
-      "add": "Position speichern",
+      "add": "Position hinzufügen",
       "save": "Position speichern",
+      "cancel": "Abbrechen",
       "edit": "Positionen bearbeiten",
       "service": "Service",
       "description": "Beschreibung",
