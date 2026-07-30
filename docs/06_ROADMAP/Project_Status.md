@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001.1
+Current Mission: UX-002
 
-Next Action: reconcile Supabase migration history and finalize smoke baseline
+Next Action: refine protected app landing/dashboard and operational layout
 
 ---
 
@@ -27,8 +27,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline |
-| Last completed mission | INFRA-001-SMOKE — First real operational smoke test |
+| Current mission | UX-002 — App landing/dashboard and operational layout refinement |
+| Last completed mission | INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline |
 | Latest approved and pushed commit | f94df88 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
@@ -47,8 +47,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001-E2E status | Completed; owner password recovery/login verified |
 | UX-001 status | Completed and pushed |
 | INFRA-001-SMOKE status | Completed and pushed; passed with non-blocking issues |
-| INFRA-001.1 status | Next approved task; not started |
-| UX-002 status | Candidate follow-up; not started |
+| INFRA-001.1 status | Completed |
+| UX-002 status | Next approved task |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
@@ -88,8 +88,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001-E2E | Complete real password recovery and first owner login | Completed |
 | UX-001 | Protected app shell refinement and session handover | Completed |
 | INFRA-001-SMOKE | First real operational smoke test | Completed and pushed; passed with non-blocking issues |
-| INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Next |
-| UX-002 | App landing/dashboard and operational layout refinement | Candidate, not started |
+| INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Completed |
+| UX-002 | App landing/dashboard and operational layout refinement | Next |
 
 ## Commit History
 
@@ -206,7 +206,7 @@ Current DEV-010 state:
 - Supabase EcoWash Staging is connected.
 - The five approved migrations have been applied successfully to staging.
 - Local and remote migration histories were aligned through APP-008.1 before smoke.
-- Smoke corrective SQL was applied manually and requires INFRA-001.1 history reconciliation.
+- Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` Storage bucket exists and is private with 1 MB image limit.
 - First owner Auth user, profile, organization, location and owner membership exist in staging.
 - APP-001 is approved.
@@ -224,7 +224,8 @@ Current DEV-010 state:
 - AUTH-001-E2E is completed; owner password recovery, login and `/it/app` access were verified.
 - UX-001 is completed and pushed.
 - INFRA-001-SMOKE passed on EcoWash Staging and is committed at `f94df88`.
-- INFRA-001.1 is the next approved task to reconcile migration history after the manual SQL correction used during smoke.
+- INFRA-001.1 reconciled migration history after the manual SQL correction used during smoke.
+- UX-002 is the next approved task.
 
 ## APP-007 Implementation State
 
@@ -361,24 +362,24 @@ Corrective work committed in `f94df88`:
 - Order item UI blocks repeated submits immediately and shows only one edit form at a time.
 - Diagnostic order-create logging was reduced to a production-safe error code only.
 
-Smoke staging data remains present. Do not clean up or alter staging records before INFRA-001.1 reconciliation is complete.
+Smoke staging data remains present for UX and follow-up validation.
 
-Migration history warning:
+Migration history state:
 
-- REMOTE SQL APPLIED MANUALLY — MIGRATION HISTORY VERIFICATION PENDING.
-- The corrective SQL was applied manually in Supabase SQL Editor during smoke.
-- The matching local migration is committed, but remote migration history must be checked before any further migration operation.
-- Do not rerun SQL blindly and do not use `migration repair` without diagnosis and approval.
+- Supabase migration history reconciled successfully on 2026-07-30.
+- The corrective SQL was applied manually in Supabase SQL Editor during smoke, and INFRA-001.1 reconciled the matching migration history entry.
+- Do not rerun the corrective migration.
+
+INFRA-001.1 read-only verification:
+
+- `order-media` bucket exists, is private, has a 1 MB limit and allows JPEG, PNG and WebP.
+- Smoke customer, property, service, order `EW-000001`, one active item, total `25,00 EUR`, production ready, completed pickup, completed delivery, payments totaling `25,00 EUR`, zero balance and one intake photo were verified.
 
 Next approved task:
 
-- `INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
-
-Following candidate task:
-
 - `UX-002 — App landing/dashboard and operational layout refinement`
 
-UX-002 is not started. It will likely cover dashboard hierarchy, visual density, desktop/mobile operational layout, clearer login access from the public site, and simpler panels/actions. It must not change stable domain logic without a separate approved task.
+UX-002 will likely cover dashboard hierarchy, visual density, desktop/mobile operational layout, clearer login access from the public site, and simpler panels/actions. It must not change stable domain logic without a separate approved task.
 
 ## APP-002 Documentation State
 
@@ -575,7 +576,7 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Supabase Staging is connected and bootstrapped
 - First real owner login after password recovery is complete
 - First real operational smoke test passed on staging and corrective code is committed
-- Remote migration history reconciliation pending after manual SQL correction
+- Supabase migration history reconciled successfully on 2026-07-30
 - No staging deployment completed yet
 - No public signup
 - No real contact-form transmission
@@ -616,13 +617,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da INFRA-001.1 e riconciliamo la migration history Supabase.”
+“Buongiorno, riprendiamo EcoWash Phoenix da UX-002 e rifiniamo la dashboard iniziale dell’area protetta.”
 
 Exact starting state:
 
 - Branch `main`
-- Working tree expected clean
-- Local `main` and local `origin/main` at `f94df88`; verify remote with network
+- Working tree expected to contain only INFRA-001.1 documentation closeout until committed
+- Local `main` and local `origin/main` at `6317c65` before this documentation closeout
 - Current release state is Release-ready, deployment deferred
 - Production domain selection and purchase are still pending
 - APP-001 is approved
@@ -640,7 +641,8 @@ Exact starting state:
 - AUTH-001-E2E is completed; owner login and `/it/app` access succeeded
 - UX-001 is completed and pushed
 - INFRA-001-SMOKE passed with non-blocking issues and is committed
-- INFRA-001.1 is next; do not start UX-002 first
+- INFRA-001.1 is completed
+- UX-002 is next
 - Do not modify approved migrations before real project verification
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
@@ -648,7 +650,7 @@ Exact starting state:
 - Do not reapply already-applied migrations
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Do not begin new application features before INFRA-001.1 is closed or explicitly paused
+- Do not change stable domain logic, migrations or Supabase remote state during UX-002 without a separate approved task
 - Do not redesign the approved homepage unless a verified defect requires it
 
 First checks:
@@ -663,10 +665,8 @@ First checks:
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Authenticate Supabase CLI in a controlled way only inside INFRA-001.1.
-4. Run `supabase migration list`.
-5. Compare local and remote migration histories.
-6. Verify whether `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` is present in remote history.
-7. Do not rerun SQL blindly.
-8. Verify `order-media` and run final read-only checks.
-9. Update docs and close INFRA-001.1.
+3. Review UX-002 scope and screenshots before changing UI.
+4. Keep database, migrations and Supabase remote state unchanged.
+5. Audit `/[locale]/app` landing/dashboard hierarchy, density and navigation.
+6. Check public-site access to login.
+7. Plan focused UI changes before implementation.

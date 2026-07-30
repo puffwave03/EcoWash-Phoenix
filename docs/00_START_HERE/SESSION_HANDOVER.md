@@ -6,19 +6,19 @@ Date: 2026-07-30
 
 Approximate closeout time: around 18:00 Europe/Madrid
 
-Session checkpoint: INFRA-001-SMOKE completed; INFRA-001.1 next
+Session checkpoint: INFRA-001.1 completed; UX-002 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-HEAD: `f94df88 INFRA-001-SMOKE fix: resolve staging smoke test blockers`
+HEAD at INFRA-001.1 start: `6317c65 DOCS-008 docs: update session closeout after INFRA-001-SMOKE`
 
-Origin/main status: local `main` and local `origin/main` point to `f94df88`; verify with network tomorrow.
+Origin/main status at INFRA-001.1 start: local `main` and `origin/main` point to `6317c65`.
 
-Working tree status at closeout start: clean
+Working tree status at INFRA-001.1 start: clean
 
-Commit status: INFRA-001-SMOKE already committed and pushed.
+Commit status: INFRA-001.1 documentation closeout pending review and commit.
 
 ---
 
@@ -38,6 +38,7 @@ Commit status: INFRA-001-SMOKE already committed and pushed.
 - AUTH-001-E2E — Real password recovery and first owner login
 - UX-001 — Protected app shell refinement and session handover
 - INFRA-001-SMOKE — First real operational smoke test: PASS WITH NON-BLOCKING ISSUES
+- INFRA-001.1 — Supabase migration history reconciliation and smoke baseline finalization
 
 ## Supabase Staging State
 
@@ -52,6 +53,9 @@ Completed on EcoWash Staging:
 - Real dashboard visible at `/it/app`.
 - UX-001 protected app shell completed.
 - INFRA-001-SMOKE completed end to end.
+- INFRA-001.1 completed.
+- Supabase migration history reconciled successfully on 2026-07-30.
+- `order-media` bucket verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 
 Applied baseline migrations:
 
@@ -61,17 +65,17 @@ Applied baseline migrations:
 - `20260728000300_app_007_logistics_photos_payments.sql`
 - `20260728000400_app_008_1_organization_timezone.sql`
 
-Smoke corrective migration now committed locally:
+Smoke corrective migration:
 
 - `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql`
 
-## Migration Warning
+## Migration History State
 
-REMOTE SQL APPLIED MANUALLY — MIGRATION HISTORY VERIFICATION PENDING
+Supabase migration history reconciled successfully on 2026-07-30.
 
-During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. The matching local migration is now present in Git, but the remote migration history still needs a controlled CLI verification.
+During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
-Do not rerun the corrective migration blindly. Do not use `supabase migration repair` without diagnosis and explicit approval. Do not run `supabase db reset --linked`, `supabase migration up`, or `supabase db push` during closeout. The next task must compare local and remote migration state before choosing a reconciliation method.
+Do not rerun the corrective migration. Do not use `supabase db reset --linked`, `supabase migration up`, or `supabase db push` unless a future task explicitly approves it.
 
 ## INFRA-001-SMOKE Result
 
@@ -112,7 +116,7 @@ Smoke staging records retained:
 - balance `0,00 EUR`
 - one intake photo
 
-Do not delete or alter smoke records before migration reconciliation is complete.
+Smoke records remain available on staging for UX and follow-up validation.
 
 ## Bugs Resolved During Smoke
 
@@ -125,12 +129,11 @@ Do not delete or alter smoke records before migration reconciliation is complete
 
 ## Unverified or Non-Final Items
 
-- `order-media` bucket privacy was not reverified directly during the final photo checkpoint, though it had been confirmed during INFRA-001.
 - Negative MIME/size upload tests were not executed during smoke.
 - Overpayment behavior was not documented with a definitive result.
 - Payment actor visibility was not documented with a definitive result.
-- Final read-only database verification via CLI was not executed.
-- Remote migration history is not reconciled for the manually applied smoke corrective SQL.
+- `order-media` bucket privacy, file size limit and MIME allowlist were verified read-only during INFRA-001.1.
+- Final smoke baseline read-only verification passed during INFRA-001.1.
 
 ## Security Notes
 
@@ -142,30 +145,13 @@ Do not delete or alter smoke records before migration reconciliation is complete
 - Keep `supabase/.temp/` ignored.
 - Do not use Docker unless a new decision explicitly approves it.
 - Keep one task per commit.
-- Do not start UX-002 before INFRA-001.1 is closed or explicitly paused.
+- Do not modify stable domain logic, migrations or Supabase remote state during UX-002 without a separate approved task.
 
 ## Next Approved Task
 
-`INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
-
-Scope for tomorrow:
-
-1. Verify Git local/remote state.
-2. Authenticate Supabase CLI in a controlled way if required.
-3. Run `supabase migration list`.
-4. Compare local and remote migration histories.
-5. Verify presence or absence of `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` in remote history.
-6. Do not rerun SQL blindly.
-7. Define the safe reconciliation method.
-8. Verify the `order-media` bucket.
-9. Execute final read-only verification.
-10. Update docs and close INFRA-001.1.
-
-## Following Candidate Task
-
 `UX-002 — App landing/dashboard and operational layout refinement`
 
-UX-002 is not started. Likely scope after INFRA-001.1:
+Likely scope:
 
 - initial dashboard hierarchy
 - visual density and scanning

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001.1
+Current Mission: UX-002
 
 ---
 
@@ -51,7 +51,8 @@ Current real-test status:
 - Owner login and `/it/app` access completed.
 - INFRA-001-SMOKE completed with `PASS WITH NON-BLOCKING ISSUES`.
 - INFRA-001-SMOKE corrective work is committed at `f94df88`.
-- INFRA-001.1 is pending for remote migration history reconciliation.
+- INFRA-001.1 completed remote migration history reconciliation.
+- Supabase migration history reconciled successfully on 2026-07-30.
 
 INFRA-001-SMOKE validated with real staging data:
 
@@ -95,6 +96,25 @@ Smoke final state:
 - one intake photo uploaded and previewed
 - data persisted after logout/login
 
+INFRA-001.1 read-only verification:
+
+- `order-media` bucket exists
+- `order-media` is private
+- file size limit is 1 MB
+- MIME allowlist contains JPEG, PNG and WebP
+- `Cliente Smoke Test` present
+- `Appartamento Smoke Test` present
+- `Lavaggio e asciugatura test` present
+- order `EW-000001` present
+- one active order item
+- order total `25,00 EUR`
+- production status `Pronto`
+- pickup completed
+- delivery completed
+- payments total `25,00 EUR`
+- balance due `0,00 EUR`
+- one active intake photo
+
 Smoke bugs resolved in the corrective diff:
 
 - BUG-001: `create_order` failed on staging due to `min(uuid)` and an ambiguous `id` reference.
@@ -109,8 +129,8 @@ Known non-blocking gaps from the smoke run:
 - Negative MIME/size upload tests were not executed during this smoke run.
 - Overpayment behavior was not documented with a definitive result.
 - Payment actor visibility was not documented with a definitive result.
-- Final read-only database verification via CLI was not executed.
-- Remote migration history is not reconciled for the manually applied smoke corrective SQL.
+- Final read-only database verification via CLI completed during INFRA-001.1.
+- Remote migration history is reconciled for the manually applied smoke corrective SQL.
 - Staging smoke records remain present and should only be cleaned up in a separate approved task.
 
 ## APP-007 Static Security Simulation

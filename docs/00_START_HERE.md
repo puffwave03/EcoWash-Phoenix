@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001.1
+Current Mission: UX-002
 
-Next Action: Reconcile Supabase migration history and finalize smoke baseline
+Next Action: Refine protected app landing/dashboard and operational layout
 
 ---
 
@@ -23,15 +23,17 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Latest approved and pushed development commit: `f94df88 INFRA-001-SMOKE fix: resolve staging smoke test blockers`
-- Current mission: `INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
+- Latest documentation commit: `6317c65 DOCS-008 docs: update session closeout after INFRA-001-SMOKE`
+- Current mission: `UX-002 — App landing/dashboard and operational layout refinement`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
+- INFRA-001.1 is completed.
 - Supabase Staging is connected and bootstrapped.
 - Owner login, dashboard, customer, property, service, order, item, production, pickup, delivery, payment, photo and logout/login persistence were validated in staging.
-- Smoke data remains on staging and must not be deleted before reconciliation.
-- Remote SQL was applied manually during smoke; migration history verification is pending.
-- UX-002 is only a following candidate task and is not started.
-- Working tree is expected to be clean before starting INFRA-001.1.
-- `main` and `origin/main` are expected to be synchronized at `f94df88`; verify with network.
+- Smoke data remains on staging.
+- Supabase migration history reconciled successfully on 2026-07-30.
+- `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
+- Working tree is expected to contain only the INFRA-001.1 documentation closeout until committed.
+- `main` and `origin/main` are expected to be synchronized at `6317c65` until this documentation closeout is committed.
 
 ---
 
@@ -66,7 +68,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da INFRA-001.1 e riconciliamo la migration history Supabase.”
+“Buongiorno, riprendiamo EcoWash Phoenix da UX-002 e rifiniamo la dashboard iniziale dell’area protetta.”
 
 Start by confirming:
 
@@ -85,4 +87,4 @@ Then read:
 - `docs/06_ROADMAP/Project_Status.md`
 - `docs/06_ROADMAP/Milestones.md`
 
-Do not run migration commands until the target project and current migration history are verified. Do not use Docker. Do not start UX-002 until INFRA-001.1 is closed or explicitly paused.
+Do not run migration commands for UX-002. Do not use Docker. Do not modify stable domain logic, migrations or Supabase remote state during UX-002 unless a separate approved task explicitly requires it.

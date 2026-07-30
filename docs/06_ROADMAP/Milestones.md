@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001.1
+Current Mission: UX-002
 
-Next Action: reconcile Supabase migration history and finalize smoke baseline
+Next Action: refine protected app landing/dashboard and operational layout
 
 ---
 
@@ -103,14 +103,14 @@ Approved and current areas:
 - AUTH-001-E2E — Complete real password recovery and first owner login: Completed
 - UX-001 — Protected app shell refinement and session handover: Completed and pushed
 - INFRA-001-SMOKE — First real operational smoke test: Completed and pushed; passed with non-blocking issues
-- INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline: Next
-- UX-002 — App landing/dashboard and operational layout refinement: Candidate follow-up, not started
+- INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline: Completed
+- UX-002 — App landing/dashboard and operational layout refinement: Next
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline
+- UX-002 — App landing/dashboard and operational layout refinement
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -140,11 +140,16 @@ Corrective work committed in `f94df88`:
 Not yet completed:
 
 - production-ready release
-- remote migration history reconciliation for the smoke corrective SQL
 - full security audit
-- UX-002
 - public deployment
 
-Next phase after INFRA-001.1:
+INFRA-001.1 completed:
 
-- keep any staging cleanup, negative testing or new feature work as a separate approved task
+- Supabase migration history reconciled successfully on 2026-07-30.
+- `order-media` bucket verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
+- Smoke baseline verified read-only: customer, property, service, order, item, production, pickup, delivery, payments, zero balance and intake photo.
+
+UX-002 scope guard:
+
+- refine dashboard hierarchy, visual density, desktop/mobile operational layout, public login access and action clarity
+- do not change stable domain logic, migrations or Supabase remote state without a separate approved task

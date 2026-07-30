@@ -53,6 +53,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | AUTH-001.1 | Completed — Password reset error handling correction |
 | UX-001 | Completed — Protected app shell refinement and session handover |
 | INFRA-001-SMOKE | Completed and pushed — First real operational smoke test passed with non-blocking issues |
+| INFRA-001.1 | Completed — Supabase migration history reconciled and smoke baseline finalized |
 
 Current public website includes:
 
@@ -113,7 +114,8 @@ Important limitations:
 - Protected app shell refinement is completed
 - First real operational smoke test passed on EcoWash Staging with non-blocking issues
 - Smoke test corrective work is committed and pushed
-- Supabase SQL correction was applied manually during smoke; migration history reconciliation remains pending
+- Supabase migration history reconciled successfully on 2026-07-30
+- UX-002 app landing/dashboard and operational layout refinement is the next task
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -131,9 +133,9 @@ Repository information:
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
 - Latest approved and pushed development commit: `f94df88`
-- Current mission: `INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline`
+- Current mission: `UX-002 — App landing/dashboard and operational layout refinement`
 - Current release state: Release-ready, deployment deferred
-- Next macro-task: reconcile Supabase migration history safely, then plan UX-002 as a separate follow-up
+- Next macro-task: refine the protected app landing/dashboard and operational layout
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -191,6 +193,6 @@ Document Status: Active
 
 Last Updated: 2026-07-30
 
-Current Mission: INFRA-001.1
+Current Mission: UX-002
 
-Next Action: reconcile Supabase migration history and finalize smoke baseline
+Next Action: refine protected app landing/dashboard and operational layout
