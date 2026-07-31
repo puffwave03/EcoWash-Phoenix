@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-30
+Last Updated: 2026-07-31
 
-Current Mission: COMM-001
+Current Mission: PRODUCT-001
 
-Next Action: finalize commercial roadmap priorities, then continue UX-002 app refinement
+Next Action: close commercial readiness and feature-gap audit, then continue M1 commercial pilot baseline
 
 ---
 
@@ -25,11 +25,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Item | Status |
 | --- | --- |
 | Project | EcoWash Phoenix |
-| Current phase | SaaS Platform Foundation — Implementation |
-| Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | COMM-001 — Commercial roadmap extraction and prioritization |
-| Last completed mission | UX-002.1 — Public login entry and mobile navigation clarity |
-| Latest approved and pushed commit | d20a5d8 |
+| Current phase | Commercial Readiness |
+| Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
+| Current mission | PRODUCT-001 — Commercial readiness and feature-gap audit |
+| Last completed mission | COMM-001 — Commercial roadmap extraction and prioritization |
+| Latest approved and pushed commit | b0f6b81 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -48,13 +48,14 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-001 status | Completed and pushed |
 | INFRA-001-SMOKE status | Completed and pushed; passed with non-blocking issues |
 | INFRA-001.1 status | Completed |
-| UX-002 status | Next commercial UX task after roadmap documentation |
+| UX-002 status | Next P0 implementation task in M1 |
 | UX-002.1 status | Completed and pushed |
-| COMM-001 status | Documentation update in progress |
+| COMM-001 status | Completed and pushed |
+| PRODUCT-001 status | Documentation update in progress |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
-| Commercial readiness | MVP validated on staging; production readiness, business administration, search, reporting and customer-facing growth remain planned |
+| Commercial readiness | Staging MVP validated; M1 production/security/QA/UX readiness is required before commercial pilot |
 
 ## Development Status
 
@@ -94,7 +95,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Completed |
 | UX-002 | App landing/dashboard and operational layout refinement | Next |
 | UX-002.1 | Public login entry and mobile navigation clarity | Completed |
-| COMM-001 | Commercial roadmap extraction and prioritization | In progress |
+| COMM-001 | Commercial roadmap extraction and prioritization | Completed |
+| PRODUCT-001 | Commercial readiness and feature-gap audit | In progress |
 
 ## Commit History
 
@@ -132,6 +134,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DOCS-008 | 6317c65 |
 | DOCS-009 | 4ec74d3 |
 | UX-002.1 | d20a5d8 |
+| COMM-001 | b0f6b81 |
 
 ## Documentation Commit History
 
@@ -174,7 +177,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and local `origin/main` point to `d20a5d8` at the current roadmap audit baseline.
+- Local `main` and `origin/main` point to `b0f6b81` at the PRODUCT-001 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -236,50 +239,84 @@ Current DEV-010 state:
 - UX-002 is the next approved task.
 - UX-002.1 is completed and pushed; the public homepage has localized protected-app entry from desktop and mobile navigation.
 
-## Commercial Roadmap State
+## PRODUCT-001 Commercial Readiness State
 
-The staging MVP is operationally validated, but not yet commercial-ready. The next product work should prioritize features that make the current app reliable, administrable and demonstrable before adding broad future modules.
+PRODUCT-001 compares documentation against code, migration, route, component, Server Action and smoke evidence. The current app is a validated staging MVP, not yet a production-commercial product.
 
-Priority 1 — Sellable operations baseline:
+Implemented features:
 
-- UX-002 app landing, dashboard hierarchy and operational layout refinement
-- production deployment readiness
-- repeatable smoke test checklist
-- full Supabase RLS, Storage and browser-secret audit
+- multilingual public website
+- protected app entry from public navigation
+- Supabase Auth login, logout and password recovery
+- tenant foundation with organizations, locations, profiles and memberships
+- customers and properties
+- service catalog and standard prices
+- orders, order items, totals and discounts
+- production workflow and status history
+- pickup and delivery
+- manual payments with derived payment summary
+- private order photos with short-lived signed URLs
+- operational dashboard using real tenant data
+- organization timezone for dashboard day windows
+- first real staging smoke baseline through order `EW-000001`
 
-Priority 2 — business administration:
+Partially implemented features:
 
-- owner-managed staff invitations and membership lifecycle
-- organization and location settings
-- service catalog and price management hardening
-- user-facing audit trail for sensitive changes
+- role model exists for `owner`, `manager` and `staff`, but there is no owner-facing staff invitation or lifecycle UI
+- service catalog and standard prices exist, but customer/property override pricing remains future scope
+- assignment fields exist, but there are no dedicated staff worklists or assignment-centered production views
+- workflow history and payment/logistics actor fields exist, but no general user-facing audit log module exists
+- dashboard summarizes operations, but daily close, open balance reports and exports are not implemented
 
-Priority 3 — operational speed:
+Missing commercial-readiness features:
 
-- global search across orders, customers, properties and services
-- production queue filters, assignment views and staff worklists
-- notes and structured issues
-- QR order lookup without personally identifiable information
-
-Priority 4 — management reporting:
-
-- daily payment close by currency and method
-- open balance and overdue collection reports
-- service volume and order throughput summaries
+- production deployment readiness and domain/environment decision
+- full Supabase RLS, Storage, grants, RPC and browser-secret audit
+- repeatable smoke/regression checklist for release
+- owner-managed staff invitation, activation and deactivation
+- organization and location settings UI
+- global search
+- structured notes and issues
+- daily payment close and open balance reports
 - CSV export for accounting or operational handoff
+- customer portal, online payments, invoices/PDFs, notifications and mobile app
 
-Priority 5 — customer-facing and advanced growth:
+Priority classification:
 
-- customer self-service portal
-- online payment providers
-- fiscal invoices and advanced PDFs
-- customer notifications
-- native mobile app
-- OCR, advanced analytics, offline mode, Realtime and Edge Functions only after a verified need
+| Priority | Meaning | Features |
+| --- | --- | --- |
+| P0 | Required before commercial pilot | UX-002, RELEASE-001, SEC-001, QA-001 |
+| P1 | Required for first paid internal operations | AUTH-002, ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
+| P2 | Strong operational/commercial differentiators | OPS-001, OPS-002, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P3 | Future growth after internal stability | CUSTOMER-001, PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
+
+M1 — Commercial Pilot Baseline:
+
+- UX-002 app layout/dashboard refinement
+- RELEASE-001 production deployment readiness
+- SEC-001 Supabase security audit
+- QA-001 repeatable smoke/regression checklist
+
+M2 — First Paid Operations:
+
+- AUTH-002 staff lifecycle
+- ORG-001 organization/location settings
+- CATALOG-002 catalog hardening
+- SEARCH-001 global search
+- AUDIT-001 audit trail
+
+M3 — Operational Scale And Management Control:
+
+- OPS-001 staff worklists
+- OPS-002 notes and issues
+- REPORT-001 daily close
+- REPORT-002 open balance report
+- EXPORT-001 CSV export
+- QR-001 PII-safe QR lookup
 
 Commercial scope guard:
 
-- do not add customer-facing features before internal operations are stable
+- do not start P3 customer-facing features before M1-M3 are complete or explicitly reprioritized
 - do not combine currencies in financial reporting
 - do not expose service-role credentials or privileged membership controls to browser code
 - keep production, fulfillment, payment and issues as independent dimensions

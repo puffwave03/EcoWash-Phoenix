@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-31
 
-Current Mission: APP-008.1
+Current Mission: PRODUCT-001
 
 ---
 
@@ -18,9 +18,9 @@ Define the approved MVP feature boundary for the future EcoWash operations platf
 
 ## Contents
 
-APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. APP-007 adds pickup, delivery, private order photos and manual payments. APP-008 adds the protected operational overview dashboard in implementation review.
+APP-006 implements the first operational order workflow slice: services, standard prices, orders, order items and immutable production status history. APP-007 adds pickup, delivery, private order photos and manual payments. APP-008 adds the protected operational overview dashboard. APP-008.1 adds organization timezone support. INFRA-001-SMOKE validates the first real staging flow end to end.
 
-## MVP Must Have
+## Implemented MVP Baseline
 
 - Organization boundary for all operational data
 - Owner, manager and staff profiles with role-based access
@@ -33,10 +33,31 @@ APP-006 implements the first operational order workflow slice: services, standar
 - Optional pickup and delivery per order
 - Order photos for intake, processing, quality, issues, delivery and payment proof
 - Manual payments
+- Base dashboard metrics from real operational records
+- Organization timezone for daily dashboard windows
+- Public login access to the protected app
+
+## Partial Features
+
+- Role model exists, but owner-facing staff invitation and lifecycle management are not implemented.
+- Assignment fields exist for orders/logistics, but staff worklists and assignment-centered views are not implemented.
+- Service catalog and standard pricing exist, but customer/property price overrides are not implemented in the app.
+- Production status history and payment/logistics actors exist, but a general user-facing audit log is not implemented.
+- Dashboard metrics exist, but daily close, open balance reporting and exports are not implemented.
+
+## Missing Commercial Features
+
+- Production deployment readiness and domain/environment decision
+- Full Supabase RLS, Storage, grants, RPC and browser-secret audit
+- Repeatable smoke/regression checklist for commercial release
+- Staff invitation, activation and deactivation
+- Organization and location settings UI
 - Internal notes and future customer-visible notes
 - Order issues/discrepancies separated from production status
 - Search across orders, customers, properties and service status
-- Base dashboard metrics from real operational records
+- Daily payment close by currency and method
+- Open balance and overdue collection report
+- CSV export for operational/accounting handoff
 
 ## APP-008 Operational Dashboard
 

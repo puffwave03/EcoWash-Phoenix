@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-30
+Last Updated: 2026-07-31
 
-Current Mission: COMM-001
+Current Mission: PRODUCT-001
 
-Next Action: Commercial roadmap audit and app UX refinement
+Next Action: Close commercial readiness and feature-gap audit
 
 ---
 
@@ -112,117 +112,151 @@ Pending areas:
 
 ---
 
-## Commercialization Roadmap
+## Commercial Readiness Roadmap
 
-The first marketable EcoWash product should prioritize reliability, clarity and daily operational value before adding broad platform features. The project already has a working staging MVP; the next roadmap should turn it into a sellable internal operations product for the first EcoWash business.
+PRODUCT-001 treats code, migrations, Server Actions, routes, smoke results and active documentation as separate evidence sources. A feature is commercial-ready only when it exists in code or schema, is reachable through the app where needed, and has a clear verification path.
 
-### Priority 1 — Sellable Operations Baseline
+### Current Implemented Baseline
 
-Status: Next
+Status: Staging MVP validated, not yet production-commercial.
 
-Goal: make the existing MVP safe, clear and credible for real daily use.
+Implemented and smoke-validated:
 
-Recommended missions:
+- public multilingual website and contact/demo presentation flow
+- localized protected login entry from the public header
+- Supabase Auth login, logout and password recovery
+- tenant foundation with organizations, locations, profiles and memberships
+- customers and properties
+- services and standard prices
+- orders, order items, production workflow and status history
+- pickup and delivery
+- manual payments
+- private order photos with signed previews
+- operational dashboard over real tenant data
+- organization timezone for dashboard day windows
+- first real staging smoke flow through order `EW-000001`
 
-- UX-002 — App landing, dashboard hierarchy and operational layout refinement.
-- UX-002.1 — Public login entry and mobile navigation clarity.
-- RELEASE-001 — Production deployment readiness and environment verification.
-- QA-001 — Repeatable smoke test checklist for customer, property, service, order, logistics, payment, photo and dashboard flows.
-- SEC-001 — Full RLS, storage and browser-secret audit before production.
+Partially implemented:
 
-Commercial value:
+- role model: `owner`, `manager` and `staff` exist, but there is no owner-facing invitation or staff lifecycle UI
+- catalog/pricing: service and standard price management exists, but no customer/property price override UI
+- assignments: order/logistics assignment fields exist, but staff worklists and assignment-centered views are still planned
+- audit: status/payment/logistics histories exist for specific flows, but no canonical user-facing audit log module exists
+- reporting: dashboard has operational summaries, but no daily close, open balance report or export workflow
 
-- owner can reliably log in, understand the day and operate the business
-- staff can work without confusing public-site and protected-app navigation
-- the system can be demonstrated without demo data or fragile manual explanations
+Missing for commercial readiness:
 
-### Priority 2 — Business Administration
+- production deployment and domain readiness
+- full Supabase RLS, Storage, grant and browser-secret audit
+- repeatable smoke/regression checklist for production release
+- owner-managed staff invitations and deactivation
+- organization and location settings UI
+- global search
+- structured notes and issues
+- management reports and CSV exports
+- customer-facing portal, online payments, invoices/PDFs and notifications
 
-Status: Planned
+### Priority Classes
 
-Goal: let EcoWash manage day-to-day business configuration without developer intervention.
+P0 — required before a commercial pilot:
 
-Recommended missions:
+- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist.
+- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit.
+- QA-001 — Repeatable smoke/regression checklist using staging and later production.
+- UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement.
 
-- AUTH-002 — Owner-managed staff invitations and membership lifecycle.
-- ORG-001 — Organization and location settings screen.
-- CATALOG-002 — Safer service catalog and price management workflow.
+P1 — required for first paid internal operations:
+
+- AUTH-002 — Owner-managed staff invitations, activation and deactivation.
+- ORG-001 — Organization and location settings.
+- CATALOG-002 — Catalog and standard price management hardening.
+- SEARCH-001 — Search across orders, customers, properties and services.
 - AUDIT-001 — User-facing audit trail for sensitive operational changes.
 
-Commercial value:
+P2 — strong commercial differentiators after the first paid baseline:
 
-- the owner can add or disable staff
-- prices and locations can be maintained safely
-- operational accountability becomes visible enough for real business use
-
-### Priority 3 — Operational Speed
-
-Status: Planned
-
-Goal: reduce time spent finding records and moving orders.
-
-Recommended missions:
-
-- SEARCH-001 — Global search across orders, customers, properties and services.
 - OPS-001 — Production queue filters, assignment views and staff worklists.
-- OPS-002 — Notes and structured issues for discrepancies, customer questions and operational blockers.
+- OPS-002 — Notes and structured order issues.
+- REPORT-001 — Daily payment close by currency and method.
+- REPORT-002 — Open balance and overdue collection report.
+- EXPORT-001 — CSV export for accounting or operational handoff.
 - QR-001 — QR order lookup without personally identifiable information.
 
-Commercial value:
+P3 — future growth after internal operations are stable:
 
-- staff can find orders faster
-- owner/manager can see blocked work without reading every order
-- QR lookup can improve counter operations without exposing sensitive data
+- CUSTOMER-001 — Customer self-service portal.
+- PAY-001 — Online payment provider integration.
+- DOC-001 — Fiscal invoices and advanced PDFs.
+- NOTIFY-001 — Customer/staff notifications.
+- MOBILE-001 — Native mobile app.
+- OCR-001 — OCR intake support.
+- ANALYTICS-001 — Advanced analytics.
+- OFFLINE-001 — Offline mode.
+- REALTIME-001 — Realtime views only when operationally justified.
+- EDGE-001 — Edge Functions only after a verified backend need appears.
 
-### Priority 4 — Management Reporting
+### Milestone M1 — Commercial Pilot Baseline
 
-Status: Planned after operational speed
+Goal: make the current staging MVP demonstrable, deployable and safe enough for a controlled EcoWash pilot.
 
-Goal: provide enough reporting for daily control without becoming a BI platform.
+Scope:
 
-Recommended missions:
+- UX-002
+- RELEASE-001
+- SEC-001
+- QA-001
 
-- REPORT-001 — Daily cash and payment close by currency and method.
-- REPORT-002 — Open balance report and overdue collection list.
-- REPORT-003 — Service volume and order throughput summaries.
-- EXPORT-001 — CSV export for operational and accounting handoff.
+Exit criteria:
 
-Commercial value:
+- production target and domain decision are documented
+- environment variables are reviewed without exposing secrets
+- no service-role key or private credential reaches browser code
+- RLS, Storage and RPC permissions have a documented review result
+- smoke test can be repeated from login through dashboard
+- app dashboard and order detail are clear enough for owner/staff daily use
 
-- owner can reconcile cash and card payments
-- unpaid work is visible
-- reporting supports commercial trust without premature analytics complexity
+### Milestone M2 — First Paid Operations
 
-### Priority 5 — Customer-Facing Growth
+Goal: let EcoWash operate without developer intervention for everyday administration.
 
-Status: Future
+Scope:
 
-Goal: add customer-facing capabilities only after internal operations are stable.
+- AUTH-002
+- ORG-001
+- CATALOG-002
+- SEARCH-001
+- AUDIT-001
 
-Deferred feature groups:
+Exit criteria:
 
-- customer self-service portal
-- online payment providers
-- fiscal invoices and advanced PDFs
-- customer notifications
-- native mobile app
+- owner can invite, activate and deactivate staff
+- owner/manager can maintain business settings and catalog data safely
+- staff cannot access privileged settings
+- users can find orders/customers/properties/services quickly
+- sensitive changes are visible in an audit-oriented view
 
-Commercial value:
+### Milestone M3 — Operational Scale And Management Control
 
-- expands customer convenience after the internal system is trustworthy
-- avoids exposing unfinished operational processes to customers
+Goal: improve throughput, financial control and handoff to accounting/management.
 
-### Priority 6 — Advanced Automation
+Scope:
 
-Status: Later
+- OPS-001
+- OPS-002
+- REPORT-001
+- REPORT-002
+- EXPORT-001
+- QR-001
 
-Deferred feature groups:
+Exit criteria:
 
-- OCR
-- advanced analytics
-- offline mode
-- Realtime features
-- Edge Functions unless a verified backend need appears
-- generic workflow builder
+- staff worklists reduce navigation friction
+- notes/issues capture operational blockers without replacing production status
+- owner can close the payment day by currency and method
+- open balances are actionable
+- key operational data can be exported safely
+- QR lookup does not expose PII
 
-These should not be implemented before the core commercial product is stable, deployed and tested with real daily operations.
+### Deferred Until After M3
+
+Do not start customer portal, online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.

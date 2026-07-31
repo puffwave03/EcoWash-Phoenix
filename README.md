@@ -54,6 +54,9 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | UX-001 | Completed — Protected app shell refinement and session handover |
 | INFRA-001-SMOKE | Completed and pushed — First real operational smoke test passed with non-blocking issues |
 | INFRA-001.1 | Completed — Supabase migration history reconciled and smoke baseline finalized |
+| UX-002.1 | Completed — Public login access and mobile navigation clarity |
+| COMM-001 | Completed — Commercial roadmap priorities |
+| PRODUCT-001 | In progress — Commercial readiness and feature-gap audit |
 
 Current public website includes:
 
@@ -115,7 +118,8 @@ Important limitations:
 - First real operational smoke test passed on EcoWash Staging with non-blocking issues
 - Smoke test corrective work is committed and pushed
 - Supabase migration history reconciled successfully on 2026-07-30
-- UX-002 app landing/dashboard and operational layout refinement is the next task
+- PRODUCT-001 commercial readiness and feature-gap audit is the current task
+- UX-002 app landing/dashboard and operational layout refinement is the next P0 implementation task
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -124,7 +128,7 @@ Important limitations:
 - No Realtime dashboard
 - No production deployment yet
 - Production domain not selected or purchased yet
-- No completed SaaS platform
+- No production-commercial SaaS release yet
 - No pricing, legal or social pages
 - No unsupported metrics, customer logos, certifications or marketing claims
 
@@ -132,10 +136,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed development commit: `f94df88`
-- Current mission: `UX-002 — App landing/dashboard and operational layout refinement`
-- Current release state: Release-ready, deployment deferred
-- Next macro-task: refine the protected app landing/dashboard and operational layout
+- Latest approved and pushed commit: `b0f6b81`
+- Current mission: `PRODUCT-001 — Commercial readiness and feature-gap audit`
+- Current release state: staging MVP validated; commercial pilot readiness in planning
+- Next macro-task: complete M1 Commercial Pilot Baseline
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -191,8 +195,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-07-30
+Last Updated: 2026-07-31
 
-Current Mission: UX-002
+Current Mission: PRODUCT-001
 
-Next Action: refine protected app landing/dashboard and operational layout
+Next Action: close commercial readiness and feature-gap audit
