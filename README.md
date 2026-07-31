@@ -54,9 +54,15 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | UX-001 | Completed — Protected app shell refinement and session handover |
 | INFRA-001-SMOKE | Completed and pushed — First real operational smoke test passed with non-blocking issues |
 | INFRA-001.1 | Completed — Supabase migration history reconciled and smoke baseline finalized |
+| UX-002 | Completed — App landing/dashboard and operational layout refinement |
 | UX-002.1 | Completed — Public login access and mobile navigation clarity |
+| UX-002.2 | Completed — Protected app shell and mobile navigation |
+| UX-002.2.1 | Completed — Mobile CTA contrast correction |
+| UX-002.3 | Completed — Dashboard hierarchy and quick actions |
+| UX-002.4 | Completed — Order detail information architecture and mobile contrast |
+| UX-002.5 | Completed — Final responsive and accessibility pass |
 | COMM-001 | Completed — Commercial roadmap priorities |
-| PRODUCT-001 | In progress — Commercial readiness and feature-gap audit |
+| PRODUCT-001 | Completed — Commercial readiness and feature-gap audit |
 
 Current public website includes:
 
@@ -118,8 +124,9 @@ Important limitations:
 - First real operational smoke test passed on EcoWash Staging with non-blocking issues
 - Smoke test corrective work is committed and pushed
 - Supabase migration history reconciled successfully on 2026-07-30
-- PRODUCT-001 commercial readiness and feature-gap audit is the current task
-- UX-002 app landing/dashboard and operational layout refinement is the next P0 implementation task
+- PRODUCT-001 commercial readiness and feature-gap audit is completed
+- UX-002 app landing/dashboard and operational layout refinement is completed
+- SEC-001 Supabase security audit is the next approved P0 task
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -136,10 +143,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `b0f6b81`
-- Current mission: `PRODUCT-001 — Commercial readiness and feature-gap audit`
+- Latest approved and pushed commit: `730bcae`
+- Current mission: `SEC-001 — Supabase security audit`
 - Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: complete M1 Commercial Pilot Baseline
+- Next macro-task: complete M1 Commercial Pilot Baseline security review
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -197,6 +204,6 @@ Document Status: Active
 
 Last Updated: 2026-07-31
 
-Current Mission: PRODUCT-001
+Current Mission: SEC-001
 
-Next Action: close commercial readiness and feature-gap audit
+Next Action: audit Supabase RLS, Storage, grants, RPC and browser secret exposure

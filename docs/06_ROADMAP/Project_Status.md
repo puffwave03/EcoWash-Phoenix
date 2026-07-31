@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-31
 
-Current Mission: PRODUCT-001
+Current Mission: SEC-001
 
-Next Action: close commercial readiness and feature-gap audit, then continue M1 commercial pilot baseline
+Next Action: audit Supabase RLS, Storage, grants, RPC and browser secret exposure
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PRODUCT-001 — Commercial readiness and feature-gap audit |
-| Last completed mission | COMM-001 — Commercial roadmap extraction and prioritization |
-| Latest approved and pushed commit | b0f6b81 |
+| Current mission | SEC-001 — Supabase security audit |
+| Last completed mission | UX-002.5 — Final responsive and accessibility pass |
+| Latest approved and pushed commit | 730bcae |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -48,10 +48,15 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-001 status | Completed and pushed |
 | INFRA-001-SMOKE status | Completed and pushed; passed with non-blocking issues |
 | INFRA-001.1 status | Completed |
-| UX-002 status | Next P0 implementation task in M1 |
+| UX-002 status | Completed and pushed |
 | UX-002.1 status | Completed and pushed |
+| UX-002.2 status | Completed and pushed |
+| UX-002.2.1 status | Completed and pushed |
+| UX-002.3 status | Completed and pushed |
+| UX-002.4 status | Completed and pushed |
+| UX-002.5 status | Completed and pushed |
 | COMM-001 status | Completed and pushed |
-| PRODUCT-001 status | Documentation update in progress |
+| PRODUCT-001 status | Completed and pushed |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
@@ -93,10 +98,16 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-001 | Protected app shell refinement and session handover | Completed |
 | INFRA-001-SMOKE | First real operational smoke test | Completed and pushed; passed with non-blocking issues |
 | INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Completed |
-| UX-002 | App landing/dashboard and operational layout refinement | Next |
+| UX-002 | App landing/dashboard and operational layout refinement | Completed |
 | UX-002.1 | Public login entry and mobile navigation clarity | Completed |
+| UX-002.2 | Protected app shell and mobile navigation | Completed |
+| UX-002.2.1 | Mobile CTA contrast correction | Completed |
+| UX-002.3 | Dashboard hierarchy and quick actions | Completed |
+| UX-002.4 | Order detail information architecture and mobile contrast | Completed |
+| UX-002.5 | Final responsive and accessibility pass | Completed |
 | COMM-001 | Commercial roadmap extraction and prioritization | Completed |
-| PRODUCT-001 | Commercial readiness and feature-gap audit | In progress |
+| PRODUCT-001 | Commercial readiness and feature-gap audit | Completed |
+| SEC-001 | Supabase security audit | Next |
 
 ## Commit History
 
@@ -135,6 +146,12 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | DOCS-009 | 4ec74d3 |
 | UX-002.1 | d20a5d8 |
 | COMM-001 | b0f6b81 |
+| PRODUCT-001 | df6a166 |
+| UX-002.2 | 07c0ce9 |
+| UX-002.2.1 | df20f76 |
+| UX-002.3 | 732f82c |
+| UX-002.4 | d408425 |
+| UX-002.5 | 730bcae |
 
 ## Documentation Commit History
 
@@ -177,7 +194,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `b0f6b81` at the PRODUCT-001 baseline.
+- Local `main` and `origin/main` point to `730bcae` at the SEC-001 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -236,8 +253,12 @@ Current DEV-010 state:
 - UX-001 is completed and pushed.
 - INFRA-001-SMOKE passed on EcoWash Staging and is committed at `f94df88`.
 - INFRA-001.1 reconciled migration history after the manual SQL correction used during smoke.
-- UX-002 is the next approved task.
-- UX-002.1 is completed and pushed; the public homepage has localized protected-app entry from desktop and mobile navigation.
+- UX-002 is completed and pushed through UX-002.5.
+- UX-002.1 added localized protected-app entry from desktop and mobile public navigation.
+- UX-002.2 refined the protected app shell, mobile navigation, active states and internal header.
+- UX-002.3 improved dashboard hierarchy and quick actions using existing dashboard data only.
+- UX-002.4 reorganized order detail information architecture without changing order logic.
+- UX-002.5 completed the final responsive/accessibility pass for contrast and touch targets.
 
 ## PRODUCT-001 Commercial Readiness State
 
@@ -285,16 +306,16 @@ Priority classification:
 
 | Priority | Meaning | Features |
 | --- | --- | --- |
-| P0 | Required before commercial pilot | UX-002, RELEASE-001, SEC-001, QA-001 |
+| P0 | Required before commercial pilot | UX-002 completed; RELEASE-001, SEC-001 and QA-001 pending |
 | P1 | Required for first paid internal operations | AUTH-002, ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
 | P2 | Strong operational/commercial differentiators | OPS-001, OPS-002, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | CUSTOMER-001, PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
 
-- UX-002 app layout/dashboard refinement
+- UX-002 app layout/dashboard refinement — completed
 - RELEASE-001 production deployment readiness
-- SEC-001 Supabase security audit
+- SEC-001 Supabase security audit — next
 - QA-001 repeatable smoke/regression checklist
 
 M2 — First Paid Operations:
@@ -471,9 +492,9 @@ INFRA-001.1 read-only verification:
 
 Next approved task:
 
-- `UX-002 — App landing/dashboard and operational layout refinement`
+- `SEC-001 — Supabase security audit`
 
-UX-002 will likely cover dashboard hierarchy, visual density, desktop/mobile operational layout, clearer login access from the public site, and simpler panels/actions. It must not change stable domain logic without a separate approved task.
+SEC-001 should audit Supabase RLS, Storage policies, grants, RPC permissions, helper functions, browser-exposed environment variables and service-role exposure risk. It must not apply migrations, modify production/staging data or change Supabase remote state unless a separate approved fix task explicitly authorizes it.
 
 ## APP-002 Documentation State
 
@@ -711,56 +732,41 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da UX-002 e rifiniamo la dashboard iniziale dell’area protetta.”
+“Buongiorno, riprendiamo EcoWash Phoenix da SEC-001 e facciamo l'audit sicurezza Supabase.”
 
 Exact starting state:
 
 - Branch `main`
-- Working tree expected to contain only INFRA-001.1 documentation closeout until committed
-- Local `main` and local `origin/main` at `6317c65` before this documentation closeout
-- Current release state is Release-ready, deployment deferred
+- Working tree expected clean
+- Local `main` and `origin/main` expected at `730bcae`
+- Current release state is staging MVP validated; production deployment still deferred
 - Production domain selection and purchase are still pending
-- APP-001 is approved
-- APP-002 is completed and pushed
-- APP-003 is completed and pushed
-- APP-004 is completed and pushed
-- APP-005 is completed and pushed
-- APP-006 is completed and pushed
-- APP-007 is completed and pushed
-- APP-008 is completed and pushed
-- APP-008.1 is completed and pushed
-- INFRA-001 staging bootstrap is completed
-- AUTH-001 is completed and pushed
-- AUTH-001.1 is completed and pushed
-- AUTH-001-E2E is completed; owner login and `/it/app` access succeeded
-- UX-001 is completed and pushed
-- INFRA-001-SMOKE passed with non-blocking issues and is committed
-- INFRA-001.1 is completed
-- UX-002 is next
-- Do not modify approved migrations before real project verification
+- PRODUCT-001 is completed and pushed
+- UX-002 is completed and pushed through UX-002.5
+- SEC-001 is next
+- Do not modify approved migrations during the audit
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
-- Do not apply migrations before verifying the target Supabase project and environment
-- Do not reapply already-applied migrations
+- Do not apply migrations or alter Supabase remote state during SEC-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Do not change stable domain logic, migrations or Supabase remote state during UX-002 without a separate approved task
-- Do not redesign the approved homepage unless a verified defect requires it
+- Report findings before applying any security fix
 
 First checks:
 
 1. Run:
    - `git status --short`
    - `git branch --show-current`
-   - `git log -5 --oneline --decorate`
+   - `git log -10 --oneline --decorate`
    - `git ls-remote origin refs/heads/main`
 2. Read:
    - `README.md`
+   - `docs/00_START_HERE.md`
    - `docs/00_START_HERE/SESSION_HANDOVER.md`
+   - `docs/04_ARCHITECTURE/Security.md`
+   - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Review UX-002 scope and screenshots before changing UI.
-4. Keep database, migrations and Supabase remote state unchanged.
-5. Audit `/[locale]/app` landing/dashboard hierarchy, density and navigation.
-6. Check public-site access to login.
-7. Plan focused UI changes before implementation.
+3. Audit Supabase RLS, Storage policies, grants, RPCs and helper functions.
+4. Audit browser/server environment-variable boundaries.
+5. Classify findings by severity before proposing fixes.

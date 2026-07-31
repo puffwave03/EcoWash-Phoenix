@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-31
 
-Current Mission: PRODUCT-001
+Current Mission: SEC-001
 
-Next Action: close commercial readiness and feature-gap audit
+Next Action: audit Supabase RLS, Storage, grants, RPC and browser secret exposure
 
 ---
 
@@ -104,16 +104,21 @@ Approved and current areas:
 - UX-001 — Protected app shell refinement and session handover: Completed and pushed
 - INFRA-001-SMOKE — First real operational smoke test: Completed and pushed; passed with non-blocking issues
 - INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline: Completed
-- UX-002 — App landing/dashboard and operational layout refinement: Next
+- UX-002 — App landing/dashboard and operational layout refinement: Completed and pushed
+- UX-002.1 — Public login entry and mobile navigation clarity: Completed and pushed
+- UX-002.2 — Protected app shell and mobile navigation: Completed and pushed
+- UX-002.2.1 — Mobile CTA contrast correction: Completed and pushed
+- UX-002.3 — Dashboard hierarchy and quick actions: Completed and pushed
+- UX-002.4 — Order detail information architecture and mobile contrast: Completed and pushed
+- UX-002.5 — Final responsive and accessibility pass: Completed and pushed
 - COMM-001 — Commercialization roadmap and production sequencing: Completed and pushed
-- PRODUCT-001 — Commercial readiness and feature-gap audit: In progress
+- PRODUCT-001 — Commercial readiness and feature-gap audit: Completed and pushed
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- PRODUCT-001 — Commercial readiness and feature-gap audit
-- UX-002 — App landing/dashboard and operational layout refinement remains the next implementation task after PRODUCT-001
+- SEC-001 — Supabase security audit
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -157,11 +162,20 @@ UX-002 scope guard:
 - refine dashboard hierarchy, visual density, desktop/mobile operational layout, public login access and action clarity
 - do not change stable domain logic, migrations or Supabase remote state without a separate approved task
 
+UX-002 completed scope:
+
+- public login entry and mobile public navigation clarity
+- protected app shell and mobile navigation refinement
+- dashboard hierarchy and quick actions
+- order detail information architecture
+- final responsive, contrast, touch target and accessibility pass
+- no database, migration, Supabase, Server Action or domain logic changes
+
 ---
 
 ## Milestone 8 — M1 Commercial Pilot Baseline
 
-Status: Planned next
+Status: In progress
 
 Purpose: convert the validated staging MVP into a product that can be demonstrated, deployed and safely piloted by EcoWash.
 
@@ -169,9 +183,9 @@ Priority class: P0.
 
 Scope:
 
-- UX-002 — App landing, dashboard hierarchy and operational layout refinement.
+- UX-002 — App landing, dashboard hierarchy and operational layout refinement. Completed.
 - RELEASE-001 — Production deployment readiness, environment review and rollback checklist.
-- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit.
+- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Next.
 - QA-001 — Repeatable smoke/regression checklist for staging and production release.
 
 Commercial exit criteria:

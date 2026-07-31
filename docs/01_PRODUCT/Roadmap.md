@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-31
 
-Current Mission: PRODUCT-001
+Current Mission: SEC-001
 
-Next Action: Close commercial readiness and feature-gap audit
+Next Action: Audit Supabase RLS, Storage, grants, RPC and browser secret exposure
 
 ---
 
@@ -105,7 +105,7 @@ Completed or validated areas:
 
 Pending areas:
 
-- UX-002 app landing/dashboard and operational layout refinement
+- UX-002 app landing/dashboard and operational layout refinement completed through UX-002.5
 - Public deployment
 - Production-ready release
 - Reporting beyond the MVP operational dashboard
@@ -160,10 +160,10 @@ Missing for commercial readiness:
 
 P0 — required before a commercial pilot:
 
+- UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement. Completed.
 - RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist.
-- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit.
+- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Next.
 - QA-001 — Repeatable smoke/regression checklist using staging and later production.
-- UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement.
 
 P1 — required for first paid internal operations:
 
@@ -201,9 +201,9 @@ Goal: make the current staging MVP demonstrable, deployable and safe enough for 
 
 Scope:
 
-- UX-002
+- UX-002 — completed
 - RELEASE-001
-- SEC-001
+- SEC-001 — next
 - QA-001
 
 Exit criteria:

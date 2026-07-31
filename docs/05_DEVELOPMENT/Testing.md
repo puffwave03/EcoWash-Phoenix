@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-30
+Last Updated: 2026-07-31
 
-Current Mission: UX-002
+Current Mission: SEC-001
 
 ---
 
@@ -46,6 +46,9 @@ AUTH-001 also requires manual staging validation with Supabase Auth redirect URL
 
 Current real-test status:
 
+- PRODUCT-001 completed the commercial readiness and feature-gap audit.
+- UX-002 completed app layout, dashboard hierarchy, order detail information architecture, mobile navigation, contrast and touch target refinements.
+- UX-002.5 quality gates passed: `npm run lint`, `npm run build`, `git diff --check`.
 - AUTH-001 quality gates passed.
 - Password recovery E2E completed.
 - Owner login and `/it/app` access completed.
@@ -132,6 +135,12 @@ Known non-blocking gaps from the smoke run:
 - Final read-only database verification via CLI completed during INFRA-001.1.
 - Remote migration history is reconciled for the manually applied smoke corrective SQL.
 - Staging smoke records remain present and should only be cleaned up in a separate approved task.
+
+## SEC-001 Testing Direction
+
+SEC-001 starts as a security audit. It should verify RLS, Storage policies, grants, RPC permissions, `security definer` functions, `search_path`, tenant helper functions and browser/server environment boundaries before any fix is implemented.
+
+SEC-001 must not apply migrations, alter Supabase remote state, modify staging data, expose secrets or use service-role credentials in browser code. Any discovered defect should be classified and fixed in a separate approved task.
 
 ## APP-007 Static Security Simulation
 
