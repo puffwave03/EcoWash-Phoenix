@@ -154,7 +154,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         <div className="flex min-w-max gap-2">
           {sectionLinks.map((link) => (
             <a
-              className="inline-flex min-h-10 items-center justify-center rounded-control border border-border bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="inline-flex min-h-11 items-center justify-center rounded-control border border-border bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href={link.href}
               key={link.href}
             >

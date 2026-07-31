@@ -9,7 +9,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white shadow-luxury hover:bg-primary-strong focus-visible:ring-primary",
+    "bg-primary !text-white shadow-luxury hover:bg-primary-strong hover:!text-white focus-visible:ring-primary",
   secondary:
     "border border-secondary bg-surface text-primary hover:bg-secondary-soft focus-visible:ring-secondary",
   ghost: "text-primary hover:bg-primary-soft focus-visible:ring-primary",
