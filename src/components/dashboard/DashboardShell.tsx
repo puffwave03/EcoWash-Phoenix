@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
+import { AppNavigation } from "@/components/dashboard/AppNavigation";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
-import { Link } from "@/i18n/navigation";
 import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
@@ -29,14 +29,12 @@ export function DashboardShell({
   locale,
   text,
 }: DashboardShellProps) {
-  const navLinkClass = "block rounded-control px-3 py-2.5 text-sm font-semibold text-white/80 transition-standard hover:bg-white/10 hover:text-white";
-
   return (
     <main className="min-h-screen bg-[#eef1ee] text-foreground">
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside
           aria-label={text.navigationLabel}
-          className="flex flex-col justify-between bg-[#09291f] px-5 py-5 text-white lg:min-h-screen"
+          className="hidden flex-col justify-between bg-[#09291f] px-5 py-5 text-white lg:flex lg:min-h-screen"
         >
           <div className="space-y-8">
             <div className="space-y-3">
@@ -53,36 +51,17 @@ export function DashboardShell({
               </div>
             </div>
 
-            <nav className="space-y-1">
-              <Link
-                className="block rounded-control bg-white px-3 py-2.5 text-sm font-semibold text-primary shadow-card"
-                href="/app"
-                locale={locale}
-              >
-                {text.overview}
-              </Link>
-              <Link
-                className={navLinkClass}
-                href="/app/customers"
-                locale={locale}
-              >
-                {text.customers}
-              </Link>
-              <Link
-                className={navLinkClass}
-                href="/app/orders"
-                locale={locale}
-              >
-                {text.orders}
-              </Link>
-              <Link
-                className={navLinkClass}
-                href="/app/services"
-                locale={locale}
-              >
-                {text.services}
-              </Link>
-            </nav>
+            <AppNavigation
+              locale={locale}
+              mode="desktop"
+              navigationLabel={text.navigationLabel}
+              text={{
+                customers: text.customers,
+                orders: text.orders,
+                overview: text.overview,
+                services: text.services,
+              }}
+            />
           </div>
 
           <div className="mt-8 space-y-4 border-t border-white/12 pt-5">
@@ -105,25 +84,38 @@ export function DashboardShell({
         </aside>
 
         <div className="min-w-0">
-          <header className="border-b border-border bg-white px-5 py-4 lg:px-8">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted">{text.organizationLabel}</p>
-                <p className="text-2xl font-semibold text-primary">
-                  {access.membership.organization.name}
-                </p>
-              </div>
-              <p className="text-sm font-semibold uppercase text-secondary">
-                {text.overview}
-              </p>
-            </div>
-          </header>
+          <AppNavigation
+            locale={locale}
+            mode="header"
+            navigationLabel={text.navigationLabel}
+            organizationLabel={text.organizationLabel}
+            organizationName={access.membership.organization.name}
+            role={access.membership.role}
+            text={{
+              customers: text.customers,
+              orders: text.orders,
+              overview: text.overview,
+              services: text.services,
+            }}
+          />
 
-          <section className="px-5 py-6 lg:px-8">
+          <section className="px-4 py-5 pb-24 sm:px-5 lg:px-8 lg:py-6 lg:pb-8">
             {children}
           </section>
         </div>
       </div>
+
+      <AppNavigation
+        locale={locale}
+        mode="mobile"
+        navigationLabel={text.navigationLabel}
+        text={{
+          customers: text.customers,
+          orders: text.orders,
+          overview: text.overview,
+          services: text.services,
+        }}
+      />
     </main>
   );
 }
