@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-07-30
 
-Current Mission: UX-002
+Current Mission: COMM-001
 
-Next Action: refine protected app landing/dashboard and operational layout
+Next Action: finalize commercial roadmap priorities, then continue UX-002 app refinement
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | SaaS Platform Foundation — Implementation |
 | Current milestone | Milestone 7 — SaaS Platform Foundation |
-| Current mission | UX-002 — App landing/dashboard and operational layout refinement |
-| Last completed mission | INFRA-001.1 — Reconcile Supabase migration history and finalize smoke baseline |
-| Latest approved and pushed commit | f94df88 |
+| Current mission | COMM-001 — Commercial roadmap extraction and prioritization |
+| Last completed mission | UX-002.1 — Public login entry and mobile navigation clarity |
+| Latest approved and pushed commit | d20a5d8 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -48,10 +48,13 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-001 status | Completed and pushed |
 | INFRA-001-SMOKE status | Completed and pushed; passed with non-blocking issues |
 | INFRA-001.1 status | Completed |
-| UX-002 status | Next approved task |
+| UX-002 status | Next commercial UX task after roadmap documentation |
+| UX-002.1 status | Completed and pushed |
+| COMM-001 status | Documentation update in progress |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
+| Commercial readiness | MVP validated on staging; production readiness, business administration, search, reporting and customer-facing growth remain planned |
 
 ## Development Status
 
@@ -90,6 +93,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | INFRA-001-SMOKE | First real operational smoke test | Completed and pushed; passed with non-blocking issues |
 | INFRA-001.1 | Reconcile Supabase migration history and finalize smoke baseline | Completed |
 | UX-002 | App landing/dashboard and operational layout refinement | Next |
+| UX-002.1 | Public login entry and mobile navigation clarity | Completed |
+| COMM-001 | Commercial roadmap extraction and prioritization | In progress |
 
 ## Commit History
 
@@ -124,6 +129,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-001.1 | 6769365 |
 | UX-001 | a607218 |
 | INFRA-001-SMOKE | f94df88 |
+| DOCS-008 | 6317c65 |
+| DOCS-009 | 4ec74d3 |
+| UX-002.1 | d20a5d8 |
 
 ## Documentation Commit History
 
@@ -166,7 +174,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and local `origin/main` point to `f94df88` at closeout; verify remote with network tomorrow
+- Local `main` and local `origin/main` point to `d20a5d8` at the current roadmap audit baseline.
 
 ## DEV-009.5 Completed State
 
@@ -226,6 +234,55 @@ Current DEV-010 state:
 - INFRA-001-SMOKE passed on EcoWash Staging and is committed at `f94df88`.
 - INFRA-001.1 reconciled migration history after the manual SQL correction used during smoke.
 - UX-002 is the next approved task.
+- UX-002.1 is completed and pushed; the public homepage has localized protected-app entry from desktop and mobile navigation.
+
+## Commercial Roadmap State
+
+The staging MVP is operationally validated, but not yet commercial-ready. The next product work should prioritize features that make the current app reliable, administrable and demonstrable before adding broad future modules.
+
+Priority 1 — Sellable operations baseline:
+
+- UX-002 app landing, dashboard hierarchy and operational layout refinement
+- production deployment readiness
+- repeatable smoke test checklist
+- full Supabase RLS, Storage and browser-secret audit
+
+Priority 2 — business administration:
+
+- owner-managed staff invitations and membership lifecycle
+- organization and location settings
+- service catalog and price management hardening
+- user-facing audit trail for sensitive changes
+
+Priority 3 — operational speed:
+
+- global search across orders, customers, properties and services
+- production queue filters, assignment views and staff worklists
+- notes and structured issues
+- QR order lookup without personally identifiable information
+
+Priority 4 — management reporting:
+
+- daily payment close by currency and method
+- open balance and overdue collection reports
+- service volume and order throughput summaries
+- CSV export for accounting or operational handoff
+
+Priority 5 — customer-facing and advanced growth:
+
+- customer self-service portal
+- online payment providers
+- fiscal invoices and advanced PDFs
+- customer notifications
+- native mobile app
+- OCR, advanced analytics, offline mode, Realtime and Edge Functions only after a verified need
+
+Commercial scope guard:
+
+- do not add customer-facing features before internal operations are stable
+- do not combine currencies in financial reporting
+- do not expose service-role credentials or privileged membership controls to browser code
+- keep production, fulfillment, payment and issues as independent dimensions
 
 ## APP-007 Implementation State
 
