@@ -153,6 +153,21 @@
       "ready": "Prêtes",
       "balanceDue": "Solde dû"
     },
+    "workspace": {
+      "title": "Ce qui demande attention",
+      "description": "Commencez par les exceptions, puis passez à la production, à la logistique et aux encaissements avec le chemin le plus court vers chaque action.",
+      "attentionTitle": "File d'attention",
+      "attentionCount": "éléments à vérifier",
+      "attentionClear": "rien d'urgent",
+      "quickActions": "Actions rapides",
+      "newOrder": "Nouvelle commande",
+      "newCustomer": "Nouveau client",
+      "services": "Gérer les services",
+      "viewOrders": "Voir les commandes",
+      "productionSignal": "Production",
+      "logisticsSignal": "Logistique",
+      "paymentsSignal": "Paiements"
+    },
     "production": {
       "title": "File de production",
       "readyTitle": "File des commandes prêtes",

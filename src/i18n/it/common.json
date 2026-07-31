@@ -153,6 +153,21 @@
       "ready": "Pronti",
       "balanceDue": "Saldo dovuto"
     },
+    "workspace": {
+      "title": "Cosa richiede attenzione ora",
+      "description": "Parti dalle eccezioni, poi passa a produzione, logistica e incassi con il percorso più breve verso ogni azione.",
+      "attentionTitle": "Coda attenzione",
+      "attentionCount": "elementi da verificare",
+      "attentionClear": "nessuna urgenza",
+      "quickActions": "Azioni rapide",
+      "newOrder": "Nuovo ordine",
+      "newCustomer": "Nuovo cliente",
+      "services": "Gestisci servizi",
+      "viewOrders": "Vedi ordini",
+      "productionSignal": "Produzione",
+      "logisticsSignal": "Logistica",
+      "paymentsSignal": "Pagamenti"
+    },
     "production": {
       "title": "Coda produzione",
       "readyTitle": "Coda pronti",

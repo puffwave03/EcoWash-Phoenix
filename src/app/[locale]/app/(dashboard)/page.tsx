@@ -84,6 +84,21 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
           ready: t("summary.ready"),
           title: t("summary.title"),
         },
+        workspace: {
+          attentionClear: t("workspace.attentionClear"),
+          attentionCount: t("workspace.attentionCount"),
+          attentionTitle: t("workspace.attentionTitle"),
+          description: t("workspace.description"),
+          logisticsSignal: t("workspace.logisticsSignal"),
+          newCustomer: t("workspace.newCustomer"),
+          newOrder: t("workspace.newOrder"),
+          paymentsSignal: t("workspace.paymentsSignal"),
+          productionSignal: t("workspace.productionSignal"),
+          quickActions: t("workspace.quickActions"),
+          services: t("workspace.services"),
+          title: t("workspace.title"),
+          viewOrders: t("workspace.viewOrders"),
+        },
       }}
     />
   );

@@ -153,6 +153,21 @@
       "ready": "Bereit",
       "balanceDue": "Offener Betrag"
     },
+    "workspace": {
+      "title": "Was jetzt Aufmerksamkeit braucht",
+      "description": "Beginnen Sie mit den Ausnahmen und wechseln Sie dann schnell zu Produktion, Logistik und Zahlungseinzug.",
+      "attentionTitle": "Aufmerksamkeitsliste",
+      "attentionCount": "Punkte zu prüfen",
+      "attentionClear": "nichts Dringendes",
+      "quickActions": "Schnellaktionen",
+      "newOrder": "Neuer Auftrag",
+      "newCustomer": "Neuer Kunde",
+      "services": "Services verwalten",
+      "viewOrders": "Aufträge ansehen",
+      "productionSignal": "Produktion",
+      "logisticsSignal": "Logistik",
+      "paymentsSignal": "Zahlungen"
+    },
     "production": {
       "title": "Produktionswarteschlange",
       "readyTitle": "Bereit-Warteschlange",

@@ -79,6 +79,21 @@ type DashboardText = {
     ready: string;
     title: string;
   };
+  workspace: {
+    attentionClear: string;
+    attentionCount: string;
+    attentionTitle: string;
+    description: string;
+    logisticsSignal: string;
+    newCustomer: string;
+    newOrder: string;
+    paymentsSignal: string;
+    productionSignal: string;
+    quickActions: string;
+    services: string;
+    title: string;
+    viewOrders: string;
+  };
 };
 
 type OperationalDashboardProps = {
@@ -113,6 +128,47 @@ function OrderLink({ id, locale, text }: { id: string; locale: string; text: str
     <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" href={`/app/orders/${id}`} locale={locale}>
       {text}
     </Link>
+  );
+}
+
+function QuickAction({
+  href,
+  label,
+  locale,
+  primary = false,
+}: {
+  href: string;
+  label: string;
+  locale: string;
+  primary?: boolean;
+}) {
+  return (
+    <Link
+      className={`inline-flex min-h-11 items-center justify-center rounded-control px-4 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+        primary
+          ? "bg-primary text-white shadow-card hover:bg-primary-strong"
+          : "border border-border bg-white text-primary hover:border-primary hover:bg-primary-soft"
+      }`}
+      href={href}
+      locale={locale}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function SignalCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-card border border-white/16 bg-white/10 p-4">
+      <p className="text-xs font-semibold uppercase text-white/70">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+    </div>
   );
 }
 
@@ -259,9 +315,82 @@ export function OperationalDashboard({ data, locale, text }: OperationalDashboar
     [text.summary.ready, data.summary.readyOrders],
   ];
   const financialSummary = data.financialSummary;
+  const attentionItems = [
+    [text.summary.late, data.summary.lateOpenOrders],
+    [text.summary.onHold, data.summary.onHoldOrders],
+    [text.logistics.attention, data.logisticsAttention.length],
+    [text.balances.title, data.paymentBalances.length],
+  ];
+  const attentionTotal = attentionItems.reduce((total, [, value]) => total + Number(value), 0);
+  const productionSignal =
+    data.productionQueue.length + data.readyQueue.length + data.summary.onHoldOrders;
+  const logisticsSignal =
+    data.todayPickups.length + data.todayDeliveries.length + data.logisticsAttention.length;
+  const paymentsSignal = data.summary.balanceDueTotals
+    ? formatCurrencyAmounts(data.summary.balanceDueTotals, locale)
+    : data.paymentBalances.length;
 
   return (
     <div className="space-y-6">
+      <section className="grid gap-4 xl:grid-cols-[1.45fr_1fr]" aria-labelledby="dashboard-workspace-title">
+        <div className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase text-secondary">
+                {text.summary.title}
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white lg:text-3xl" id="dashboard-workspace-title">
+                {text.workspace.title}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-white/76">
+                {text.workspace.description}
+              </p>
+            </div>
+            <div className="rounded-card border border-white/16 bg-white/10 p-4">
+              <p className="text-sm font-semibold text-white/76">
+                {text.workspace.attentionTitle}
+              </p>
+              <p className="mt-2 text-3xl font-semibold text-white">
+                {attentionTotal}
+              </p>
+              <p className="mt-1 text-xs font-medium text-white/68">
+                {attentionTotal > 0 ? text.workspace.attentionCount : text.workspace.attentionClear}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <SignalCard label={text.workspace.productionSignal} value={productionSignal} />
+            <SignalCard label={text.workspace.logisticsSignal} value={logisticsSignal} />
+            <SignalCard label={text.workspace.paymentsSignal} value={paymentsSignal} />
+          </div>
+        </div>
+
+        <Card className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-primary">{text.workspace.quickActions}</h3>
+            <p className="mt-1 text-sm text-muted">{text.workspace.attentionTitle}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+            <QuickAction href="/app/orders/new" label={text.workspace.newOrder} locale={locale} primary />
+            <QuickAction href="/app/customers/new" label={text.workspace.newCustomer} locale={locale} />
+            <QuickAction href="/app/services" label={text.workspace.services} locale={locale} />
+            <QuickAction href="/app/orders" label={text.workspace.viewOrders} locale={locale} />
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid gap-3 md:grid-cols-4" aria-label={text.workspace.attentionTitle}>
+        {attentionItems.map(([label, value]) => (
+          <div className="rounded-card border border-border bg-white p-4 shadow-card" key={label}>
+            <p className="text-sm font-medium text-muted">{label}</p>
+            <p className={`mt-2 text-2xl font-semibold ${Number(value) > 0 ? "text-primary" : "text-muted"}`}>
+              {value}
+            </p>
+          </div>
+        ))}
+      </section>
+
       <section className="space-y-4" aria-labelledby="dashboard-summary-title">
         <h2 className="text-xl font-semibold text-primary" id="dashboard-summary-title">
           {text.summary.title}

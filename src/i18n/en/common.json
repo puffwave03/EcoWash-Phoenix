@@ -153,6 +153,21 @@
       "ready": "Ready",
       "balanceDue": "Balance due"
     },
+    "workspace": {
+      "title": "What needs attention now",
+      "description": "Start from the exceptions, then move into production, logistics and collection work with the shortest path to each action.",
+      "attentionTitle": "Attention queue",
+      "attentionCount": "items to review",
+      "attentionClear": "nothing urgent",
+      "quickActions": "Quick actions",
+      "newOrder": "New order",
+      "newCustomer": "New customer",
+      "services": "Manage services",
+      "viewOrders": "View orders",
+      "productionSignal": "Production",
+      "logisticsSignal": "Logistics",
+      "paymentsSignal": "Payments"
+    },
     "production": {
       "title": "Production queue",
       "readyTitle": "Ready queue",

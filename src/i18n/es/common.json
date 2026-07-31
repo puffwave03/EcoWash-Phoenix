@@ -153,6 +153,21 @@
       "ready": "Listos",
       "balanceDue": "Saldo pendiente"
     },
+    "workspace": {
+      "title": "Qué requiere atención ahora",
+      "description": "Empieza por las excepciones y avanza hacia producción, logística y cobros con el camino más corto a cada acción.",
+      "attentionTitle": "Cola de atención",
+      "attentionCount": "elementos por revisar",
+      "attentionClear": "nada urgente",
+      "quickActions": "Acciones rápidas",
+      "newOrder": "Nuevo pedido",
+      "newCustomer": "Nuevo cliente",
+      "services": "Gestionar servicios",
+      "viewOrders": "Ver pedidos",
+      "productionSignal": "Producción",
+      "logisticsSignal": "Logística",
+      "paymentsSignal": "Pagos"
+    },
     "production": {
       "title": "Cola de producción",
       "readyTitle": "Cola de listos",
