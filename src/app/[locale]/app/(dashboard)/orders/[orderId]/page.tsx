@@ -56,6 +56,25 @@ function formatMoney(amount: number, currency: string, locale: string) {
   return new Intl.NumberFormat(locale, { currency, style: "currency" }).format(amount);
 }
 
+function SectionShell({
+  children,
+  id,
+  title,
+}: {
+  children: React.ReactNode;
+  id: string;
+  title: string;
+}) {
+  return (
+    <section className="scroll-mt-24 space-y-4" id={id}>
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-xl font-semibold text-primary">{title}</h3>
+      </div>
+      {children}
+    </section>
+  );
+}
+
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
   const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, t] = await Promise.all([
@@ -72,194 +91,274 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getTranslations({ locale, namespace: "common.orders" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
+  const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
+  const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManagePaymentCorrections = access.membership.role === "owner" || access.membership.role === "manager";
+  const sectionLinks = [
+    { href: "#items", label: t("items.title") },
+    { href: "#production", label: t("workflow.change") },
+    { href: "#logistics", label: t("logistics.title") },
+    { href: "#payments", label: t("payments.title") },
+    { href: "#photos", label: t("photos.title") },
+  ];
 
   return (
     <div className="space-y-6">
-      <Card className="space-y-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">{order.orderNumber}</p>
-            <h2 className="mt-2 text-2xl font-semibold text-primary">{order.customerName}</h2>
-            <p className="mt-1 text-sm text-muted">{statusLabels[order.productionStatus]} · {t(`priorities.${order.priority}`)}</p>
+      <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
+              {order.orderNumber}
+            </p>
+            <h2 className="mt-2 truncate text-2xl font-semibold text-white lg:text-3xl">
+              {order.customerName}
+            </h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="rounded-control bg-white px-3 py-1 text-xs font-semibold text-primary">
+                {statusLabels[order.productionStatus]}
+              </span>
+              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
+                {t(`priorities.${order.priority}`)}
+              </span>
+              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
+                {paymentStatusLabels[paymentSummary.paymentStatus]}
+              </span>
+            </div>
           </div>
           <Link href={`/app/orders/${order.id}/edit`} locale={locale}>
             <Button variant="secondary">{t("edit")}</Button>
           </Link>
         </div>
-        <dl className="grid gap-4 md:grid-cols-4">
-          <div><dt className="text-sm text-muted">{t("property")}</dt><dd className="font-semibold text-primary">{order.propertyName || "-"}</dd></div>
-          <div><dt className="text-sm text-muted">{t("due")}</dt><dd className="font-semibold text-primary">{order.dueAt ? new Date(order.dueAt).toLocaleString(locale) : "-"}</dd></div>
-          <div><dt className="text-sm text-muted">{t("assigned")}</dt><dd className="font-semibold text-primary">{order.assignedToName || "-"}</dd></div>
-          <div><dt className="text-sm text-muted">{t("total")}</dt><dd className="font-semibold text-primary">{formatMoney(order.total, order.currency, locale)}</dd></div>
+
+        <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-card border border-white/16 bg-white/10 p-4">
+            <dt className="text-xs font-semibold uppercase text-white/68">{t("property")}</dt>
+            <dd className="mt-2 font-semibold text-white">{order.propertyName || "-"}</dd>
+          </div>
+          <div className="rounded-card border border-white/16 bg-white/10 p-4">
+            <dt className="text-xs font-semibold uppercase text-white/68">{t("due")}</dt>
+            <dd className="mt-2 font-semibold text-white">{order.dueAt ? new Date(order.dueAt).toLocaleString(locale) : "-"}</dd>
+          </div>
+          <div className="rounded-card border border-white/16 bg-white/10 p-4">
+            <dt className="text-xs font-semibold uppercase text-white/68">{t("assigned")}</dt>
+            <dd className="mt-2 font-semibold text-white">{order.assignedToName || "-"}</dd>
+          </div>
+          <div className="rounded-card border border-white/16 bg-white/10 p-4">
+            <dt className="text-xs font-semibold uppercase text-white/68">{t("total")}</dt>
+            <dd className="mt-2 text-xl font-semibold text-white">{formatMoney(order.total, order.currency, locale)}</dd>
+          </div>
         </dl>
-      </Card>
+      </section>
 
-      <Card className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary">{t("items.title")}</h3>
-        <OrderItemForm
-          action={saveOrderItemAction.bind(null, locale, order.id)}
-          services={services}
-          text={{
-            addItem: t("items.add"),
-            description: t("items.description"),
-            error: t("items.error"),
-            notes: t("items.notes"),
-            piece: t("unitTypes.piece"),
-            quantity: t("items.quantity"),
-            saving: t("items.saving"),
-            service: t("items.service"),
-            unitPrice: t("items.unitPrice"),
-            unitType: t("items.unitType"),
-            weight: t("unitTypes.weight"),
-          }}
-        />
-      </Card>
+      <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-border bg-[#eef1ee]/95 px-4 py-2 backdrop-blur lg:top-[4.5rem] lg:mx-0 lg:rounded-card lg:border lg:bg-white lg:shadow-card" aria-label={t("title")}>
+        <div className="flex min-w-max gap-2">
+          {sectionLinks.map((link) => (
+            <a
+              className="inline-flex min-h-10 items-center justify-center rounded-control border border-border bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              href={link.href}
+              key={link.href}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </nav>
 
-      <OrderItems
-        items={items}
-        locale={locale}
-        onRemove={removeOrderItemAction.bind(null, locale, order.id)}
-        order={order}
-        text={{
-          cancel: t("items.cancel"),
-          description: t("items.description"),
-          edit: t("edit"),
-          error: t("items.error"),
-          lineTotal: t("items.lineTotal"),
-          piece: t("unitTypes.piece"),
-          quantity: t("items.quantity"),
-          remove: t("items.remove"),
-          removing: t("items.removing"),
-          saveEdit: t("items.save"),
-          saving: t("items.saving"),
-          service: t("items.service"),
-          subtotal: t("subtotal"),
-          total: t("total"),
-          unitPrice: t("items.unitPrice"),
-          unitType: t("items.unitType"),
-          weight: t("unitTypes.weight"),
-        }}
-        onSave={saveOrderItemAction.bind(null, locale, order.id)}
-        services={services}
-      />
-
-      {canEditCatalog(access.membership.role) ? (
-        <Card>
-          <form action={updateOrderDiscountAction.bind(null, locale, order.id)} className="flex flex-col gap-3 md:max-w-sm">
-            <label className="space-y-2 text-sm font-semibold text-primary">
-              <span>{t("discount")}</span>
-              <input className="min-h-11 rounded-control border border-border px-3 text-sm" defaultValue={order.discountAmount} min="0" name="discountAmount" step="0.01" type="number" />
-            </label>
-            <Button type="submit">{t("updateDiscount")}</Button>
-          </form>
+      <dl className="grid gap-4 lg:grid-cols-4">
+        <Card className="lg:col-span-2">
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <div><dt className="text-sm text-muted">{t("logistics.pickup")}</dt><dd className="font-semibold text-primary">{logistics.pickup ? logisticsStatusLabels[logistics.pickup.status] : t("logistics.empty")}</dd></div>
+            <div><dt className="text-sm text-muted">{t("logistics.delivery")}</dt><dd className="font-semibold text-primary">{logistics.delivery ? logisticsStatusLabels[logistics.delivery.status] : t("logistics.empty")}</dd></div>
+          </dl>
         </Card>
-      ) : null}
+        <Card>
+          <dt className="text-sm text-muted">{t("payments.balanceDue")}</dt>
+          <dd className="mt-1 text-xl font-semibold text-primary">{formatMoney(paymentSummary.balanceDue, order.currency, locale)}</dd>
+        </Card>
+        <Card>
+          <dt className="text-sm text-muted">{t("photos.title")}</dt>
+          <dd className="mt-1 text-xl font-semibold text-primary">{photos.filter((photo) => photo.isActive).length}</dd>
+        </Card>
+      </dl>
 
-      <LogisticsPanel
-        actions={{
-          saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
-          savePickup: savePickupAction.bind(null, locale, order.id),
-          transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id),
-          transitionPickup: transitionPickupAction.bind(null, locale, order.id),
-        }}
-        assignments={assignments}
-        logistics={logistics}
-        text={{
-          addressLine1: t("logistics.addressLine1"),
-          addressLine2: t("logistics.addressLine2"),
-          assignedTo: t("logistics.assignedTo"),
-          cancelledReason: t("logistics.cancelledReason"),
-          city: t("logistics.city"),
-          contactName: t("logistics.contactName"),
-          contactPhone: t("logistics.contactPhone"),
-          countryCode: t("logistics.countryCode"),
-          delivery: t("logistics.delivery"),
-          empty: t("logistics.empty"),
-          error: t("logistics.error"),
-          fee: t("logistics.fee"),
-          inProgress: t("logistics.title"),
-          notes: t("logistics.notes"),
-          pickup: t("logistics.pickup"),
-          postalCode: t("logistics.postalCode"),
-          save: t("logistics.save"),
-          saving: t("logistics.saving"),
-          scheduledAt: t("logistics.scheduledAt"),
-          statuses: t.raw("logistics.statuses"),
-        }}
-      />
+      <SectionShell id="items" title={t("items.title")}>
+        <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
+          <div className="space-y-4">
+            <Card className="space-y-4">
+              <OrderItemForm
+                action={saveOrderItemAction.bind(null, locale, order.id)}
+                services={services}
+                text={{
+                  addItem: t("items.add"),
+                  description: t("items.description"),
+                  error: t("items.error"),
+                  notes: t("items.notes"),
+                  piece: t("unitTypes.piece"),
+                  quantity: t("items.quantity"),
+                  saving: t("items.saving"),
+                  service: t("items.service"),
+                  unitPrice: t("items.unitPrice"),
+                  unitType: t("items.unitType"),
+                  weight: t("unitTypes.weight"),
+                }}
+              />
+            </Card>
 
-      <PaymentsPanel
-        actions={{
-          record: recordPaymentAction.bind(null, locale, order.id),
-          refund: refundPaymentAction.bind(null, locale, order.id),
-          void: voidPaymentAction.bind(null, locale, order.id),
-        }}
-        canManageCorrections={canManagePaymentCorrections}
-        currency={order.currency}
-        locale={locale}
-        payments={payments}
-        summary={paymentSummary}
-        text={{
-          actor: t("payments.actor"),
-          amount: t("payments.amount"),
-          balanceDue: t("payments.balanceDue"),
-          date: t("payments.date"),
-          empty: t("payments.empty"),
-          error: t("payments.error"),
-          method: t("payments.method"),
-          methods: t.raw("payments.methods"),
-          notes: t("payments.notes"),
-          paidAt: t("payments.paidAt"),
-          paymentStatus: t("payments.paymentStatus"),
-          proof: t("payments.proof"),
-          record: t("payments.record"),
-          reference: t("payments.reference"),
-          refund: t("payments.refund"),
-          refundReason: t("payments.refundReason"),
-          saving: t("payments.saving"),
-          statuses: t.raw("payments.statuses"),
-          title: t("payments.title"),
-          totalDue: t("payments.totalDue"),
-          totalPaid: t("payments.totalPaid"),
-          void: t("payments.void"),
-          voidReason: t("payments.voidReason"),
-        }}
-      />
+            <OrderItems
+              items={items}
+              locale={locale}
+              onRemove={removeOrderItemAction.bind(null, locale, order.id)}
+              order={order}
+              text={{
+                cancel: t("items.cancel"),
+                description: t("items.description"),
+                edit: t("edit"),
+                error: t("items.error"),
+                lineTotal: t("items.lineTotal"),
+                piece: t("unitTypes.piece"),
+                quantity: t("items.quantity"),
+                remove: t("items.remove"),
+                removing: t("items.removing"),
+                saveEdit: t("items.save"),
+                saving: t("items.saving"),
+                service: t("items.service"),
+                subtotal: t("subtotal"),
+                total: t("total"),
+                unitPrice: t("items.unitPrice"),
+                unitType: t("items.unitType"),
+                weight: t("unitTypes.weight"),
+              }}
+              onSave={saveOrderItemAction.bind(null, locale, order.id)}
+              services={services}
+            />
+          </div>
 
-      <OrderPhotosPanel
-        action={uploadOrderPhotoAction.bind(null, locale, order.id)}
-        deactivateAction={deactivateOrderPhotoAction.bind(null, locale, order.id)}
-        photos={photos}
-        text={{
-          caption: t("photos.caption"),
-          categories: t.raw("photos.categories"),
-          category: t("photos.category"),
-          deactivate: t("photos.deactivate"),
-          empty: t("photos.empty"),
-          error: t("photos.error"),
-          file: t("photos.file"),
-          fileHelp: t("photos.fileHelp"),
-          inactive: t("photos.inactive"),
-          title: t("photos.title"),
-          upload: t("photos.upload"),
-          uploading: t("photos.uploading"),
-        }}
-      />
+          {canEditCatalog(access.membership.role) ? (
+            <Card className="h-fit">
+              <form action={updateOrderDiscountAction.bind(null, locale, order.id)} className="flex flex-col gap-3">
+                <label className="space-y-2 text-sm font-semibold text-primary">
+                  <span>{t("discount")}</span>
+                  <input className="min-h-11 rounded-control border border-border px-3 text-sm" defaultValue={order.discountAmount} min="0" name="discountAmount" step="0.01" type="number" />
+                </label>
+                <Button type="submit">{t("updateDiscount")}</Button>
+              </form>
+            </Card>
+          ) : null}
+        </div>
+      </SectionShell>
 
-      <Card>
-        <StatusTransitionForm
-          action={transitionOrderStatusAction.bind(null, locale, order.id)}
-          currentStatus={order.productionStatus}
-          history={history}
+      <SectionShell id="production" title={t("workflow.change")}>
+        <Card>
+          <StatusTransitionForm
+            action={transitionOrderStatusAction.bind(null, locale, order.id)}
+            currentStatus={order.productionStatus}
+            history={history}
+            text={{
+              change: t("workflow.change"),
+              history: t("workflow.history"),
+              reason: t("workflow.reason"),
+              statusLabels,
+            }}
+          />
+        </Card>
+      </SectionShell>
+
+      <SectionShell id="logistics" title={t("logistics.title")}>
+        <LogisticsPanel
+          actions={{
+            saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
+            savePickup: savePickupAction.bind(null, locale, order.id),
+            transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id),
+            transitionPickup: transitionPickupAction.bind(null, locale, order.id),
+          }}
+          assignments={assignments}
+          logistics={logistics}
           text={{
-            change: t("workflow.change"),
-            history: t("workflow.history"),
-            reason: t("workflow.reason"),
-            statusLabels,
+            addressLine1: t("logistics.addressLine1"),
+            addressLine2: t("logistics.addressLine2"),
+            assignedTo: t("logistics.assignedTo"),
+            cancelledReason: t("logistics.cancelledReason"),
+            city: t("logistics.city"),
+            contactName: t("logistics.contactName"),
+            contactPhone: t("logistics.contactPhone"),
+            countryCode: t("logistics.countryCode"),
+            delivery: t("logistics.delivery"),
+            empty: t("logistics.empty"),
+            error: t("logistics.error"),
+            fee: t("logistics.fee"),
+            inProgress: t("logistics.title"),
+            notes: t("logistics.notes"),
+            pickup: t("logistics.pickup"),
+            postalCode: t("logistics.postalCode"),
+            save: t("logistics.save"),
+            saving: t("logistics.saving"),
+            scheduledAt: t("logistics.scheduledAt"),
+            statuses: t.raw("logistics.statuses"),
           }}
         />
-      </Card>
+      </SectionShell>
+
+      <SectionShell id="payments" title={t("payments.title")}>
+        <PaymentsPanel
+          actions={{
+            record: recordPaymentAction.bind(null, locale, order.id),
+            refund: refundPaymentAction.bind(null, locale, order.id),
+            void: voidPaymentAction.bind(null, locale, order.id),
+          }}
+          canManageCorrections={canManagePaymentCorrections}
+          currency={order.currency}
+          locale={locale}
+          payments={payments}
+          summary={paymentSummary}
+          text={{
+            actor: t("payments.actor"),
+            amount: t("payments.amount"),
+            balanceDue: t("payments.balanceDue"),
+            date: t("payments.date"),
+            empty: t("payments.empty"),
+            error: t("payments.error"),
+            method: t("payments.method"),
+            methods: t.raw("payments.methods"),
+            notes: t("payments.notes"),
+            paidAt: t("payments.paidAt"),
+            paymentStatus: t("payments.paymentStatus"),
+            proof: t("payments.proof"),
+            record: t("payments.record"),
+            reference: t("payments.reference"),
+            refund: t("payments.refund"),
+            refundReason: t("payments.refundReason"),
+            saving: t("payments.saving"),
+            statuses: t.raw("payments.statuses"),
+            title: t("payments.title"),
+            totalDue: t("payments.totalDue"),
+            totalPaid: t("payments.totalPaid"),
+            void: t("payments.void"),
+            voidReason: t("payments.voidReason"),
+          }}
+        />
+      </SectionShell>
+
+      <SectionShell id="photos" title={t("photos.title")}>
+        <OrderPhotosPanel
+          action={uploadOrderPhotoAction.bind(null, locale, order.id)}
+          deactivateAction={deactivateOrderPhotoAction.bind(null, locale, order.id)}
+          photos={photos}
+          text={{
+            caption: t("photos.caption"),
+            categories: t.raw("photos.categories"),
+            category: t("photos.category"),
+            deactivate: t("photos.deactivate"),
+            empty: t("photos.empty"),
+            error: t("photos.error"),
+            file: t("photos.file"),
+            fileHelp: t("photos.fileHelp"),
+            inactive: t("photos.inactive"),
+            title: t("photos.title"),
+            upload: t("photos.upload"),
+            uploading: t("photos.uploading"),
+          }}
+        />
+      </SectionShell>
     </div>
   );
 }

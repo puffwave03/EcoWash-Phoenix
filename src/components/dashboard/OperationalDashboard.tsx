@@ -146,7 +146,7 @@ function QuickAction({
     <Link
       className={`inline-flex min-h-11 items-center justify-center rounded-control px-4 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
         primary
-          ? "bg-primary text-white shadow-card hover:bg-primary-strong"
+          ? "bg-primary !text-white shadow-card hover:bg-primary-strong hover:!text-white"
           : "border border-border bg-white text-primary hover:border-primary hover:bg-primary-soft"
       }`}
       href={href}
