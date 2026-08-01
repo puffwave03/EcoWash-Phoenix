@@ -64,6 +64,10 @@ export async function uploadOrderPhotoAction(
 
   if (error) {
     console.error("Order photo registration failed", error.code);
+    const cleanup = await supabase.storage.from("order-media").remove([storagePath]);
+    if (cleanup.error) {
+      console.error("Order photo cleanup failed");
+    }
     return fail();
   }
 
