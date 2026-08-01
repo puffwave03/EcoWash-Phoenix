@@ -27,7 +27,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | RELEASE-001.1 — Staging hosting and environment contract |
+| Current mission | RELEASE-001.2 — Staging deployment rehearsal |
 | Last completed mission | PILOT-001 — Commercial pilot portal scope and route architecture |
 | Latest approved and pushed commit | 2cca68f |
 | Remote status | main synchronized with origin/main |
@@ -116,7 +116,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PILOT-001 | Commercial pilot portal scope and route architecture | Architecture approved |
 | RELEASE-001 | Production deployment readiness | In progress; audit result READY WITH BLOCKERS |
 | RELEASE-001.0 | Canonicalize release readiness plan and blockers | Completed, pending commit |
-| RELEASE-001.1 | Staging hosting and environment contract | Next |
+| RELEASE-001.1 | Staging hosting and environment contract | Completed, pending commit |
+| RELEASE-001.2 | Staging deployment rehearsal | Next |
 
 ## Commit History
 
@@ -328,7 +329,8 @@ M1 — Commercial Pilot Baseline:
 - PILOT-001 commercial pilot portal scope and route architecture — architecture approved
 - RELEASE-001 production deployment readiness — in progress; audit result READY WITH BLOCKERS
 - RELEASE-001.0 canonicalize release readiness plan and blockers — completed, pending commit
-- RELEASE-001.1 staging hosting and environment contract — next
+- RELEASE-001.1 staging hosting and environment contract — completed, pending commit
+- RELEASE-001.2 staging deployment rehearsal — next
 - QA-001 repeatable smoke/regression checklist — planned
 - AUTH-002 staff lifecycle — planned
 - ORG-001 organization/location settings — planned
@@ -553,9 +555,9 @@ SEC-001 completion state:
 
 Next approved task:
 
-- `RELEASE-001.1 — Staging hosting and environment contract`
+- `RELEASE-001.2 — Staging deployment rehearsal`
 
-PILOT-001 is architecture-approved. RELEASE-001 audit result is `READY WITH BLOCKERS`; RELEASE-001.0 canonicalized the staging-first plan. RELEASE-001.1 should define staging hosting and environment contract, require `NEXT_PUBLIC_SITE_INDEXING=false`, use Supabase staging, verify staging Auth redirect requirements and avoid production work.
+PILOT-001 is architecture-approved. RELEASE-001 audit result is `READY WITH BLOCKERS`; RELEASE-001.1 defined the staging hosting and environment contract. RELEASE-001.2 should deploy staging/preview to Vercel from the approved commit, use Supabase staging, verify `NEXT_PUBLIC_SITE_INDEXING=false`, validate staging Auth redirects, smoke login/dashboard/orders/payments/Storage, verify logs and rehearse app rollback.
 
 PILOT-001 is architecture-approved. RELEASE-001 should review production target, domain/environment strategy and rollback planning while preserving SEC-001 hardening and PILOT-001 portal authorization boundaries.
 
@@ -797,7 +799,7 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.1 e definiamo hosting staging ed environment contract.”
+“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.2 e facciamo il rehearsal di deployment staging su Vercel.”
 
 Exact starting state:
 

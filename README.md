@@ -64,7 +64,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | COMM-001 | Completed — Commercial roadmap priorities |
 | PRODUCT-001 | Completed — Commercial readiness and feature-gap audit |
 | SEC-001 | Completed — Supabase security audit, remediation and authenticated mutation regression |
-| RELEASE-001 | In progress — Release readiness planning, blockers and deployment runbook |
+| RELEASE-001 | In progress — Staging-first release readiness planning |
 
 Current public website includes:
 
@@ -130,6 +130,7 @@ Important limitations:
 - UX-002 app landing/dashboard and operational layout refinement is completed
 - SEC-001 Supabase security audit is completed, including SEC-001.1 remediation and SEC-001.2 authenticated mutation regression
 - RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet
+- RELEASE-001.1 staging hosting and environment contract is ready for Vercel staging setup
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -149,7 +150,7 @@ Repository information:
 - Latest approved and pushed commit: `2cca68f`
 - Current mission: `RELEASE-001 — Production deployment readiness`
 - Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: define the staging hosting and environment contract
+- Next macro-task: run controlled Vercel staging deployment rehearsal
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -209,4 +210,4 @@ Last Updated: 2026-08-01
 
 Current Mission: RELEASE-001
 
-Next Action: define RELEASE-001.1 staging hosting and environment contract
+Next Action: run RELEASE-001.2 staging deployment rehearsal

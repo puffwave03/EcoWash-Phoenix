@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: RELEASE-001.0
+Current Mission: RELEASE-001.2
 
 ---
 
@@ -329,4 +329,65 @@ Storage rollback:
 
 Current state: `READY WITH BLOCKERS`.
 
-Next allowed action after RELEASE-001.0: define the staging hosting and environment contract in `RELEASE-001.1`.
+## RELEASE-001.1 Staging Contract Result
+
+RELEASE-001.1 result: `READY FOR VERCEL STAGING SETUP`.
+
+Staging hosting contract:
+
+- Hosting target: Vercel staging/preview deployment from the approved `main` commit.
+- Staging domain: Vercel-assigned HTTPS domain is acceptable for the first staging deployment.
+- Custom domain: not required and not a staging blocker.
+- Production deployment: explicitly out of scope.
+- Production DNS: explicitly out of scope.
+- Production Supabase: explicitly out of scope.
+
+Staging environment contract:
+
+| Variable | Staging value class | Required value rule |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Vercel-assigned HTTPS staging URL | Must exactly match the deployed staging origin and have no trailing slash. |
+| `NEXT_PUBLIC_SUPABASE_URL` | EcoWash Staging Supabase URL | Must point to staging Supabase, not production. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | EcoWash Staging anon key | Must be anon key only; no service-role key. |
+| `NEXT_PUBLIC_SITE_INDEXING` | literal flag | Must be `false`. |
+
+Staging indexing contract:
+
+- `NEXT_PUBLIC_SITE_INDEXING=false` is mandatory.
+- `/robots.txt` must disallow indexing on staging.
+- Staging must not be submitted to search consoles or public directories.
+
+Staging Auth redirect contract:
+
+Configure EcoWash Staging Supabase Auth with the staging origin after the Vercel URL exists:
+
+```text
+Site URL:
+https://<vercel-staging-domain>
+
+Redirect URLs:
+https://<vercel-staging-domain>/**
+https://<vercel-staging-domain>/*/update-password
+```
+
+Validation scope:
+
+- Forgot password request sends recovery email.
+- Recovery link opens `/{locale}/update-password` on staging.
+- Login redirects authenticated users to `/{locale}/app`.
+- Logout returns to login.
+- Invalid or expired recovery links fail safely.
+
+Vercel staging setup instructions:
+
+1. Create or connect the Vercel project from the GitHub repository.
+2. Select the Next.js framework preset.
+3. Use `npm run build` as the build command.
+4. Do not add `vercel.json` unless a later task identifies a concrete need.
+5. Configure staging/preview environment variables from the contract above.
+6. Deploy to staging/preview only.
+7. Record the assigned Vercel staging URL.
+8. Configure Supabase staging Auth redirects for that URL.
+9. Run RELEASE-001.2 staging deployment rehearsal.
+
+Next allowed action after RELEASE-001.1: run controlled staging deployment rehearsal in `RELEASE-001.2`.

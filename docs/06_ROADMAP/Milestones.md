@@ -197,8 +197,8 @@ Official sequence after SEC-001:
 - SEC-001 — completed
 - PILOT-001 — architecture approved; roles, permissions, route architecture, portal boundaries, dependencies, implementation order and pilot acceptance criteria
 - RELEASE-001.0 — completed; canonicalize release readiness plan and blockers
-- RELEASE-001.1 — next; staging hosting and environment contract
-- RELEASE-001.2 — staging deployment rehearsal
+- RELEASE-001.1 — completed; staging hosting and environment contract ready for Vercel staging setup
+- RELEASE-001.2 — next; staging deployment rehearsal
 - RELEASE-001.3 — production Supabase and environment design
 - RELEASE-001.4 — Auth URL and redirect validation
 - RELEASE-001.5 — backup, rollback and incident runbook

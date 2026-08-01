@@ -6,7 +6,7 @@ Date: 2026-08-01
 
 Approximate closeout time: end of RELEASE-001 audit
 
-Session checkpoint: RELEASE-001.0 completed; RELEASE-001.1 next
+Session checkpoint: RELEASE-001.1 completed; RELEASE-001.2 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -187,16 +187,17 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`RELEASE-001.1 — Staging hosting and environment contract`
+`RELEASE-001.2 — Staging deployment rehearsal`
 
 Scope:
 
-- choose and configure staging hosting
-- define staging/preview environment variables
-- require `NEXT_PUBLIC_SITE_INDEXING=false`
-- use Supabase staging
-- verify staging Auth redirect requirements
-- do not require a custom domain; the assigned Vercel domain may be used for first staging
+- deploy staging/preview to Vercel from approved commit
+- use staging environment contract from `docs/05_DEVELOPMENT/Deployment.md`
+- verify `NEXT_PUBLIC_SITE_INDEXING=false`
+- configure and validate Supabase staging Auth redirects after the Vercel URL exists
+- smoke login, dashboard, orders, payments and Storage
+- verify runtime logs
+- rehearse app rollback
 - do not perform production work
 
 RELEASE-001 audit result is `READY WITH BLOCKERS`. PILOT-001 is architecture-approved. The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.

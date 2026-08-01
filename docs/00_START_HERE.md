@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: RELEASE-001
+Current Mission: RELEASE-001.2
 
-Next Action: Define RELEASE-001.1 staging hosting and environment contract
+Next Action: Run controlled Vercel staging deployment rehearsal
 
 ---
 
@@ -32,6 +32,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - SEC-001.2 authenticated mutation regression passed.
 - PILOT-001 architecture is approved and canonicalized.
 - RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet.
+- RELEASE-001.1 staging hosting and environment contract is ready for Vercel staging setup.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -80,7 +81,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.1 e definiamo hosting staging ed environment contract.”
+“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.2 e facciamo il rehearsal di deployment staging su Vercel.”
 
 Start by confirming:
 
