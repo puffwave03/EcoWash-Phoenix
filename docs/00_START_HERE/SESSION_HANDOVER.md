@@ -2,23 +2,23 @@
 
 Status: Active
 
-Date: 2026-07-31
+Date: 2026-08-01
 
-Approximate closeout time: end of UX-002 closeout
+Approximate closeout time: end of SEC-001 closeout
 
-Session checkpoint: UX-002 completed; SEC-001 next
+Session checkpoint: SEC-001 completed; PILOT-001 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `730bcae UX-002.5 fix: finalize responsive contrast and touch targets`
+Latest approved and pushed commit: `3e1579e SEC-001.1 fix: harden database privileges and order media access`
 
-Origin/main status: local `main` and `origin/main` point to `730bcae`.
+Origin/main status: local `main` and `origin/main` point to `3e1579e`.
 
-Working tree status after UX-002.5: clean
+Working tree status after SEC-001.2: clean
 
-Commit status: DOCS-010 documentation closeout pending review and commit.
+Commit status: DOCS-011 documentation closeout pending review and commit.
 
 ---
 
@@ -48,6 +48,9 @@ Commit status: DOCS-010 documentation closeout pending review and commit.
 - UX-002.3 — Dashboard hierarchy and quick actions
 - UX-002.4 — Order detail information architecture and mobile contrast
 - UX-002.5 — Final responsive and accessibility pass
+- SEC-001 — Supabase security audit
+- SEC-001.1 — Database privilege, RPC and Storage policy remediation
+- SEC-001.2 — Authenticated mutation regression after hardening
 
 ## Supabase Staging State
 
@@ -65,6 +68,8 @@ Completed on EcoWash Staging:
 - INFRA-001.1 completed.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` bucket verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
+- SEC-001.1 remediation migration `20260801000100_sec_001_1_security_remediation.sql` is applied and local/remote migration history is aligned.
+- SEC-001.2 authenticated mutation regression passed with rollback-only test coverage and no smoke baseline drift.
 
 Applied baseline migrations:
 
@@ -78,6 +83,10 @@ Smoke corrective migration:
 
 - `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql`
 
+Security remediation migration:
+
+- `20260801000100_sec_001_1_security_remediation.sql`
+
 ## Migration History State
 
 Supabase migration history reconciled successfully on 2026-07-30.
@@ -85,6 +94,8 @@ Supabase migration history reconciled successfully on 2026-07-30.
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
 Do not rerun the corrective migration. Do not use `supabase db reset --linked`, `supabase migration up`, or `supabase db push` unless a future task explicitly approves it.
+
+SEC-001.1 added database privilege hardening, explicit authenticated RPC allowlisting, `recalculate_order_totals(uuid)` client execution revocation, table privilege reduction and active-metadata enforcement for `order-media` SELECT. SEC-001.2 verified rollback-only authenticated mutation regression with no persistent data changes.
 
 ## INFRA-001-SMOKE Result
 
@@ -154,7 +165,7 @@ Smoke records remain available on staging for UX and follow-up validation.
 - Keep `supabase/.temp/` ignored.
 - Do not use Docker unless a new decision explicitly approves it.
 - Keep one task per commit.
-- Do not modify stable domain logic, migrations or Supabase remote state during SEC-001 without a separate approved fix task.
+- Do not modify stable domain logic, routes, migrations or Supabase remote state during PILOT-001 unless a separate approved implementation task explicitly authorizes it.
 
 ## UX-002 Completed State
 
@@ -174,18 +185,17 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`SEC-001 — Supabase security audit`
+`PILOT-001 — Commercial pilot portal scope and route architecture`
 
 Scope:
 
-- audit RLS on foundation, customer/property, service/order, logistics, payment and photo tables
-- audit Storage bucket and object policies for `order-media`
-- audit RPC grants, `security definer` functions and `search_path`
-- audit helper functions used for tenant and role authorization
-- audit browser/server Supabase clients and environment-variable exposure
-- verify no service-role key or private credential is browser reachable
-- classify findings before implementing fixes
-- do not apply migrations or remote changes during the audit unless a separate approved fix task authorizes them
+- define roles, permissions, route architecture and boundaries for the administrative dashboard, processing portal, delivery portal and customer portal
+- map dependencies, implementation order and pilot acceptance criteria
+- document core workflows and explicit non-goals
+- preserve existing SEC-001 hardening assumptions for RLS, RPC and Storage access
+- do not implement routes, UI, schema, migrations, policy changes or Supabase changes during this architecture task
+
+The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
 
 ## Resume Commands
 

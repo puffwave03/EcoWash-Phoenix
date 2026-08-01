@@ -63,6 +63,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | UX-002.5 | Completed — Final responsive and accessibility pass |
 | COMM-001 | Completed — Commercial roadmap priorities |
 | PRODUCT-001 | Completed — Commercial readiness and feature-gap audit |
+| SEC-001 | Completed — Supabase security audit, remediation and authenticated mutation regression |
 
 Current public website includes:
 
@@ -126,7 +127,7 @@ Important limitations:
 - Supabase migration history reconciled successfully on 2026-07-30
 - PRODUCT-001 commercial readiness and feature-gap audit is completed
 - UX-002 app landing/dashboard and operational layout refinement is completed
-- SEC-001 Supabase security audit is the next approved P0 task
+- SEC-001 Supabase security audit is completed, including SEC-001.1 remediation and SEC-001.2 authenticated mutation regression
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -143,10 +144,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `730bcae`
-- Current mission: `SEC-001 — Supabase security audit`
+- Latest approved and pushed commit: `3e1579e`
+- Current mission: `PILOT-001 — Commercial pilot portal scope and route architecture`
 - Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: complete M1 Commercial Pilot Baseline security review
+- Next macro-task: define pilot roles, permissions, routes, portal boundaries, dependencies, implementation order and acceptance criteria
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -202,8 +203,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-01
 
-Current Mission: SEC-001
+Current Mission: PILOT-001
 
-Next Action: audit Supabase RLS, Storage, grants, RPC and browser secret exposure
+Next Action: define pilot portal architecture only; no portal implementation

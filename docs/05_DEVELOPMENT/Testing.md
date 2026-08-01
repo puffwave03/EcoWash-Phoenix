@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-01
 
-Current Mission: SEC-001
+Current Mission: PILOT-001
 
 ---
 
@@ -56,6 +56,9 @@ Current real-test status:
 - INFRA-001-SMOKE corrective work is committed at `f94df88`.
 - INFRA-001.1 completed remote migration history reconciliation.
 - Supabase migration history reconciled successfully on 2026-07-30.
+- SEC-001 completed the Supabase security audit.
+- SEC-001.1 applied database privilege, RPC and Storage policy hardening through migration `20260801000100`.
+- SEC-001.2 authenticated mutation regression passed with rollback-only tests and no smoke baseline drift.
 
 INFRA-001-SMOKE validated with real staging data:
 
@@ -136,11 +139,27 @@ Known non-blocking gaps from the smoke run:
 - Remote migration history is reconciled for the manually applied smoke corrective SQL.
 - Staging smoke records remain present and should only be cleaned up in a separate approved task.
 
-## SEC-001 Testing Direction
+## SEC-001 Completed Security Verification
 
-SEC-001 starts as a security audit. It should verify RLS, Storage policies, grants, RPC permissions, `security definer` functions, `search_path`, tenant helper functions and browser/server environment boundaries before any fix is implemented.
+SEC-001 verified RLS, Storage policies, grants, RPC permissions, `security definer` functions, `search_path`, tenant helper functions and browser/server environment boundaries.
 
-SEC-001 must not apply migrations, alter Supabase remote state, modify staging data, expose secrets or use service-role credentials in browser code. Any discovered defect should be classified and fixed in a separate approved task.
+SEC-001.1 remediation result:
+
+- anonymous RPC execution is blocked
+- internal helpers such as `recalculate_order_totals(uuid)` and `app_current_organization_id()` are not client-executable
+- authenticated RPCs used by the app remain explicitly allowlisted
+- anonymous table SELECT/INSERT/UPDATE/DELETE/TRUNCATE privileges are removed
+- authenticated table privileges are reduced to the operations used by the app
+- `order-media` SELECT requires active `order_photos` metadata matching bucket, path, organization and order
+
+SEC-001.2 regression result:
+
+- authenticated rollback-only mutation tests passed for order detail, item save/remove, discount, logistics, payment, refund, void, photo registration/deactivation and status transition RPCs
+- `create_order` was verified as reachable by authenticated users up to domain validation without consuming the order-number sequence
+- rollback fixture data did not persist
+- smoke order `EW-000001` remained unchanged
+
+PILOT-001 must preserve these security assumptions while defining portal scope, roles, permissions, route architecture, dependencies, implementation order and acceptance criteria. It must not implement routes or UI, apply migrations, alter Supabase remote state, modify staging data, expose secrets or use service-role credentials in browser code.
 
 ## APP-007 Static Security Simulation
 

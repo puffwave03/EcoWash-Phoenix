@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-29
+Last Updated: 2026-08-01
 
-Current Mission: AUTH-001-E2E
+Current Mission: PILOT-001
 
 ---
 
@@ -90,6 +90,28 @@ APP-003 status:
 - Client hard delete policies are intentionally not added.
 - Service-role credentials are not used by the new browser/server client factories.
 
+## SEC-001 Security Audit Result
+
+SEC-001 is completed.
+
+SEC-001.1 applied `20260801000100_sec_001_1_security_remediation.sql` to EcoWash Staging and hardened the database security surface:
+
+- all `public` function execution was revoked from `PUBLIC`, `anon` and `authenticated` before applying an explicit authenticated allowlist
+- internal helpers, including `recalculate_order_totals(uuid)` and `app_current_organization_id()`, are not executable by Data API clients
+- anonymous table SELECT/INSERT/UPDATE/DELETE/TRUNCATE privileges on application tables are removed
+- authenticated table privileges are reduced to the operations used directly by the app
+- Storage SELECT for `order-media` requires active matching `order_photos` metadata
+- browser/server Supabase clients continue to use only the anon key; no service-role key is browser reachable
+
+SEC-001.2 authenticated mutation regression passed after the hardening:
+
+- mutative RPCs used by the app continue to work for an authorized authenticated user
+- rollback-only regression tests left no persistent fixture data
+- smoke order `EW-000001` remained unchanged
+- anonymous RPC calls are blocked with permission denied
+
+PILOT-001 must preserve these boundaries while planning roles, permissions and portal route architecture only. Customer-facing access must be designed separately from staff/admin access before any portal implementation task begins.
+
 ## APP-004 Authentication Controls
 
 APP-004 adds real email/password login and logout through Supabase SSR.
@@ -159,6 +181,8 @@ Required controls:
 - Client hard delete is not exposed; photo removal is logical deactivation.
 
 APP-007 Storage policies allow authenticated owner/manager/staff members of the same organization to upload and read order media for orders in their tenant. Anonymous access, cross-tenant paths, arbitrary path shapes, direct object updates and direct object deletes are denied.
+
+SEC-001.1 further requires active `order_photos` metadata to read `order-media` objects. An object path alone is not sufficient for Storage SELECT.
 
 ## APP-007 Logistics, Photos And Payment Controls
 

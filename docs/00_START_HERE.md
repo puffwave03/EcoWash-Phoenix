@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-01
 
-Current Mission: SEC-001
+Current Mission: PILOT-001
 
-Next Action: Audit Supabase RLS, Storage, grants, RPC and browser secret exposure
+Next Action: Define pilot portal architecture only; no portal implementation
 
 ---
 
@@ -22,11 +22,14 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `730bcae UX-002.5 fix: finalize responsive contrast and touch targets`
-- Current mission: `SEC-001 — Supabase security audit`
+- Latest approved and pushed commit: `3e1579e SEC-001.1 fix: harden database privileges and order media access`
+- Current mission: `PILOT-001 — Commercial pilot portal scope and route architecture`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
+- SEC-001 is completed.
+- SEC-001.1 is completed, applied to staging and pushed.
+- SEC-001.2 authenticated mutation regression passed.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -39,8 +42,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before SEC-001 audit work.
-- `main` and `origin/main` are expected to be synchronized at `730bcae`.
+- Working tree is expected to be clean before PILOT-001 work.
+- `main` and `origin/main` are expected to be synchronized at `3e1579e`.
 
 ---
 
@@ -75,7 +78,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da SEC-001 e facciamo l'audit sicurezza Supabase.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PILOT-001 e definiamo architettura, ruoli e confini dei portali senza implementarli.”
 
 Start by confirming:
 
@@ -95,4 +98,4 @@ Then read:
 - `docs/06_ROADMAP/Project_Status.md`
 - `docs/06_ROADMAP/Milestones.md`
 
-Do not run destructive Supabase commands for SEC-001. Do not use Docker. Do not modify code, stable domain logic, migrations or Supabase remote state during SEC-001 unless a separate approved fix task explicitly authorizes it.
+Do not run destructive Supabase commands for PILOT-001. Do not use Docker. Do not modify code, stable domain logic, routes, migrations or Supabase remote state while defining the pilot architecture unless a separate approved implementation task explicitly authorizes it.

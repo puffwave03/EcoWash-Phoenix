@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-01
 
-Current Mission: SEC-001
+Current Mission: PILOT-001
 
-Next Action: audit Supabase RLS, Storage, grants, RPC and browser secret exposure
+Next Action: define pilot portal architecture only; no portal implementation
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | SEC-001 — Supabase security audit |
-| Last completed mission | UX-002.5 — Final responsive and accessibility pass |
-| Latest approved and pushed commit | 730bcae |
+| Current mission | PILOT-001 — Commercial pilot portal scope and route architecture |
+| Last completed mission | SEC-001.2 — Authenticated mutation regression |
+| Latest approved and pushed commit | 3e1579e |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -57,10 +57,13 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-002.5 status | Completed and pushed |
 | COMM-001 status | Completed and pushed |
 | PRODUCT-001 status | Completed and pushed |
+| SEC-001 status | Completed |
+| SEC-001.1 status | Completed, applied to staging and pushed |
+| SEC-001.2 status | Completed; authenticated mutation regression passed |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
-| Commercial readiness | Staging MVP validated; M1 production/security/QA/UX readiness is required before commercial pilot |
+| Commercial readiness | Staging MVP validated; SEC-001 security hardening completed; pilot portal architecture, release readiness, repeatable QA and approved portal MVP implementation remain before the real operational pilot |
 
 ## Development Status
 
@@ -107,7 +110,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-002.5 | Final responsive and accessibility pass | Completed |
 | COMM-001 | Commercial roadmap extraction and prioritization | Completed |
 | PRODUCT-001 | Commercial readiness and feature-gap audit | Completed |
-| SEC-001 | Supabase security audit | Next |
+| SEC-001 | Supabase security audit | Completed |
+| SEC-001.1 | Security remediation and migration design/application | Completed |
+| SEC-001.2 | Authenticated mutation regression | Completed |
+| PILOT-001 | Commercial pilot portal scope and route architecture | Next; planning only |
 
 ## Commit History
 
@@ -152,6 +158,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-002.3 | 732f82c |
 | UX-002.4 | d408425 |
 | UX-002.5 | 730bcae |
+| SEC-001.1 | 3e1579e |
 
 ## Documentation Commit History
 
@@ -194,7 +201,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `730bcae` at the SEC-001 baseline.
+- Local `main` and `origin/main` point to `3e1579e` at the DOCS-011 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -292,31 +299,51 @@ Partially implemented features:
 Missing commercial-readiness features:
 
 - production deployment readiness and domain/environment decision
-- full Supabase RLS, Storage, grants, RPC and browser-secret audit
 - repeatable smoke/regression checklist for release
+- pilot portal architecture and implementation order for administrative, processing, delivery and customer surfaces
 - owner-managed staff invitation, activation and deactivation
 - organization and location settings UI
 - global search
 - structured notes and issues
 - daily payment close and open balance reports
 - CSV export for accounting or operational handoff
-- customer portal, online payments, invoices/PDFs, notifications and mobile app
+- online payments, invoices/PDFs, notifications and mobile app
 
 Priority classification:
 
 | Priority | Meaning | Features |
 | --- | --- | --- |
-| P0 | Required before commercial pilot | UX-002 completed; RELEASE-001, SEC-001 and QA-001 pending |
+| P0 | Required before commercial pilot | UX-002 and SEC-001 completed; PILOT-001, RELEASE-001 and QA-001 pending |
 | P1 | Required for first paid internal operations | AUTH-002, ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
-| P2 | Strong operational/commercial differentiators | OPS-001, OPS-002, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
-| P3 | Future growth after internal stability | CUSTOMER-001, PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
+| P2 | Portal MVPs and strong operational/commercial differentiators | OPS-001, OPS-002, PORTAL-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
 
 - UX-002 app layout/dashboard refinement — completed
-- RELEASE-001 production deployment readiness
-- SEC-001 Supabase security audit — next
-- QA-001 repeatable smoke/regression checklist
+- SEC-001 Supabase security audit, remediation and authenticated mutation regression — completed
+- PILOT-001 commercial pilot portal scope and route architecture — next; planning only
+- RELEASE-001 production deployment readiness — planned
+- QA-001 repeatable smoke/regression checklist — planned
+- AUTH-002 staff lifecycle — planned
+- ORG-001 organization/location settings — planned
+- OPS-001 Production Portal MVP — planned after architecture review
+- OPS-002 Delivery Portal MVP — planned after architecture review
+- PORTAL-001 Customer Portal MVP — planned after architecture review
+- PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
+
+PILOT-001 planning scope:
+
+- Administrative dashboard: owner/manager overview for daily operations, balances, queues and attention records.
+- Processing portal: staff-focused production queue for order intake, item handling, status movement and issue visibility.
+- Delivery portal: pickup/delivery task flow for assigned logistics work, completion states and customer/property context.
+- Customer portal: controlled customer-facing order visibility and service-request surface, scoped to pilot needs and designed separately from staff access.
+- Define roles, permissions, route architecture, dependencies, implementation order and acceptance criteria.
+- Do not implement routes, UI, schema, migrations, policies or Supabase changes in PILOT-001.
+
+Operational pilot definition:
+
+- `PILOT-002` or the M1 First Laundry Operational Pilot is the real pilot execution after planning, release readiness, QA and approved MVP portal implementation.
 
 M2 — First Paid Operations:
 
@@ -328,8 +355,9 @@ M2 — First Paid Operations:
 
 M3 — Operational Scale And Management Control:
 
-- OPS-001 staff worklists
-- OPS-002 notes and issues
+- OPS-001 Production Portal MVP
+- OPS-002 Delivery Portal MVP
+- PORTAL-001 Customer Portal MVP
 - REPORT-001 daily close
 - REPORT-002 open balance report
 - EXPORT-001 CSV export
@@ -337,7 +365,7 @@ M3 — Operational Scale And Management Control:
 
 Commercial scope guard:
 
-- do not start P3 customer-facing features before M1-M3 are complete or explicitly reprioritized
+- customer portal is now explicitly reprioritized into M1 pilot scope, but online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime and Edge Functions remain deferred unless separately approved
 - do not combine currencies in financial reporting
 - do not expose service-role credentials or privileged membership controls to browser code
 - keep production, fulfillment, payment and issues as independent dimensions
@@ -490,11 +518,20 @@ INFRA-001.1 read-only verification:
 - `order-media` bucket exists, is private, has a 1 MB limit and allows JPEG, PNG and WebP.
 - Smoke customer, property, service, order `EW-000001`, one active item, total `25,00 EUR`, production ready, completed pickup, completed delivery, payments totaling `25,00 EUR`, zero balance and one intake photo were verified.
 
+SEC-001 completion state:
+
+- SEC-001 diagnostic audit found excessive function/table privileges, anonymous RPC exposure, an exposed internal totals helper and Storage object SELECT not requiring active photo metadata.
+- SEC-001.1 applied `20260801000100_sec_001_1_security_remediation.sql` on staging, hardened function grants, reduced table privileges, kept authenticated RPC allowlisting explicit and required active `order_photos` metadata for `order-media` SELECT.
+- SEC-001.2 authenticated mutation regression passed with rollback-only tests for the mutative RPCs used by the app. The smoke order remained unchanged.
+- Anonymous RPC calls are blocked, internal helpers are not client-executable, RLS tenant isolation remains intact and Storage reads are limited to active metadata in the authorized tenant.
+
 Next approved task:
 
-- `SEC-001 — Supabase security audit`
+- `PILOT-001 — Commercial pilot portal scope and route architecture`
 
-SEC-001 should audit Supabase RLS, Storage policies, grants, RPC permissions, helper functions, browser-exposed environment variables and service-role exposure risk. It must not apply migrations, modify production/staging data or change Supabase remote state unless a separate approved fix task explicitly authorizes it.
+PILOT-001 is an architecture and planning task only. It must define roles, permissions, route architecture, boundaries for the administrative dashboard, processing portal, delivery portal and customer portal, dependencies, implementation order and acceptance criteria for the later pilot. It must not implement routes, UI, schema, migrations, policies, Supabase changes or production code.
+
+The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
 
 ## APP-002 Documentation State
 
@@ -732,25 +769,25 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da SEC-001 e facciamo l'audit sicurezza Supabase.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PILOT-001 e definiamo architettura, ruoli e confini dei portali senza implementarli.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `730bcae`
+- Local `main` and `origin/main` expected at `3e1579e`
 - Current release state is staging MVP validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- SEC-001 is next
-- Do not modify approved migrations during the audit
+- SEC-001 is completed; PILOT-001 is next
+- Do not modify approved migrations during PILOT-001
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
-- Do not apply migrations or alter Supabase remote state during SEC-001
+- Do not apply migrations or alter Supabase remote state during PILOT-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Report findings before applying any security fix
+- Define portal architecture, dependencies, implementation order and acceptance criteria before implementation
 
 First checks:
 

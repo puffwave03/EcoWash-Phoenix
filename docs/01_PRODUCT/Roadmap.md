@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-01
 
-Current Mission: SEC-001
+Current Mission: PILOT-001
 
-Next Action: Audit Supabase RLS, Storage, grants, RPC and browser secret exposure
+Next Action: Define pilot portal architecture only; no portal implementation
 
 ---
 
@@ -134,6 +134,7 @@ Implemented and smoke-validated:
 - private order photos with signed previews
 - operational dashboard over real tenant data
 - organization timezone for dashboard day windows
+- Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
 - first real staging smoke flow through order `EW-000001`
 
 Partially implemented:
@@ -147,22 +148,23 @@ Partially implemented:
 Missing for commercial readiness:
 
 - production deployment and domain readiness
-- full Supabase RLS, Storage, grant and browser-secret audit
 - repeatable smoke/regression checklist for production release
+- commercial pilot portal architecture and implementation order
 - owner-managed staff invitations and deactivation
 - organization and location settings UI
 - global search
 - structured notes and issues
 - management reports and CSV exports
-- customer-facing portal, online payments, invoices/PDFs and notifications
+- online payments, invoices/PDFs and notifications
 
 ### Priority Classes
 
 P0 — required before a commercial pilot:
 
 - UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement. Completed.
+- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
+- PILOT-001 — Commercial pilot portal scope and route architecture. Next; planning only, no implementation.
 - RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist.
-- SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Next.
 - QA-001 — Repeatable smoke/regression checklist using staging and later production.
 
 P1 — required for first paid internal operations:
@@ -173,10 +175,11 @@ P1 — required for first paid internal operations:
 - SEARCH-001 — Search across orders, customers, properties and services.
 - AUDIT-001 — User-facing audit trail for sensitive operational changes.
 
-P2 — strong commercial differentiators after the first paid baseline:
+P2 — portal MVPs and strong commercial differentiators after the first paid baseline:
 
-- OPS-001 — Production queue filters, assignment views and staff worklists.
-- OPS-002 — Notes and structured order issues.
+- OPS-001 — Production Portal MVP.
+- OPS-002 — Delivery Portal MVP.
+- PORTAL-001 — Customer Portal MVP.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -184,7 +187,6 @@ P2 — strong commercial differentiators after the first paid baseline:
 
 P3 — future growth after internal operations are stable:
 
-- CUSTOMER-001 — Customer self-service portal.
 - PAY-001 — Online payment provider integration.
 - DOC-001 — Fiscal invoices and advanced PDFs.
 - NOTIFY-001 — Customer/staff notifications.
@@ -202,9 +204,30 @@ Goal: make the current staging MVP demonstrable, deployable and safe enough for 
 Scope:
 
 - UX-002 — completed
-- RELEASE-001
-- SEC-001 — next
-- QA-001
+- SEC-001 — completed
+- PILOT-001 — next; architecture and planning only
+- RELEASE-001 — planned
+- QA-001 — planned
+- AUTH-002 — planned
+- ORG-001 — planned
+- OPS-001 — Production Portal MVP, planned after architecture review
+- OPS-002 — Delivery Portal MVP, planned after architecture review
+- PORTAL-001 — Customer Portal MVP, planned after architecture review
+- PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
+
+PILOT-001 planning scope:
+
+- Administrative dashboard: owner/manager control surface for daily operational decisions, payment attention and queue visibility.
+- Processing portal: production-side staff workspace for intake, items, status movement and work-in-progress visibility.
+- Delivery portal: logistics-side workspace for pickup/delivery tasks, assignment context and fulfillment updates.
+- Customer portal: pilot-scoped customer-facing access for order visibility and service-request interaction, with separate authorization boundaries from staff/admin portals.
+- Define roles, permissions, route architecture, dependencies, implementation order and acceptance criteria.
+- No route, UI, schema, migration, policy or Supabase implementation is part of PILOT-001.
+
+Operational pilot definition:
+
+- `PILOT-002` or the M1 First Laundry Operational Pilot is the real business pilot execution task.
+- It starts only after PILOT-001 planning, RELEASE-001, QA-001 and the approved MVP portal implementation tasks are reviewed.
 
 Exit criteria:
 
@@ -212,6 +235,8 @@ Exit criteria:
 - environment variables are reviewed without exposing secrets
 - no service-role key or private credential reaches browser code
 - RLS, Storage and RPC permissions have a documented review result
+- role, route and data boundaries are defined for administrative, processing, delivery and customer portals
+- implementation order and acceptance criteria for the operational pilot are approved
 - smoke test can be repeated from login through dashboard
 - app dashboard and order detail are clear enough for owner/staff daily use
 
@@ -259,4 +284,4 @@ Exit criteria:
 
 ### Deferred Until After M3
 
-Do not start customer portal, online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
+Customer portal is now part of M1 pilot scoping. Do not start online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
