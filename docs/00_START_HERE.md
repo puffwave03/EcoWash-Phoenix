@@ -8,7 +8,7 @@ Last Updated: 2026-08-01
 
 Current Mission: RELEASE-001
 
-Next Action: Review production deployment readiness, environment strategy and rollback plan
+Next Action: Define RELEASE-001.1 staging hosting and environment contract
 
 ---
 
@@ -22,7 +22,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `c3a1059 DOCS-011 docs: close SEC-001 and define pilot architecture scope`
+- Latest approved and pushed commit: `2cca68f PILOT-001 docs: define portal roles routes and authorization boundaries`
 - Current mission: `RELEASE-001 — Production deployment readiness`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
@@ -30,6 +30,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - SEC-001 is completed.
 - SEC-001.1 is completed, applied to staging and pushed.
 - SEC-001.2 authenticated mutation regression passed.
+- PILOT-001 architecture is approved and canonicalized.
+- RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -43,7 +45,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 - Working tree is expected to be clean before RELEASE-001 work.
-- `main` and `origin/main` are expected to be synchronized at `c3a1059`.
+- `main` and `origin/main` are expected to be synchronized at `2cca68f`.
 
 ---
 
@@ -78,7 +80,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001 e facciamo la review di deployment, environment e rollback.”
+“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.1 e definiamo hosting staging ed environment contract.”
 
 Start by confirming:
 
@@ -93,6 +95,7 @@ Then read:
 - `docs/00_START_HERE.md`
 - `docs/00_START_HERE/SESSION_HANDOVER.md`
 - `docs/05_DEVELOPMENT/Testing.md`
+- `docs/05_DEVELOPMENT/Deployment.md`
 - `docs/04_ARCHITECTURE/Security.md`
 - `docs/03_DATABASE/Database_Design.md`
 - `docs/06_ROADMAP/Project_Status.md`

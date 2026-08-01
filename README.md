@@ -64,6 +64,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | COMM-001 | Completed — Commercial roadmap priorities |
 | PRODUCT-001 | Completed — Commercial readiness and feature-gap audit |
 | SEC-001 | Completed — Supabase security audit, remediation and authenticated mutation regression |
+| RELEASE-001 | In progress — Release readiness planning, blockers and deployment runbook |
 
 Current public website includes:
 
@@ -128,6 +129,7 @@ Important limitations:
 - PRODUCT-001 commercial readiness and feature-gap audit is completed
 - UX-002 app landing/dashboard and operational layout refinement is completed
 - SEC-001 Supabase security audit is completed, including SEC-001.1 remediation and SEC-001.2 authenticated mutation regression
+- RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -144,10 +146,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `c3a1059`
+- Latest approved and pushed commit: `2cca68f`
 - Current mission: `RELEASE-001 — Production deployment readiness`
 - Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: production deployment readiness after PILOT-001 architecture approval
+- Next macro-task: define the staging hosting and environment contract
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -207,4 +209,4 @@ Last Updated: 2026-08-01
 
 Current Mission: RELEASE-001
 
-Next Action: review production deployment readiness, environment strategy and rollback plan
+Next Action: define RELEASE-001.1 staging hosting and environment contract

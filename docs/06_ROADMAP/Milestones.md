@@ -189,14 +189,21 @@ Scope:
 - UX-002 — App landing, dashboard hierarchy and operational layout refinement. Completed.
 - SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
 - PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved; no implementation.
-- RELEASE-001 — Production deployment readiness, environment review and rollback checklist. Next.
+- RELEASE-001 — Production deployment readiness, environment review and rollback checklist. In progress; audit result `READY WITH BLOCKERS`.
 - QA-001 — Repeatable smoke/regression checklist for staging and production release.
 
 Official sequence after SEC-001:
 
 - SEC-001 — completed
 - PILOT-001 — architecture approved; roles, permissions, route architecture, portal boundaries, dependencies, implementation order and pilot acceptance criteria
-- RELEASE-001 — next
+- RELEASE-001.0 — completed; canonicalize release readiness plan and blockers
+- RELEASE-001.1 — next; staging hosting and environment contract
+- RELEASE-001.2 — staging deployment rehearsal
+- RELEASE-001.3 — production Supabase and environment design
+- RELEASE-001.4 — Auth URL and redirect validation
+- RELEASE-001.5 — backup, rollback and incident runbook
+- RELEASE-001.6 — logging, monitoring and release metadata
+- RELEASE-001.7 — production release checklist and go/no-go review
 - QA-001 — planned
 - AUTH-002 — planned
 - ORG-001 — planned
@@ -230,7 +237,10 @@ Operational pilot definition:
 
 Commercial exit criteria:
 
-- production target, domain and environment strategy are documented
+- staging target is documented; production target, domain and environment strategy are documented before production go/no-go
+- staging and production requirements are separated
+- staging and production blockers are documented
+- deployment and rollback checklist are approved
 - dashboard supports daily owner decisions without demo data
 - pilot routes and role boundaries are defined for administrative, processing, delivery and customer portals
 - portal implementation order and operational pilot acceptance criteria are approved

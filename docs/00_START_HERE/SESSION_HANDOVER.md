@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-01
 
-Approximate closeout time: end of SEC-001 closeout
+Approximate closeout time: end of RELEASE-001 audit
 
-Session checkpoint: PILOT-001 architecture approved; RELEASE-001 next
+Session checkpoint: RELEASE-001.0 completed; RELEASE-001.1 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `c3a1059 DOCS-011 docs: close SEC-001 and define pilot architecture scope`
+Latest approved and pushed commit: `2cca68f PILOT-001 docs: define portal roles routes and authorization boundaries`
 
-Origin/main status: local `main` and `origin/main` point to `c3a1059`.
+Origin/main status: local `main` and `origin/main` point to `2cca68f`.
 
-Working tree status after SEC-001.2: clean
+Working tree status after RELEASE-001 audit: clean
 
-Commit status: DOCS-011 documentation closeout pending review and commit.
+Commit status: RELEASE-001.0 documentation correction pending review and commit.
 
 ---
 
@@ -51,6 +51,8 @@ Commit status: DOCS-011 documentation closeout pending review and commit.
 - SEC-001 — Supabase security audit
 - SEC-001.1 — Database privilege, RPC and Storage policy remediation
 - SEC-001.2 — Authenticated mutation regression after hardening
+- PILOT-001 — Commercial pilot portal scope and route architecture
+- PILOT-001.1 — Pilot portal roles, routes and authorization boundaries
 
 ## Supabase Staging State
 
@@ -185,16 +187,19 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`RELEASE-001 — Production deployment readiness`
+`RELEASE-001.1 — Staging hosting and environment contract`
 
 Scope:
 
-- review production target, domain/environment strategy and rollback plan
-- verify no service-role key or private credential is browser reachable
-- preserve SEC-001 hardening assumptions and PILOT-001 portal authorization boundaries
-- do not implement routes, UI, schema, migrations, policy changes or Supabase changes during the review task
+- choose and configure staging hosting
+- define staging/preview environment variables
+- require `NEXT_PUBLIC_SITE_INDEXING=false`
+- use Supabase staging
+- verify staging Auth redirect requirements
+- do not require a custom domain; the assigned Vercel domain may be used for first staging
+- do not perform production work
 
-PILOT-001 is architecture-approved. The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
+RELEASE-001 audit result is `READY WITH BLOCKERS`. PILOT-001 is architecture-approved. The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
 
 ## Resume Commands
 

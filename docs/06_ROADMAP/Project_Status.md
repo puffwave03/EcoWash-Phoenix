@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | RELEASE-001 — Production deployment readiness |
+| Current mission | RELEASE-001.1 — Staging hosting and environment contract |
 | Last completed mission | PILOT-001 — Commercial pilot portal scope and route architecture |
-| Latest approved and pushed commit | c3a1059 |
+| Latest approved and pushed commit | 2cca68f |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -114,7 +114,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | SEC-001.1 | Security remediation and migration design/application | Completed |
 | SEC-001.2 | Authenticated mutation regression | Completed |
 | PILOT-001 | Commercial pilot portal scope and route architecture | Architecture approved |
-| RELEASE-001 | Production deployment readiness | Next |
+| RELEASE-001 | Production deployment readiness | In progress; audit result READY WITH BLOCKERS |
+| RELEASE-001.0 | Canonicalize release readiness plan and blockers | Completed, pending commit |
+| RELEASE-001.1 | Staging hosting and environment contract | Next |
 
 ## Commit History
 
@@ -202,7 +204,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `c3a1059` at the PILOT-001.1 baseline.
+- Local `main` and `origin/main` point to `2cca68f` at the RELEASE-001.0 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -324,7 +326,9 @@ M1 — Commercial Pilot Baseline:
 - UX-002 app layout/dashboard refinement — completed
 - SEC-001 Supabase security audit, remediation and authenticated mutation regression — completed
 - PILOT-001 commercial pilot portal scope and route architecture — architecture approved
-- RELEASE-001 production deployment readiness — next
+- RELEASE-001 production deployment readiness — in progress; audit result READY WITH BLOCKERS
+- RELEASE-001.0 canonicalize release readiness plan and blockers — completed, pending commit
+- RELEASE-001.1 staging hosting and environment contract — next
 - QA-001 repeatable smoke/regression checklist — planned
 - AUTH-002 staff lifecycle — planned
 - ORG-001 organization/location settings — planned
@@ -359,6 +363,12 @@ PILOT-001 canonical decisions:
 Operational pilot definition:
 
 - `PILOT-002` or the M1 First Laundry Operational Pilot is the real pilot execution after planning, release readiness, QA and approved MVP portal implementation.
+
+RELEASE-001 blocker summary:
+
+- Staging requires hosting contract, staging/preview env contract, `NEXT_PUBLIC_SITE_INDEXING=false`, Supabase staging usage, staging Auth redirect verification, read-only Supabase CLI access, migration history verification and QA decisions for remaining smoke gaps.
+- Production has no confirmed domain, hosting project, production Supabase project, Auth redirect configuration, production env matrix, backup/rollback plan, observability/logging policy or production smoke checklist.
+- Production is not ready until these blockers are resolved in RELEASE-001.x tasks.
 
 M2 — First Paid Operations:
 
@@ -543,7 +553,9 @@ SEC-001 completion state:
 
 Next approved task:
 
-- `RELEASE-001 — Production deployment readiness`
+- `RELEASE-001.1 — Staging hosting and environment contract`
+
+PILOT-001 is architecture-approved. RELEASE-001 audit result is `READY WITH BLOCKERS`; RELEASE-001.0 canonicalized the staging-first plan. RELEASE-001.1 should define staging hosting and environment contract, require `NEXT_PUBLIC_SITE_INDEXING=false`, use Supabase staging, verify staging Auth redirect requirements and avoid production work.
 
 PILOT-001 is architecture-approved. RELEASE-001 should review production target, domain/environment strategy and rollback planning while preserving SEC-001 hardening and PILOT-001 portal authorization boundaries.
 
@@ -785,13 +797,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PILOT-001 e definiamo architettura, ruoli e confini dei portali senza implementarli.”
+“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.1 e definiamo hosting staging ed environment contract.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `c3a1059`
+- Local `main` and `origin/main` expected at `2cca68f`
 - Current release state is staging MVP validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed

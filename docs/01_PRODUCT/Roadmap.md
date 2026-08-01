@@ -164,7 +164,7 @@ P0 — required before a commercial pilot:
 - UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement. Completed.
 - SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
 - PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved; no implementation.
-- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist. Next.
+- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist. In progress; audit result `READY WITH BLOCKERS`.
 - QA-001 — Repeatable smoke/regression checklist using staging and later production.
 
 P1 — required for first paid internal operations:
@@ -207,7 +207,14 @@ Scope:
 - UX-002 — completed
 - SEC-001 — completed
 - PILOT-001 — architecture approved
-- RELEASE-001 — next
+- RELEASE-001.0 — completed; canonicalize release readiness plan and blockers
+- RELEASE-001.1 — next; staging hosting and environment contract
+- RELEASE-001.2 — staging deployment rehearsal
+- RELEASE-001.3 — production Supabase and environment design
+- RELEASE-001.4 — Auth URL and redirect validation
+- RELEASE-001.5 — backup, rollback and incident runbook
+- RELEASE-001.6 — logging, monitoring and release metadata
+- RELEASE-001.7 — production release checklist and go/no-go review
 - QA-001 — planned
 - AUTH-002 — planned
 - ORG-001 — planned
@@ -243,8 +250,11 @@ Operational pilot definition:
 
 Exit criteria:
 
-- production target and domain decision are documented
+- staging target is documented; production target and domain decision are documented before production go/no-go
 - environment variables are reviewed without exposing secrets
+- staging and production requirements are separated
+- staging and production blockers are documented
+- deployment and rollback checklist are approved
 - no service-role key or private credential reaches browser code
 - RLS, Storage and RPC permissions have a documented review result
 - role, route and data boundaries are defined for administrative, processing, delivery and customer portals
