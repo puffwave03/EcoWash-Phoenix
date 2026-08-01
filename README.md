@@ -144,10 +144,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `3e1579e`
-- Current mission: `PILOT-001 — Commercial pilot portal scope and route architecture`
+- Latest approved and pushed commit: `c3a1059`
+- Current mission: `RELEASE-001 — Production deployment readiness`
 - Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: define pilot roles, permissions, routes, portal boundaries, dependencies, implementation order and acceptance criteria
+- Next macro-task: production deployment readiness after PILOT-001 architecture approval
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -205,6 +205,6 @@ Document Status: Active
 
 Last Updated: 2026-08-01
 
-Current Mission: PILOT-001
+Current Mission: RELEASE-001
 
-Next Action: define pilot portal architecture only; no portal implementation
+Next Action: review production deployment readiness, environment strategy and rollback plan

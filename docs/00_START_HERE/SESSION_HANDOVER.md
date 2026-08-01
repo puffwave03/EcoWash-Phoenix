@@ -6,15 +6,15 @@ Date: 2026-08-01
 
 Approximate closeout time: end of SEC-001 closeout
 
-Session checkpoint: SEC-001 completed; PILOT-001 next
+Session checkpoint: PILOT-001 architecture approved; RELEASE-001 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `3e1579e SEC-001.1 fix: harden database privileges and order media access`
+Latest approved and pushed commit: `c3a1059 DOCS-011 docs: close SEC-001 and define pilot architecture scope`
 
-Origin/main status: local `main` and `origin/main` point to `3e1579e`.
+Origin/main status: local `main` and `origin/main` point to `c3a1059`.
 
 Working tree status after SEC-001.2: clean
 
@@ -165,7 +165,7 @@ Smoke records remain available on staging for UX and follow-up validation.
 - Keep `supabase/.temp/` ignored.
 - Do not use Docker unless a new decision explicitly approves it.
 - Keep one task per commit.
-- Do not modify stable domain logic, routes, migrations or Supabase remote state during PILOT-001 unless a separate approved implementation task explicitly authorizes it.
+- Do not modify stable domain logic, routes, migrations or Supabase remote state during RELEASE-001 unless a separate approved implementation task explicitly authorizes it.
 
 ## UX-002 Completed State
 
@@ -185,17 +185,16 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`PILOT-001 — Commercial pilot portal scope and route architecture`
+`RELEASE-001 — Production deployment readiness`
 
 Scope:
 
-- define roles, permissions, route architecture and boundaries for the administrative dashboard, processing portal, delivery portal and customer portal
-- map dependencies, implementation order and pilot acceptance criteria
-- document core workflows and explicit non-goals
-- preserve existing SEC-001 hardening assumptions for RLS, RPC and Storage access
-- do not implement routes, UI, schema, migrations, policy changes or Supabase changes during this architecture task
+- review production target, domain/environment strategy and rollback plan
+- verify no service-role key or private credential is browser reachable
+- preserve SEC-001 hardening assumptions and PILOT-001 portal authorization boundaries
+- do not implement routes, UI, schema, migrations, policy changes or Supabase changes during the review task
 
-The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
+PILOT-001 is architecture-approved. The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
 
 ## Resume Commands
 

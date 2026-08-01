@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: PILOT-001
+Current Mission: RELEASE-001
 
-Next Action: Define pilot portal architecture only; no portal implementation
+Next Action: Review production deployment readiness, environment strategy and rollback plan
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `3e1579e SEC-001.1 fix: harden database privileges and order media access`
-- Current mission: `PILOT-001 — Commercial pilot portal scope and route architecture`
+- Latest approved and pushed commit: `c3a1059 DOCS-011 docs: close SEC-001 and define pilot architecture scope`
+- Current mission: `RELEASE-001 — Production deployment readiness`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -42,8 +42,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before PILOT-001 work.
-- `main` and `origin/main` are expected to be synchronized at `3e1579e`.
+- Working tree is expected to be clean before RELEASE-001 work.
+- `main` and `origin/main` are expected to be synchronized at `c3a1059`.
 
 ---
 
@@ -78,7 +78,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PILOT-001 e definiamo architettura, ruoli e confini dei portali senza implementarli.”
+“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001 e facciamo la review di deployment, environment e rollback.”
 
 Start by confirming:
 
@@ -98,4 +98,4 @@ Then read:
 - `docs/06_ROADMAP/Project_Status.md`
 - `docs/06_ROADMAP/Milestones.md`
 
-Do not run destructive Supabase commands for PILOT-001. Do not use Docker. Do not modify code, stable domain logic, routes, migrations or Supabase remote state while defining the pilot architecture unless a separate approved implementation task explicitly authorizes it.
+Do not run destructive Supabase commands for RELEASE-001. Do not use Docker. Do not modify code, stable domain logic, routes, migrations or Supabase remote state unless a separate approved implementation task explicitly authorizes it.

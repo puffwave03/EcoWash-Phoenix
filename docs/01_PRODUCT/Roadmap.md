@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: PILOT-001
+Current Mission: RELEASE-001
 
-Next Action: Define pilot portal architecture only; no portal implementation
+Next Action: Review production deployment readiness, environment strategy and rollback plan
 
 ---
 
@@ -163,8 +163,8 @@ P0 — required before a commercial pilot:
 
 - UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement. Completed.
 - SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
-- PILOT-001 — Commercial pilot portal scope and route architecture. Next; planning only, no implementation.
-- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist.
+- PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved; no implementation.
+- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist. Next.
 - QA-001 — Repeatable smoke/regression checklist using staging and later production.
 
 P1 — required for first paid internal operations:
@@ -179,6 +179,7 @@ P2 — portal MVPs and strong commercial differentiators after the first paid ba
 
 - OPS-001 — Production Portal MVP.
 - OPS-002 — Delivery Portal MVP.
+- PORTAL-001.1 — Customer identity, data model and authorization design.
 - PORTAL-001 — Customer Portal MVP.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
@@ -205,14 +206,15 @@ Scope:
 
 - UX-002 — completed
 - SEC-001 — completed
-- PILOT-001 — next; architecture and planning only
-- RELEASE-001 — planned
+- PILOT-001 — architecture approved
+- RELEASE-001 — next
 - QA-001 — planned
 - AUTH-002 — planned
 - ORG-001 — planned
 - OPS-001 — Production Portal MVP, planned after architecture review
 - OPS-002 — Delivery Portal MVP, planned after architecture review
-- PORTAL-001 — Customer Portal MVP, planned after architecture review
+- PORTAL-001.1 — Customer identity, data model and authorization design, required before PORTAL-001
+- PORTAL-001 — Customer Portal MVP, planned after PORTAL-001.1
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -223,6 +225,16 @@ PILOT-001 planning scope:
 - Customer portal: pilot-scoped customer-facing access for order visibility and service-request interaction, with separate authorization boundaries from staff/admin portals.
 - Define roles, permissions, route architecture, dependencies, implementation order and acceptance criteria.
 - No route, UI, schema, migration, policy or Supabase implementation is part of PILOT-001.
+
+PILOT-001 canonical decisions:
+
+- M1 internal roles stay `owner`, `manager` and `staff`.
+- Production operator and delivery operator are personas/capabilities, not new `app_role` values.
+- Do not introduce `/[locale]/app/admin` for M1; `/[locale]/app` remains the administrative dashboard surface.
+- Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; magic link is authentication, not authorization.
+- Customer portal must not use `organization_memberships`, must not add `customer` to `app_role` and must not call internal staff RPCs directly.
+- Location scope is one organization and one operational location for M1; the model remains location-aware, but location-based authorization is future work.
+- UI hiding is not authorization; Server Actions/RPCs must enforce capability checks.
 
 Operational pilot definition:
 
@@ -268,6 +280,8 @@ Scope:
 
 - OPS-001
 - OPS-002
+- PORTAL-001.1
+- PORTAL-001
 - REPORT-001
 - REPORT-002
 - EXPORT-001

@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: PILOT-001
+Current Mission: RELEASE-001
 
 ---
 
@@ -110,7 +110,11 @@ SEC-001.2 authenticated mutation regression passed after the hardening:
 - smoke order `EW-000001` remained unchanged
 - anonymous RPC calls are blocked with permission denied
 
-PILOT-001 must preserve these boundaries while planning roles, permissions and portal route architecture only. Customer-facing access must be designed separately from staff/admin access before any portal implementation task begins.
+PILOT-001 is architecture-approved. M1 internal roles remain `owner`, `manager` and `staff`; production operator and delivery operator are application personas/capabilities, not new `app_role` values.
+
+Customer access must not use `organization_memberships` and must not add `customer` to `app_role`. The M1 direction is Supabase Auth magic link/OTP plus a separate future customer-user relationship. Magic link is authentication only; authorization requires customer-scoped RLS/RPC or equivalent server-side checks, field whitelists, customer-safe photo categories, expiry/revocation and audit.
+
+The customer portal must not call internal staff RPCs directly.
 
 ## APP-004 Authentication Controls
 
@@ -189,8 +193,9 @@ SEC-001.1 further requires active `order_photos` metadata to read `order-media` 
 - Pickup and delivery records are tenant-scoped through their parent order.
 - Logistics create/update and status transitions use narrow RPCs.
 - Pickup and delivery statuses are independent from production status.
-- Staff can record manual payments but cannot void or refund them.
+- Staff payment recording is conditional for the pilot and must be decided in OPS-002 capability design.
 - Owner and manager can void or refund payments only with a reason.
+- Staff cannot apply discounts, void payments or refund payments.
 - Payment summary is derived from confirmed/refunded/void records and `orders.total`; the browser cannot submit a trusted payment status.
 - MVP overpayment is rejected.
 - A confirmed payment with refund records cannot be voided; corrections after refund require additional refund/accounting records, not destructive mutation.

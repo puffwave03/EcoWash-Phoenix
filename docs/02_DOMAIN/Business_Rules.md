@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-08-01
 
-Current Mission: APP-008.1
+Current Mission: RELEASE-001
 
 ---
 
@@ -22,8 +22,10 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 
 - Every operational record must belong to one organization directly or through an unambiguous parent.
 - The first UI may behave as a single EcoWash business, but the data model must be multi-tenant-ready from day one.
-- Users access operational data only through organization membership.
+- Internal users access operational data only through organization membership.
 - Staff cannot change memberships, global roles or catalog pricing.
+- M1 internal roles remain `owner`, `manager` and `staff`; production operator and delivery operator are personas/capabilities, not new role values.
+- Customer portal users must use a separate future customer-user relationship and customer-scoped authorization model, not organization membership.
 
 ## Customer And Property Rules
 
@@ -68,8 +70,9 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - Payment status is derived from order total and valid payment records.
 - Confirmed payments count toward `total_paid`; refunds subtract; void payments do not count.
 - MVP overpayment is rejected.
-- Staff can register manual payments.
+- Staff payment recording is conditional for the pilot and must be decided in OPS-002 capability design.
 - Owner/manager can void or refund payments only with a reason.
+- Staff cannot apply discounts, void payments or refund payments.
 - Refund handling is manual and does not introduce an online payment provider integration.
 
 ## Logistics Rules
@@ -78,6 +81,15 @@ Define MVP business rules for orders, pricing, logistics, payments, issues and a
 - Customer dropoff and customer collection must be supported.
 - Logistics records keep address snapshots for historical accuracy.
 - Address snapshots must be limited to the details needed to complete or audit the service.
+- Delivery assignment and scheduling are owner/manager capabilities for M1.
+- Delivery status transitions are allowed for assigned staff, manager and owner.
+
+## Customer Portal Rules
+
+- Magic link/OTP is the M1 authentication direction for customers, but authorization requires a customer-user link and customer-scoped checks.
+- The customer portal must use a field whitelist and must not expose internal notes, staff-only financial history, raw Storage paths or internal staff RPCs.
+- Customer-visible photos require approved customer-safe categories, active metadata, expiry/revocation and audit rules.
+- Public order tokens are not the primary M1 access model.
 
 ## Photo Rules
 

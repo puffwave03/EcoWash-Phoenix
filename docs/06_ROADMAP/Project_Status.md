@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: PILOT-001
+Current Mission: RELEASE-001
 
-Next Action: define pilot portal architecture only; no portal implementation
+Next Action: review production deployment readiness, environment strategy and rollback plan
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PILOT-001 — Commercial pilot portal scope and route architecture |
-| Last completed mission | SEC-001.2 — Authenticated mutation regression |
-| Latest approved and pushed commit | 3e1579e |
+| Current mission | RELEASE-001 — Production deployment readiness |
+| Last completed mission | PILOT-001 — Commercial pilot portal scope and route architecture |
+| Latest approved and pushed commit | c3a1059 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -113,7 +113,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | SEC-001 | Supabase security audit | Completed |
 | SEC-001.1 | Security remediation and migration design/application | Completed |
 | SEC-001.2 | Authenticated mutation regression | Completed |
-| PILOT-001 | Commercial pilot portal scope and route architecture | Next; planning only |
+| PILOT-001 | Commercial pilot portal scope and route architecture | Architecture approved |
+| RELEASE-001 | Production deployment readiness | Next |
 
 ## Commit History
 
@@ -201,7 +202,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `3e1579e` at the DOCS-011 baseline.
+- Local `main` and `origin/main` point to `c3a1059` at the PILOT-001.1 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -313,7 +314,7 @@ Priority classification:
 
 | Priority | Meaning | Features |
 | --- | --- | --- |
-| P0 | Required before commercial pilot | UX-002 and SEC-001 completed; PILOT-001, RELEASE-001 and QA-001 pending |
+| P0 | Required before commercial pilot | UX-002, SEC-001 and PILOT-001 completed; RELEASE-001 and QA-001 pending |
 | P1 | Required for first paid internal operations | AUTH-002, ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
 | P2 | Portal MVPs and strong operational/commercial differentiators | OPS-001, OPS-002, PORTAL-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
@@ -322,14 +323,15 @@ M1 — Commercial Pilot Baseline:
 
 - UX-002 app layout/dashboard refinement — completed
 - SEC-001 Supabase security audit, remediation and authenticated mutation regression — completed
-- PILOT-001 commercial pilot portal scope and route architecture — next; planning only
-- RELEASE-001 production deployment readiness — planned
+- PILOT-001 commercial pilot portal scope and route architecture — architecture approved
+- RELEASE-001 production deployment readiness — next
 - QA-001 repeatable smoke/regression checklist — planned
 - AUTH-002 staff lifecycle — planned
 - ORG-001 organization/location settings — planned
 - OPS-001 Production Portal MVP — planned after architecture review
 - OPS-002 Delivery Portal MVP — planned after architecture review
-- PORTAL-001 Customer Portal MVP — planned after architecture review
+- PORTAL-001.1 Customer identity, data model and authorization design — required before PORTAL-001
+- PORTAL-001 Customer Portal MVP — planned after PORTAL-001.1
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -340,6 +342,19 @@ PILOT-001 planning scope:
 - Customer portal: controlled customer-facing order visibility and service-request surface, scoped to pilot needs and designed separately from staff access.
 - Define roles, permissions, route architecture, dependencies, implementation order and acceptance criteria.
 - Do not implement routes, UI, schema, migrations, policies or Supabase changes in PILOT-001.
+
+PILOT-001 canonical decisions:
+
+- M1 internal roles stay `owner`, `manager` and `staff`; production operator and delivery operator are personas/capabilities only.
+- `/[locale]/app` remains the administrative dashboard surface; do not introduce `/[locale]/app/admin` for M1.
+- Internal routes are `/[locale]/app`, `/[locale]/app/orders`, `/[locale]/app/customers`, `/[locale]/app/services`, `/[locale]/app/payments`, `/[locale]/app/production`, `/[locale]/app/production/orders/[orderId]`, `/[locale]/app/delivery`, `/[locale]/app/delivery/pickups`, `/[locale]/app/delivery/deliveries` and `/[locale]/app/delivery/tasks/[taskId]`.
+- Customer routes are `/[locale]/portal`, `/[locale]/portal/orders`, `/[locale]/portal/orders/[orderRef]`, `/[locale]/portal/requests/new` and `/[locale]/portal/access`.
+- Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; magic link is authentication, not authorization.
+- Customer portal must not use `organization_memberships`, must not add `customer` to `app_role`, must not use public order tokens as the primary M1 model and must not call internal staff RPCs directly.
+- Location scope is one organization and one operational location for M1; the model is location-aware, while location-based authorization is future work.
+- Owner has full tenant control; manager has operational and ordinary financial control; staff has operational production/delivery access.
+- Staff cannot apply discounts, void/refund payments or access catalog/settings. Delivery assignment/scheduling are owner/manager capabilities; delivery status transitions are for assigned staff, manager and owner. Staff payment recording is conditional and must be decided in OPS-002.
+- UI hiding is not authorization; Server Actions/RPCs must enforce capability checks.
 
 Operational pilot definition:
 
@@ -357,6 +372,7 @@ M3 — Operational Scale And Management Control:
 
 - OPS-001 Production Portal MVP
 - OPS-002 Delivery Portal MVP
+- PORTAL-001.1 Customer identity, data model and authorization design
 - PORTAL-001 Customer Portal MVP
 - REPORT-001 daily close
 - REPORT-002 open balance report
@@ -527,9 +543,9 @@ SEC-001 completion state:
 
 Next approved task:
 
-- `PILOT-001 — Commercial pilot portal scope and route architecture`
+- `RELEASE-001 — Production deployment readiness`
 
-PILOT-001 is an architecture and planning task only. It must define roles, permissions, route architecture, boundaries for the administrative dashboard, processing portal, delivery portal and customer portal, dependencies, implementation order and acceptance criteria for the later pilot. It must not implement routes, UI, schema, migrations, policies, Supabase changes or production code.
+PILOT-001 is architecture-approved. RELEASE-001 should review production target, domain/environment strategy and rollback planning while preserving SEC-001 hardening and PILOT-001 portal authorization boundaries.
 
 The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
 
@@ -775,16 +791,16 @@ Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `3e1579e`
+- Local `main` and `origin/main` expected at `c3a1059`
 - Current release state is staging MVP validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- SEC-001 is completed; PILOT-001 is next
-- Do not modify approved migrations during PILOT-001
+- PILOT-001 is architecture-approved; RELEASE-001 is next
+- Do not modify approved migrations during RELEASE-001
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
-- Do not apply migrations or alter Supabase remote state during PILOT-001
+- Do not apply migrations or alter Supabase remote state during RELEASE-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
 - Define portal architecture, dependencies, implementation order and acceptance criteria before implementation

@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-27
+Last Updated: 2026-08-01
 
-Current Mission: APP-002
+Current Mission: RELEASE-001
 
 ---
 
@@ -41,7 +41,9 @@ Deferred users:
 - `driver`
 - `customer`
 
-In the first MVP, staff users may handle pickup and delivery tasks.
+In the first MVP, staff users may handle production and delivery work. Production operator and delivery operator are application personas/capabilities, not new `app_role` values.
+
+Customer portal access must not use organization memberships and must not add `customer` to `app_role`. The M1 customer portal direction is Supabase Auth magic link/OTP plus a future customer-user relationship and customer-scoped authorization model. Magic link authenticates the person; it does not by itself authorize access to customer data.
 
 ## Core Objects
 

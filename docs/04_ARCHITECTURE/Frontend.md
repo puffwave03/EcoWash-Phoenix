@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-28
+Last Updated: 2026-08-01
 
-Current Mission: APP-008.1
+Current Mission: RELEASE-001
 
 ---
 
@@ -80,6 +80,31 @@ The dashboard shell displays:
 - Services navigation
 
 No module navigation is shown for unavailable features.
+
+## PILOT-001 Route Architecture
+
+PILOT-001 is architecture-approved and does not create routes. M1 route architecture is:
+
+- `/[locale]/app`
+- `/[locale]/app/orders`
+- `/[locale]/app/customers`
+- `/[locale]/app/services`
+- `/[locale]/app/payments`
+- `/[locale]/app/production`
+- `/[locale]/app/production/orders/[orderId]`
+- `/[locale]/app/delivery`
+- `/[locale]/app/delivery/pickups`
+- `/[locale]/app/delivery/deliveries`
+- `/[locale]/app/delivery/tasks/[taskId]`
+- `/[locale]/portal`
+- `/[locale]/portal/orders`
+- `/[locale]/portal/orders/[orderRef]`
+- `/[locale]/portal/requests/new`
+- `/[locale]/portal/access`
+
+Do not introduce `/[locale]/app/admin` for M1. The existing `/[locale]/app` remains the administrative dashboard surface.
+
+Production and delivery portals use internal membership auth. The customer portal uses a separate customer shell and must not reuse the internal app shell or organization membership.
 
 ## Localization
 
