@@ -3,6 +3,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
+import { OrderAssignmentForm } from "@/components/orders/OrderAssignmentForm";
 import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
 import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
@@ -27,6 +28,7 @@ import {
   removeOrderItemAction,
   saveOrderItemAction,
   transitionOrderStatusAction,
+  updateOrderAssignmentAction,
   updateOrderDiscountAction,
 } from "@/features/orders/server/actions";
 import {
@@ -93,6 +95,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
+  const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
   const canManagePaymentCorrections = access.membership.role === "owner" || access.membership.role === "manager";
   const sectionLinks = [
     { href: "#items", label: t("items.title") },
@@ -248,19 +251,39 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       </SectionShell>
 
       <SectionShell id="production" title={t("workflow.change")}>
-        <Card>
-          <StatusTransitionForm
-            action={transitionOrderStatusAction.bind(null, locale, order.id)}
-            currentStatus={order.productionStatus}
-            history={history}
-            text={{
-              change: t("workflow.change"),
-              history: t("workflow.history"),
-              reason: t("workflow.reason"),
-              statusLabels,
-            }}
-          />
-        </Card>
+        <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
+          <Card>
+            <StatusTransitionForm
+              action={transitionOrderStatusAction.bind(null, locale, order.id)}
+              currentStatus={order.productionStatus}
+              history={history}
+              text={{
+                change: t("workflow.change"),
+                history: t("workflow.history"),
+                reason: t("workflow.reason"),
+                statusLabels,
+              }}
+            />
+          </Card>
+          <Card className="h-fit">
+            <OrderAssignmentForm
+              action={updateOrderAssignmentAction.bind(null, locale, order.id)}
+              assignedTo={order.assignedTo}
+              assignedToName={order.assignedToName}
+              assignments={assignments}
+              canAssign={canManageAssignments}
+              text={{
+                assignedTo: t("assignment.assignedTo"),
+                error: t("assignment.error"),
+                none: t("assignment.none"),
+                save: t("assignment.save"),
+                saving: t("assignment.saving"),
+                staffReadonly: t("assignment.staffReadonly"),
+                success: t("assignment.success"),
+              }}
+            />
+          </Card>
+        </div>
       </SectionShell>
 
       <SectionShell id="logistics" title={t("logistics.title")}>
@@ -272,6 +295,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             transitionPickup: transitionPickupAction.bind(null, locale, order.id),
           }}
           assignments={assignments}
+          canAssign={canManageAssignments}
           logistics={logistics}
           text={{
             addressLine1: t("logistics.addressLine1"),
@@ -293,6 +317,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             save: t("logistics.save"),
             saving: t("logistics.saving"),
             scheduledAt: t("logistics.scheduledAt"),
+            unassigned: t("assignment.none"),
             success: t("logistics.success"),
             statuses: t.raw("logistics.statuses"),
           }}

@@ -9,8 +9,10 @@ import {
   parseFulfillmentStatus,
   parseLogisticsForm,
 } from "@/features/logistics/validation";
+import type { AppRole } from "@/lib/auth/types";
 
 const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
+const ASSIGNMENT_ROLES: AppRole[] = ["owner", "manager"];
 
 function fail(fieldErrors: Record<string, string> = {}, formError: string | null = "generic") {
   return { fieldErrors, formError, success: false };
@@ -18,6 +20,47 @@ function fail(fieldErrors: Record<string, string> = {}, formError: string | null
 
 function revalidateOrder(locale: string, orderId: string) {
   revalidatePath(`/${locale}/app/orders/${orderId}`);
+  revalidatePath(`/${locale}/app/delivery`);
+}
+
+async function existingAssignment(table: "deliveries" | "pickups", organizationId: string, orderId: string, recordId: string) {
+  if (!recordId) return null;
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from(table)
+    .select("assigned_to")
+    .eq("organization_id", organizationId)
+    .eq("order_id", orderId)
+    .eq("id", recordId)
+    .maybeSingle<{ assigned_to: string | null }>();
+
+  if (error) {
+    console.error("Logistics assignment lookup failed", error.code);
+    return null;
+  }
+
+  return data?.assigned_to ?? null;
+}
+
+async function assignmentForRole({
+  inputAssignedTo,
+  orderId,
+  organizationId,
+  recordId,
+  role,
+  table,
+}: {
+  inputAssignedTo: string;
+  orderId: string;
+  organizationId: string;
+  recordId: string;
+  role: AppRole;
+  table: "deliveries" | "pickups";
+}) {
+  if (ASSIGNMENT_ROLES.includes(role)) return inputAssignedTo;
+
+  return existingAssignment(table, organizationId, orderId, recordId);
 }
 
 export async function savePickupAction(
@@ -31,12 +74,20 @@ export async function savePickupAction(
   const { fieldErrors, input, valid } = parseLogisticsForm(formData);
   if (!valid) return fail(fieldErrors, null);
 
-  await requireMembership(locale);
+  const { membership } = await requireMembership(locale);
+  const assignedTo = await assignmentForRole({
+    inputAssignedTo: input.assignedTo,
+    orderId,
+    organizationId: membership.organization.id,
+    recordId: input.recordId,
+    role: membership.role,
+    table: "pickups",
+  });
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("create_or_update_pickup", {
     target_address_line1: optionalDbValue(input.addressLine1),
     target_address_line2: optionalDbValue(input.addressLine2),
-    target_assigned_to: optionalDbValue(input.assignedTo),
+    target_assigned_to: optionalDbValue(assignedTo ?? ""),
     target_city: optionalDbValue(input.city),
     target_contact_name: optionalDbValue(input.contactName),
     target_contact_phone: optionalDbValue(input.contactPhone),
@@ -69,12 +120,20 @@ export async function saveDeliveryAction(
   const { fieldErrors, input, valid } = parseLogisticsForm(formData);
   if (!valid) return fail(fieldErrors, null);
 
-  await requireMembership(locale);
+  const { membership } = await requireMembership(locale);
+  const assignedTo = await assignmentForRole({
+    inputAssignedTo: input.assignedTo,
+    orderId,
+    organizationId: membership.organization.id,
+    recordId: input.recordId,
+    role: membership.role,
+    table: "deliveries",
+  });
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("create_or_update_delivery", {
     target_address_line1: optionalDbValue(input.addressLine1),
     target_address_line2: optionalDbValue(input.addressLine2),
-    target_assigned_to: optionalDbValue(input.assignedTo),
+    target_assigned_to: optionalDbValue(assignedTo ?? ""),
     target_city: optionalDbValue(input.city),
     target_contact_name: optionalDbValue(input.contactName),
     target_contact_phone: optionalDbValue(input.contactPhone),

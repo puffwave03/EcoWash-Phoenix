@@ -1,14 +1,19 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { Card } from "@/components/Card";
 import { Link } from "@/i18n/navigation";
 import type { ProductionQueueOrder } from "@/features/orders/server/queries";
 import type { OrderPriority, ProductionStatus } from "@/features/orders/types";
 
 type ProductionGroupKey = "todo" | "inProgress" | "onHold" | "ready";
+type AssignmentFilter = "all" | "mine" | "unassigned";
 
 type ProductionQueueText = {
   assignedTo: string;
   due: string;
   empty: string;
+  filters: Record<AssignmentFilter, string>;
   groups: Record<ProductionGroupKey, string>;
   order: string;
   priority: string;
@@ -39,46 +44,71 @@ function ordersForGroup(orders: ProductionQueueOrder[], statuses: ProductionStat
 }
 
 export function ProductionQueue({
+  currentProfileId,
   locale,
   orders,
   text,
 }: {
+  currentProfileId: string;
   locale: string;
   orders: ProductionQueueOrder[];
   text: ProductionQueueText;
 }) {
+  const [filter, setFilter] = useState<AssignmentFilter>("all");
+  const filteredOrders = useMemo(() => {
+    if (filter === "mine") return orders.filter((order) => order.assignedTo === currentProfileId);
+    if (filter === "unassigned") return orders.filter((order) => !order.assignedTo);
+
+    return orders;
+  }, [currentProfileId, filter, orders]);
+
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
-      {productionGroups.map((group) => {
-        const groupOrders = ordersForGroup(orders, group.statuses);
-
-        return (
-          <section
-            aria-labelledby={`production-${group.key}`}
-            className="min-w-0"
-            key={group.key}
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(text.filters) as AssignmentFilter[]).map((key) => (
+          <button
+            className={`min-h-10 rounded-control border px-3 text-sm font-semibold transition-standard ${
+              filter === key ? "border-primary bg-primary text-white" : "border-border bg-white text-primary hover:bg-primary-soft"
+            }`}
+            key={key}
+            onClick={() => setFilter(key)}
+            type="button"
           >
-            <Card className="h-full space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-lg font-semibold text-primary" id={`production-${group.key}`}>
-                  {text.groups[group.key]}
-                </h3>
-                <span className="min-w-9 rounded-full bg-primary-soft px-3 py-1 text-center text-sm font-semibold text-primary">
-                  {groupOrders.length}
-                </span>
-              </div>
+            {text.filters[key]}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-4 xl:grid-cols-2">
+        {productionGroups.map((group) => {
+          const groupOrders = ordersForGroup(filteredOrders, group.statuses);
 
-              {groupOrders.length === 0 ? (
-                <p className="rounded-control border border-dashed border-border px-4 py-5 text-sm text-muted">
-                  {text.empty}
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {groupOrders.map((order) => (
-                    <article
-                      className="rounded-card border border-border bg-white px-4 py-4 shadow-sm"
-                      key={order.id}
-                    >
+          return (
+            <section
+              aria-labelledby={`production-${group.key}`}
+              className="min-w-0"
+              key={group.key}
+            >
+              <Card className="h-full space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-primary" id={`production-${group.key}`}>
+                    {text.groups[group.key]}
+                  </h3>
+                  <span className="min-w-9 rounded-full bg-primary-soft px-3 py-1 text-center text-sm font-semibold text-primary">
+                    {groupOrders.length}
+                  </span>
+                </div>
+
+                {groupOrders.length === 0 ? (
+                  <p className="rounded-control border border-dashed border-border px-4 py-5 text-sm text-muted">
+                    {text.empty}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {groupOrders.map((order) => (
+                      <article
+                        className="rounded-card border border-border bg-white px-4 py-4 shadow-sm"
+                        key={order.id}
+                      >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
                           <p className="text-xs font-semibold uppercase text-muted">
@@ -115,17 +145,18 @@ export function ProductionQueue({
                         </div>
                         <div>
                           <dt className="font-semibold text-primary">{text.assignedTo}</dt>
-                          <dd className="text-muted">{order.assignedToName || "-"}</dd>
+                          <dd className="text-muted">{order.assignedToName || text.filters.unassigned}</dd>
                         </div>
                       </dl>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </Card>
-          </section>
-        );
-      })}
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

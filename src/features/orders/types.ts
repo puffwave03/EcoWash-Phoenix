@@ -23,6 +23,7 @@ export type OrderStatusFilter = (typeof ORDER_STATUS_FILTERS)[number];
 export type ActiveFilter = (typeof ACTIVE_FILTERS)[number];
 
 export type Order = {
+  assignedTo: string | null;
   assignedToName: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -89,6 +90,7 @@ export type OrderItemFormInput = {
 export type OrderActionState = {
   fieldErrors: Record<string, string>;
   formError: string | null;
+  success?: boolean;
 };
 
 export type OrderListFilters = {

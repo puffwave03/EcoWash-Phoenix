@@ -268,6 +268,11 @@
     "assignedTo": "Assegnato a",
     "view": "Vedi ordine",
     "empty": "Nessun ordine in questo gruppo.",
+    "filters": {
+      "all": "Tutti",
+      "mine": "Assegnati a me",
+      "unassigned": "Non assegnati"
+    },
     "groups": {
       "todo": "Da fare",
       "inProgress": "In lavorazione",
@@ -305,6 +310,11 @@
     "assignedTo": "Assegnato a",
     "view": "Vedi ordine",
     "empty": "Nessuna attività in questo gruppo.",
+    "filters": {
+      "all": "Tutti",
+      "mine": "Assegnati a me",
+      "unassigned": "Non assegnati"
+    },
     "late": "In ritardo",
     "dueSoon": "Da fare oggi",
     "groups": {
@@ -499,6 +509,15 @@
       "change": "Cambia stato",
       "history": "Storico stati",
       "reason": "Motivo"
+    },
+    "assignment": {
+      "assignedTo": "Addetto produzione",
+      "none": "Non assegnato",
+      "save": "Salva assegnazione",
+      "saving": "Salvataggio...",
+      "success": "Assegnazione salvata.",
+      "error": "L'assegnazione non può essere salvata.",
+      "staffReadonly": "Solo owner e manager possono modificare le assegnazioni."
     },
     "logistics": {
       "title": "Ritiro e consegna",

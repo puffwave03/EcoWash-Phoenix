@@ -58,6 +58,7 @@ type DeliveryTaskRow = Pick<
 };
 
 export type DeliveryQueueTask = {
+  assignedTo: string | null;
   addressLine1: string | null;
   addressLine2: string | null;
   assignedToName: string | null;
@@ -126,6 +127,7 @@ function mapDeliveryTask(row: DeliveryTaskRow, kind: DeliveryTaskKind): Delivery
   return {
     addressLine1: row.address_line1,
     addressLine2: row.address_line2,
+    assignedTo: row.assigned_to,
     assignedToName: relationName(row.assigned_to_profile),
     city: row.city,
     completedAt: row.completed_at,
@@ -228,6 +230,8 @@ export async function listAssignableStaff(locale: string): Promise<AssignmentOpt
     .select("profile_id, profile:profiles(display_name)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
+    .eq("role", "staff")
+    .order("profile_id", { ascending: true })
     .returns<{ profile: { display_name: string } | { display_name: string }[] | null; profile_id: string }[]>();
 
   if (error || !data) return [];

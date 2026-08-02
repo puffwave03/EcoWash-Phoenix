@@ -12,6 +12,7 @@ import type {
 } from "@/features/orders/types";
 
 type OrderRow = {
+  assigned_to: string | null;
   assigned_to_profile: { display_name: string } | { display_name: string }[] | null;
   completed_at: string | null;
   created_at: string;
@@ -72,13 +73,13 @@ export type AssignmentOption = {
 
 export type ProductionQueueOrder = Pick<
   Order,
-  "assignedToName" | "customerName" | "dueAt" | "id" | "orderNumber" | "priority" | "productionStatus" | "propertyName"
+  "assignedTo" | "assignedToName" | "customerName" | "dueAt" | "id" | "orderNumber" | "priority" | "productionStatus" | "propertyName"
 >;
 
 const ORDER_SELECT =
-  "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, is_active, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
+  "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, assigned_to, is_active, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const PRODUCTION_QUEUE_SELECT =
-  "id, order_number, production_status, priority, due_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
+  "id, order_number, production_status, priority, due_at, assigned_to, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const ITEM_SELECT =
   "id, service_id, description, unit_type, quantity, unit_price, line_total, notes, is_active";
 const HISTORY_SELECT =
@@ -92,6 +93,7 @@ function relationName(value: { display_name?: string; name?: string } | { displa
 
 function mapOrder(row: OrderRow): Order {
   return {
+    assignedTo: row.assigned_to,
     assignedToName: relationName(row.assigned_to_profile),
     completedAt: row.completed_at,
     createdAt: row.created_at,
@@ -114,8 +116,9 @@ function mapOrder(row: OrderRow): Order {
   };
 }
 
-function mapProductionQueueOrder(row: Pick<OrderRow, "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">): ProductionQueueOrder {
+function mapProductionQueueOrder(row: Pick<OrderRow, "assigned_to" | "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">): ProductionQueueOrder {
   return {
+    assignedTo: row.assigned_to,
     assignedToName: relationName(row.assigned_to_profile),
     customerName: relationName(row.customer) ?? "",
     dueAt: row.due_at,
@@ -196,7 +199,7 @@ export async function listProductionQueueOrders(locale: string): Promise<Product
     .order("due_at", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(100)
-    .returns<Pick<OrderRow, "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">[]>();
+    .returns<Pick<OrderRow, "assigned_to" | "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">[]>();
 
   if (error || !data) {
     console.error("Production queue query failed", error?.code);
@@ -304,6 +307,8 @@ export async function listActiveMembershipsForAssignment(locale: string): Promis
     .select("profile_id, profile:profiles(display_name)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
+    .eq("role", "staff")
+    .order("profile_id", { ascending: true })
     .returns<{ profile: { display_name: string } | { display_name: string }[] | null; profile_id: string }[]>();
 
   if (error || !data) return [];

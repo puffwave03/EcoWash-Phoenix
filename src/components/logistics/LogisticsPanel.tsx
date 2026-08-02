@@ -31,6 +31,7 @@ type LogisticsPanelText = {
   save: string;
   saving: string;
   scheduledAt: string;
+  unassigned: string;
   success: string;
   statuses: Record<FulfillmentStatus, string>;
 };
@@ -43,6 +44,7 @@ type LogisticsPanelProps = {
     transitionPickup: (formData: FormData) => Promise<void>;
   };
   assignments: AssignmentOption[];
+  canAssign: boolean;
   logistics: OrderLogistics;
   text: LogisticsPanelText;
 };
@@ -68,12 +70,14 @@ function nextStatuses(status: FulfillmentStatus | null) {
 function LogisticsForm({
   action,
   assignments,
+  canAssign,
   record,
   text,
   title,
 }: {
   action: (state: LogisticsActionState, formData: FormData) => Promise<LogisticsActionState>;
   assignments: AssignmentOption[];
+  canAssign: boolean;
   record: LogisticsRecord | null;
   text: LogisticsPanelText;
   title: string;
@@ -96,15 +100,25 @@ function LogisticsForm({
           <span>{text.scheduledAt}</span>
           <input className={fieldClass(Boolean(state.fieldErrors.scheduledAt))} defaultValue={toInputDate(record?.scheduledAt ?? null)} name="scheduledAt" type="datetime-local" />
         </label>
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.assignedTo}</span>
-          <select className={fieldClass(Boolean(state.fieldErrors.assignedTo))} defaultValue={record?.assignedTo ?? ""} name="assignedTo">
-            <option value="" />
-            {assignments.map((assignment) => (
-              <option key={assignment.id} value={assignment.id}>{assignment.label}</option>
-            ))}
-          </select>
-        </label>
+        {canAssign ? (
+          <label className="space-y-2 text-sm font-semibold text-primary">
+            <span>{text.assignedTo}</span>
+            <select className={fieldClass(Boolean(state.fieldErrors.assignedTo))} defaultValue={record?.assignedTo ?? ""} name="assignedTo">
+              <option value="">{text.unassigned}</option>
+              {assignments.map((assignment) => (
+                <option key={assignment.id} value={assignment.id}>{assignment.label}</option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <div className="space-y-2 text-sm font-semibold text-primary">
+            <input name="assignedTo" type="hidden" value={record?.assignedTo ?? ""} />
+            <span>{text.assignedTo}</span>
+            <p className="min-h-11 rounded-control border border-border bg-white px-3 py-3 text-sm font-normal text-muted">
+              {record?.assignedToName || text.unassigned}
+            </p>
+          </div>
+        )}
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.addressLine1}</span>
           <input className={fieldClass()} defaultValue={record?.addressLine1 ?? ""} name="addressLine1" />
@@ -177,17 +191,17 @@ function TransitionButtons({
   );
 }
 
-export function LogisticsPanel({ actions, assignments, logistics, text }: LogisticsPanelProps) {
+export function LogisticsPanel({ actions, assignments, canAssign, logistics, text }: LogisticsPanelProps) {
   return (
     <Card className="space-y-6">
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="space-y-4">
-          <LogisticsForm action={actions.savePickup} assignments={assignments} record={logistics.pickup} text={text} title={text.pickup} />
+          <LogisticsForm action={actions.savePickup} assignments={assignments} canAssign={canAssign} record={logistics.pickup} text={text} title={text.pickup} />
           <TransitionButtons action={actions.transitionPickup} record={logistics.pickup} text={text} />
         </div>
         <div className="space-y-4">
-          <LogisticsForm action={actions.saveDelivery} assignments={assignments} record={logistics.delivery} text={text} title={text.delivery} />
+          <LogisticsForm action={actions.saveDelivery} assignments={assignments} canAssign={canAssign} record={logistics.delivery} text={text} title={text.delivery} />
           <TransitionButtons action={actions.transitionDelivery} record={logistics.delivery} text={text} />
         </div>
       </div>

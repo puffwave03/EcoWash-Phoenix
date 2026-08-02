@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { Card } from "@/components/Card";
 import { Link } from "@/i18n/navigation";
 import type { DeliveryQueueTask } from "@/features/logistics/server/queries";
@@ -5,6 +8,7 @@ import type { FulfillmentStatus } from "@/features/logistics/types";
 
 type DeliveryTaskKind = DeliveryQueueTask["kind"];
 type DeliveryGroupKey = "today" | "upcoming" | "inProgress" | "completedToday";
+type AssignmentFilter = "all" | "mine" | "unassigned";
 
 type DeliveryQueueText = {
   address: string;
@@ -13,6 +17,7 @@ type DeliveryQueueText = {
   delivery: string;
   dueSoon: string;
   empty: string;
+  filters: Record<AssignmentFilter, string>;
   groups: Record<DeliveryGroupKey, string>;
   late: string;
   order: string;
@@ -152,7 +157,7 @@ function TaskCard({
         </div>
         <div>
           <dt className="font-semibold text-primary">{text.assignedTo}</dt>
-          <dd className="text-muted">{task.assignedToName || "-"}</dd>
+          <dd className="text-muted">{task.assignedToName || text.filters.unassigned}</dd>
         </div>
       </dl>
     </article>
@@ -218,20 +223,44 @@ function TaskSection({
 }
 
 export function DeliveryQueue({
+  currentProfileId,
   locale,
   tasks,
   text,
   timeZone,
 }: {
+  currentProfileId: string;
   locale: string;
   tasks: DeliveryQueueTask[];
   text: DeliveryQueueText;
   timeZone: string;
 }) {
+  const [filter, setFilter] = useState<AssignmentFilter>("all");
+  const filteredTasks = useMemo(() => {
+    if (filter === "mine") return tasks.filter((task) => task.assignedTo === currentProfileId);
+    if (filter === "unassigned") return tasks.filter((task) => !task.assignedTo);
+
+    return tasks;
+  }, [currentProfileId, filter, tasks]);
+
   return (
     <div className="space-y-8">
-      <TaskSection kind="pickup" locale={locale} tasks={tasks} text={text} timeZone={timeZone} />
-      <TaskSection kind="delivery" locale={locale} tasks={tasks} text={text} timeZone={timeZone} />
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(text.filters) as AssignmentFilter[]).map((key) => (
+          <button
+            className={`min-h-10 rounded-control border px-3 text-sm font-semibold transition-standard ${
+              filter === key ? "border-primary bg-primary text-white" : "border-border bg-white text-primary hover:bg-primary-soft"
+            }`}
+            key={key}
+            onClick={() => setFilter(key)}
+            type="button"
+          >
+            {text.filters[key]}
+          </button>
+        ))}
+      </div>
+      <TaskSection kind="pickup" locale={locale} tasks={filteredTasks} text={text} timeZone={timeZone} />
+      <TaskSection kind="delivery" locale={locale} tasks={filteredTasks} text={text} timeZone={timeZone} />
     </div>
   );
 }

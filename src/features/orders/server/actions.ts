@@ -6,25 +6,34 @@ import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { OrderActionState } from "@/features/orders/types";
 import {
+  isUuid,
   optionalDbValue,
   parseOrderForm,
   parseOrderItemForm,
   parseProductionStatus,
 } from "@/features/orders/validation";
 
-const initialState: OrderActionState = { fieldErrors: {}, formError: null };
+const initialState: OrderActionState = { fieldErrors: {}, formError: null, success: false };
+const ASSIGNMENT_ROLES = ["owner", "manager"] as const;
 
 function fail(
   formError: OrderActionState["formError"] = "generic",
   fieldErrors: Record<string, string> = {},
-) {
-  return { fieldErrors, formError };
+): OrderActionState {
+  return { fieldErrors, formError, success: false };
 }
 
 function revalidateOrders(locale: string, orderId?: string) {
   revalidatePath(`/${locale}/app`);
   revalidatePath(`/${locale}/app/orders`);
+  revalidatePath(`/${locale}/app/production`);
   if (orderId) revalidatePath(`/${locale}/app/orders/${orderId}`);
+}
+
+function optionalAssignment(value: FormDataEntryValue | null) {
+  const assignedTo = String(value ?? "").trim();
+
+  return assignedTo === "" || isUuid(assignedTo) ? assignedTo : null;
 }
 
 export async function createOrderAction(
@@ -88,6 +97,37 @@ export async function updateOrderAction(
 
   revalidateOrders(locale, orderId);
   redirect(`/${locale}/app/orders/${orderId}`);
+}
+
+export async function updateOrderAssignmentAction(
+  locale: string,
+  orderId: string,
+  _state: OrderActionState = initialState,
+  formData: FormData,
+) {
+  void _state;
+
+  const assignedTo = optionalAssignment(formData.get("assignedTo"));
+  if (assignedTo === null) return { fieldErrors: { assignedTo: "invalid" }, formError: null, success: false };
+
+  const { membership } = await requireMembership(locale);
+  if (!ASSIGNMENT_ROLES.includes(membership.role as (typeof ASSIGNMENT_ROLES)[number])) {
+    return fail("generic");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("update_order_assignment", {
+    target_assigned_to: optionalDbValue(assignedTo),
+    target_order_id: orderId,
+  });
+
+  if (error) {
+    console.error("Order assignment update failed", error.code);
+    return fail("generic");
+  }
+
+  revalidateOrders(locale, orderId);
+  return { fieldErrors: {}, formError: null, success: true };
 }
 
 export async function saveOrderItemAction(

@@ -268,6 +268,11 @@
     "assignedTo": "Assigné à",
     "view": "Voir la commande",
     "empty": "Aucune commande dans ce groupe.",
+    "filters": {
+      "all": "Toutes",
+      "mine": "Assignées à moi",
+      "unassigned": "Non assignées"
+    },
     "groups": {
       "todo": "À faire",
       "inProgress": "En cours",
@@ -305,6 +310,11 @@
     "assignedTo": "Assigné à",
     "view": "Voir la commande",
     "empty": "Aucune tâche dans ce groupe.",
+    "filters": {
+      "all": "Toutes",
+      "mine": "Assignées à moi",
+      "unassigned": "Non assignées"
+    },
     "late": "En retard",
     "dueSoon": "À faire aujourd'hui",
     "groups": {
@@ -499,6 +509,15 @@
       "change": "Changer le statut",
       "history": "Historique des statuts",
       "reason": "Motif"
+    },
+    "assignment": {
+      "assignedTo": "Assigné production",
+      "none": "Non assigné",
+      "save": "Enregistrer l'assignation",
+      "saving": "Enregistrement...",
+      "success": "Assignation enregistrée.",
+      "error": "L'assignation n'a pas pu être enregistrée.",
+      "staffReadonly": "Seuls les owners et managers peuvent modifier les assignations."
     },
     "logistics": {
       "title": "Collecte et livraison",

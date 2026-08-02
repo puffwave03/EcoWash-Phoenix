@@ -23,6 +23,7 @@ export default async function DeliveryPage({ params }: DeliveryPageProps) {
       </div>
 
       <DeliveryQueue
+        currentProfileId={access.profile.id}
         locale={locale}
         tasks={tasks}
         text={{
@@ -32,6 +33,7 @@ export default async function DeliveryPage({ params }: DeliveryPageProps) {
           delivery: t("delivery"),
           dueSoon: t("dueSoon"),
           empty: t("empty"),
+          filters: t.raw("filters"),
           groups: t.raw("groups"),
           late: t("late"),
           order: t("order"),
