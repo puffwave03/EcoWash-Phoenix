@@ -134,6 +134,7 @@
       "production": "Producción",
       "delivery": "Recogidas y entregas",
       "services": "Servicios",
+      "staff": "Personal",
       "userLabel": "Usuario",
       "organizationLabel": "Organización",
       "roleLabel": "Rol"
@@ -329,6 +330,39 @@
       "in_progress": "En curso",
       "completed": "Completado",
       "cancelled": "Cancelado"
+    }
+  },
+  "staff": {
+    "title": "Personal",
+    "description": "Gestiona las personas que trabajan en la lavandería y mantén el acceso vinculado a la organización.",
+    "active": "Personal activo",
+    "inactive": "Personal inactivo",
+    "add": "Añadir colaborador",
+    "email": "Email",
+    "name": "Nombre",
+    "role": "Rol",
+    "status": "Estado",
+    "invitedAt": "Creado o invitado",
+    "currentUser": "Tú",
+    "pending": "Invitación pendiente",
+    "empty": "No hay colaboradores aquí.",
+    "invite": "Enviar invitación",
+    "save": "Cambiar rol",
+    "deactivate": "Desactivar",
+    "reactivate": "Reactivar",
+    "saving": "Guardando...",
+    "success": "Invitación enviada y membresía preparada.",
+    "updateSuccess": "Colaborador actualizado.",
+    "configuration": "Las invitaciones requieren SUPABASE_SERVICE_ROLE_KEY configurada en el servidor.",
+    "duplicate": "Este email ya está vinculado a una membresía.",
+    "inviteError": "No se pudo enviar la invitación.",
+    "memberError": "No se pudo actualizar la membresía.",
+    "error": "No se pudo guardar el cambio de personal.",
+    "noEmail": "Email oculto",
+    "roles": {
+      "owner": "Titular",
+      "manager": "Responsable",
+      "staff": "Empleado"
     }
   },
   "customers": {

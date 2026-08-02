@@ -134,6 +134,7 @@
       "production": "Production",
       "delivery": "Collectes et livraisons",
       "services": "Services",
+      "staff": "Personnel",
       "userLabel": "Utilisateur",
       "organizationLabel": "Organisation",
       "roleLabel": "Rôle"
@@ -329,6 +330,39 @@
       "in_progress": "En cours",
       "completed": "Terminé",
       "cancelled": "Annulé"
+    }
+  },
+  "staff": {
+    "title": "Personnel",
+    "description": "Gérez les personnes qui travaillent dans la blanchisserie et gardez l'accès lié à l'organisation.",
+    "active": "Personnel actif",
+    "inactive": "Personnel inactif",
+    "add": "Ajouter un collaborateur",
+    "email": "Email",
+    "name": "Nom",
+    "role": "Rôle",
+    "status": "Statut",
+    "invitedAt": "Créé ou invité",
+    "currentUser": "Vous",
+    "pending": "Invitation en attente",
+    "empty": "Aucun collaborateur ici.",
+    "invite": "Envoyer l'invitation",
+    "save": "Changer le rôle",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "saving": "Enregistrement...",
+    "success": "Invitation envoyée et membership préparée.",
+    "updateSuccess": "Collaborateur mis à jour.",
+    "configuration": "Les invitations nécessitent SUPABASE_SERVICE_ROLE_KEY configurée côté serveur.",
+    "duplicate": "Cet email est déjà lié à une membership.",
+    "inviteError": "L'invitation n'a pas pu être envoyée.",
+    "memberError": "La membership n'a pas pu être mise à jour.",
+    "error": "La modification du personnel n'a pas pu être enregistrée.",
+    "noEmail": "Email masqué",
+    "roles": {
+      "owner": "Propriétaire",
+      "manager": "Responsable",
+      "staff": "Employé"
     }
   },
   "customers": {

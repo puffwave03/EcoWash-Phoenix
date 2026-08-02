@@ -15,6 +15,7 @@ type DashboardShellText = {
   production: string;
   roleLabel: string;
   services: string;
+  staff: string;
   userLabel: string;
 };
 
@@ -57,6 +58,7 @@ export function DashboardShell({
               locale={locale}
               mode="desktop"
               navigationLabel={text.navigationLabel}
+              role={access.membership.role}
               text={{
                 customers: text.customers,
                 delivery: text.delivery,
@@ -64,6 +66,7 @@ export function DashboardShell({
                 overview: text.overview,
                 production: text.production,
                 services: text.services,
+                staff: text.staff,
               }}
             />
           </div>
@@ -102,6 +105,7 @@ export function DashboardShell({
               overview: text.overview,
               production: text.production,
               services: text.services,
+              staff: text.staff,
             }}
           />
 
@@ -115,6 +119,7 @@ export function DashboardShell({
         locale={locale}
         mode="mobile"
         navigationLabel={text.navigationLabel}
+        role={access.membership.role}
         text={{
           customers: text.customers,
           delivery: text.delivery,
@@ -122,6 +127,7 @@ export function DashboardShell({
           overview: text.overview,
           production: text.production,
           services: text.services,
+          staff: text.staff,
         }}
       />
     </main>

@@ -134,6 +134,7 @@
       "production": "Produktion",
       "delivery": "Abholung und Lieferung",
       "services": "Services",
+      "staff": "Personal",
       "userLabel": "Benutzer",
       "organizationLabel": "Organisation",
       "roleLabel": "Rolle"
@@ -329,6 +330,39 @@
       "in_progress": "In Bearbeitung",
       "completed": "Abgeschlossen",
       "cancelled": "Storniert"
+    }
+  },
+  "staff": {
+    "title": "Personal",
+    "description": "Verwalten Sie die Personen, die in der Wäscherei arbeiten, und halten Sie den Zugriff an die Organisation gebunden.",
+    "active": "Aktives Personal",
+    "inactive": "Inaktives Personal",
+    "add": "Mitarbeiter hinzufügen",
+    "email": "E-Mail",
+    "name": "Name",
+    "role": "Rolle",
+    "status": "Status",
+    "invitedAt": "Erstellt oder eingeladen",
+    "currentUser": "Sie",
+    "pending": "Einladung ausstehend",
+    "empty": "Keine Mitarbeiter hier.",
+    "invite": "Einladung senden",
+    "save": "Rolle ändern",
+    "deactivate": "Deaktivieren",
+    "reactivate": "Reaktivieren",
+    "saving": "Speichern...",
+    "success": "Einladung gesendet und Mitgliedschaft vorbereitet.",
+    "updateSuccess": "Mitarbeiter aktualisiert.",
+    "configuration": "Einladungen benötigen SUPABASE_SERVICE_ROLE_KEY auf dem Server.",
+    "duplicate": "Diese E-Mail ist bereits mit einer Mitgliedschaft verknüpft.",
+    "inviteError": "Die Einladung konnte nicht gesendet werden.",
+    "memberError": "Die Mitgliedschaft konnte nicht aktualisiert werden.",
+    "error": "Die Personaländerung konnte nicht gespeichert werden.",
+    "noEmail": "E-Mail verborgen",
+    "roles": {
+      "owner": "Inhaber",
+      "manager": "Manager",
+      "staff": "Mitarbeiter"
     }
   },
   "customers": {

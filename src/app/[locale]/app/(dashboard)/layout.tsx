@@ -33,6 +33,7 @@ export default async function DashboardLayout({
         production: t("production"),
         roleLabel: t("roleLabel"),
         services: t("services"),
+        staff: t("staff"),
         userLabel: t("userLabel"),
       }}
     >

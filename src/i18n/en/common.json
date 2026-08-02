@@ -134,6 +134,7 @@
       "production": "Production",
       "delivery": "Pickups & deliveries",
       "services": "Services",
+      "staff": "Staff",
       "userLabel": "User",
       "organizationLabel": "Organization",
       "roleLabel": "Role"
@@ -329,6 +330,39 @@
       "in_progress": "In progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    }
+  },
+  "staff": {
+    "title": "Staff",
+    "description": "Manage the people who work in this laundry and keep access tied to the organization.",
+    "active": "Active staff",
+    "inactive": "Inactive staff",
+    "add": "Add collaborator",
+    "email": "Email",
+    "name": "Name",
+    "role": "Role",
+    "status": "Status",
+    "invitedAt": "Created or invited",
+    "currentUser": "You",
+    "pending": "Pending invite",
+    "empty": "No staff members here.",
+    "invite": "Send invite",
+    "save": "Change role",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "saving": "Saving...",
+    "success": "Invite sent and membership prepared.",
+    "updateSuccess": "Staff member updated.",
+    "configuration": "Staff invitations need SUPABASE_SERVICE_ROLE_KEY configured on the server.",
+    "duplicate": "This email is already linked to a membership.",
+    "inviteError": "The invite could not be sent.",
+    "memberError": "The membership could not be updated.",
+    "error": "The staff change could not be saved.",
+    "noEmail": "Email hidden",
+    "roles": {
+      "owner": "Owner",
+      "manager": "Manager",
+      "staff": "Staff"
     }
   },
   "customers": {

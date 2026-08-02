@@ -9,6 +9,7 @@ type AppNavigationText = {
   overview: string;
   production: string;
   services: string;
+  staff: string;
 };
 
 type AppNavigationProps = {
@@ -38,7 +39,8 @@ export function AppNavigation({
     { href: "/app/production", label: text.production, match: "/app/production" },
     { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
     { href: "/app/services", label: text.services, match: "/app/services" },
-  ];
+    { href: "/app/staff", label: text.staff, match: "/app/staff", restricted: true },
+  ].filter((item) => !item.restricted || role === "owner" || role === "manager");
   const activeItem =
     navigationItems.find((item) =>
       item.match === "/app" ? pathname === "/app" : pathname.startsWith(item.match),
@@ -72,7 +74,7 @@ export function AppNavigation({
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-card backdrop-blur lg:hidden"
       >
         <div className="grid grid-cols-3 gap-1 sm:grid-cols-6">
-          {navigationItems.map((item) => {
+          {navigationItems.filter((item) => item.href !== "/app/staff").map((item) => {
             const isActive = item.href === activeItem.href;
 
             return (
