@@ -64,7 +64,12 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | COMM-001 | Completed — Commercial roadmap priorities |
 | PRODUCT-001 | Completed — Commercial readiness and feature-gap audit |
 | SEC-001 | Completed — Supabase security audit, remediation and authenticated mutation regression |
-| RELEASE-001 | In progress — Staging-first release readiness planning |
+| RELEASE-001 | Deferred after staging validation — Production postponed until pilot product completion |
+| OPS-001.1 | Completed — Production Queue MVP |
+| OPS-001.2A | Completed — Completed logistics corrections |
+| OPS-001.2B | Completed — Delivery Queue MVP |
+| OPS-001.3 | Completed — Work Assignment MVP |
+| OPS-001.4 | Completed — Staff Management MVP |
 
 Current public website includes:
 
@@ -129,15 +134,17 @@ Important limitations:
 - PRODUCT-001 commercial readiness and feature-gap audit is completed
 - UX-002 app landing/dashboard and operational layout refinement is completed
 - SEC-001 Supabase security audit is completed, including SEC-001.1 remediation and SEC-001.2 authenticated mutation regression
-- RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet
-- RELEASE-001.1 staging hosting and environment contract is ready for Vercel staging setup
+- Staging Vercel is online at `https://ecowash-phoenix-staging.vercel.app`
+- Supabase Auth staging is configured and validated
+- Production is intentionally deferred until the pilot product is functionally complete
+- Internal production, delivery, assignment and staff-management MVPs are implemented
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
 - No analytics
 - No billing
 - No Realtime dashboard
-- No production deployment yet
+- No real production environment or production deployment yet
 - Production domain not selected or purchased yet
 - No production-commercial SaaS release yet
 - No pricing, legal or social pages
@@ -147,10 +154,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `2cca68f`
-- Current mission: `RELEASE-001 — Production deployment readiness`
-- Current release state: staging MVP validated; commercial pilot readiness in planning
-- Next macro-task: run controlled Vercel staging deployment rehearsal
+- Latest approved and pushed commit: `85cd292`
+- Current mission: `PORTAL-001 — Customer Portal MVP`
+- Current release state: staging online and validated; production deferred
+- Next macro-task: implement the customer-facing portal MVP
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -208,6 +215,6 @@ Document Status: Active
 
 Last Updated: 2026-08-01
 
-Current Mission: RELEASE-001
+Current Mission: PORTAL-001
 
-Next Action: run RELEASE-001.2 staging deployment rehearsal
+Next Action: implement the Customer Portal MVP

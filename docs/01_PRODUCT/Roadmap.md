@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-01
 
-Current Mission: RELEASE-001
+Current Mission: PORTAL-001
 
-Next Action: Review production deployment readiness, environment strategy and rollback plan
+Next Action: Implement the Customer Portal MVP
 
 ---
 
@@ -118,7 +118,7 @@ PRODUCT-001 treats code, migrations, Server Actions, routes, smoke results and a
 
 ### Current Implemented Baseline
 
-Status: Staging MVP validated, not yet production-commercial.
+Status: Staging MVP validated and online, not yet production-commercial.
 
 Implemented and smoke-validated:
 
@@ -134,23 +134,24 @@ Implemented and smoke-validated:
 - private order photos with signed previews
 - operational dashboard over real tenant data
 - organization timezone for dashboard day windows
+- Production Queue
+- Delivery Queue
+- production and logistics assignment with All, Assigned to me and Unassigned filters
+- owner/manager staff management, invitation, activation and deactivation
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
 - first real staging smoke flow through order `EW-000001`
 
 Partially implemented:
 
-- role model: `owner`, `manager` and `staff` exist, but there is no owner-facing invitation or staff lifecycle UI
 - catalog/pricing: service and standard price management exists, but no customer/property price override UI
-- assignments: order/logistics assignment fields exist, but staff worklists and assignment-centered views are still planned
 - audit: status/payment/logistics histories exist for specific flows, but no canonical user-facing audit log module exists
 - reporting: dashboard has operational summaries, but no daily close, open balance report or export workflow
 
 Missing for commercial readiness:
 
-- production deployment and domain readiness
+- production deployment and domain readiness, deferred until the pilot product is functionally complete
 - repeatable smoke/regression checklist for production release
-- commercial pilot portal architecture and implementation order
-- owner-managed staff invitations and deactivation
+- Customer Portal MVP
 - organization and location settings UI
 - global search
 - structured notes and issues
@@ -164,23 +165,24 @@ P0 — required before a commercial pilot:
 - UX-002 — Protected app landing, dashboard hierarchy and operational layout refinement. Completed.
 - SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
 - PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved; no implementation.
-- RELEASE-001 — Production deployment readiness, domain/environment review and rollback checklist. In progress; audit result `READY WITH BLOCKERS`.
+- RELEASE-001 — Production deployment readiness. Staging is online and validated; real production is deferred.
 - QA-001 — Repeatable smoke/regression checklist using staging and later production.
 
 P1 — required for first paid internal operations:
 
-- AUTH-002 — Owner-managed staff invitations, activation and deactivation.
 - ORG-001 — Organization and location settings.
 - CATALOG-002 — Catalog and standard price management hardening.
 - SEARCH-001 — Search across orders, customers, properties and services.
 - AUDIT-001 — User-facing audit trail for sensitive operational changes.
 
-P2 — portal MVPs and strong commercial differentiators after the first paid baseline:
+P2 — remaining portal MVPs and strong commercial differentiators after the first paid baseline:
 
-- OPS-001 — Production Portal MVP.
-- OPS-002 — Delivery Portal MVP.
-- PORTAL-001.1 — Customer identity, data model and authorization design.
-- PORTAL-001 — Customer Portal MVP.
+- OPS-001.1 — Production Queue MVP. Completed.
+- OPS-001.2A — Completed logistics corrections. Completed.
+- OPS-001.2B — Delivery Queue MVP. Completed.
+- OPS-001.3 — Work Assignment MVP. Completed.
+- OPS-001.4 — Staff Management MVP. Completed.
+- PORTAL-001 — Customer Portal MVP. Next.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -208,20 +210,18 @@ Scope:
 - SEC-001 — completed
 - PILOT-001 — architecture approved
 - RELEASE-001.0 — completed; canonicalize release readiness plan and blockers
-- RELEASE-001.1 — completed; staging hosting and environment contract ready for Vercel staging setup
-- RELEASE-001.2 — next; staging deployment rehearsal
-- RELEASE-001.3 — production Supabase and environment design
-- RELEASE-001.4 — Auth URL and redirect validation
-- RELEASE-001.5 — backup, rollback and incident runbook
-- RELEASE-001.6 — logging, monitoring and release metadata
-- RELEASE-001.7 — production release checklist and go/no-go review
+- RELEASE-001.1 — completed; staging hosting and environment contract
+- RELEASE-001.2 — completed; staging deployment rehearsal and Auth validation
+- RELEASE-001.3 — completed; production Supabase and environment design
+- RELEASE-001.4+ — deferred until pilot product completion
 - QA-001 — planned
-- AUTH-002 — planned
 - ORG-001 — planned
-- OPS-001 — Production Portal MVP, planned after architecture review
-- OPS-002 — Delivery Portal MVP, planned after architecture review
-- PORTAL-001.1 — Customer identity, data model and authorization design, required before PORTAL-001
-- PORTAL-001 — Customer Portal MVP, planned after PORTAL-001.1
+- OPS-001.1 — Production Queue MVP, completed
+- OPS-001.2A — Completed logistics corrections, completed
+- OPS-001.2B — Delivery Queue MVP, completed
+- OPS-001.3 — Work Assignment MVP, completed
+- OPS-001.4 — Staff Management MVP, completed
+- PORTAL-001 — Customer Portal MVP, next
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -268,7 +268,6 @@ Goal: let EcoWash operate without developer intervention for everyday administra
 
 Scope:
 
-- AUTH-002
 - ORG-001
 - CATALOG-002
 - SEARCH-001
@@ -288,9 +287,6 @@ Goal: improve throughput, financial control and handoff to accounting/management
 
 Scope:
 
-- OPS-001
-- OPS-002
-- PORTAL-001.1
 - PORTAL-001
 - REPORT-001
 - REPORT-002

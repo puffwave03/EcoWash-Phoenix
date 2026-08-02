@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-02
 
-Current Mission: RELEASE-001
+Current Mission: PORTAL-001
 
-Next Action: review production deployment readiness, environment strategy and rollback plan
+Next Action: implement the Customer Portal MVP
 
 ---
 
@@ -116,12 +116,21 @@ Approved and current areas:
 - SEC-001 — Supabase security audit: Completed
 - SEC-001.1 — Security remediation and migration application: Completed and pushed
 - SEC-001.2 — Authenticated mutation regression: Completed
+- RELEASE-001.0 — Release readiness plan and blockers: Completed and pushed
+- RELEASE-001.1 — Staging hosting and environment contract: Completed and pushed
+- RELEASE-001.2 — Staging deployment rehearsal and Auth validation: Completed
+- RELEASE-001.3 — Production Supabase and environment design: Completed
+- OPS-001.1 — Production Queue MVP: Completed and pushed
+- OPS-001.2A — Completed logistics corrections: Completed and pushed
+- OPS-001.2B — Delivery Queue MVP: Completed and pushed
+- OPS-001.3 — Work Assignment MVP: Completed and pushed
+- OPS-001.4 — Staff Management MVP: Completed and pushed
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- PILOT-001 — Commercial pilot portal scope and route architecture
+- PORTAL-001 — Customer Portal MVP
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -150,9 +159,9 @@ Corrective work committed in `f94df88`:
 
 Not yet completed:
 
+- Customer Portal MVP
 - production-ready release
-- public deployment
-- commercial pilot portal architecture and implementation order
+- real production environment
 
 INFRA-001.1 completed:
 
@@ -188,8 +197,8 @@ Scope:
 
 - UX-002 — App landing, dashboard hierarchy and operational layout refinement. Completed.
 - SEC-001 — Full Supabase RLS, Storage, grants, RPC and browser-secret audit. Completed.
-- PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved; no implementation.
-- RELEASE-001 — Production deployment readiness, environment review and rollback checklist. In progress; audit result `READY WITH BLOCKERS`.
+- PILOT-001 — Commercial pilot portal scope and route architecture. Architecture approved and canonicalized.
+- RELEASE-001 — Staging-first release readiness. Staging is online and validated; production is deferred until pilot product completion.
 - QA-001 — Repeatable smoke/regression checklist for staging and production release.
 
 Official sequence after SEC-001:
@@ -197,20 +206,18 @@ Official sequence after SEC-001:
 - SEC-001 — completed
 - PILOT-001 — architecture approved; roles, permissions, route architecture, portal boundaries, dependencies, implementation order and pilot acceptance criteria
 - RELEASE-001.0 — completed; canonicalize release readiness plan and blockers
-- RELEASE-001.1 — completed; staging hosting and environment contract ready for Vercel staging setup
-- RELEASE-001.2 — next; staging deployment rehearsal
-- RELEASE-001.3 — production Supabase and environment design
-- RELEASE-001.4 — Auth URL and redirect validation
-- RELEASE-001.5 — backup, rollback and incident runbook
-- RELEASE-001.6 — logging, monitoring and release metadata
-- RELEASE-001.7 — production release checklist and go/no-go review
+- RELEASE-001.1 — completed; staging hosting and environment contract
+- RELEASE-001.2 — completed; staging deployment rehearsal and Auth validation
+- RELEASE-001.3 — completed; production Supabase and environment design
+- RELEASE-001.4+ — deferred until the pilot product is functionally complete
 - QA-001 — planned
-- AUTH-002 — planned
 - ORG-001 — planned
-- OPS-001 — Production Portal MVP
-- OPS-002 — Delivery Portal MVP
-- PORTAL-001.1 — Customer identity, data model and authorization design
-- PORTAL-001 — Customer Portal MVP
+- OPS-001.1 — Production Queue MVP, completed
+- OPS-001.2A — Completed logistics corrections, completed
+- OPS-001.2B — Delivery Queue MVP, completed
+- OPS-001.3 — Work Assignment MVP, completed
+- OPS-001.4 — Staff Management MVP, completed
+- PORTAL-001 — Customer Portal MVP, next
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
 
 PILOT-001 planning scope:
@@ -259,7 +266,6 @@ Priority class: P1.
 
 Candidate missions:
 
-- AUTH-002 — Staff invitation, activation and deactivation.
 - ORG-001 — Organization and location settings.
 - CATALOG-002 — Service catalog and price management hardening.
 - SEARCH-001 — Search across orders, customers, properties and services.
@@ -282,9 +288,6 @@ Priority class: P2.
 
 Candidate missions:
 
-- OPS-001 — Production Portal MVP.
-- OPS-002 — Delivery Portal MVP.
-- PORTAL-001.1 — Customer identity, data model and authorization design.
 - PORTAL-001 — Customer Portal MVP.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.

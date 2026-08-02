@@ -2,23 +2,23 @@
 
 Status: Active
 
-Date: 2026-08-01
+Date: 2026-08-02
 
-Approximate closeout time: end of RELEASE-001 audit
+Approximate closeout time: after OPS-001.4 staff management approval
 
-Session checkpoint: RELEASE-001.1 completed; RELEASE-001.2 next
+Session checkpoint: OPS-001.4 completed and pushed; PORTAL-001 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `2cca68f PILOT-001 docs: define portal roles routes and authorization boundaries`
+Latest approved and pushed commit: `85cd292 OPS-001.4 feat: add staff management MVP`
 
-Origin/main status: local `main` and `origin/main` point to `2cca68f`.
+Origin/main status: local `main` and `origin/main` point to `85cd292`.
 
-Working tree status after RELEASE-001 audit: clean
+Working tree status after OPS-001.4 closeout: clean
 
-Commit status: RELEASE-001.0 documentation correction pending review and commit.
+Commit status: no code commit pending.
 
 ---
 
@@ -53,6 +53,15 @@ Commit status: RELEASE-001.0 documentation correction pending review and commit.
 - SEC-001.2 — Authenticated mutation regression after hardening
 - PILOT-001 — Commercial pilot portal scope and route architecture
 - PILOT-001.1 — Pilot portal roles, routes and authorization boundaries
+- RELEASE-001.0 — Release readiness plan and blockers
+- RELEASE-001.1 — Staging hosting and environment contract
+- RELEASE-001.2 — Staging deployment rehearsal and Auth validation
+- RELEASE-001.3 — Production Supabase and environment design
+- OPS-001.1 — Production Queue MVP
+- OPS-001.2A — Completed logistics corrections
+- OPS-001.2B — Delivery Queue MVP
+- OPS-001.3 — Work Assignment MVP
+- OPS-001.4 — Staff Management MVP
 
 ## Supabase Staging State
 
@@ -72,6 +81,12 @@ Completed on EcoWash Staging:
 - `order-media` bucket verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 - SEC-001.1 remediation migration `20260801000100_sec_001_1_security_remediation.sql` is applied and local/remote migration history is aligned.
 - SEC-001.2 authenticated mutation regression passed with rollback-only test coverage and no smoke baseline drift.
+- Vercel staging project `ecowash-phoenix-staging` is online at `https://ecowash-phoenix-staging.vercel.app`.
+- The staging project's main target is configured for this staging deployment path; no real production environment has been created.
+- Staging indexing is disabled and `/robots.txt` returns `Disallow: /`.
+- Supabase Auth staging Site URL and Redirect URLs are configured and validated.
+- `SUPABASE_SERVICE_ROLE_KEY` is configured only server-side for staff invitations, is not prefixed with `NEXT_PUBLIC_` and is not tracked in Git.
+- Automatic deploy from `main` to the Vercel staging project is working.
 
 Applied baseline migrations:
 
@@ -89,6 +104,13 @@ Security remediation migration:
 
 - `20260801000100_sec_001_1_security_remediation.sql`
 
+Recent operations migrations applied on staging:
+
+- `20260802000100_ops_001_2a_fix_completed_logistics_updates.sql`
+- `20260802000200_ops_001_3_work_assignment.sql`
+- `20260802000300_ops_001_4_staff_management.sql`
+- `20260802000400_ops_001_4_fix_staff_membership_role_variable.sql`
+
 ## Migration History State
 
 Supabase migration history reconciled successfully on 2026-07-30.
@@ -98,6 +120,42 @@ During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` a
 Do not rerun the corrective migration. Do not use `supabase db reset --linked`, `supabase migration up`, or `supabase db push` unless a future task explicitly approves it.
 
 SEC-001.1 added database privilege hardening, explicit authenticated RPC allowlisting, `recalculate_order_totals(uuid)` client execution revocation, table privilege reduction and active-metadata enforcement for `order-media` SELECT. SEC-001.2 verified rollback-only authenticated mutation regression with no persistent data changes.
+
+OPS-001.2A added the minimum migration needed to allow owner/manager corrections to completed pickup and delivery logistics without reopening logistics architecture. OPS-001.3 added assignment support for production and logistics using existing role boundaries. OPS-001.4 added staff-management and invite flows using server-only Supabase Auth Admin access.
+
+## Current Functional State
+
+Available now:
+
+- public multilingual website
+- Auth login, logout and password recovery
+- protected dashboard
+- customers, properties, services and prices
+- orders, order lines and workflow statuses
+- manual payments
+- private order photos
+- pickup and delivery logistics
+- Production Queue at `/[locale]/app/production`
+- Delivery Queue at `/[locale]/app/delivery`
+- production and logistics assignment
+- queue filters: All, Assigned to me, Unassigned
+- staff management at `/[locale]/app/staff`
+- owner/manager invitation flow for staff and managers
+- staff activation and deactivation
+- owner, manager and staff authorization rules
+
+Role summary:
+
+- `owner`: full organization, staff and operational control.
+- `manager`: operational control and staff management.
+- `staff`: production/logistics work without staff management.
+- `customer`: separate portal user model, not implemented yet.
+
+Test data notes:
+
+- Temporary users created for OPS-001.4 invite testing were removed.
+- At most one active staff test user from OPS-001.3 may remain for visual review and assignment checks.
+- Do not document credentials, email addresses, UUIDs or customer personal data.
 
 ## INFRA-001-SMOKE Result
 
@@ -167,7 +225,7 @@ Smoke records remain available on staging for UX and follow-up validation.
 - Keep `supabase/.temp/` ignored.
 - Do not use Docker unless a new decision explicitly approves it.
 - Keep one task per commit.
-- Do not modify stable domain logic, routes, migrations or Supabase remote state during RELEASE-001 unless a separate approved implementation task explicitly authorizes it.
+- Do not modify Supabase remote state unless a separate approved implementation task explicitly authorizes it.
 
 ## UX-002 Completed State
 
@@ -187,20 +245,38 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`RELEASE-001.2 — Staging deployment rehearsal`
+`PORTAL-001 — Customer Portal MVP`
 
-Scope:
+Practical objective:
 
-- deploy staging/preview to Vercel from approved commit
-- use staging environment contract from `docs/05_DEVELOPMENT/Deployment.md`
-- verify `NEXT_PUBLIC_SITE_INDEXING=false`
-- configure and validate Supabase staging Auth redirects after the Vercel URL exists
-- smoke login, dashboard, orders, payments and Storage
-- verify runtime logs
-- rehearse app rollback
-- do not perform production work
+- let a customer access a separate customer area
+- show only the customer's own orders
+- show order status
+- show pickup and delivery information
+- show authorized photos only
+- show essential order history
 
-RELEASE-001 audit result is `READY WITH BLOCKERS`. PILOT-001 is architecture-approved. The real operational pilot is separate from PILOT-001 and should be tracked later as `PILOT-002` or as the M1 First Laundry Operational Pilot milestone after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
+Out of scope for PORTAL-001:
+
+- online payments
+- invoices
+- chat
+- push notifications
+- order modification
+- advanced profile management
+
+Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
+
+Official working loop:
+
+1. Cristiano describes the operational result.
+2. ChatGPT defines the solution and prompt.
+3. Codex implements.
+4. Run lint/build.
+5. Product Owner completes visual review.
+6. Commit and push.
+7. Vercel staging deploys from `main`.
+8. Move to the next task.
 
 ## Resume Commands
 
@@ -220,4 +296,7 @@ http://localhost:3000/it/app
 http://localhost:3000/it/app/customers
 http://localhost:3000/it/app/services
 http://localhost:3000/it/app/orders
+http://localhost:3000/it/app/production
+http://localhost:3000/it/app/delivery
+http://localhost:3000/it/app/staff
 ```

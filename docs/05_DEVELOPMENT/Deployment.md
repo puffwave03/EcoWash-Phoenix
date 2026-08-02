@@ -4,32 +4,35 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-02
 
-Current Mission: RELEASE-001.2
+Current Mission: PORTAL-001
 
 ---
 
 ## Purpose
 
-Canonicalize the release readiness plan, staging/production blockers, deployment sequencing and rollback checklist for EcoWash Phoenix.
+Track the current staging deployment contract and preserve the production-deferred release guardrails for EcoWash Phoenix.
 
 ---
 
 ## Contents
 
-RELEASE-001 audit result: `READY WITH BLOCKERS`.
+Current release result: staging is online and validated; real production is deferred until the pilot product is functionally complete.
 
 This document is a plan. It does not declare EcoWash Phoenix production-ready and does not authorize deployment, DNS changes, environment changes, Supabase project creation, Auth redirect changes or migration application.
 
 ## Current Release Position
 
 - `main` is the only release branch.
-- Latest confirmed release-planning baseline: `2cca68f PILOT-001 docs: define portal roles routes and authorization boundaries`.
+- Latest confirmed operational baseline: `85cd292 OPS-001.4 feat: add staff management MVP`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
+- RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
+- RELEASE-001.3 production environment design is completed.
+- Vercel staging project `ecowash-phoenix-staging` is online at `https://ecowash-phoenix-staging.vercel.app`.
+- Automatic deploy from `main` to the staging project is working.
 - No production environment is confirmed.
-- No hosting provider/project is configured in the repository.
 - No production Supabase project is inventoried.
 
 ## Staging Requirements
@@ -48,6 +51,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 - `order-media` remains private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 - Auth recovery redirect works for the staging canonical URL.
 - `NEXT_PUBLIC_SITE_INDEXING=false` is used for staging/preview deployments.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-side only for staff invitations and must never use a `NEXT_PUBLIC_` prefix.
 - Staging can use the assigned Vercel domain; a custom domain is not required for the first staging deployment.
 - Staging uses EcoWash Staging Supabase, not a production Supabase project.
 - No production deployment, DNS cutover or production Supabase work is part of staging rehearsal.
@@ -327,16 +331,18 @@ Storage rollback:
 
 ## Release Decision State
 
-Current state: `READY WITH BLOCKERS`.
+Current state: `STAGING READY — PRODUCTION DEFERRED`.
 
-## RELEASE-001.1 Staging Contract Result
+## Staging Contract Result
 
 RELEASE-001.1 result: `READY FOR VERCEL STAGING SETUP`.
 
+RELEASE-001.2 result: `COMPLETED — STAGING AUTH VALIDATED`.
+
 Staging hosting contract:
 
-- Hosting target: Vercel staging/preview deployment from the approved `main` commit.
-- Staging domain: Vercel-assigned HTTPS domain is acceptable for the first staging deployment.
+- Hosting target: Vercel project `ecowash-phoenix-staging`.
+- Staging domain: `https://ecowash-phoenix-staging.vercel.app`.
 - Custom domain: not required and not a staging blocker.
 - Production deployment: explicitly out of scope.
 - Production DNS: explicitly out of scope.
@@ -350,11 +356,13 @@ Staging environment contract:
 | `NEXT_PUBLIC_SUPABASE_URL` | EcoWash Staging Supabase URL | Must point to staging Supabase, not production. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | EcoWash Staging anon key | Must be anon key only; no service-role key. |
 | `NEXT_PUBLIC_SITE_INDEXING` | literal flag | Must be `false`. |
+| `SUPABASE_SERVICE_ROLE_KEY` | server-side secret | Required for staff invitations only; never expose to browser code and never commit. |
 
 Staging indexing contract:
 
 - `NEXT_PUBLIC_SITE_INDEXING=false` is mandatory.
 - `/robots.txt` must disallow indexing on staging.
+- Current staging robots result: `Disallow: /`.
 - Staging must not be submitted to search consoles or public directories.
 
 Staging Auth redirect contract:
@@ -363,11 +371,11 @@ Configure EcoWash Staging Supabase Auth with the staging origin after the Vercel
 
 ```text
 Site URL:
-https://<vercel-staging-domain>
+https://ecowash-phoenix-staging.vercel.app
 
 Redirect URLs:
-https://<vercel-staging-domain>/**
-https://<vercel-staging-domain>/*/update-password
+https://ecowash-phoenix-staging.vercel.app/**
+https://ecowash-phoenix-staging.vercel.app/*/update-password
 ```
 
 Validation scope:
@@ -378,16 +386,10 @@ Validation scope:
 - Logout returns to login.
 - Invalid or expired recovery links fail safely.
 
-Vercel staging setup instructions:
+Current staging status:
 
-1. Create or connect the Vercel project from the GitHub repository.
-2. Select the Next.js framework preset.
-3. Use `npm run build` as the build command.
-4. Do not add `vercel.json` unless a later task identifies a concrete need.
-5. Configure staging/preview environment variables from the contract above.
-6. Deploy to staging/preview only.
-7. Record the assigned Vercel staging URL.
-8. Configure Supabase staging Auth redirects for that URL.
-9. Run RELEASE-001.2 staging deployment rehearsal.
-
-Next allowed action after RELEASE-001.1: run controlled staging deployment rehearsal in `RELEASE-001.2`.
+- Vercel staging is ready.
+- Supabase Auth staging is configured and validated.
+- Indexing is disabled.
+- Automatic deploy from `main` is working.
+- No real production resource has been created.

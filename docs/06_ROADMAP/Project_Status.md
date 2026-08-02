@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-02
 
-Current Mission: RELEASE-001
+Current Mission: PORTAL-001
 
-Next Action: review production deployment readiness, environment strategy and rollback plan
+Next Action: implement the Customer Portal MVP
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | RELEASE-001.2 — Staging deployment rehearsal |
-| Last completed mission | PILOT-001 — Commercial pilot portal scope and route architecture |
-| Latest approved and pushed commit | 2cca68f |
+| Current mission | PORTAL-001 — Customer Portal MVP |
+| Last completed mission | OPS-001.4 — Staff Management MVP |
+| Latest approved and pushed commit | 85cd292 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -60,10 +60,17 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | SEC-001 status | Completed |
 | SEC-001.1 status | Completed, applied to staging and pushed |
 | SEC-001.2 status | Completed; authenticated mutation regression passed |
+| RELEASE-001.2 status | Completed; staging deployment and Auth validated |
+| RELEASE-001.3 status | Completed; production design closed without creating production resources |
+| OPS-001.1 status | Completed and pushed |
+| OPS-001.2A status | Completed and pushed |
+| OPS-001.2B status | Completed and pushed |
+| OPS-001.3 status | Completed and pushed |
+| OPS-001.4 status | Completed and pushed |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected, migrations applied, owner bootstrap created; owner login verified; first real operational smoke test passed with non-blocking issues |
-| Commercial readiness | Staging MVP validated; SEC-001 security hardening completed; pilot portal architecture, release readiness, repeatable QA and approved portal MVP implementation remain before the real operational pilot |
+| Backend/SaaS implementation | Supabase Staging connected and aligned; staging Vercel online; owner login verified; operational smoke baseline and OPS queues/staff flows validated |
+| Commercial readiness | Staging is online and functional for internal operations; Customer Portal MVP, QA and later production planning remain before the real operational pilot |
 
 ## Development Status
 
@@ -114,10 +121,17 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | SEC-001.1 | Security remediation and migration design/application | Completed |
 | SEC-001.2 | Authenticated mutation regression | Completed |
 | PILOT-001 | Commercial pilot portal scope and route architecture | Architecture approved |
-| RELEASE-001 | Production deployment readiness | In progress; audit result READY WITH BLOCKERS |
-| RELEASE-001.0 | Canonicalize release readiness plan and blockers | Completed, pending commit |
-| RELEASE-001.1 | Staging hosting and environment contract | Completed, pending commit |
-| RELEASE-001.2 | Staging deployment rehearsal | Next |
+| RELEASE-001 | Production deployment readiness | Deferred after staging validation |
+| RELEASE-001.0 | Canonicalize release readiness plan and blockers | Completed |
+| RELEASE-001.1 | Staging hosting and environment contract | Completed |
+| RELEASE-001.2 | Staging deployment rehearsal | Completed; staging Auth validated |
+| RELEASE-001.3 | Production Supabase and environment design | Completed; no production resources created |
+| OPS-001.1 | Production Queue MVP | Completed |
+| OPS-001.2A | Completed logistics corrections | Completed |
+| OPS-001.2B | Delivery Queue MVP | Completed |
+| OPS-001.3 | Work Assignment MVP | Completed |
+| OPS-001.4 | Staff Management MVP | Completed |
+| PORTAL-001 | Customer Portal MVP | Next |
 
 ## Commit History
 
@@ -205,7 +219,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `2cca68f` at the RELEASE-001.0 baseline.
+- Local `main` and `origin/main` point to `85cd292` at the OPS-001.4 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -290,22 +304,24 @@ Implemented features:
 - private order photos with short-lived signed URLs
 - operational dashboard using real tenant data
 - organization timezone for dashboard day windows
+- Production Queue
+- Delivery Queue
+- production and logistics assignment
+- All, Assigned to me and Unassigned queue filters
+- owner/manager staff management, invitations, activation and deactivation
 - first real staging smoke baseline through order `EW-000001`
 
 Partially implemented features:
 
-- role model exists for `owner`, `manager` and `staff`, but there is no owner-facing staff invitation or lifecycle UI
 - service catalog and standard prices exist, but customer/property override pricing remains future scope
-- assignment fields exist, but there are no dedicated staff worklists or assignment-centered production views
 - workflow history and payment/logistics actor fields exist, but no general user-facing audit log module exists
 - dashboard summarizes operations, but daily close, open balance reports and exports are not implemented
 
 Missing commercial-readiness features:
 
-- production deployment readiness and domain/environment decision
+- Customer Portal MVP
+- production deployment readiness and domain/environment decision, deferred until pilot product completion
 - repeatable smoke/regression checklist for release
-- pilot portal architecture and implementation order for administrative, processing, delivery and customer surfaces
-- owner-managed staff invitation, activation and deactivation
 - organization and location settings UI
 - global search
 - structured notes and issues
@@ -317,9 +333,9 @@ Priority classification:
 
 | Priority | Meaning | Features |
 | --- | --- | --- |
-| P0 | Required before commercial pilot | UX-002, SEC-001 and PILOT-001 completed; RELEASE-001 and QA-001 pending |
-| P1 | Required for first paid internal operations | AUTH-002, ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
-| P2 | Portal MVPs and strong operational/commercial differentiators | OPS-001, OPS-002, PORTAL-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P0 | Required before commercial pilot | UX-002, SEC-001, PILOT-001 and staging release validation completed; QA-001 pending |
+| P1 | Required for first paid internal operations | ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
+| P2 | Portal MVPs and strong operational/commercial differentiators | PORTAL-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
@@ -327,17 +343,19 @@ M1 — Commercial Pilot Baseline:
 - UX-002 app layout/dashboard refinement — completed
 - SEC-001 Supabase security audit, remediation and authenticated mutation regression — completed
 - PILOT-001 commercial pilot portal scope and route architecture — architecture approved
-- RELEASE-001 production deployment readiness — in progress; audit result READY WITH BLOCKERS
-- RELEASE-001.0 canonicalize release readiness plan and blockers — completed, pending commit
-- RELEASE-001.1 staging hosting and environment contract — completed, pending commit
-- RELEASE-001.2 staging deployment rehearsal — next
+- RELEASE-001 production deployment readiness — staging complete; production deferred
+- RELEASE-001.0 canonicalize release readiness plan and blockers — completed
+- RELEASE-001.1 staging hosting and environment contract — completed
+- RELEASE-001.2 staging deployment rehearsal — completed; staging Auth validated
+- RELEASE-001.3 production Supabase and environment design — completed
 - QA-001 repeatable smoke/regression checklist — planned
-- AUTH-002 staff lifecycle — planned
 - ORG-001 organization/location settings — planned
-- OPS-001 Production Portal MVP — planned after architecture review
-- OPS-002 Delivery Portal MVP — planned after architecture review
-- PORTAL-001.1 Customer identity, data model and authorization design — required before PORTAL-001
-- PORTAL-001 Customer Portal MVP — planned after PORTAL-001.1
+- OPS-001.1 Production Queue MVP — completed
+- OPS-001.2A Completed logistics corrections — completed
+- OPS-001.2B Delivery Queue MVP — completed
+- OPS-001.3 Work Assignment MVP — completed
+- OPS-001.4 Staff Management MVP — completed
+- PORTAL-001 Customer Portal MVP — next
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -366,15 +384,21 @@ Operational pilot definition:
 
 - `PILOT-002` or the M1 First Laundry Operational Pilot is the real pilot execution after planning, release readiness, QA and approved MVP portal implementation.
 
-RELEASE-001 blocker summary:
+Staging state:
 
-- Staging requires hosting contract, staging/preview env contract, `NEXT_PUBLIC_SITE_INDEXING=false`, Supabase staging usage, staging Auth redirect verification, read-only Supabase CLI access, migration history verification and QA decisions for remaining smoke gaps.
-- Production has no confirmed domain, hosting project, production Supabase project, Auth redirect configuration, production env matrix, backup/rollback plan, observability/logging policy or production smoke checklist.
-- Production is not ready until these blockers are resolved in RELEASE-001.x tasks.
+- Vercel project `ecowash-phoenix-staging` is online at `https://ecowash-phoenix-staging.vercel.app`.
+- The staging project uses the configured main target for automatic deploys from `main`.
+- Indexing is disabled; `/robots.txt` disallows crawling.
+- Supabase Auth staging is configured and validated.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-side only, not public, not tracked and used for staff invitations.
+
+Production state:
+
+- No real production Supabase project, Vercel project, domain, DNS or environment has been created.
+- Production is deferred until the pilot product is functionally complete.
 
 M2 — First Paid Operations:
 
-- AUTH-002 staff lifecycle
 - ORG-001 organization/location settings
 - CATALOG-002 catalog hardening
 - SEARCH-001 global search
@@ -382,9 +406,6 @@ M2 — First Paid Operations:
 
 M3 — Operational Scale And Management Control:
 
-- OPS-001 Production Portal MVP
-- OPS-002 Delivery Portal MVP
-- PORTAL-001.1 Customer identity, data model and authorization design
 - PORTAL-001 Customer Portal MVP
 - REPORT-001 daily close
 - REPORT-002 open balance report
@@ -555,13 +576,13 @@ SEC-001 completion state:
 
 Next approved task:
 
-- `RELEASE-001.2 — Staging deployment rehearsal`
+- `PORTAL-001 — Customer Portal MVP`
 
-PILOT-001 is architecture-approved. RELEASE-001 audit result is `READY WITH BLOCKERS`; RELEASE-001.1 defined the staging hosting and environment contract. RELEASE-001.2 should deploy staging/preview to Vercel from the approved commit, use Supabase staging, verify `NEXT_PUBLIC_SITE_INDEXING=false`, validate staging Auth redirects, smoke login/dashboard/orders/payments/Storage, verify logs and rehearse app rollback.
+PORTAL-001 should give customers a separate authenticated area where they can see only their own orders, order status, pickup/delivery information, authorized photos and essential history.
 
-PILOT-001 is architecture-approved. RELEASE-001 should review production target, domain/environment strategy and rollback planning while preserving SEC-001 hardening and PILOT-001 portal authorization boundaries.
+Do not include online payments, invoices, chat, push notifications, order modification or advanced profile management in PORTAL-001.
 
-The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot after RELEASE-001, QA-001 and the approved MVP portal implementation tasks.
+Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
 ## APP-002 Documentation State
 
@@ -799,19 +820,19 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.2 e facciamo il rehearsal di deployment staging su Vercel.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-001 e implementiamo il Customer Portal MVP.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `2cca68f`
-- Current release state is staging MVP validated; production deployment still deferred
+- Local `main` and `origin/main` expected at `85cd292`
+- Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- PILOT-001 is architecture-approved; RELEASE-001 is next
-- Do not modify approved migrations during RELEASE-001
+- PILOT-001 is architecture-approved; PORTAL-001 is next
+- Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations or alter Supabase remote state during RELEASE-001

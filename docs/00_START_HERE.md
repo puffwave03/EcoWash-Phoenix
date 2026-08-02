@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-02
 
-Current Mission: RELEASE-001.2
+Current Mission: PORTAL-001
 
-Next Action: Run controlled Vercel staging deployment rehearsal
+Next Action: Implement the Customer Portal MVP
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `2cca68f PILOT-001 docs: define portal roles routes and authorization boundaries`
-- Current mission: `RELEASE-001 — Production deployment readiness`
+- Latest approved and pushed commit: `85cd292 OPS-001.4 feat: add staff management MVP`
+- Current mission: `PORTAL-001 — Customer Portal MVP`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -31,8 +31,9 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - SEC-001.1 is completed, applied to staging and pushed.
 - SEC-001.2 authenticated mutation regression passed.
 - PILOT-001 architecture is approved and canonicalized.
-- RELEASE-001 audit result is `READY WITH BLOCKERS`; production is not ready yet.
-- RELEASE-001.1 staging hosting and environment contract is ready for Vercel staging setup.
+- RELEASE-001.2 staging deployment rehearsal completed with staging Auth validated.
+- RELEASE-001.3 production design completed; production is deferred until the pilot product is functionally complete.
+- OPS-001.1 through OPS-001.4 are completed: Production Queue, completed logistics corrections, Delivery Queue, Work Assignment and Staff Management.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -40,13 +41,17 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - UX-002.4 is completed and pushed.
 - UX-002.5 is completed and pushed.
 - COMM-001 commercial roadmap priorities are completed and pushed.
-- Supabase Staging is connected and bootstrapped.
+- Supabase Staging is connected, bootstrapped and aligned.
+- Vercel staging is online at `https://ecowash-phoenix-staging.vercel.app`.
+- Vercel staging indexing is disabled; `/robots.txt` returns `Disallow: /`.
+- Supabase Auth staging is configured and validated.
+- `SUPABASE_SERVICE_ROLE_KEY` is present only server-side for staff invitations and is not tracked.
 - Owner login, dashboard, customer, property, service, order, item, production, pickup, delivery, payment, photo and logout/login persistence were validated in staging.
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before RELEASE-001 work.
-- `main` and `origin/main` are expected to be synchronized at `2cca68f`.
+- Working tree is expected to be clean before PORTAL-001 work.
+- `main` and `origin/main` are expected to be synchronized at `85cd292`.
 
 ---
 
@@ -74,6 +79,9 @@ Protected staging routes to verify when needed:
 - `/it/app/customers`
 - `/it/app/services`
 - `/it/app/orders`
+- `/it/app/production`
+- `/it/app/delivery`
+- `/it/app/staff`
 
 ---
 
@@ -81,7 +89,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da RELEASE-001.2 e facciamo il rehearsal di deployment staging su Vercel.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-001 e implementiamo il Customer Portal MVP.”
 
 Start by confirming:
 
@@ -102,4 +110,4 @@ Then read:
 - `docs/06_ROADMAP/Project_Status.md`
 - `docs/06_ROADMAP/Milestones.md`
 
-Do not run destructive Supabase commands for RELEASE-001. Do not use Docker. Do not modify code, stable domain logic, routes, migrations or Supabase remote state unless a separate approved implementation task explicitly authorizes it.
+Do not run destructive Supabase commands. Do not use Docker. Do not modify Supabase remote state unless a separate approved implementation task explicitly authorizes it. Avoid repeating release audits already completed; follow the normal workflow: Cristiano describes the operational result, ChatGPT defines solution and prompt, Codex implements, lint/build, visual review, commit and push, staging deploy, next task.
