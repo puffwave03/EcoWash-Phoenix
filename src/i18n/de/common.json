@@ -488,6 +488,7 @@
       "fee": "Gebühr",
       "save": "Logistik speichern",
       "saving": "Speichern...",
+      "success": "Logistik gespeichert.",
       "error": "Logistik konnte nicht gespeichert werden.",
       "cancelledReason": "Stornierungsgrund",
       "statuses": {

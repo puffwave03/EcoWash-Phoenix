@@ -36,4 +36,5 @@ export type OrderLogistics = {
 export type LogisticsActionState = {
   fieldErrors: Record<string, string>;
   formError: string | null;
+  success: boolean;
 };

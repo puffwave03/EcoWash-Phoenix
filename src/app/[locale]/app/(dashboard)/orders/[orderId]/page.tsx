@@ -293,6 +293,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             save: t("logistics.save"),
             saving: t("logistics.saving"),
             scheduledAt: t("logistics.scheduledAt"),
+            success: t("logistics.success"),
             statuses: t.raw("logistics.statuses"),
           }}
         />

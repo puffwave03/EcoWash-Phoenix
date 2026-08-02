@@ -31,6 +31,7 @@ type LogisticsPanelText = {
   save: string;
   saving: string;
   scheduledAt: string;
+  success: string;
   statuses: Record<FulfillmentStatus, string>;
 };
 
@@ -46,7 +47,7 @@ type LogisticsPanelProps = {
   text: LogisticsPanelText;
 };
 
-const initialState: LogisticsActionState = { fieldErrors: {}, formError: null };
+const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
 
 function fieldClass(hasError = false) {
   return `min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
@@ -89,6 +90,7 @@ function LogisticsForm({
         </span>
       </div>
       {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
+      {state.success ? <p className="rounded-control border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{text.success}</p> : null}
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.scheduledAt}</span>

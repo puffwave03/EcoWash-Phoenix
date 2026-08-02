@@ -10,10 +10,10 @@ import {
   parseLogisticsForm,
 } from "@/features/logistics/validation";
 
-const initialState: LogisticsActionState = { fieldErrors: {}, formError: null };
+const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
 
 function fail(fieldErrors: Record<string, string> = {}, formError: string | null = "generic") {
-  return { fieldErrors, formError };
+  return { fieldErrors, formError, success: false };
 }
 
 function revalidateOrder(locale: string, orderId: string) {
@@ -55,7 +55,7 @@ export async function savePickupAction(
   }
 
   revalidateOrder(locale, orderId);
-  return initialState;
+  return { fieldErrors: {}, formError: null, success: true };
 }
 
 export async function saveDeliveryAction(
@@ -93,7 +93,7 @@ export async function saveDeliveryAction(
   }
 
   revalidateOrder(locale, orderId);
-  return initialState;
+  return { fieldErrors: {}, formError: null, success: true };
 }
 
 export async function transitionPickupAction(locale: string, orderId: string, formData: FormData) {

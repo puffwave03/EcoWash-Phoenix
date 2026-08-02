@@ -488,6 +488,7 @@
       "fee": "Cargo",
       "save": "Guardar logística",
       "saving": "Guardando...",
+      "success": "Logística guardada.",
       "error": "No se pudo guardar la logística.",
       "cancelledReason": "Motivo de cancelación",
       "statuses": {

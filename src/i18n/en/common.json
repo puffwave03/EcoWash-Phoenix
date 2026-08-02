@@ -488,6 +488,7 @@
       "fee": "Fee",
       "save": "Save logistics",
       "saving": "Saving...",
+      "success": "Logistics saved.",
       "error": "Logistics could not be saved.",
       "cancelledReason": "Cancellation reason",
       "statuses": {

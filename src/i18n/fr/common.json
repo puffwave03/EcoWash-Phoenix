@@ -488,6 +488,7 @@
       "fee": "Frais",
       "save": "Enregistrer la logistique",
       "saving": "Enregistrement...",
+      "success": "Logistique enregistrée.",
       "error": "La logistique n'a pas pu être enregistrée.",
       "cancelledReason": "Motif d'annulation",
       "statuses": {

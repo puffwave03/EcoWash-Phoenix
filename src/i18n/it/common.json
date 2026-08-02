@@ -488,6 +488,7 @@
       "fee": "Costo",
       "save": "Salva logistica",
       "saving": "Salvataggio...",
+      "success": "Logistica salvata.",
       "error": "La logistica non può essere salvata.",
       "cancelledReason": "Motivo annullamento",
       "statuses": {
