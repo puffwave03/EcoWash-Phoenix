@@ -6,6 +6,7 @@ type AppNavigationText = {
   customers: string;
   orders: string;
   overview: string;
+  production: string;
   services: string;
 };
 
@@ -33,6 +34,7 @@ export function AppNavigation({
     { href: "/app", label: text.overview, match: "/app" },
     { href: "/app/customers", label: text.customers, match: "/app/customers" },
     { href: "/app/orders", label: text.orders, match: "/app/orders" },
+    { href: "/app/production", label: text.production, match: "/app/production" },
     { href: "/app/services", label: text.services, match: "/app/services" },
   ];
   const activeItem =
@@ -67,7 +69,7 @@ export function AppNavigation({
         aria-label={navigationLabel}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-card backdrop-blur lg:hidden"
       >
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-5 gap-1">
           {navigationItems.map((item) => {
             const isActive = item.href === activeItem.href;
 

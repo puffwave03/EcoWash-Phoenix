@@ -11,6 +11,7 @@ type DashboardShellText = {
   orders: string;
   organizationLabel: string;
   overview: string;
+  production: string;
   roleLabel: string;
   services: string;
   userLabel: string;
@@ -59,6 +60,7 @@ export function DashboardShell({
                 customers: text.customers,
                 orders: text.orders,
                 overview: text.overview,
+                production: text.production,
                 services: text.services,
               }}
             />
@@ -95,6 +97,7 @@ export function DashboardShell({
               customers: text.customers,
               orders: text.orders,
               overview: text.overview,
+              production: text.production,
               services: text.services,
             }}
           />
@@ -113,6 +116,7 @@ export function DashboardShell({
           customers: text.customers,
           orders: text.orders,
           overview: text.overview,
+          production: text.production,
           services: text.services,
         }}
       />

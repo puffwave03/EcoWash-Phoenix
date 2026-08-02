@@ -131,6 +131,7 @@
       "overview": "Resumen",
       "customers": "Clientes",
       "orders": "Pedidos",
+      "production": "Producción",
       "services": "Servicios",
       "userLabel": "Usuario",
       "organizationLabel": "Organización",
@@ -254,6 +255,40 @@
         "refunded": "Reembolsado",
         "void": "Anulado"
       }
+    }
+  },
+  "production": {
+    "title": "Producción",
+    "description": "Sigue los pedidos activos por fase de producción y abre el detalle cuando el trabajo deba avanzar.",
+    "order": "Pedido",
+    "property": "Propiedad",
+    "priority": "Prioridad",
+    "due": "Vencimiento",
+    "assignedTo": "Asignado a",
+    "view": "Ver pedido",
+    "empty": "No hay pedidos en este grupo.",
+    "groups": {
+      "todo": "Por hacer",
+      "inProgress": "En producción",
+      "onHold": "En pausa",
+      "ready": "Listos"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "received": "Recibido",
+      "washing": "Lavado",
+      "drying": "Secado",
+      "ironing": "Planchado",
+      "quality_check": "Control de calidad",
+      "packing": "Empaquetado",
+      "ready": "Listo",
+      "completed": "Producción completada",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado"
     }
   },
   "customers": {

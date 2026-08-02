@@ -131,6 +131,7 @@
       "overview": "Vue d'ensemble",
       "customers": "Clients",
       "orders": "Commandes",
+      "production": "Production",
       "services": "Services",
       "userLabel": "Utilisateur",
       "organizationLabel": "Organisation",
@@ -254,6 +255,40 @@
         "refunded": "Remboursé",
         "void": "Annulé"
       }
+    }
+  },
+  "production": {
+    "title": "Production",
+    "description": "Suivez les commandes actives par étape de production et ouvrez le détail quand le travail doit avancer.",
+    "order": "Commande",
+    "property": "Propriété",
+    "priority": "Priorité",
+    "due": "Échéance",
+    "assignedTo": "Assigné à",
+    "view": "Voir la commande",
+    "empty": "Aucune commande dans ce groupe.",
+    "groups": {
+      "todo": "À faire",
+      "inProgress": "En cours",
+      "onHold": "En pause",
+      "ready": "Prêtes"
+    },
+    "priorities": {
+      "normal": "Normale",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Brouillon",
+      "received": "Reçue",
+      "washing": "Lavage",
+      "drying": "Séchage",
+      "ironing": "Repassage",
+      "quality_check": "Contrôle qualité",
+      "packing": "Emballage",
+      "ready": "Prête",
+      "completed": "Production terminée",
+      "on_hold": "En pause",
+      "cancelled": "Annulée"
     }
   },
   "customers": {

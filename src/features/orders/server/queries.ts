@@ -70,8 +70,15 @@ export type AssignmentOption = {
   label: string;
 };
 
+export type ProductionQueueOrder = Pick<
+  Order,
+  "assignedToName" | "customerName" | "dueAt" | "id" | "orderNumber" | "priority" | "productionStatus" | "propertyName"
+>;
+
 const ORDER_SELECT =
   "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, is_active, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
+const PRODUCTION_QUEUE_SELECT =
+  "id, order_number, production_status, priority, due_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const ITEM_SELECT =
   "id, service_id, description, unit_type, quantity, unit_price, line_total, notes, is_active";
 const HISTORY_SELECT =
@@ -104,6 +111,19 @@ function mapOrder(row: OrderRow): Order {
     propertyName: relationName(row.property),
     subtotal: row.subtotal,
     total: row.total,
+  };
+}
+
+function mapProductionQueueOrder(row: Pick<OrderRow, "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">): ProductionQueueOrder {
+  return {
+    assignedToName: relationName(row.assigned_to_profile),
+    customerName: relationName(row.customer) ?? "",
+    dueAt: row.due_at,
+    id: row.id,
+    orderNumber: row.order_number,
+    priority: row.priority,
+    productionStatus: row.production_status,
+    propertyName: relationName(row.property),
   };
 }
 
@@ -162,6 +182,28 @@ export async function listOrders(
   }
 
   return data.map(mapOrder);
+}
+
+export async function listProductionQueueOrders(locale: string): Promise<ProductionQueueOrder[]> {
+  const { membership } = await requireMembership(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("orders")
+    .select(PRODUCTION_QUEUE_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .not("production_status", "in", "(completed,cancelled)")
+    .order("due_at", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(100)
+    .returns<Pick<OrderRow, "assigned_to_profile" | "customer" | "due_at" | "id" | "order_number" | "priority" | "production_status" | "property">[]>();
+
+  if (error || !data) {
+    console.error("Production queue query failed", error?.code);
+    return [];
+  }
+
+  return data.map(mapProductionQueueOrder);
 }
 
 export async function getOrderById(locale: string, orderId: string) {

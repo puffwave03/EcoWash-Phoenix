@@ -131,6 +131,7 @@
       "overview": "Übersicht",
       "customers": "Kunden",
       "orders": "Aufträge",
+      "production": "Produktion",
       "services": "Services",
       "userLabel": "Benutzer",
       "organizationLabel": "Organisation",
@@ -254,6 +255,40 @@
         "refunded": "Erstattet",
         "void": "Storniert"
       }
+    }
+  },
+  "production": {
+    "title": "Produktion",
+    "description": "Verfolgen Sie aktive Aufträge nach Produktionsphase und öffnen Sie den Auftrag, wenn Arbeit weitergehen muss.",
+    "order": "Auftrag",
+    "property": "Objekt",
+    "priority": "Priorität",
+    "due": "Fällig",
+    "assignedTo": "Zugewiesen an",
+    "view": "Auftrag ansehen",
+    "empty": "Keine Aufträge in dieser Gruppe.",
+    "groups": {
+      "todo": "Zu erledigen",
+      "inProgress": "In Bearbeitung",
+      "onHold": "Pausiert",
+      "ready": "Bereit"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Entwurf",
+      "received": "Eingegangen",
+      "washing": "Waschen",
+      "drying": "Trocknen",
+      "ironing": "Bügeln",
+      "quality_check": "Qualitätskontrolle",
+      "packing": "Verpacken",
+      "ready": "Bereit",
+      "completed": "Produktion abgeschlossen",
+      "on_hold": "Pausiert",
+      "cancelled": "Storniert"
     }
   },
   "customers": {

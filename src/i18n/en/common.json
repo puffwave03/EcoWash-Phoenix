@@ -131,6 +131,7 @@
       "overview": "Overview",
       "customers": "Customers",
       "orders": "Orders",
+      "production": "Production",
       "services": "Services",
       "userLabel": "User",
       "organizationLabel": "Organization",
@@ -254,6 +255,40 @@
         "refunded": "Refunded",
         "void": "Void"
       }
+    }
+  },
+  "production": {
+    "title": "Production",
+    "description": "Track active orders by production stage and open the order detail when work needs to move.",
+    "order": "Order",
+    "property": "Property",
+    "priority": "Priority",
+    "due": "Due",
+    "assignedTo": "Assigned to",
+    "view": "View order",
+    "empty": "No orders in this group.",
+    "groups": {
+      "todo": "To do",
+      "inProgress": "In progress",
+      "onHold": "On hold",
+      "ready": "Ready"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "received": "Received",
+      "washing": "Washing",
+      "drying": "Drying",
+      "ironing": "Ironing",
+      "quality_check": "Quality check",
+      "packing": "Packing",
+      "ready": "Ready",
+      "completed": "Production completed",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled"
     }
   },
   "customers": {

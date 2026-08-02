@@ -131,6 +131,7 @@
       "overview": "Panoramica",
       "customers": "Clienti",
       "orders": "Ordini",
+      "production": "Produzione",
       "services": "Servizi",
       "userLabel": "Utente",
       "organizationLabel": "Organizzazione",
@@ -254,6 +255,40 @@
         "refunded": "Rimborsato",
         "void": "Annullato"
       }
+    }
+  },
+  "production": {
+    "title": "Produzione",
+    "description": "Segui gli ordini attivi per fase di lavorazione e apri il dettaglio quando il lavoro deve avanzare.",
+    "order": "Ordine",
+    "property": "Proprietà",
+    "priority": "Priorità",
+    "due": "Scadenza",
+    "assignedTo": "Assegnato a",
+    "view": "Vedi ordine",
+    "empty": "Nessun ordine in questo gruppo.",
+    "groups": {
+      "todo": "Da fare",
+      "inProgress": "In lavorazione",
+      "onHold": "In pausa",
+      "ready": "Pronti"
+    },
+    "priorities": {
+      "normal": "Normale",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Bozza",
+      "received": "Ricevuto",
+      "washing": "Lavaggio",
+      "drying": "Asciugatura",
+      "ironing": "Stiratura",
+      "quality_check": "Controllo qualità",
+      "packing": "Imballaggio",
+      "ready": "Pronto",
+      "completed": "Produzione completata",
+      "on_hold": "In pausa",
+      "cancelled": "Annullato"
     }
   },
   "customers": {
