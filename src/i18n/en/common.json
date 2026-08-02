@@ -132,6 +132,7 @@
       "customers": "Customers",
       "orders": "Orders",
       "production": "Production",
+      "delivery": "Pickups & deliveries",
       "services": "Services",
       "userLabel": "User",
       "organizationLabel": "Organization",
@@ -288,6 +289,35 @@
       "ready": "Ready",
       "completed": "Production completed",
       "on_hold": "On hold",
+      "cancelled": "Cancelled"
+    }
+  },
+  "deliveryQueue": {
+    "title": "Pickups & deliveries",
+    "description": "See the active pickup and delivery work for the day, the next stops and anything already in progress.",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "order": "Order",
+    "customer": "Customer",
+    "property": "Property",
+    "address": "Address",
+    "phone": "Phone",
+    "assignedTo": "Assigned to",
+    "view": "View order",
+    "empty": "No tasks in this group.",
+    "late": "Late",
+    "dueSoon": "Due today",
+    "groups": {
+      "today": "To do today",
+      "upcoming": "Upcoming",
+      "inProgress": "In progress",
+      "completedToday": "Completed today"
+    },
+    "statuses": {
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "completed": "Completed",
       "cancelled": "Cancelled"
     }
   },

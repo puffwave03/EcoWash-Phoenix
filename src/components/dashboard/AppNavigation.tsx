@@ -4,6 +4,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 
 type AppNavigationText = {
   customers: string;
+  delivery: string;
   orders: string;
   overview: string;
   production: string;
@@ -35,6 +36,7 @@ export function AppNavigation({
     { href: "/app/customers", label: text.customers, match: "/app/customers" },
     { href: "/app/orders", label: text.orders, match: "/app/orders" },
     { href: "/app/production", label: text.production, match: "/app/production" },
+    { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
     { href: "/app/services", label: text.services, match: "/app/services" },
   ];
   const activeItem =
@@ -69,7 +71,7 @@ export function AppNavigation({
         aria-label={navigationLabel}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-card backdrop-blur lg:hidden"
       >
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-3 gap-1 sm:grid-cols-6">
           {navigationItems.map((item) => {
             const isActive = item.href === activeItem.href;
 

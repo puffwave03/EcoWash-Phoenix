@@ -132,6 +132,7 @@
       "customers": "Kunden",
       "orders": "Aufträge",
       "production": "Produktion",
+      "delivery": "Abholung und Lieferung",
       "services": "Services",
       "userLabel": "Benutzer",
       "organizationLabel": "Organisation",
@@ -288,6 +289,35 @@
       "ready": "Bereit",
       "completed": "Produktion abgeschlossen",
       "on_hold": "Pausiert",
+      "cancelled": "Storniert"
+    }
+  },
+  "deliveryQueue": {
+    "title": "Abholung und Lieferung",
+    "description": "Sehen Sie die aktiven Abhol- und Lieferaufgaben des Tages, die nächsten Stopps und was bereits läuft.",
+    "pickup": "Abholung",
+    "delivery": "Lieferung",
+    "order": "Auftrag",
+    "customer": "Kunde",
+    "property": "Objekt",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "assignedTo": "Zugewiesen an",
+    "view": "Auftrag ansehen",
+    "empty": "Keine Aufgaben in dieser Gruppe.",
+    "late": "Überfällig",
+    "dueSoon": "Heute fällig",
+    "groups": {
+      "today": "Heute zu erledigen",
+      "upcoming": "Anstehend",
+      "inProgress": "In Bearbeitung",
+      "completedToday": "Heute abgeschlossen"
+    },
+    "statuses": {
+      "not_required": "Nicht erforderlich",
+      "scheduled": "Geplant",
+      "in_progress": "In Bearbeitung",
+      "completed": "Abgeschlossen",
       "cancelled": "Storniert"
     }
   },

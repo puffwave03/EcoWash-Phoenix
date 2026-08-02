@@ -132,6 +132,7 @@
       "customers": "Clientes",
       "orders": "Pedidos",
       "production": "Producción",
+      "delivery": "Recogidas y entregas",
       "services": "Servicios",
       "userLabel": "Usuario",
       "organizationLabel": "Organización",
@@ -288,6 +289,35 @@
       "ready": "Listo",
       "completed": "Producción completada",
       "on_hold": "En pausa",
+      "cancelled": "Cancelado"
+    }
+  },
+  "deliveryQueue": {
+    "title": "Recogidas y entregas",
+    "description": "Consulta el trabajo activo de recogida y entrega del día, las próximas paradas y lo que ya está en curso.",
+    "pickup": "Recogida",
+    "delivery": "Entrega",
+    "order": "Pedido",
+    "customer": "Cliente",
+    "property": "Propiedad",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "assignedTo": "Asignado a",
+    "view": "Ver pedido",
+    "empty": "No hay tareas en este grupo.",
+    "late": "Atrasado",
+    "dueSoon": "Para hoy",
+    "groups": {
+      "today": "Para hoy",
+      "upcoming": "Próximas",
+      "inProgress": "En curso",
+      "completedToday": "Completadas hoy"
+    },
+    "statuses": {
+      "not_required": "No requerido",
+      "scheduled": "Programado",
+      "in_progress": "En curso",
+      "completed": "Completado",
       "cancelled": "Cancelado"
     }
   },

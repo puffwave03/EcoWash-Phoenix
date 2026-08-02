@@ -4,6 +4,7 @@ import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
+  delivery: string;
   foundation: string;
   logout: string;
   navigationLabel: string;
@@ -58,6 +59,7 @@ export function DashboardShell({
               navigationLabel={text.navigationLabel}
               text={{
                 customers: text.customers,
+                delivery: text.delivery,
                 orders: text.orders,
                 overview: text.overview,
                 production: text.production,
@@ -95,6 +97,7 @@ export function DashboardShell({
             role={access.membership.role}
             text={{
               customers: text.customers,
+              delivery: text.delivery,
               orders: text.orders,
               overview: text.overview,
               production: text.production,
@@ -114,6 +117,7 @@ export function DashboardShell({
         navigationLabel={text.navigationLabel}
         text={{
           customers: text.customers,
+          delivery: text.delivery,
           orders: text.orders,
           overview: text.overview,
           production: text.production,

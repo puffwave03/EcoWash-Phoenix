@@ -22,6 +22,7 @@ export default async function DashboardLayout({
       access={access}
       locale={locale}
       text={{
+        delivery: t("delivery"),
         foundation: t("foundation"),
         logout: t("logout"),
         navigationLabel: t("navigationLabel"),
