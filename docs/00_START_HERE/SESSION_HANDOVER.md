@@ -2,21 +2,21 @@
 
 Status: Active
 
-Date: 2026-08-02
+Date: 2026-08-03
 
-Approximate closeout time: after OPS-001.4 staff management approval
+Approximate closeout time: after PORTAL-001 secure customer portal approval
 
-Session checkpoint: OPS-001.4 completed and pushed; PORTAL-001 next
+Session checkpoint: PORTAL-001 / PORTAL-001.1 completed and pushed; OPS-001.5 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `85cd292 OPS-001.4 feat: add staff management MVP`
+Latest approved and pushed commit: `530cfe7 PORTAL-001 feat: add secure customer portal MVP`
 
-Origin/main status: local `main` and `origin/main` point to `85cd292`.
+Origin/main status: local `main` and `origin/main` point to `530cfe7`.
 
-Working tree status after OPS-001.4 closeout: clean
+Working tree status after PORTAL-001 closeout: clean
 
 Commit status: no code commit pending.
 
@@ -62,6 +62,7 @@ Commit status: no code commit pending.
 - OPS-001.2B — Delivery Queue MVP
 - OPS-001.3 — Work Assignment MVP
 - OPS-001.4 — Staff Management MVP
+- PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
 
 ## Supabase Staging State
 
@@ -86,6 +87,8 @@ Completed on EcoWash Staging:
 - Staging indexing is disabled and `/robots.txt` returns `Disallow: /`.
 - Supabase Auth staging Site URL and Redirect URLs are configured and validated.
 - `SUPABASE_SERVICE_ROLE_KEY` is configured only server-side for staff invitations, is not prefixed with `NEXT_PUBLIC_` and is not tracked in Git.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is configured only as a server-side Vercel staging variable for the customer portal review helper.
+- Customer portal staging validation passed with no HTTP 500: protected portal routes, customer `/app` denial and customer-scoped order access were verified.
 - Automatic deploy from `main` to the Vercel staging project is working.
 
 Applied baseline migrations:
@@ -110,6 +113,12 @@ Recent operations migrations applied on staging:
 - `20260802000200_ops_001_3_work_assignment.sql`
 - `20260802000300_ops_001_4_staff_management.sql`
 - `20260802000400_ops_001_4_fix_staff_membership_role_variable.sql`
+
+Customer portal migrations applied on staging:
+
+- `20260803000100_portal_001_customer_portal.sql`
+- `20260803000200_portal_001_safe_customer_rpc.sql`
+- `20260803000300_portal_001_fix_customer_storage_policy.sql`
 
 ## Migration History State
 
@@ -143,18 +152,29 @@ Available now:
 - owner/manager invitation flow for staff and managers
 - staff activation and deactivation
 - owner, manager and staff authorization rules
+- secure customer portal routes under `/[locale]/portal`
+- customer overview, order list and order detail
+- customer-visible pickup, delivery and essential status history
+- customer-visible order photos only
+- customer-scoped isolation through separate Auth user to customer access
+- customer users are excluded from `/[locale]/app`
+- owner/manager customer portal access management
+- customer access link resend, password reset and rate-limit handling
+- localized Auth callback with SSR cookie persistence
+- staging-only customer preview behind `ENABLE_STAGING_CUSTOMER_PREVIEW=true`
 
 Role summary:
 
 - `owner`: full organization, staff and operational control.
-- `manager`: operational control and staff management.
-- `staff`: production/logistics work without staff management.
-- `customer`: separate portal user model, not implemented yet.
+- `manager`: operational control, staff management and customer portal access management.
+- `staff`: production/logistics work without staff management or customer access management.
+- `customer`: separate portal user linked to `customers`, never an `organization_memberships` role.
 
 Test data notes:
 
 - Temporary users created for OPS-001.4 invite testing were removed.
 - At most one active staff test user from OPS-001.3 may remain for visual review and assignment checks.
+- The PORTAL-001 customer test fixture remains active for review.
 - Do not document credentials, email addresses, UUIDs or customer personal data.
 
 ## INFRA-001-SMOKE Result
@@ -219,13 +239,14 @@ Smoke records remain available on staging for UX and follow-up validation.
 
 - Do not delete the owner Auth user.
 - Do not recreate organization, location or membership.
-- Do not expose service-role keys in browser code or `NEXT_PUBLIC_*` variables.
+- Do not expose service-role keys, Auth tokens, magic links or passwords in browser code, logs, docs or `NEXT_PUBLIC_*` variables.
 - Do not commit `.env.local`.
 - Keep `order-media` private.
 - Keep `supabase/.temp/` ignored.
 - Do not use Docker unless a new decision explicitly approves it.
 - Keep one task per commit.
 - Do not modify Supabase remote state unless a separate approved implementation task explicitly authorizes it.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-only and staging-only. It must not be enabled in a future real production environment.
 
 ## UX-002 Completed State
 
@@ -245,25 +266,27 @@ UX-002 did not change database schema, migrations, Supabase remote state, RPCs, 
 
 ## Next Approved Task
 
-`PORTAL-001 — Customer Portal MVP`
+`OPS-001.5 — Daily Close MVP`
 
 Practical objective:
 
-- let a customer access a separate customer area
-- show only the customer's own orders
-- show order status
-- show pickup and delivery information
-- show authorized photos only
-- show essential order history
+- give owner and manager a daily operational control screen
+- show orders completed today
+- show orders still open
+- show paused or late activities
+- show pickups and deliveries not completed
+- show missing or partial payments
+- highlight operational anomalies
+- link directly to affected orders
 
-Out of scope for PORTAL-001:
+Out of scope for OPS-001.5:
 
-- online payments
+- advanced accounting
 - invoices
-- chat
-- push notifications
-- order modification
-- advanced profile management
+- fiscal exports
+- automatic cash close
+- mass updates
+- real production deployment
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -299,4 +322,6 @@ http://localhost:3000/it/app/orders
 http://localhost:3000/it/app/production
 http://localhost:3000/it/app/delivery
 http://localhost:3000/it/app/staff
+http://localhost:3000/it/portal
+http://localhost:3000/it/portal/orders
 ```

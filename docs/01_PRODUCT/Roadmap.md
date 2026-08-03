@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-03
 
-Current Mission: PORTAL-001
+Current Mission: OPS-001.5
 
-Next Action: Implement the Customer Portal MVP
+Next Action: Implement the Daily Close MVP
 
 ---
 
@@ -138,6 +138,7 @@ Implemented and smoke-validated:
 - Delivery Queue
 - production and logistics assignment with All, Assigned to me and Unassigned filters
 - owner/manager staff management, invitation, activation and deactivation
+- secure customer portal with customer-scoped order visibility and access management
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
 - first real staging smoke flow through order `EW-000001`
 
@@ -151,7 +152,7 @@ Missing for commercial readiness:
 
 - production deployment and domain readiness, deferred until the pilot product is functionally complete
 - repeatable smoke/regression checklist for production release
-- Customer Portal MVP
+- Daily Close MVP
 - organization and location settings UI
 - global search
 - structured notes and issues
@@ -182,7 +183,8 @@ P2 — remaining portal MVPs and strong commercial differentiators after the fir
 - OPS-001.2B — Delivery Queue MVP. Completed.
 - OPS-001.3 — Work Assignment MVP. Completed.
 - OPS-001.4 — Staff Management MVP. Completed.
-- PORTAL-001 — Customer Portal MVP. Next.
+- PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP. Completed.
+- OPS-001.5 — Daily Close MVP. Next.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -221,7 +223,8 @@ Scope:
 - OPS-001.2B — Delivery Queue MVP, completed
 - OPS-001.3 — Work Assignment MVP, completed
 - OPS-001.4 — Staff Management MVP, completed
-- PORTAL-001 — Customer Portal MVP, next
+- PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
+- OPS-001.5 — Daily Close MVP, next
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -287,7 +290,7 @@ Goal: improve throughput, financial control and handoff to accounting/management
 
 Scope:
 
-- PORTAL-001
+- OPS-001.5
 - REPORT-001
 - REPORT-002
 - EXPORT-001

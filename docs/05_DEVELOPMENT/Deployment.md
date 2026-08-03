@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-02
+Last Updated: 2026-08-03
 
-Current Mission: PORTAL-001
+Current Mission: OPS-001.5
 
 ---
 
@@ -25,7 +25,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Current Release Position
 
 - `main` is the only release branch.
-- Latest confirmed operational baseline: `85cd292 OPS-001.4 feat: add staff management MVP`.
+- Latest confirmed operational baseline: `530cfe7 PORTAL-001 feat: add secure customer portal MVP`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
 - RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
@@ -51,7 +51,8 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 - `order-media` remains private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 - Auth recovery redirect works for the staging canonical URL.
 - `NEXT_PUBLIC_SITE_INDEXING=false` is used for staging/preview deployments.
-- `SUPABASE_SERVICE_ROLE_KEY` is server-side only for staff invitations and must never use a `NEXT_PUBLIC_` prefix.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-side only for staff invitations and customer access management and must never use a `NEXT_PUBLIC_` prefix.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-side only for the staging customer portal review helper; it must not use a `NEXT_PUBLIC_` prefix and must not be enabled in a future real production environment.
 - Staging can use the assigned Vercel domain; a custom domain is not required for the first staging deployment.
 - Staging uses EcoWash Staging Supabase, not a production Supabase project.
 - No production deployment, DNS cutover or production Supabase work is part of staging rehearsal.
@@ -356,7 +357,8 @@ Staging environment contract:
 | `NEXT_PUBLIC_SUPABASE_URL` | EcoWash Staging Supabase URL | Must point to staging Supabase, not production. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | EcoWash Staging anon key | Must be anon key only; no service-role key. |
 | `NEXT_PUBLIC_SITE_INDEXING` | literal flag | Must be `false`. |
-| `SUPABASE_SERVICE_ROLE_KEY` | server-side secret | Required for staff invitations only; never expose to browser code and never commit. |
+| `SUPABASE_SERVICE_ROLE_KEY` | server-side secret | Required for staff invitations and customer access management; never expose to browser code and never commit. |
+| `ENABLE_STAGING_CUSTOMER_PREVIEW` | server-side staging flag | May be `true` only on the Vercel staging project for review; never expose to browser code and do not enable in future real production. |
 
 Staging indexing contract:
 
@@ -391,5 +393,8 @@ Current staging status:
 - Vercel staging is ready.
 - Supabase Auth staging is configured and validated.
 - Indexing is disabled.
+- `/robots.txt` returns `Disallow: /`.
+- Customer portal routes are deployed and protected.
+- Staging customer preview is feature-flagged server-side only.
 - Automatic deploy from `main` is working.
 - No real production resource has been created.

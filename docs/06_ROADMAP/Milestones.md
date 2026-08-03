@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-02
+Last Updated: 2026-08-03
 
-Current Mission: PORTAL-001
+Current Mission: OPS-001.5
 
-Next Action: implement the Customer Portal MVP
+Next Action: implement the Daily Close MVP
 
 ---
 
@@ -125,12 +125,13 @@ Approved and current areas:
 - OPS-001.2B — Delivery Queue MVP: Completed and pushed
 - OPS-001.3 — Work Assignment MVP: Completed and pushed
 - OPS-001.4 — Staff Management MVP: Completed and pushed
+- PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP: Completed and pushed
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- PORTAL-001 — Customer Portal MVP
+- OPS-001.5 — Daily Close MVP
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -159,7 +160,7 @@ Corrective work committed in `f94df88`:
 
 Not yet completed:
 
-- Customer Portal MVP
+- Daily Close MVP
 - production-ready release
 - real production environment
 
@@ -217,7 +218,8 @@ Official sequence after SEC-001:
 - OPS-001.2B — Delivery Queue MVP, completed
 - OPS-001.3 — Work Assignment MVP, completed
 - OPS-001.4 — Staff Management MVP, completed
-- PORTAL-001 — Customer Portal MVP, next
+- PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
+- OPS-001.5 — Daily Close MVP, next
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
 
 PILOT-001 planning scope:
@@ -288,7 +290,7 @@ Priority class: P2.
 
 Candidate missions:
 
-- PORTAL-001 — Customer Portal MVP.
+- OPS-001.5 — Daily Close MVP.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.

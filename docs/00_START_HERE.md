@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-02
+Last Updated: 2026-08-03
 
-Current Mission: PORTAL-001
+Current Mission: OPS-001.5
 
-Next Action: Implement the Customer Portal MVP
+Next Action: Implement the Daily Close MVP
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `85cd292 OPS-001.4 feat: add staff management MVP`
-- Current mission: `PORTAL-001 — Customer Portal MVP`
+- Latest approved and pushed commit: `530cfe7 PORTAL-001 feat: add secure customer portal MVP`
+- Current mission: `OPS-001.5 — Daily Close MVP`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -34,6 +34,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - RELEASE-001.2 staging deployment rehearsal completed with staging Auth validated.
 - RELEASE-001.3 production design completed; production is deferred until the pilot product is functionally complete.
 - OPS-001.1 through OPS-001.4 are completed: Production Queue, completed logistics corrections, Delivery Queue, Work Assignment and Staff Management.
+- PORTAL-001 / PORTAL-001.1 is completed: secure customer portal, customer access management and staging-only customer preview.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -46,12 +47,13 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Vercel staging indexing is disabled; `/robots.txt` returns `Disallow: /`.
 - Supabase Auth staging is configured and validated.
 - `SUPABASE_SERVICE_ROLE_KEY` is present only server-side for staff invitations and is not tracked.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is configured server-side on the staging Vercel project only.
 - Owner login, dashboard, customer, property, service, order, item, production, pickup, delivery, payment, photo and logout/login persistence were validated in staging.
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before PORTAL-001 work.
-- `main` and `origin/main` are expected to be synchronized at `85cd292`.
+- Working tree is expected to be clean before OPS-001.5 work.
+- `main` and `origin/main` are expected to be synchronized at `530cfe7`.
 
 ---
 
@@ -82,6 +84,8 @@ Protected staging routes to verify when needed:
 - `/it/app/production`
 - `/it/app/delivery`
 - `/it/app/staff`
+- `/it/portal`
+- `/it/portal/orders`
 
 ---
 
@@ -89,7 +93,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-001 e implementiamo il Customer Portal MVP.”
+“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.5 e implementiamo il Daily Close MVP.”
 
 Start by confirming:
 

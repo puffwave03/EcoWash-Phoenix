@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-02
+Last Updated: 2026-08-03
 
-Current Mission: PORTAL-001
+Current Mission: OPS-001.5
 
-Next Action: implement the Customer Portal MVP
+Next Action: implement the Daily Close MVP
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PORTAL-001 — Customer Portal MVP |
-| Last completed mission | OPS-001.4 — Staff Management MVP |
-| Latest approved and pushed commit | 85cd292 |
+| Current mission | OPS-001.5 — Daily Close MVP |
+| Last completed mission | PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP |
+| Latest approved and pushed commit | 530cfe7 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -67,10 +67,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.2B status | Completed and pushed |
 | OPS-001.3 status | Completed and pushed |
 | OPS-001.4 status | Completed and pushed |
+| PORTAL-001 / PORTAL-001.1 status | Completed and pushed |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned; staging Vercel online; owner login verified; operational smoke baseline and OPS queues/staff flows validated |
-| Commercial readiness | Staging is online and functional for internal operations; Customer Portal MVP, QA and later production planning remain before the real operational pilot |
+| Backend/SaaS implementation | Supabase Staging connected and aligned; staging Vercel online; owner login verified; operational smoke baseline, OPS queues/staff flows and secure customer portal validated |
+| Commercial readiness | Staging is online and functional for internal operations and customer portal review; Daily Close MVP, QA and later production planning remain before the real operational pilot |
 
 ## Development Status
 
@@ -131,7 +132,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.2B | Delivery Queue MVP | Completed |
 | OPS-001.3 | Work Assignment MVP | Completed |
 | OPS-001.4 | Staff Management MVP | Completed |
-| PORTAL-001 | Customer Portal MVP | Next |
+| PORTAL-001 / PORTAL-001.1 | Secure Customer Portal MVP | Completed |
+| OPS-001.5 | Daily Close MVP | Next |
 
 ## Commit History
 
@@ -219,7 +221,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `85cd292` at the OPS-001.4 baseline.
+- Local `main` and `origin/main` point to `530cfe7` at the PORTAL-001 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -309,6 +311,9 @@ Implemented features:
 - production and logistics assignment
 - All, Assigned to me and Unassigned queue filters
 - owner/manager staff management, invitations, activation and deactivation
+- secure customer portal under `/[locale]/portal`
+- customer-scoped overview, order list, order detail, pickup/delivery, essential history and customer-visible photos
+- owner/manager customer access management with resend, reset password and rate-limit handling
 - first real staging smoke baseline through order `EW-000001`
 
 Partially implemented features:
@@ -319,7 +324,7 @@ Partially implemented features:
 
 Missing commercial-readiness features:
 
-- Customer Portal MVP
+- Daily Close MVP
 - production deployment readiness and domain/environment decision, deferred until pilot product completion
 - repeatable smoke/regression checklist for release
 - organization and location settings UI
@@ -335,7 +340,7 @@ Priority classification:
 | --- | --- | --- |
 | P0 | Required before commercial pilot | UX-002, SEC-001, PILOT-001 and staging release validation completed; QA-001 pending |
 | P1 | Required for first paid internal operations | ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
-| P2 | Portal MVPs and strong operational/commercial differentiators | PORTAL-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P2 | Operational/commercial differentiators after portal MVP | OPS-001.5, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
@@ -355,8 +360,9 @@ M1 — Commercial Pilot Baseline:
 - OPS-001.2B Delivery Queue MVP — completed
 - OPS-001.3 Work Assignment MVP — completed
 - OPS-001.4 Staff Management MVP — completed
-- PORTAL-001 Customer Portal MVP — next
-- PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
+- PORTAL-001 / PORTAL-001.1 Secure Customer Portal MVP — completed
+- OPS-001.5 Daily Close MVP — next
+- PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved operational closeout support
 
 PILOT-001 planning scope:
 
@@ -390,7 +396,9 @@ Staging state:
 - The staging project uses the configured main target for automatic deploys from `main`.
 - Indexing is disabled; `/robots.txt` disallows crawling.
 - Supabase Auth staging is configured and validated.
-- `SUPABASE_SERVICE_ROLE_KEY` is server-side only, not public, not tracked and used for staff invitations.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-side only, not public, not tracked and used for staff invitations and customer access management.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-side only on staging for customer portal review and must not be enabled in future real production.
+- PORTAL-001 customer test fixture remains active for review; do not document its email, UUID or credentials.
 
 Production state:
 
@@ -406,8 +414,8 @@ M2 — First Paid Operations:
 
 M3 — Operational Scale And Management Control:
 
-- PORTAL-001 Customer Portal MVP
-- REPORT-001 daily close
+- OPS-001.5 Daily Close MVP
+- REPORT-001 daily payment close
 - REPORT-002 open balance report
 - EXPORT-001 CSV export
 - QR-001 PII-safe QR lookup
@@ -576,11 +584,11 @@ SEC-001 completion state:
 
 Next approved task:
 
-- `PORTAL-001 — Customer Portal MVP`
+- `OPS-001.5 — Daily Close MVP`
 
-PORTAL-001 should give customers a separate authenticated area where they can see only their own orders, order status, pickup/delivery information, authorized photos and essential history.
+OPS-001.5 should give owner and manager a daily operational control screen with orders completed today, orders still open, paused or late activities, unfinished pickups and deliveries, missing or partial payments, operational anomalies and direct order links.
 
-Do not include online payments, invoices, chat, push notifications, order modification or advanced profile management in PORTAL-001.
+Do not include advanced accounting, invoices, fiscal exports, automatic cash close, mass updates or real production deployment in OPS-001.5.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -820,25 +828,25 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-001 e implementiamo il Customer Portal MVP.”
+“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.5 e implementiamo il Daily Close MVP.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `85cd292`
+- Local `main` and `origin/main` expected at `530cfe7`
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- PILOT-001 is architecture-approved; PORTAL-001 is next
+- PILOT-001 is architecture-approved; PORTAL-001 is completed; OPS-001.5 is next
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations or alter Supabase remote state during RELEASE-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Define portal architecture, dependencies, implementation order and acceptance criteria before implementation
+- Implement Daily Close MVP only after confirming the current staging/customer-portal baseline
 
 First checks:
 
