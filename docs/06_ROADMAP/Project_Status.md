@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.5
+Current Mission: OPS-001.6
 
-Next Action: implement the Daily Close MVP
+Next Action: implement the Operational Alerts MVP
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | OPS-001.5 — Daily Close MVP |
-| Last completed mission | PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP |
-| Latest approved and pushed commit | 530cfe7 |
+| Current mission | OPS-001.6 — Operational Alerts MVP |
+| Last completed mission | OPS-001.5 — Daily Close MVP |
+| Latest approved and pushed commit | 48cd1a1 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -68,10 +68,11 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.3 status | Completed and pushed |
 | OPS-001.4 status | Completed and pushed |
 | PORTAL-001 / PORTAL-001.1 status | Completed and pushed |
+| OPS-001.5 status | Completed and pushed |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected and aligned; staging Vercel online; owner login verified; operational smoke baseline, OPS queues/staff flows and secure customer portal validated |
-| Commercial readiness | Staging is online and functional for internal operations and customer portal review; Daily Close MVP, QA and later production planning remain before the real operational pilot |
+| Commercial readiness | Staging is online and functional for internal operations, customer portal review and daily close review; Operational Alerts MVP, QA and later production planning remain before the real operational pilot |
 
 ## Development Status
 
@@ -133,7 +134,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.3 | Work Assignment MVP | Completed |
 | OPS-001.4 | Staff Management MVP | Completed |
 | PORTAL-001 / PORTAL-001.1 | Secure Customer Portal MVP | Completed |
-| OPS-001.5 | Daily Close MVP | Next |
+| OPS-001.5 | Daily Close MVP | Completed |
+| OPS-001.6 | Operational Alerts MVP | Next |
 
 ## Commit History
 
@@ -221,7 +223,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `530cfe7` at the PORTAL-001 baseline.
+- Local `main` and `origin/main` point to `48cd1a1` at the OPS-001.5 baseline.
 
 ## DEV-009.5 Completed State
 
@@ -340,7 +342,7 @@ Priority classification:
 | --- | --- | --- |
 | P0 | Required before commercial pilot | UX-002, SEC-001, PILOT-001 and staging release validation completed; QA-001 pending |
 | P1 | Required for first paid internal operations | ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
-| P2 | Operational/commercial differentiators after portal MVP | OPS-001.5, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P2 | Operational/commercial differentiators after portal MVP | OPS-001.6, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
@@ -361,7 +363,8 @@ M1 — Commercial Pilot Baseline:
 - OPS-001.3 Work Assignment MVP — completed
 - OPS-001.4 Staff Management MVP — completed
 - PORTAL-001 / PORTAL-001.1 Secure Customer Portal MVP — completed
-- OPS-001.5 Daily Close MVP — next
+- OPS-001.5 Daily Close MVP — completed
+- OPS-001.6 Operational Alerts MVP — next
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved operational closeout support
 
 PILOT-001 planning scope:
@@ -414,7 +417,7 @@ M2 — First Paid Operations:
 
 M3 — Operational Scale And Management Control:
 
-- OPS-001.5 Daily Close MVP
+- OPS-001.6 Operational Alerts MVP
 - REPORT-001 daily payment close
 - REPORT-002 open balance report
 - EXPORT-001 CSV export
@@ -582,13 +585,21 @@ SEC-001 completion state:
 - SEC-001.2 authenticated mutation regression passed with rollback-only tests for the mutative RPCs used by the app. The smoke order remained unchanged.
 - Anonymous RPC calls are blocked, internal helpers are not client-executable, RLS tenant isolation remains intact and Storage reads are limited to active metadata in the authorized tenant.
 
+OPS-001.5 completion state:
+
+- `OPS-001.5 — Daily Close MVP` is completed and pushed in `48cd1a1`.
+
+OPS-001.5 added `/[locale]/app/daily-close` for owner and manager. It shows orders completed today, orders still open, paused orders, late orders, unfinished pickups and deliveries, missing or partial payments, operational anomalies and direct order links. It uses the organization's timezone, filters all queries by `organization.id`, requires membership and redirects staff to access-denied.
+
+Validation passed: real owner access, mobile layout, counts/sections, static owner/manager/staff guard review, static cross-tenant filtering review, static order-link review, lint, build, diff-check, staging deploy, unauthenticated safe redirect and robots `Disallow: /`.
+
+Still to verify when dedicated accounts are available: real manager access, real staff denial and real order-link click with a dedicated session. These are not FAIL results and are not blocking.
+
 Next approved task:
 
-- `OPS-001.5 — Daily Close MVP`
+- `OPS-001.6 — Operational Alerts MVP`
 
-OPS-001.5 should give owner and manager a daily operational control screen with orders completed today, orders still open, paused or late activities, unfinished pickups and deliveries, missing or partial payments, operational anomalies and direct order links.
-
-Do not include advanced accounting, invoices, fiscal exports, automatic cash close, mass updates or real production deployment in OPS-001.5.
+OPS-001.6 should create lightweight in-app operational alerts for owner and manager: late orders, imminent pickup/delivery work, paused or blocked orders, missing payments, unassigned orders and anomalies, with badges, a summary panel and direct links. It should not include email, push notifications, WhatsApp, external automation or new tables unless strictly necessary.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -828,18 +839,18 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.5 e implementiamo il Daily Close MVP.”
+“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.6 e implementiamo l’Operational Alerts MVP.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `530cfe7`
+- Local `main` and `origin/main` expected at `48cd1a1`
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- PILOT-001 is architecture-approved; PORTAL-001 is completed; OPS-001.5 is next
+- PILOT-001 is architecture-approved; PORTAL-001 and OPS-001.5 are completed; OPS-001.6 is next
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars

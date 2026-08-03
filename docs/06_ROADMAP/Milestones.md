@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.5
+Current Mission: OPS-001.6
 
-Next Action: implement the Daily Close MVP
+Next Action: implement the Operational Alerts MVP
 
 ---
 
@@ -126,12 +126,13 @@ Approved and current areas:
 - OPS-001.3 — Work Assignment MVP: Completed and pushed
 - OPS-001.4 — Staff Management MVP: Completed and pushed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP: Completed and pushed
+- OPS-001.5 — Daily Close MVP: Completed and pushed
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current approved task:
 
-- OPS-001.5 — Daily Close MVP
+- OPS-001.6 — Operational Alerts MVP
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -160,7 +161,7 @@ Corrective work committed in `f94df88`:
 
 Not yet completed:
 
-- Daily Close MVP
+- Operational Alerts MVP
 - production-ready release
 - real production environment
 
@@ -219,7 +220,8 @@ Official sequence after SEC-001:
 - OPS-001.3 — Work Assignment MVP, completed
 - OPS-001.4 — Staff Management MVP, completed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
-- OPS-001.5 — Daily Close MVP, next
+- OPS-001.5 — Daily Close MVP, completed
+- OPS-001.6 — Operational Alerts MVP, next
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
 
 PILOT-001 planning scope:
@@ -254,6 +256,7 @@ Commercial exit criteria:
 - pilot routes and role boundaries are defined for administrative, processing, delivery and customer portals
 - portal implementation order and operational pilot acceptance criteria are approved
 - staging smoke test remains repeatable from login through dashboard
+- Daily Close gives owner/manager a daily operational control screen without accounting automation
 - production environment can be configured without exposing secrets
 - no service-role key or private credential is exposed to browser code or public env vars
 - RLS, Storage and RPC permissions have a documented review result
@@ -290,7 +293,7 @@ Priority class: P2.
 
 Candidate missions:
 
-- OPS-001.5 — Daily Close MVP.
+- OPS-001.6 — Operational Alerts MVP.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.

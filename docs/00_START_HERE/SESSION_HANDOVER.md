@@ -4,19 +4,19 @@ Status: Active
 
 Date: 2026-08-03
 
-Approximate closeout time: after PORTAL-001 secure customer portal approval
+Approximate closeout time: after OPS-001.5 Daily Close MVP approval
 
-Session checkpoint: PORTAL-001 / PORTAL-001.1 completed and pushed; OPS-001.5 next
+Session checkpoint: OPS-001.5 completed and pushed; OPS-001.6 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `530cfe7 PORTAL-001 feat: add secure customer portal MVP`
+Latest approved and pushed commit: `48cd1a1 OPS-001.5 feat: add daily close dashboard`
 
-Origin/main status: local `main` and `origin/main` point to `530cfe7`.
+Origin/main status: local `main` and `origin/main` point to `48cd1a1`.
 
-Working tree status after PORTAL-001 closeout: clean
+Working tree status after OPS-001.5 closeout: clean
 
 Commit status: no code commit pending.
 
@@ -63,6 +63,7 @@ Commit status: no code commit pending.
 - OPS-001.3 — Work Assignment MVP
 - OPS-001.4 — Staff Management MVP
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
+- OPS-001.5 — Daily Close MVP
 
 ## Supabase Staging State
 
@@ -162,6 +163,9 @@ Available now:
 - customer access link resend, password reset and rate-limit handling
 - localized Auth callback with SSR cookie persistence
 - staging-only customer preview behind `ENABLE_STAGING_CUSTOMER_PREVIEW=true`
+- Daily Close dashboard at `/[locale]/app/daily-close`
+- owner/manager daily control sections for completed orders, open orders, paused orders, late orders, open logistics, payment issues and operational anomalies
+- Daily Close links directly to affected orders and uses organization timezone for daily windows
 
 Role summary:
 
@@ -264,29 +268,75 @@ Completed UX scope:
 
 UX-002 did not change database schema, migrations, Supabase remote state, RPCs, Server Actions, workflow logic, pricing, payment logic, logistics logic, photo handling or authentication boundaries.
 
-## Next Approved Task
+## OPS-001.5 Daily Close Result
 
-`OPS-001.5 — Daily Close MVP`
+Status: Completed and pushed.
 
-Practical objective:
+Route:
 
-- give owner and manager a daily operational control screen
-- show orders completed today
-- show orders still open
-- show paused or late activities
-- show pickups and deliveries not completed
-- show missing or partial payments
-- highlight operational anomalies
-- link directly to affected orders
+- `/[locale]/app/daily-close`
 
-Out of scope for OPS-001.5:
+Access and data boundaries:
+
+- membership is required
+- owner and manager are allowed
+- staff is redirected to access-denied
+- queries are filtered by `organization.id`
+- no new migration, RPC, table or role was added
+
+Daily Close shows:
+
+- orders completed today
+- orders still open
+- orders on hold
+- late orders
+- pickups not completed
+- deliveries not completed
+- missing or partial payments
+- operational anomalies
+- direct order links
+
+Validation:
+
+- owner real access: PASS
+- mobile layout: PASS
+- counts and sections: PASS
+- owner/manager/staff guard: PASS static review
+- cross-tenant filtering: PASS static review
+- order links: PASS static review
+- lint/build/diff-check: PASS
+- Vercel staging deployment: Ready
+- unauthenticated route access: safe 307 redirect to login
+- robots remains `Disallow: /`
+
+Still to verify when dedicated accounts are available:
+
+- real manager access
+- real staff denial
+- real order-link click with a dedicated session
+
+These are not FAIL results and are not blocking.
+
+Out of scope confirmed:
 
 - advanced accounting
 - invoices
-- fiscal exports
+- export
 - automatic cash close
 - mass updates
-- real production deployment
+- new migrations
+- new RPCs
+
+## Next Approved Task
+
+`OPS-001.6 — Operational Alerts MVP`
+
+Practical objective:
+
+- create lightweight in-app operational alerts for owner and manager
+- surface late orders, imminent pickup/delivery work, paused or blocked orders, missing payments, unassigned orders and anomalies
+- provide badges, a compact summary panel and direct links to affected records
+- avoid email, push notifications, WhatsApp, external automation and new tables unless strictly necessary
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

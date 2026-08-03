@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.5
+Current Mission: OPS-001.6
 
-Next Action: Implement the Daily Close MVP
+Next Action: Implement the Operational Alerts MVP
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `530cfe7 PORTAL-001 feat: add secure customer portal MVP`
-- Current mission: `OPS-001.5 — Daily Close MVP`
+- Latest approved and pushed commit: `48cd1a1 OPS-001.5 feat: add daily close dashboard`
+- Current mission: `OPS-001.6 — Operational Alerts MVP`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -35,6 +35,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - RELEASE-001.3 production design completed; production is deferred until the pilot product is functionally complete.
 - OPS-001.1 through OPS-001.4 are completed: Production Queue, completed logistics corrections, Delivery Queue, Work Assignment and Staff Management.
 - PORTAL-001 / PORTAL-001.1 is completed: secure customer portal, customer access management and staging-only customer preview.
+- OPS-001.5 is completed: Daily Close dashboard for owner/manager operational review.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -52,8 +53,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before OPS-001.5 work.
-- `main` and `origin/main` are expected to be synchronized at `530cfe7`.
+- Working tree is expected to be clean before OPS-001.6 work.
+- `main` and `origin/main` are expected to be synchronized at `48cd1a1`.
 
 ---
 
@@ -84,6 +85,7 @@ Protected staging routes to verify when needed:
 - `/it/app/production`
 - `/it/app/delivery`
 - `/it/app/staff`
+- `/it/app/daily-close`
 - `/it/portal`
 - `/it/portal/orders`
 
@@ -93,7 +95,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.5 e implementiamo il Daily Close MVP.”
+“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.6 e implementiamo l’Operational Alerts MVP.”
 
 Start by confirming:
 

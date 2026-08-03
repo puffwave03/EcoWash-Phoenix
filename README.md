@@ -71,6 +71,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | OPS-001.3 | Completed — Work Assignment MVP |
 | OPS-001.4 | Completed — Staff Management MVP |
 | PORTAL-001 / PORTAL-001.1 | Completed — Secure Customer Portal MVP |
+| OPS-001.5 | Completed — Daily Close MVP |
 
 Current public website includes:
 
@@ -140,6 +141,7 @@ Important limitations:
 - Production is intentionally deferred until the pilot product is functionally complete
 - Internal production, delivery, assignment and staff-management MVPs are implemented
 - Secure customer portal MVP is implemented with customer-scoped access, order visibility, logistics, customer-visible photos and owner/manager access management
+- Daily Close MVP is implemented for owner/manager operational review with organization-scoped KPI sections and order links
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -156,10 +158,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `530cfe7`
-- Current mission: `OPS-001.5 — Daily Close MVP`
+- Latest approved and pushed commit: `48cd1a1`
+- Current mission: `OPS-001.6 — Operational Alerts MVP`
 - Current release state: staging online and validated; production deferred
-- Next macro-task: implement the daily close operational control screen
+- Next macro-task: implement lightweight in-app operational alerts
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -217,6 +219,6 @@ Document Status: Active
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.5
+Current Mission: OPS-001.6
 
-Next Action: implement the Daily Close MVP
+Next Action: implement the Operational Alerts MVP
