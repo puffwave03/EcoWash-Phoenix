@@ -136,6 +136,7 @@
       "delivery": "Recogidas y entregas",
       "services": "Servicios",
       "staff": "Personal",
+      "dailyClose": "Cierre diario",
       "userLabel": "Usuario",
       "organizationLabel": "Organización",
       "roleLabel": "Rol"
@@ -331,6 +332,70 @@
       "in_progress": "En curso",
       "completed": "Completado",
       "cancelled": "Cancelado"
+    }
+  },
+  "dailyClose": {
+    "title": "Cierre diario",
+    "description": "Revisa el trabajo completado hoy, excepciones abiertas, logística pendiente y saldos antes de cerrar la jornada operativa.",
+    "empty": "Nada que revisar en este grupo.",
+    "summary": {
+      "completedToday": "Completados hoy",
+      "openOrders": "Pedidos abiertos",
+      "onHoldOrders": "En pausa",
+      "lateOrders": "Atrasados",
+      "incompletePickups": "Recogidas abiertas",
+      "incompleteDeliveries": "Entregas abiertas",
+      "paymentIssues": "Problemas de pago",
+      "anomalies": "Anomalías"
+    },
+    "groups": {
+      "completedToday": "Pedidos completados hoy",
+      "openOrders": "Pedidos aún abiertos",
+      "onHoldOrders": "Pedidos en pausa",
+      "lateOrders": "Pedidos atrasados",
+      "incompletePickups": "Recogidas no completadas",
+      "incompleteDeliveries": "Entregas no completadas",
+      "paymentIssues": "Pagos faltantes o parciales",
+      "anomalies": "Anomalías operativas"
+    },
+    "labels": {
+      "order": "Pedido",
+      "customer": "Cliente",
+      "property": "Propiedad",
+      "status": "Estado",
+      "time": "Vencimiento u hora",
+      "assignedTo": "Asignado a",
+      "missingAmount": "Importe pendiente",
+      "view": "Ver pedido"
+    },
+    "anomalies": {
+      "late": "Atrasado",
+      "onHold": "En pausa",
+      "payment": "Problema de pago",
+      "logistics": "Problema logístico"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "received": "Recibido",
+      "washing": "Lavado",
+      "drying": "Secado",
+      "ironing": "Planchado",
+      "quality_check": "Control de calidad",
+      "packing": "Empaquetado",
+      "ready": "Listo",
+      "completed": "Completado",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado",
+      "not_required": "No requerido",
+      "scheduled": "Programado",
+      "in_progress": "En curso"
+    },
+    "paymentStatuses": {
+      "unpaid": "Sin pagar",
+      "partially_paid": "Parcialmente pagado",
+      "paid": "Pagado",
+      "refunded": "Reembolsado",
+      "void": "Anulado"
     }
   },
   "staff": {

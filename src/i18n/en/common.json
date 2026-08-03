@@ -136,6 +136,7 @@
       "delivery": "Pickups & deliveries",
       "services": "Services",
       "staff": "Staff",
+      "dailyClose": "Daily close",
       "userLabel": "User",
       "organizationLabel": "Organization",
       "roleLabel": "Role"
@@ -331,6 +332,70 @@
       "in_progress": "In progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    }
+  },
+  "dailyClose": {
+    "title": "Daily close",
+    "description": "Review today's completed work, open exceptions, logistics gaps and balances before closing the operating day.",
+    "empty": "Nothing to review in this group.",
+    "summary": {
+      "completedToday": "Completed today",
+      "openOrders": "Open orders",
+      "onHoldOrders": "On hold",
+      "lateOrders": "Late",
+      "incompletePickups": "Open pickups",
+      "incompleteDeliveries": "Open deliveries",
+      "paymentIssues": "Payment issues",
+      "anomalies": "Anomalies"
+    },
+    "groups": {
+      "completedToday": "Orders completed today",
+      "openOrders": "Orders still open",
+      "onHoldOrders": "Orders on hold",
+      "lateOrders": "Late orders",
+      "incompletePickups": "Pickups not completed",
+      "incompleteDeliveries": "Deliveries not completed",
+      "paymentIssues": "Missing or partial payments",
+      "anomalies": "Operational anomalies"
+    },
+    "labels": {
+      "order": "Order",
+      "customer": "Customer",
+      "property": "Property",
+      "status": "Status",
+      "time": "Due or time",
+      "assignedTo": "Assigned to",
+      "missingAmount": "Missing amount",
+      "view": "View order"
+    },
+    "anomalies": {
+      "late": "Late",
+      "onHold": "On hold",
+      "payment": "Payment issue",
+      "logistics": "Logistics issue"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "received": "Received",
+      "washing": "Washing",
+      "drying": "Drying",
+      "ironing": "Ironing",
+      "quality_check": "Quality check",
+      "packing": "Packing",
+      "ready": "Ready",
+      "completed": "Completed",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled",
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress"
+    },
+    "paymentStatuses": {
+      "unpaid": "Unpaid",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "refunded": "Refunded",
+      "void": "Void"
     }
   },
   "staff": {

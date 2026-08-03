@@ -136,6 +136,7 @@
       "delivery": "Ritiri e consegne",
       "services": "Servizi",
       "staff": "Personale",
+      "dailyClose": "Chiusura giornaliera",
       "userLabel": "Utente",
       "organizationLabel": "Organizzazione",
       "roleLabel": "Ruolo"
@@ -331,6 +332,70 @@
       "in_progress": "In corso",
       "completed": "Completato",
       "cancelled": "Annullato"
+    }
+  },
+  "dailyClose": {
+    "title": "Chiusura giornaliera",
+    "description": "Controlla lavoro completato oggi, eccezioni aperte, logistica non conclusa e saldi prima di chiudere la giornata operativa.",
+    "empty": "Niente da verificare in questo gruppo.",
+    "summary": {
+      "completedToday": "Completati oggi",
+      "openOrders": "Ordini aperti",
+      "onHoldOrders": "In pausa",
+      "lateOrders": "In ritardo",
+      "incompletePickups": "Ritiri aperti",
+      "incompleteDeliveries": "Consegne aperte",
+      "paymentIssues": "Problemi pagamenti",
+      "anomalies": "Anomalie"
+    },
+    "groups": {
+      "completedToday": "Ordini completati oggi",
+      "openOrders": "Ordini ancora aperti",
+      "onHoldOrders": "Ordini in pausa",
+      "lateOrders": "Ordini in ritardo",
+      "incompletePickups": "Ritiri non conclusi",
+      "incompleteDeliveries": "Consegne non concluse",
+      "paymentIssues": "Pagamenti mancanti o parziali",
+      "anomalies": "Anomalie operative"
+    },
+    "labels": {
+      "order": "Ordine",
+      "customer": "Cliente",
+      "property": "Proprietà",
+      "status": "Stato",
+      "time": "Scadenza o orario",
+      "assignedTo": "Assegnato a",
+      "missingAmount": "Importo mancante",
+      "view": "Vedi ordine"
+    },
+    "anomalies": {
+      "late": "In ritardo",
+      "onHold": "In pausa",
+      "payment": "Problema pagamento",
+      "logistics": "Problema logistico"
+    },
+    "statuses": {
+      "draft": "Bozza",
+      "received": "Ricevuto",
+      "washing": "Lavaggio",
+      "drying": "Asciugatura",
+      "ironing": "Stiratura",
+      "quality_check": "Controllo qualità",
+      "packing": "Imballaggio",
+      "ready": "Pronto",
+      "completed": "Completato",
+      "on_hold": "In pausa",
+      "cancelled": "Annullato",
+      "not_required": "Non richiesto",
+      "scheduled": "Programmato",
+      "in_progress": "In corso"
+    },
+    "paymentStatuses": {
+      "unpaid": "Non pagato",
+      "partially_paid": "Parzialmente pagato",
+      "paid": "Pagato",
+      "refunded": "Rimborsato",
+      "void": "Annullato"
     }
   },
   "staff": {
