@@ -3,6 +3,7 @@
 import { Link, usePathname } from "@/i18n/navigation";
 
 type AppNavigationText = {
+  alerts: string;
   customers: string;
   dailyClose: string;
   delivery: string;
@@ -14,6 +15,7 @@ type AppNavigationText = {
 };
 
 type AppNavigationProps = {
+  alertCount?: number;
   locale: string;
   mode: "desktop" | "header" | "mobile";
   navigationLabel: string;
@@ -24,6 +26,7 @@ type AppNavigationProps = {
 };
 
 export function AppNavigation({
+  alertCount = 0,
   locale,
   mode,
   navigationLabel,
@@ -40,6 +43,7 @@ export function AppNavigation({
     { href: "/app/production", label: text.production, match: "/app/production" },
     { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
     { href: "/app/daily-close", label: text.dailyClose, match: "/app/daily-close", restricted: true, secondary: true },
+    { href: "/app/alerts", label: text.alerts, match: "/app/alerts", restricted: true, secondary: true, alertBadge: true },
     { href: "/app/services", label: text.services, match: "/app/services" },
     { href: "/app/staff", label: text.staff, match: "/app/staff", restricted: true },
   ].filter((item) => !item.restricted || role === "owner" || role === "manager");
@@ -117,7 +121,14 @@ export function AppNavigation({
             key={item.href}
             locale={locale}
           >
-            {item.label}
+            <span className="flex items-center justify-between gap-2">
+              <span>{item.label}</span>
+              {item.alertBadge && alertCount > 0 ? (
+                <span className="min-w-6 rounded-full bg-secondary px-2 py-0.5 text-center text-xs font-semibold text-primary">
+                  {alertCount}
+                </span>
+              ) : null}
+            </span>
           </Link>
         );
       })}

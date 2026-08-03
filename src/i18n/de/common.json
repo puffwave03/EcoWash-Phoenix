@@ -137,6 +137,7 @@
       "services": "Services",
       "staff": "Personal",
       "dailyClose": "Tagesabschluss",
+      "alerts": "Operative Hinweise",
       "userLabel": "Benutzer",
       "organizationLabel": "Organisation",
       "roleLabel": "Rolle"
@@ -373,6 +374,70 @@
       "onHold": "Pausiert",
       "payment": "Zahlungsproblem",
       "logistics": "Logistikproblem"
+    },
+    "statuses": {
+      "draft": "Entwurf",
+      "received": "Eingegangen",
+      "washing": "Waschen",
+      "drying": "Trocknen",
+      "ironing": "Bügeln",
+      "quality_check": "Qualitätskontrolle",
+      "packing": "Verpacken",
+      "ready": "Bereit",
+      "completed": "Abgeschlossen",
+      "on_hold": "Pausiert",
+      "cancelled": "Storniert",
+      "not_required": "Nicht erforderlich",
+      "scheduled": "Geplant",
+      "in_progress": "In Bearbeitung"
+    },
+    "paymentStatuses": {
+      "unpaid": "Unbezahlt",
+      "partially_paid": "Teilweise bezahlt",
+      "paid": "Bezahlt",
+      "refunded": "Erstattet",
+      "void": "Storniert"
+    }
+  },
+  "alerts": {
+    "title": "Operative Hinweise",
+    "description": "Sehen Sie aktive Probleme, die Aufmerksamkeit von Owner oder Manager brauchen, bevor sie den Tag ausbremsen.",
+    "empty": "Derzeit keine operativen Hinweise.",
+    "summary": {
+      "total": "Aktive Hinweise",
+      "critical": "Kritisch",
+      "warning": "Zu prüfen",
+      "info": "Informativ"
+    },
+    "sections": {
+      "critical": "Kritisch",
+      "warning": "Zu prüfen",
+      "info": "Informativ"
+    },
+    "severities": {
+      "critical": "Kritisch",
+      "warning": "Zu prüfen",
+      "info": "Informativ"
+    },
+    "types": {
+      "late_order": "Überfälliger Auftrag",
+      "on_hold_order": "Pausierter Auftrag",
+      "unassigned_order": "Auftrag ohne Zuweisung",
+      "pickup_due_soon": "Abholung bald fällig",
+      "pickup_overdue": "Abholung überfällig",
+      "delivery_due_soon": "Lieferung bald fällig",
+      "delivery_overdue": "Lieferung überfällig",
+      "payment_issue": "Unvollständige Zahlung",
+      "operational_anomaly": "Operative Anomalie"
+    },
+    "labels": {
+      "order": "Auftrag",
+      "customer": "Kunde",
+      "property": "Objekt",
+      "time": "Fälligkeit oder Uhrzeit",
+      "assignedTo": "Zugewiesen an",
+      "missingAmount": "Offener Betrag",
+      "view": "Auftrag ansehen"
     },
     "statuses": {
       "draft": "Entwurf",

@@ -4,6 +4,7 @@ import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
+  alerts: string;
   dailyClose: string;
   delivery: string;
   foundation: string;
@@ -22,6 +23,7 @@ type DashboardShellText = {
 
 type DashboardShellProps = {
   access: DashboardAccess;
+  alertCount?: number;
   children: ReactNode;
   locale: string;
   text: DashboardShellText;
@@ -29,6 +31,7 @@ type DashboardShellProps = {
 
 export function DashboardShell({
   access,
+  alertCount = 0,
   children,
   locale,
   text,
@@ -60,7 +63,9 @@ export function DashboardShell({
               mode="desktop"
               navigationLabel={text.navigationLabel}
               role={access.membership.role}
+              alertCount={alertCount}
               text={{
+                alerts: text.alerts,
                 customers: text.customers,
                 dailyClose: text.dailyClose,
                 delivery: text.delivery,
@@ -100,7 +105,9 @@ export function DashboardShell({
             organizationLabel={text.organizationLabel}
             organizationName={access.membership.organization.name}
             role={access.membership.role}
+            alertCount={alertCount}
             text={{
+              alerts: text.alerts,
               customers: text.customers,
               dailyClose: text.dailyClose,
               delivery: text.delivery,
@@ -123,7 +130,9 @@ export function DashboardShell({
         mode="mobile"
         navigationLabel={text.navigationLabel}
         role={access.membership.role}
+        alertCount={alertCount}
         text={{
+          alerts: text.alerts,
           customers: text.customers,
           dailyClose: text.dailyClose,
           delivery: text.delivery,

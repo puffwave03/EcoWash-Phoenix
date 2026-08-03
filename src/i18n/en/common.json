@@ -137,6 +137,7 @@
       "services": "Services",
       "staff": "Staff",
       "dailyClose": "Daily close",
+      "alerts": "Operational alerts",
       "userLabel": "User",
       "organizationLabel": "Organization",
       "roleLabel": "Role"
@@ -373,6 +374,70 @@
       "onHold": "On hold",
       "payment": "Payment issue",
       "logistics": "Logistics issue"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "received": "Received",
+      "washing": "Washing",
+      "drying": "Drying",
+      "ironing": "Ironing",
+      "quality_check": "Quality check",
+      "packing": "Packing",
+      "ready": "Ready",
+      "completed": "Completed",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled",
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress"
+    },
+    "paymentStatuses": {
+      "unpaid": "Unpaid",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "refunded": "Refunded",
+      "void": "Void"
+    }
+  },
+  "alerts": {
+    "title": "Operational alerts",
+    "description": "See the active issues that need owner or manager attention before they slow down the day.",
+    "empty": "No operational alerts right now.",
+    "summary": {
+      "total": "Active alerts",
+      "critical": "Critical",
+      "warning": "To review",
+      "info": "Informative"
+    },
+    "sections": {
+      "critical": "Critical",
+      "warning": "To review",
+      "info": "Informative"
+    },
+    "severities": {
+      "critical": "Critical",
+      "warning": "To review",
+      "info": "Informative"
+    },
+    "types": {
+      "late_order": "Late order",
+      "on_hold_order": "Order on hold",
+      "unassigned_order": "Order without assignee",
+      "pickup_due_soon": "Pickup due soon",
+      "pickup_overdue": "Pickup overdue",
+      "delivery_due_soon": "Delivery due soon",
+      "delivery_overdue": "Delivery overdue",
+      "payment_issue": "Incomplete payment",
+      "operational_anomaly": "Operational anomaly"
+    },
+    "labels": {
+      "order": "Order",
+      "customer": "Customer",
+      "property": "Property",
+      "time": "Due or time",
+      "assignedTo": "Assigned to",
+      "missingAmount": "Missing amount",
+      "view": "View order"
     },
     "statuses": {
       "draft": "Draft",

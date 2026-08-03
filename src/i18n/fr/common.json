@@ -137,6 +137,7 @@
       "services": "Services",
       "staff": "Personnel",
       "dailyClose": "Clôture quotidienne",
+      "alerts": "Alertes opérationnelles",
       "userLabel": "Utilisateur",
       "organizationLabel": "Organisation",
       "roleLabel": "Rôle"
@@ -373,6 +374,70 @@
       "onHold": "En pause",
       "payment": "Problème paiement",
       "logistics": "Problème logistique"
+    },
+    "statuses": {
+      "draft": "Brouillon",
+      "received": "Reçue",
+      "washing": "Lavage",
+      "drying": "Séchage",
+      "ironing": "Repassage",
+      "quality_check": "Contrôle qualité",
+      "packing": "Emballage",
+      "ready": "Prête",
+      "completed": "Terminée",
+      "on_hold": "En pause",
+      "cancelled": "Annulée",
+      "not_required": "Non requis",
+      "scheduled": "Planifié",
+      "in_progress": "En cours"
+    },
+    "paymentStatuses": {
+      "unpaid": "Impayé",
+      "partially_paid": "Partiellement payé",
+      "paid": "Payé",
+      "refunded": "Remboursé",
+      "void": "Annulé"
+    }
+  },
+  "alerts": {
+    "title": "Alertes opérationnelles",
+    "description": "Consultez les problèmes actifs qui demandent l'attention d'un owner ou manager avant qu'ils ralentissent la journée.",
+    "empty": "Aucune alerte opérationnelle pour le moment.",
+    "summary": {
+      "total": "Alertes actives",
+      "critical": "Critiques",
+      "warning": "À contrôler",
+      "info": "Informatives"
+    },
+    "sections": {
+      "critical": "Critiques",
+      "warning": "À contrôler",
+      "info": "Informatives"
+    },
+    "severities": {
+      "critical": "Critique",
+      "warning": "À contrôler",
+      "info": "Informative"
+    },
+    "types": {
+      "late_order": "Commande en retard",
+      "on_hold_order": "Commande en pause",
+      "unassigned_order": "Commande non assignée",
+      "pickup_due_soon": "Collecte imminente",
+      "pickup_overdue": "Collecte en retard",
+      "delivery_due_soon": "Livraison imminente",
+      "delivery_overdue": "Livraison en retard",
+      "payment_issue": "Paiement incomplet",
+      "operational_anomaly": "Anomalie opérationnelle"
+    },
+    "labels": {
+      "order": "Commande",
+      "customer": "Client",
+      "property": "Propriété",
+      "time": "Échéance ou horaire",
+      "assignedTo": "Assigné à",
+      "missingAmount": "Montant restant",
+      "view": "Voir la commande"
     },
     "statuses": {
       "draft": "Brouillon",

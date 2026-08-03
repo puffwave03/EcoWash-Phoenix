@@ -137,6 +137,7 @@
       "services": "Servizi",
       "staff": "Personale",
       "dailyClose": "Chiusura giornaliera",
+      "alerts": "Avvisi operativi",
       "userLabel": "Utente",
       "organizationLabel": "Organizzazione",
       "roleLabel": "Ruolo"
@@ -373,6 +374,70 @@
       "onHold": "In pausa",
       "payment": "Problema pagamento",
       "logistics": "Problema logistico"
+    },
+    "statuses": {
+      "draft": "Bozza",
+      "received": "Ricevuto",
+      "washing": "Lavaggio",
+      "drying": "Asciugatura",
+      "ironing": "Stiratura",
+      "quality_check": "Controllo qualità",
+      "packing": "Imballaggio",
+      "ready": "Pronto",
+      "completed": "Completato",
+      "on_hold": "In pausa",
+      "cancelled": "Annullato",
+      "not_required": "Non richiesto",
+      "scheduled": "Programmato",
+      "in_progress": "In corso"
+    },
+    "paymentStatuses": {
+      "unpaid": "Non pagato",
+      "partially_paid": "Parzialmente pagato",
+      "paid": "Pagato",
+      "refunded": "Rimborsato",
+      "void": "Annullato"
+    }
+  },
+  "alerts": {
+    "title": "Avvisi operativi",
+    "description": "Vedi i problemi attivi che richiedono attenzione di owner o manager prima che rallentino la giornata.",
+    "empty": "Nessun avviso operativo al momento.",
+    "summary": {
+      "total": "Avvisi attivi",
+      "critical": "Critici",
+      "warning": "Da controllare",
+      "info": "Informativi"
+    },
+    "sections": {
+      "critical": "Critici",
+      "warning": "Da controllare",
+      "info": "Informativi"
+    },
+    "severities": {
+      "critical": "Critico",
+      "warning": "Da controllare",
+      "info": "Informativo"
+    },
+    "types": {
+      "late_order": "Ordine in ritardo",
+      "on_hold_order": "Ordine in pausa",
+      "unassigned_order": "Ordine senza assegnatario",
+      "pickup_due_soon": "Ritiro imminente",
+      "pickup_overdue": "Ritiro arretrato",
+      "delivery_due_soon": "Consegna imminente",
+      "delivery_overdue": "Consegna arretrata",
+      "payment_issue": "Pagamento incompleto",
+      "operational_anomaly": "Anomalia operativa"
+    },
+    "labels": {
+      "order": "Ordine",
+      "customer": "Cliente",
+      "property": "Proprietà",
+      "time": "Scadenza o orario",
+      "assignedTo": "Assegnato a",
+      "missingAmount": "Importo residuo",
+      "view": "Vedi ordine"
     },
     "statuses": {
       "draft": "Bozza",
