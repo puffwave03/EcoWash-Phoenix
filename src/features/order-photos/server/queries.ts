@@ -8,6 +8,7 @@ type PhotoRow = {
   caption: string | null;
   category: OrderPhoto["category"];
   created_at: string;
+  customer_visible: boolean;
   id: string;
   is_active: boolean;
   mime_type: string;
@@ -29,7 +30,7 @@ export async function getOrderPhotos(locale: string, orderId: string): Promise<O
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("order_photos")
-    .select("id, category, storage_bucket, storage_path, original_filename, mime_type, size_bytes, caption, uploaded_by_profile:profiles!order_photos_uploaded_by_fkey(display_name), created_at, is_active")
+    .select("id, category, storage_bucket, storage_path, original_filename, mime_type, size_bytes, caption, uploaded_by_profile:profiles!order_photos_uploaded_by_fkey(display_name), created_at, is_active, customer_visible")
     .eq("organization_id", membership.organization.id)
     .eq("order_id", orderId)
     .order("created_at", { ascending: false })
@@ -55,6 +56,7 @@ export async function getOrderPhotos(locale: string, orderId: string): Promise<O
       caption: row.caption,
       category: row.category,
       createdAt: row.created_at,
+      customerVisible: row.customer_visible,
       id: row.id,
       isActive: row.is_active,
       mimeType: row.mime_type,

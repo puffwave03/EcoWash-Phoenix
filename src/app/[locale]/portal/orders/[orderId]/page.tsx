@@ -1,0 +1,64 @@
+import { getTranslations } from "next-intl/server";
+import { CustomerPortalShell } from "@/components/portal/CustomerPortalShell";
+import { CustomerPortalOrderDetail } from "@/components/portal/CustomerPortalViews";
+import {
+  getCustomerPortalOrderDetail,
+  requireCustomerPortalAccess,
+} from "@/features/portal/server/queries";
+import type { FulfillmentStatus } from "@/features/logistics/types";
+import type { ProductionStatus } from "@/features/orders/types";
+
+type CustomerPortalOrderDetailPageProps = {
+  params: Promise<{ locale: string; orderId: string }>;
+};
+
+export default async function CustomerPortalOrderDetailPage({
+  params,
+}: CustomerPortalOrderDetailPageProps) {
+  const { locale, orderId } = await params;
+  const [access, order, t] = await Promise.all([
+    requireCustomerPortalAccess(locale),
+    getCustomerPortalOrderDetail(locale, orderId),
+    getTranslations({ locale, namespace: "common.portal" }),
+  ]);
+  const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
+  const fulfillmentLabels = t.raw("fulfillmentStatuses") as Record<FulfillmentStatus, string>;
+
+  return (
+    <CustomerPortalShell
+      customerName={access.customerName}
+      locale={locale}
+      text={{
+        logout: t("logout"),
+        navigationLabel: t("navigationLabel"),
+        orders: t("orders"),
+        overview: t("overview"),
+        title: t("title"),
+      }}
+    >
+      <CustomerPortalOrderDetail
+        fulfillmentLabels={fulfillmentLabels}
+        locale={locale}
+        order={order}
+        statusLabels={statusLabels}
+        text={{
+          completed: t("completed"),
+          delivery: t("delivery"),
+          emptyOrders: t("emptyOrders"),
+          history: t("history"),
+          items: t("items"),
+          nextTask: t("nextTask"),
+          noPhotos: t("noPhotos"),
+          orderDate: t("orderDate"),
+          orderReceived: t("orderReceived"),
+          orders: t("orders"),
+          photos: t("photos"),
+          pickup: t("pickup"),
+          property: t("property"),
+          ready: t("ready"),
+          status: t("status"),
+        }}
+      />
+    </CustomerPortalShell>
+  );
+}

@@ -14,6 +14,8 @@ type OrderPhotosPanelText = {
   caption: string;
   categories: Record<PhotoCategory, string>;
   category: string;
+  customerHidden: string;
+  customerVisible: string;
   deactivate: string;
   empty: string;
   error: string;
@@ -27,8 +29,10 @@ type OrderPhotosPanelText = {
 
 type OrderPhotosPanelProps = {
   action: (state: PhotoActionState, formData: FormData) => Promise<PhotoActionState>;
+  canManageCustomerVisibility?: boolean;
   deactivateAction: (photoId: string) => Promise<void>;
   photos: OrderPhoto[];
+  setCustomerVisibilityAction?: (photoId: string, formData: FormData) => Promise<void>;
   text: OrderPhotosPanelText;
 };
 
@@ -44,7 +48,14 @@ function formatSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function OrderPhotosPanel({ action, deactivateAction, photos, text }: OrderPhotosPanelProps) {
+export function OrderPhotosPanel({
+  action,
+  canManageCustomerVisibility = false,
+  deactivateAction,
+  photos,
+  setCustomerVisibilityAction,
+  text,
+}: OrderPhotosPanelProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -89,8 +100,23 @@ export function OrderPhotosPanel({ action, deactivateAction, photos, text }: Ord
                 <div>
                   <p className="font-semibold text-primary">{text.categories[photo.category]}</p>
                   <p className="text-sm text-muted">{formatSize(photo.sizeBytes)} · {photo.uploadedByName || "-"}</p>
+                  <p className="mt-1 text-xs font-semibold text-muted">
+                    {photo.customerVisible ? text.customerVisible : text.customerHidden}
+                  </p>
                 </div>
                 {photo.caption ? <p className="text-sm text-muted">{photo.caption}</p> : null}
+                {canManageCustomerVisibility && photo.isActive && setCustomerVisibilityAction ? (
+                  <form action={setCustomerVisibilityAction.bind(null, photo.id)}>
+                    <input
+                      name="customerVisible"
+                      type="hidden"
+                      value={photo.customerVisible ? "false" : "true"}
+                    />
+                    <Button type="submit" variant="secondary">
+                      {photo.customerVisible ? text.customerHidden : text.customerVisible}
+                    </Button>
+                  </form>
+                ) : null}
                 {photo.isActive ? (
                   <form action={deactivateAction.bind(null, photo.id)}>
                     <Button type="submit" variant="secondary">{text.deactivate}</Button>

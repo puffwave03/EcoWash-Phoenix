@@ -78,6 +78,7 @@
       "submit": "Anmelden",
       "submitting": "Anmeldung läuft...",
       "messages": {
+        "authCallbackError": "Dieser Anmeldelink ist ungültig oder abgelaufen. Fordern Sie einen neuen Zugangslink an und versuchen Sie es erneut.",
         "passwordUpdated": "Ihr Passwort wurde aktualisiert. Melden Sie sich mit dem neuen Passwort an."
       },
       "errors": {
@@ -365,6 +366,53 @@
       "staff": "Mitarbeiter"
     }
   },
+  "portal": {
+    "title": "Kundenbereich",
+    "navigationLabel": "Navigation im Kundenportal",
+    "overview": "Übersicht",
+    "orders": "Meine Aufträge",
+    "activeOrders": "Aktive Aufträge",
+    "history": "Verlauf",
+    "historyLink": "Verlauf anzeigen",
+    "emptyOrders": "In Ihrem Kundenbereich sind noch keine Aufträge verfügbar.",
+    "greeting": "Willkommen",
+    "nextTask": "Nächste Abholung oder Lieferung",
+    "status": "Status",
+    "pickup": "Abholung",
+    "delivery": "Lieferung",
+    "photos": "Fotos",
+    "items": "Services",
+    "noPhotos": "Für diesen Auftrag sind keine kundenfreigegebenen Fotos verfügbar.",
+    "property": "Objekt",
+    "orderDate": "Datum",
+    "orderReceived": "Auftrag erhalten",
+    "ready": "Bereit",
+    "completed": "Abgeschlossen",
+    "logout": "Abmelden",
+    "unauthorized": "Zugriff nicht autorisiert",
+    "unauthorizedTitle": "Dieses Konto ist nicht mit einem Kundenportal verknüpft.",
+    "unauthorizedDescription": "Kontaktieren Sie EcoWash, um zu bestätigen, dass der Kundenportalzugriff für Ihr Konto aktiv ist.",
+    "statuses": {
+      "draft": "Auftrag erhalten",
+      "received": "Auftrag erhalten",
+      "washing": "In Bearbeitung",
+      "drying": "In Bearbeitung",
+      "ironing": "In Bearbeitung",
+      "quality_check": "In Bearbeitung",
+      "packing": "In Bearbeitung",
+      "ready": "Bereit",
+      "completed": "Abgeschlossen",
+      "on_hold": "Pausiert",
+      "cancelled": "Storniert"
+    },
+    "fulfillmentStatuses": {
+      "not_required": "Nicht erforderlich",
+      "scheduled": "Geplant",
+      "in_progress": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    }
+  },
   "customers": {
     "title": "Kunden",
     "description": "Verwalten Sie Kunden und verknüpfte Objekte für die aktive Organisation.",
@@ -392,6 +440,34 @@
     "types": {
       "individual": "Privatperson",
       "business": "Unternehmen"
+    },
+    "portal": {
+      "title": "Kundenportalzugriff",
+      "active": "Zugang aktiv",
+      "pending": "Einladung ausstehend",
+      "disabled": "Nicht aktiviert",
+      "accessDisabled": "Zugang deaktiviert",
+      "email": "Kunden-E-Mail",
+      "invitedAt": "Einladungsdatum",
+      "lastSignIn": "Letzter Zugriff",
+      "noLastSignIn": "Noch nicht verfügbar",
+      "invite": "Zum Portal einladen",
+      "resend": "Link erneut senden",
+      "resetPassword": "Passwort-Reset senden",
+      "disable": "Zugriff deaktivieren",
+      "enable": "Zugang reaktivieren",
+      "preview": "Test-Kundenportal öffnen",
+      "success": "Versand abgeschlossen.",
+      "resendSuccess": "Zugangslink gesendet.",
+      "resetPasswordSuccess": "Passwort-Reset-E-Mail gesendet.",
+      "emailInvalid": "Geben Sie eine gültige Kunden-E-Mail ein.",
+      "configurationError": "Einladungen zum Kundenportal benötigen SUPABASE_SERVICE_ROLE_KEY auf dem Server.",
+      "inviteError": "Die Portaleinladung konnte nicht gesendet werden.",
+      "resetPasswordError": "Der Passwort-Reset konnte nicht gesendet werden.",
+      "rateLimit": "Temporäres Sendelimit erreicht. Versuchen Sie es später erneut.",
+      "membershipError": "Der Portalzugriff konnte nicht gespeichert werden.",
+      "unauthorized": "Nur Inhaber und Manager können den Kundenportalzugriff verwalten.",
+      "error": "Der Kundenportalzugriff konnte nicht gespeichert werden."
     },
     "form": {
       "newTitle": "Neuer Kunde",
@@ -632,6 +708,8 @@
       "error": "Das Foto konnte nicht verarbeitet werden.",
       "deactivate": "Entfernen",
       "inactive": "Inaktiv",
+      "customerVisible": "Für Kunden sichtbar",
+      "customerHidden": "Für Kunden verborgen",
       "categories": {
         "intake": "Annahme",
         "processing": "Bearbeitung",

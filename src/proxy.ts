@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 const authPathPattern = new RegExp(
-  `^/(${routing.locales.join("|")})/(app|login|update-password)(/|$)`,
+  `^/(${routing.locales.join("|")})/(app|portal|login|update-password)(/|$)`,
 );
 const recoveryCookieName = "ecowash-password-recovery";
 
@@ -73,6 +73,8 @@ export default async function proxy(request: NextRequest) {
 
   const isAppRoute = new RegExp(`^/${locale}/app(/|$)`).test(pathname);
   const isLoginRoute = pathname === `/${locale}/login`;
+  const isPortalRoute = new RegExp(`^/${locale}/portal(/|$)`).test(pathname);
+  const isPortalPreviewRoute = pathname === `/${locale}/portal/preview-test`;
   const isUpdatePasswordRoute = pathname === `/${locale}/update-password`;
 
   if (isUpdatePasswordRoute && request.nextUrl.searchParams.has("code")) {
@@ -106,14 +108,23 @@ export default async function proxy(request: NextRequest) {
     return redirectResponse;
   }
 
-  if (isAppRoute && !user) {
+  if ((isAppRoute || (isPortalRoute && !isPortalPreviewRoute)) && !user) {
     const loginUrl = new URL(`/${locale}/login`, request.url);
 
     return copySupabaseCookies(NextResponse.redirect(loginUrl), cookiesToSet);
   }
 
   if (isLoginRoute && user) {
-    const appUrl = new URL(`/${locale}/app`, request.url);
+    const { data: portalAccess } = await supabase
+      .from("customer_portal_access")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .limit(1);
+    const appUrl = new URL(
+      portalAccess && portalAccess.length > 0 ? `/${locale}/portal` : `/${locale}/app`,
+      request.url,
+    );
 
     return copySupabaseCookies(NextResponse.redirect(appUrl), cookiesToSet);
   }

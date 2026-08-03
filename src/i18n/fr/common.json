@@ -78,6 +78,7 @@
       "submit": "Se connecter",
       "submitting": "Connexion...",
       "messages": {
+        "authCallbackError": "Ce lien de connexion n'est pas valide ou a expiré. Demandez un nouveau lien d'accès et réessayez.",
         "passwordUpdated": "Votre mot de passe a été mis à jour. Connectez-vous avec le nouveau mot de passe."
       },
       "errors": {
@@ -365,6 +366,53 @@
       "staff": "Employé"
     }
   },
+  "portal": {
+    "title": "Espace client",
+    "navigationLabel": "Navigation du portail client",
+    "overview": "Vue d'ensemble",
+    "orders": "Mes commandes",
+    "activeOrders": "Commandes actives",
+    "history": "Historique",
+    "historyLink": "Voir l'historique",
+    "emptyOrders": "Aucune commande n'est encore disponible dans votre espace client.",
+    "greeting": "Bienvenue",
+    "nextTask": "Prochain enlèvement ou livraison",
+    "status": "Statut",
+    "pickup": "Enlèvement",
+    "delivery": "Livraison",
+    "photos": "Photos",
+    "items": "Services",
+    "noPhotos": "Aucune photo autorisée pour le client n'est disponible pour cette commande.",
+    "property": "Propriété",
+    "orderDate": "Date",
+    "orderReceived": "Commande reçue",
+    "ready": "Prêt",
+    "completed": "Terminé",
+    "logout": "Se déconnecter",
+    "unauthorized": "Accès non autorisé",
+    "unauthorizedTitle": "Ce compte n'est pas lié à un portail client.",
+    "unauthorizedDescription": "Contactez EcoWash pour confirmer que l'accès au portail client est actif pour votre compte.",
+    "statuses": {
+      "draft": "Commande reçue",
+      "received": "Commande reçue",
+      "washing": "En traitement",
+      "drying": "En traitement",
+      "ironing": "En traitement",
+      "quality_check": "En traitement",
+      "packing": "En traitement",
+      "ready": "Prêt",
+      "completed": "Terminé",
+      "on_hold": "En pause",
+      "cancelled": "Annulé"
+    },
+    "fulfillmentStatuses": {
+      "not_required": "Non requis",
+      "scheduled": "Planifié",
+      "in_progress": "En cours",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    }
+  },
   "customers": {
     "title": "Clients",
     "description": "Gérez les clients et les propriétés liées pour l'organisation active.",
@@ -392,6 +440,34 @@
     "types": {
       "individual": "Particulier",
       "business": "Entreprise"
+    },
+    "portal": {
+      "title": "Accès au portail client",
+      "active": "Accès actif",
+      "pending": "Invitation en attente",
+      "disabled": "Non activé",
+      "accessDisabled": "Accès désactivé",
+      "email": "E-mail client",
+      "invitedAt": "Date d'invitation",
+      "lastSignIn": "Dernier accès",
+      "noLastSignIn": "Pas encore disponible",
+      "invite": "Inviter au portail",
+      "resend": "Renvoyer le lien",
+      "resetPassword": "Envoyer reset mot de passe",
+      "disable": "Désactiver l'accès",
+      "enable": "Réactiver l'accès",
+      "preview": "Ouvrir le portail client test",
+      "success": "Envoi terminé.",
+      "resendSuccess": "Lien d'accès envoyé.",
+      "resetPasswordSuccess": "E-mail de reset du mot de passe envoyé.",
+      "emailInvalid": "Saisissez un e-mail client valide.",
+      "configurationError": "Les invitations au portail client nécessitent SUPABASE_SERVICE_ROLE_KEY configurée côté serveur.",
+      "inviteError": "L'invitation au portail n'a pas pu être envoyée.",
+      "resetPasswordError": "Impossible d'envoyer le reset du mot de passe.",
+      "rateLimit": "Limite temporaire d'envoi atteinte. Réessayez plus tard.",
+      "membershipError": "L'accès au portail n'a pas pu être enregistré.",
+      "unauthorized": "Seuls propriétaire et responsable peuvent gérer l'accès au portail client.",
+      "error": "L'accès au portail client n'a pas pu être enregistré."
     },
     "form": {
       "newTitle": "Nouveau client",
@@ -632,6 +708,8 @@
       "error": "La photo n'a pas pu être traitée.",
       "deactivate": "Retirer",
       "inactive": "Inactive",
+      "customerVisible": "Visible par le client",
+      "customerHidden": "Masquée au client",
       "categories": {
         "intake": "Réception",
         "processing": "Traitement",

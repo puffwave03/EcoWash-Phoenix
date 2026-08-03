@@ -13,6 +13,7 @@ export type OrderPhoto = {
   caption: string | null;
   category: PhotoCategory;
   createdAt: string;
+  customerVisible: boolean;
   id: string;
   isActive: boolean;
   mimeType: string;

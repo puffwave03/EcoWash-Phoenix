@@ -78,6 +78,7 @@
       "submit": "Acceder",
       "submitting": "Accediendo...",
       "messages": {
+        "authCallbackError": "Este enlace de acceso no es válido o ha caducado. Solicita un nuevo enlace e inténtalo de nuevo.",
         "passwordUpdated": "Tu contraseña se ha actualizado. Accede con la nueva contraseña."
       },
       "errors": {
@@ -365,6 +366,53 @@
       "staff": "Empleado"
     }
   },
+  "portal": {
+    "title": "Área cliente",
+    "navigationLabel": "Navegación del portal cliente",
+    "overview": "Resumen",
+    "orders": "Mis pedidos",
+    "activeOrders": "Pedidos activos",
+    "history": "Historial",
+    "historyLink": "Ver historial",
+    "emptyOrders": "Aún no hay pedidos disponibles en tu área cliente.",
+    "greeting": "Bienvenido",
+    "nextTask": "Próxima recogida o entrega",
+    "status": "Estado",
+    "pickup": "Recogida",
+    "delivery": "Entrega",
+    "photos": "Fotos",
+    "items": "Servicios",
+    "noPhotos": "No hay fotos autorizadas para el cliente en este pedido.",
+    "property": "Propiedad",
+    "orderDate": "Fecha",
+    "orderReceived": "Pedido recibido",
+    "ready": "Listo",
+    "completed": "Completado",
+    "logout": "Salir",
+    "unauthorized": "Acceso no autorizado",
+    "unauthorizedTitle": "Esta cuenta no está vinculada a un portal cliente.",
+    "unauthorizedDescription": "Contacta con EcoWash para confirmar que el acceso al portal cliente está activo para tu cuenta.",
+    "statuses": {
+      "draft": "Pedido recibido",
+      "received": "Pedido recibido",
+      "washing": "En proceso",
+      "drying": "En proceso",
+      "ironing": "En proceso",
+      "quality_check": "En proceso",
+      "packing": "En proceso",
+      "ready": "Listo",
+      "completed": "Completado",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado"
+    },
+    "fulfillmentStatuses": {
+      "not_required": "No requerido",
+      "scheduled": "Programado",
+      "in_progress": "En curso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    }
+  },
   "customers": {
     "title": "Clientes",
     "description": "Gestiona clientes y propiedades vinculadas para la organización activa.",
@@ -392,6 +440,34 @@
     "types": {
       "individual": "Particular",
       "business": "Empresa"
+    },
+    "portal": {
+      "title": "Acceso al portal cliente",
+      "active": "Acceso activo",
+      "pending": "Invitación pendiente",
+      "disabled": "No habilitado",
+      "accessDisabled": "Acceso deshabilitado",
+      "email": "Email del cliente",
+      "invitedAt": "Fecha de invitación",
+      "lastSignIn": "Último acceso",
+      "noLastSignIn": "Aún no disponible",
+      "invite": "Invitar al portal",
+      "resend": "Reenviar enlace",
+      "resetPassword": "Enviar reset de contraseña",
+      "disable": "Desactivar acceso",
+      "enable": "Rehabilitar acceso",
+      "preview": "Abrir portal de cliente test",
+      "success": "Envío completado.",
+      "resendSuccess": "Enlace de acceso enviado.",
+      "resetPasswordSuccess": "Email de reset de contraseña enviado.",
+      "emailInvalid": "Introduce un email de cliente válido.",
+      "configurationError": "Las invitaciones al portal cliente requieren SUPABASE_SERVICE_ROLE_KEY configurada en el servidor.",
+      "inviteError": "No se pudo enviar la invitación al portal.",
+      "resetPasswordError": "No se pudo enviar el reset de contraseña.",
+      "rateLimit": "Límite temporal de envío alcanzado. Inténtalo más tarde.",
+      "membershipError": "No se pudo guardar el acceso al portal.",
+      "unauthorized": "Solo titular y responsable pueden gestionar el acceso al portal cliente.",
+      "error": "No se pudo guardar el acceso al portal cliente."
     },
     "form": {
       "newTitle": "Nuevo cliente",
@@ -632,6 +708,8 @@
       "error": "No se pudo procesar la foto.",
       "deactivate": "Quitar",
       "inactive": "Inactiva",
+      "customerVisible": "Visible para el cliente",
+      "customerHidden": "Oculta para el cliente",
       "categories": {
         "intake": "Recepción",
         "processing": "Proceso",

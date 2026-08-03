@@ -23,6 +23,7 @@ import {
   deactivateOrderPhotoAction,
   uploadOrderPhotoAction,
 } from "@/features/order-photos/server/actions";
+import { setOrderPhotoCustomerVisibilityAction } from "@/features/portal/server/actions";
 import { getOrderPhotos } from "@/features/order-photos/server/queries";
 import {
   removeOrderItemAction,
@@ -367,12 +368,16 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <SectionShell id="photos" title={t("photos.title")}>
         <OrderPhotosPanel
           action={uploadOrderPhotoAction.bind(null, locale, order.id)}
+          canManageCustomerVisibility={canManageAssignments}
           deactivateAction={deactivateOrderPhotoAction.bind(null, locale, order.id)}
           photos={photos}
+          setCustomerVisibilityAction={setOrderPhotoCustomerVisibilityAction.bind(null, locale, order.id)}
           text={{
             caption: t("photos.caption"),
             categories: t.raw("photos.categories"),
             category: t("photos.category"),
+            customerHidden: t("photos.customerHidden"),
+            customerVisible: t("photos.customerVisible"),
             deactivate: t("photos.deactivate"),
             empty: t("photos.empty"),
             error: t("photos.error"),

@@ -15,6 +15,7 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
   const { status } = await searchParams;
   const t = await getTranslations({ locale, namespace: "common.auth.login" });
   const passwordUpdated = status === "passwordUpdated";
+  const authCallbackError = status === "authCallbackError";
 
   return (
     <main className="bg-background py-16 sm:py-24">
@@ -31,6 +32,12 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
           {passwordUpdated ? (
             <p className="rounded-control border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
               {t("messages.passwordUpdated")}
+            </p>
+          ) : null}
+
+          {authCallbackError ? (
+            <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {t("messages.authCallbackError")}
             </p>
           ) : null}
 

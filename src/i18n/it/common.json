@@ -78,6 +78,7 @@
       "submit": "Accedi",
       "submitting": "Accesso in corso...",
       "messages": {
+        "authCallbackError": "Questo link di accesso non è valido o è scaduto. Richiedi un nuovo link e riprova.",
         "passwordUpdated": "La password è stata aggiornata. Accedi con la nuova password."
       },
       "errors": {
@@ -365,6 +366,53 @@
       "staff": "Addetto"
     }
   },
+  "portal": {
+    "title": "Area cliente",
+    "navigationLabel": "Navigazione portale cliente",
+    "overview": "Panoramica",
+    "orders": "I miei ordini",
+    "activeOrders": "Ordini attivi",
+    "history": "Storico",
+    "historyLink": "Vedi storico",
+    "emptyOrders": "Nessun ordine è ancora disponibile nella tua area cliente.",
+    "greeting": "Benvenuto",
+    "nextTask": "Prossimo ritiro o consegna",
+    "status": "Stato",
+    "pickup": "Ritiro",
+    "delivery": "Consegna",
+    "photos": "Foto",
+    "items": "Servizi",
+    "noPhotos": "Nessuna foto autorizzata al cliente è disponibile per questo ordine.",
+    "property": "Proprietà",
+    "orderDate": "Data",
+    "orderReceived": "Ordine ricevuto",
+    "ready": "Pronto",
+    "completed": "Completato",
+    "logout": "Esci",
+    "unauthorized": "Accesso non autorizzato",
+    "unauthorizedTitle": "Questo account non è collegato a un portale cliente.",
+    "unauthorizedDescription": "Contatta EcoWash per confermare che l'accesso al portale cliente sia attivo per il tuo account.",
+    "statuses": {
+      "draft": "Ordine ricevuto",
+      "received": "Ordine ricevuto",
+      "washing": "In lavorazione",
+      "drying": "In lavorazione",
+      "ironing": "In lavorazione",
+      "quality_check": "In lavorazione",
+      "packing": "In lavorazione",
+      "ready": "Pronto",
+      "completed": "Completato",
+      "on_hold": "In pausa",
+      "cancelled": "Annullato"
+    },
+    "fulfillmentStatuses": {
+      "not_required": "Non richiesto",
+      "scheduled": "Programmato",
+      "in_progress": "In corso",
+      "completed": "Completato",
+      "cancelled": "Annullato"
+    }
+  },
   "customers": {
     "title": "Clienti",
     "description": "Gestisci clienti e proprietà collegate per l'organizzazione attiva.",
@@ -392,6 +440,34 @@
     "types": {
       "individual": "Privato",
       "business": "Impresa"
+    },
+    "portal": {
+      "title": "Accesso portale cliente",
+      "active": "Accesso attivo",
+      "pending": "Invito in attesa",
+      "disabled": "Non abilitato",
+      "accessDisabled": "Accesso disabilitato",
+      "email": "Email cliente",
+      "invitedAt": "Data invito",
+      "lastSignIn": "Ultimo accesso",
+      "noLastSignIn": "Non ancora disponibile",
+      "invite": "Invita al portale",
+      "resend": "Reinvia link",
+      "resetPassword": "Invia reset password",
+      "disable": "Disabilita accesso",
+      "enable": "Riabilita accesso",
+      "preview": "Apri portale cliente test",
+      "success": "Invio completato.",
+      "resendSuccess": "Link di accesso inviato.",
+      "resetPasswordSuccess": "Email di reset password inviata.",
+      "emailInvalid": "Inserisci un'email cliente valida.",
+      "configurationError": "Gli inviti al portale cliente richiedono SUPABASE_SERVICE_ROLE_KEY configurata sul server.",
+      "inviteError": "Non è stato possibile inviare l'invito al portale.",
+      "resetPasswordError": "Non è stato possibile inviare il reset password.",
+      "rateLimit": "Limite temporaneo di invio raggiunto. Riprova più tardi.",
+      "membershipError": "Non è stato possibile salvare l'accesso al portale.",
+      "unauthorized": "Solo titolare e responsabile possono gestire l'accesso al portale cliente.",
+      "error": "Non è stato possibile salvare l'accesso al portale cliente."
     },
     "form": {
       "newTitle": "Nuovo cliente",
@@ -632,6 +708,8 @@
       "error": "La foto non può essere elaborata.",
       "deactivate": "Rimuovi",
       "inactive": "Inattiva",
+      "customerVisible": "Visibile al cliente",
+      "customerHidden": "Nascosta al cliente",
       "categories": {
         "intake": "Ingresso",
         "processing": "Lavorazione",

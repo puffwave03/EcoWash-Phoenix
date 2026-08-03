@@ -78,6 +78,7 @@
       "submit": "Sign in",
       "submitting": "Signing in...",
       "messages": {
+        "authCallbackError": "This sign-in link is invalid or has expired. Request a new access link and try again.",
         "passwordUpdated": "Your password has been updated. Sign in with the new password."
       },
       "errors": {
@@ -365,6 +366,53 @@
       "staff": "Staff"
     }
   },
+  "portal": {
+    "title": "Customer area",
+    "navigationLabel": "Customer portal navigation",
+    "overview": "Overview",
+    "orders": "My orders",
+    "activeOrders": "Active orders",
+    "history": "History",
+    "historyLink": "View history",
+    "emptyOrders": "No orders are available in your customer area yet.",
+    "greeting": "Welcome",
+    "nextTask": "Next pickup or delivery",
+    "status": "Status",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "photos": "Photos",
+    "items": "Services",
+    "noPhotos": "No customer-authorized photos are available for this order.",
+    "property": "Property",
+    "orderDate": "Date",
+    "orderReceived": "Order received",
+    "ready": "Ready",
+    "completed": "Completed",
+    "logout": "Sign out",
+    "unauthorized": "Access not authorized",
+    "unauthorizedTitle": "This account is not linked to a customer portal.",
+    "unauthorizedDescription": "Contact EcoWash to confirm that customer portal access is active for your account.",
+    "statuses": {
+      "draft": "Order received",
+      "received": "Order received",
+      "washing": "In progress",
+      "drying": "In progress",
+      "ironing": "In progress",
+      "quality_check": "In progress",
+      "packing": "In progress",
+      "ready": "Ready",
+      "completed": "Completed",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled"
+    },
+    "fulfillmentStatuses": {
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
   "customers": {
     "title": "Customers",
     "description": "Manage customer records and linked properties for the active organization.",
@@ -392,6 +440,34 @@
     "types": {
       "individual": "Individual",
       "business": "Business"
+    },
+    "portal": {
+      "title": "Customer portal access",
+      "active": "Access active",
+      "pending": "Invitation pending",
+      "disabled": "Not enabled",
+      "accessDisabled": "Access disabled",
+      "email": "Customer email",
+      "invitedAt": "Invitation date",
+      "lastSignIn": "Last access",
+      "noLastSignIn": "Not available yet",
+      "invite": "Invite to portal",
+      "resend": "Resend link",
+      "resetPassword": "Send password reset",
+      "disable": "Disable access",
+      "enable": "Re-enable access",
+      "preview": "Open test customer portal",
+      "success": "Sending completed.",
+      "resendSuccess": "Access link sent.",
+      "resetPasswordSuccess": "Password reset email sent.",
+      "emailInvalid": "Enter a valid customer email.",
+      "configurationError": "Customer portal invitations need SUPABASE_SERVICE_ROLE_KEY configured on the server.",
+      "inviteError": "The portal invite could not be sent.",
+      "resetPasswordError": "The password reset email could not be sent.",
+      "rateLimit": "Temporary sending limit reached. Try again later.",
+      "membershipError": "The portal access could not be saved.",
+      "unauthorized": "Only owners and managers can manage customer portal access.",
+      "error": "Customer portal access could not be saved."
     },
     "form": {
       "newTitle": "New customer",
@@ -632,6 +708,8 @@
       "error": "The photo could not be processed.",
       "deactivate": "Remove",
       "inactive": "Inactive",
+      "customerVisible": "Visible to customer",
+      "customerHidden": "Hidden from customer",
       "categories": {
         "intake": "Intake",
         "processing": "Processing",

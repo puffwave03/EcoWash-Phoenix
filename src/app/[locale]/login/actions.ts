@@ -42,13 +42,26 @@ export async function loginAction(
     return { errorKey: "configuration" };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
     return { errorKey: "invalidCredentials" };
+  }
+
+  if (data.user) {
+    const { data: portalAccess } = await supabase
+      .from("customer_portal_access")
+      .select("id")
+      .eq("user_id", data.user.id)
+      .eq("is_active", true)
+      .limit(1);
+
+    if (portalAccess && portalAccess.length > 0) {
+      redirect(`/${locale}/portal`);
+    }
   }
 
   redirect(`/${locale}/app`);
