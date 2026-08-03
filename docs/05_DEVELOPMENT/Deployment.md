@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.6
+Current Mission: UI-001
 
 ---
 
@@ -25,14 +25,14 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Current Release Position
 
 - `main` is the only release branch.
-- Latest confirmed operational baseline: `48cd1a1 OPS-001.5 feat: add daily close dashboard`.
+- Latest confirmed operational baseline: `8ce8a8e OPS-001.6 feat: add operational alerts dashboard`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
 - RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
 - RELEASE-001.3 production environment design is completed.
 - Vercel staging project `ecowash-phoenix-staging` is online at `https://ecowash-phoenix-staging.vercel.app`.
 - Automatic deploy from `main` to the staging project is working.
-- OPS-001.5 deployed successfully to staging; unauthenticated `/it/app/daily-close` returns a safe redirect to login and no HTTP 500 was observed.
+- OPS-001.6 deployed successfully to staging; unauthenticated `/it/app/alerts` returns a safe 307 redirect to login, no HTTP 500 was observed and `/robots.txt` still returns `Disallow: /`.
 - No production environment is confirmed.
 - No production Supabase project is inventoried.
 

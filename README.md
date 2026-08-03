@@ -72,6 +72,7 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | OPS-001.4 | Completed — Staff Management MVP |
 | PORTAL-001 / PORTAL-001.1 | Completed — Secure Customer Portal MVP |
 | OPS-001.5 | Completed — Daily Close MVP |
+| OPS-001.6 | Completed — Operational Alerts MVP |
 
 Current public website includes:
 
@@ -142,6 +143,7 @@ Important limitations:
 - Internal production, delivery, assignment and staff-management MVPs are implemented
 - Secure customer portal MVP is implemented with customer-scoped access, order visibility, logistics, customer-visible photos and owner/manager access management
 - Daily Close MVP is implemented for owner/manager operational review with organization-scoped KPI sections and order links
+- Operational Alerts MVP is implemented for owner/manager issue triage with severity counts, navigation badge, direct order links and organization-scoped data
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -158,10 +160,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `48cd1a1`
-- Current mission: `OPS-001.6 — Operational Alerts MVP`
+- Latest approved and pushed commit: `8ce8a8e`
+- Current mission: `UI-001 — Operational Dashboard Visual Refinement`
 - Current release state: staging online and validated; production deferred
-- Next macro-task: implement lightweight in-app operational alerts
+- Next macro-task: refine the visual quality of the operational dashboards without changing business logic
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -219,6 +221,6 @@ Document Status: Active
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.6
+Current Mission: UI-001
 
-Next Action: implement the Operational Alerts MVP
+Next Action: refine `/app/orders`, `/app/daily-close` and `/app/alerts` presentation only

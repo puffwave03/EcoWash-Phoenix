@@ -4,19 +4,19 @@ Status: Active
 
 Date: 2026-08-03
 
-Approximate closeout time: after OPS-001.5 Daily Close MVP approval
+Approximate closeout time: after OPS-001.6 Operational Alerts MVP approval
 
-Session checkpoint: OPS-001.5 completed and pushed; OPS-001.6 next
+Session checkpoint: OPS-001.6 completed and pushed; UI-001 next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `48cd1a1 OPS-001.5 feat: add daily close dashboard`
+Latest approved and pushed commit: `8ce8a8e OPS-001.6 feat: add operational alerts dashboard`
 
-Origin/main status: local `main` and `origin/main` point to `48cd1a1`.
+Origin/main status: local `main` and `origin/main` point to `8ce8a8e`.
 
-Working tree status after OPS-001.5 closeout: clean
+Working tree status after OPS-001.6 closeout: clean
 
 Commit status: no code commit pending.
 
@@ -64,6 +64,7 @@ Commit status: no code commit pending.
 - OPS-001.4 — Staff Management MVP
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
 - OPS-001.5 — Daily Close MVP
+- OPS-001.6 — Operational Alerts MVP
 
 ## Supabase Staging State
 
@@ -166,6 +167,9 @@ Available now:
 - Daily Close dashboard at `/[locale]/app/daily-close`
 - owner/manager daily control sections for completed orders, open orders, paused orders, late orders, open logistics, payment issues and operational anomalies
 - Daily Close links directly to affected orders and uses organization timezone for daily windows
+- Operational Alerts dashboard at `/[locale]/app/alerts`
+- owner/manager alert triage for late orders, paused orders, unassigned open orders, imminent or overdue pickups/deliveries, missing or partial payments and logistics assignment anomalies
+- alert severity counts, navigation badge, deduplication, direct order links and organization-scoped data filtering
 
 Role summary:
 
@@ -327,16 +331,85 @@ Out of scope confirmed:
 - new migrations
 - new RPCs
 
+## OPS-001.6 Operational Alerts Result
+
+Status: Completed and pushed.
+
+Route:
+
+- `/[locale]/app/alerts`
+
+Access and data boundaries:
+
+- membership is required
+- owner and manager are allowed
+- staff is denied
+- queries are filtered by `organization_id`
+- no cross-tenant data is exposed
+- no new migration, RPC, table, dependency or role was added
+
+Operational Alerts includes:
+
+- late orders
+- on-hold orders
+- open orders without an assignee
+- pickups due within 2 hours
+- overdue pickups
+- deliveries due within 2 hours
+- overdue deliveries
+- missing or partial payments
+- operational anomalies from logistics without an assignee
+
+Rules:
+
+- severity is `critical`, `warning` or `info`
+- organization timezone is used
+- due-soon means within the next 2 hours
+- overdue logistics means the scheduled time is in the past and the activity is not completed
+- completed or cancelled orders are excluded from lateness alerts
+- orders without `due_at` are not marked late
+- completed logistics are excluded
+- payment residuals are clamped so they never become negative
+- alerts are deduplicated
+
+Validation:
+
+- real owner access: PASS
+- local UI review: PASS
+- badge and page total: PASS
+- severity counts and urgency ordering: PASS
+- duplicate review: PASS
+- mobile layout: PASS
+- order links: PASS
+- lint/build/diff-check: PASS
+- Vercel staging deployment: Ready
+- unauthenticated route access: safe 307 redirect to login
+- robots remains `Disallow: /`
+- no HTTP 500 observed
+
+Still to verify when dedicated accounts are available:
+
+- real manager access
+- real staff denial
+
+These are not FAIL results and are not blocking.
+
+Out of scope confirmed:
+
+- email, push, WhatsApp, SMS, webhook, cron or external automation
+- persistent notification records
+- new tables, migrations or RPCs
+- new dependencies
+
 ## Next Approved Task
 
-`OPS-001.6 — Operational Alerts MVP`
+`UI-001 — Operational Dashboard Visual Refinement`
 
 Practical objective:
 
-- create lightweight in-app operational alerts for owner and manager
-- surface late orders, imminent pickup/delivery work, paused or blocked orders, missing payments, unassigned orders and anomalies
-- provide badges, a compact summary panel and direct links to affected records
-- avoid email, push notifications, WhatsApp, external automation and new tables unless strictly necessary
+- improve visual consistency, readability and perceived quality for `/[locale]/app/orders`, `/[locale]/app/daily-close` and `/[locale]/app/alerts`
+- keep the work presentation-only: components, CSS, spacing, typography, cards, responsive behavior, icons and visual states
+- do not change queries, Server Actions, permissions, RLS, migrations, RPCs, counts, filters, business logic or dependencies
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -372,6 +445,7 @@ http://localhost:3000/it/app/orders
 http://localhost:3000/it/app/production
 http://localhost:3000/it/app/delivery
 http://localhost:3000/it/app/staff
+http://localhost:3000/it/app/alerts
 http://localhost:3000/it/portal
 http://localhost:3000/it/portal/orders
 ```

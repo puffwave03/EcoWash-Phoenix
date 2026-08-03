@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.6
+Current Mission: UI-001
 
-Next Action: Implement the Operational Alerts MVP
+Next Action: Refine operational dashboard visuals without changing logic
 
 ---
 
@@ -140,6 +140,7 @@ Implemented and smoke-validated:
 - owner/manager staff management, invitation, activation and deactivation
 - secure customer portal with customer-scoped order visibility and access management
 - Daily Close dashboard for owner/manager operational review
+- Operational Alerts dashboard for owner/manager issue triage
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
 - first real staging smoke flow through order `EW-000001`
 
@@ -147,13 +148,13 @@ Partially implemented:
 
 - catalog/pricing: service and standard price management exists, but no customer/property price override UI
 - audit: status/payment/logistics histories exist for specific flows, but no canonical user-facing audit log module exists
-- reporting: dashboard and Daily Close have operational summaries, but no open balance report or export workflow
+- reporting: dashboard, Daily Close and Operational Alerts have operational summaries, but no open balance report or export workflow
 
 Missing for commercial readiness:
 
 - production deployment and domain readiness, deferred until the pilot product is functionally complete
 - repeatable smoke/regression checklist for production release
-- Operational Alerts MVP
+- visual refinement of operational dashboards before the next pilot review pass
 - organization and location settings UI
 - global search
 - structured notes and issues
@@ -186,7 +187,8 @@ P2 — remaining portal MVPs and strong commercial differentiators after the fir
 - OPS-001.4 — Staff Management MVP. Completed.
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP. Completed.
 - OPS-001.5 — Daily Close MVP. Completed.
-- OPS-001.6 — Operational Alerts MVP. Next.
+- OPS-001.6 — Operational Alerts MVP. Completed.
+- UI-001 — Operational Dashboard Visual Refinement. Next.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -227,7 +229,8 @@ Scope:
 - OPS-001.4 — Staff Management MVP, completed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
 - OPS-001.5 — Daily Close MVP, completed
-- OPS-001.6 — Operational Alerts MVP, next
+- OPS-001.6 — Operational Alerts MVP, completed
+- UI-001 — Operational Dashboard Visual Refinement, next
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 PILOT-001 planning scope:
@@ -293,7 +296,7 @@ Goal: improve throughput, financial control and handoff to accounting/management
 
 Scope:
 
-- OPS-001.6
+- UI-001
 - REPORT-001
 - REPORT-002
 - EXPORT-001

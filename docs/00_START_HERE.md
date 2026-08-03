@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-03
 
-Current Mission: OPS-001.6
+Current Mission: UI-001
 
-Next Action: Implement the Operational Alerts MVP
+Next Action: Refine operational dashboard visuals without changing logic
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `48cd1a1 OPS-001.5 feat: add daily close dashboard`
-- Current mission: `OPS-001.6 — Operational Alerts MVP`
+- Latest approved and pushed commit: `8ce8a8e OPS-001.6 feat: add operational alerts dashboard`
+- Current mission: `UI-001 — Operational Dashboard Visual Refinement`
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -36,6 +36,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - OPS-001.1 through OPS-001.4 are completed: Production Queue, completed logistics corrections, Delivery Queue, Work Assignment and Staff Management.
 - PORTAL-001 / PORTAL-001.1 is completed: secure customer portal, customer access management and staging-only customer preview.
 - OPS-001.5 is completed: Daily Close dashboard for owner/manager operational review.
+- OPS-001.6 is completed: Operational Alerts dashboard for owner/manager issue triage.
 - UX-002 is completed and pushed through UX-002.5.
 - UX-002.1 is completed and pushed.
 - UX-002.2 is completed and pushed.
@@ -53,8 +54,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
-- Working tree is expected to be clean before OPS-001.6 work.
-- `main` and `origin/main` are expected to be synchronized at `48cd1a1`.
+- Working tree is expected to be clean before UI-001 work.
+- `main` and `origin/main` are expected to be synchronized at `8ce8a8e`.
 
 ---
 
@@ -86,6 +87,7 @@ Protected staging routes to verify when needed:
 - `/it/app/delivery`
 - `/it/app/staff`
 - `/it/app/daily-close`
+- `/it/app/alerts`
 - `/it/portal`
 - `/it/portal/orders`
 
@@ -95,7 +97,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da OPS-001.6 e implementiamo l’Operational Alerts MVP.”
+“Buongiorno, riprendiamo EcoWash Phoenix da UI-001 e rifiniamo visivamente le dashboard operative senza cambiare logica.”
 
 Start by confirming:
 
