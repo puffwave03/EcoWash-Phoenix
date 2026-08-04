@@ -74,13 +74,46 @@ export function AppNavigation({
   }
 
   if (mode === "mobile") {
+    const secondaryItems = navigationItems.filter((item) => item.secondary);
+    const primaryItems = navigationItems.filter((item) => item.href !== "/app/staff" && !item.secondary);
+
     return (
       <nav
         aria-label={navigationLabel}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-card backdrop-blur lg:hidden"
       >
+        {secondaryItems.length > 0 ? (
+          <div className="mb-2 grid grid-cols-2 gap-1 rounded-control bg-[#eef1ee] p-1">
+            {secondaryItems.map((item) => {
+              const isActive = item.href === activeItem.href;
+
+              return (
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex min-h-10 items-center justify-center gap-2 rounded-control px-2 text-center text-xs font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    isActive
+                      ? "bg-primary !text-white shadow-sm hover:!text-white"
+                      : "text-primary hover:bg-white"
+                  }`}
+                  href={item.href}
+                  key={item.href}
+                  locale={locale}
+                >
+                  <span className="truncate">{item.label}</span>
+                  {item.alertBadge && alertCount > 0 ? (
+                    <span className={`min-w-6 rounded-full px-2 py-0.5 text-center text-xs font-semibold ${
+                      isActive ? "bg-white text-primary" : "bg-secondary text-primary"
+                    }`}>
+                      {alertCount}
+                    </span>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </div>
+        ) : null}
         <div className="grid grid-cols-3 gap-1 sm:grid-cols-6">
-          {navigationItems.filter((item) => item.href !== "/app/staff" && !item.secondary).map((item) => {
+          {primaryItems.map((item) => {
             const isActive = item.href === activeItem.href;
 
             return (
@@ -115,7 +148,9 @@ export function AppNavigation({
             className={`block min-h-11 rounded-control px-3 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-[#09291f] ${
               isActive
                 ? "bg-white text-primary shadow-card"
-                : "text-white/80 hover:bg-white/10 hover:text-white"
+                : item.secondary
+                  ? "text-white/86 hover:bg-white/12 hover:text-white"
+                  : "text-white/78 hover:bg-white/10 hover:text-white"
             }`}
             href={item.href}
             key={item.href}

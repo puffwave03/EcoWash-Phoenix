@@ -1,4 +1,12 @@
 import { Card } from "@/components/Card";
+import {
+  EmptyState,
+  PageHeader,
+  SectionHeader,
+  StatusBadge,
+  SummaryCard,
+  type Tone,
+} from "@/components/operational/OperationalUi";
 import { Link } from "@/i18n/navigation";
 import type {
   DailyCloseData,
@@ -41,6 +49,17 @@ const groupOrder: DailyCloseGroupKey[] = [
   "anomalies",
 ];
 
+const groupTone: Record<DailyCloseGroupKey, Tone> = {
+  anomalies: "warning",
+  completedToday: "success",
+  incompleteDeliveries: "warning",
+  incompletePickups: "warning",
+  lateOrders: "critical",
+  onHoldOrders: "warning",
+  openOrders: "info",
+  paymentIssues: "warning",
+};
+
 function formatDateTime(value: string | null, locale: string, timeZone: string) {
   return value
     ? new Intl.DateTimeFormat(locale, {
@@ -49,6 +68,14 @@ function formatDateTime(value: string | null, locale: string, timeZone: string) 
         timeZone,
       }).format(new Date(value))
     : "-";
+}
+
+function statusTone(item: DailyCloseItem): Tone {
+  if (item.isLate) return "critical";
+  if (item.paymentStatus || item.status === "on_hold") return "warning";
+  if (item.status === "completed") return "success";
+
+  return "info";
 }
 
 function anomalyLabel(item: DailyCloseItem, text: DailyCloseText) {
@@ -71,26 +98,28 @@ function DailyCloseCard({
   text: DailyCloseText;
   timeZone: string;
 }) {
+  const tone = statusTone(item);
+
   return (
-    <article className={`rounded-card border bg-white px-4 py-4 shadow-sm ${item.isLate ? "border-red-200" : "border-border"}`}>
+    <article className={`rounded-card border bg-white px-4 py-4 shadow-sm transition-standard hover:-translate-y-0.5 hover:shadow-card ${item.isLate ? "border-red-200" : "border-border"}`}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone={tone}>
               {text.statuses[item.status]}
-            </span>
+            </StatusBadge>
             {item.kind === "anomaly" || item.isLate || item.paymentStatus ? (
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${item.isLate ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}>
+              <StatusBadge tone={item.isLate ? "critical" : "warning"}>
                 {anomalyLabel(item, text)}
-              </span>
+              </StatusBadge>
             ) : null}
           </div>
-          <p className="mt-3 text-xs font-semibold uppercase text-muted">{text.labels.order}</p>
-          <h3 className="mt-1 truncate text-base font-semibold text-primary">{item.orderNumber}</h3>
-          <p className="mt-1 truncate text-sm text-muted">{item.customerName}</p>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted">{text.labels.order}</p>
+          <h3 className="mt-1 truncate text-lg font-semibold text-primary">{item.orderNumber}</h3>
+          <p className="mt-1 truncate text-sm font-medium text-muted">{item.customerName}</p>
         </div>
         <Link
-          className="inline-flex min-h-10 items-center justify-center rounded-control border border-primary px-3 text-sm font-semibold text-primary transition-standard hover:bg-primary hover:text-white"
+          className="inline-flex min-h-10 items-center justify-center rounded-control border border-primary px-3 text-sm font-semibold text-primary transition-standard hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           href={`/app/orders/${item.orderId}`}
           locale={locale}
         >
@@ -98,7 +127,7 @@ function DailyCloseCard({
         </Link>
       </div>
 
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+      <dl className="mt-4 grid gap-3 rounded-control bg-[#fbfbf8] p-3 text-sm sm:grid-cols-2">
         <div>
           <dt className="font-semibold text-primary">{text.labels.time}</dt>
           <dd className="text-muted">{formatDateTime(item.timestamp, locale, timeZone)}</dd>
@@ -139,17 +168,16 @@ export function DailyCloseDashboard({
 }) {
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-primary">{text.title}</h2>
-        <p className="mt-2 text-sm text-muted">{text.description}</p>
-      </div>
+      <PageHeader title={text.title} description={text.description} />
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label={text.title}>
         {groupOrder.map((group) => (
-          <Card className="space-y-1" key={group}>
-            <p className="text-sm font-medium text-muted">{text.summary[group]}</p>
-            <p className="text-3xl font-semibold text-primary">{data.summary[group]}</p>
-          </Card>
+          <SummaryCard
+            key={group}
+            label={text.summary[group]}
+            tone={groupTone[group]}
+            value={data.summary[group]}
+          />
         ))}
       </section>
 
@@ -158,17 +186,10 @@ export function DailyCloseDashboard({
           const items = data.groups[group];
 
           return (
-            <Card className="space-y-4" key={group}>
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-lg font-semibold text-primary">{text.groups[group]}</h3>
-                <span className="min-w-9 rounded-full bg-primary-soft px-3 py-1 text-center text-sm font-semibold text-primary">
-                  {items.length}
-                </span>
-              </div>
+            <Card className="space-y-4 bg-white/95" key={group}>
+              <SectionHeader count={items.length} title={text.groups[group]} tone={groupTone[group]} />
               {items.length === 0 ? (
-                <p className="rounded-control border border-dashed border-border px-4 py-5 text-sm text-muted">
-                  {text.empty}
-                </p>
+                <EmptyState>{text.empty}</EmptyState>
               ) : (
                 <div className="space-y-3">
                   {items.map((item) => (
