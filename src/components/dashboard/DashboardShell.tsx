@@ -5,20 +5,28 @@ import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
   alerts: string;
+  controlCenter: string;
+  controlGroup: string;
   dailyClose: string;
   delivery: string;
   foundation: string;
   logout: string;
+  managementGroup: string;
   navigationLabel: string;
   customers: string;
   orders: string;
   organizationLabel: string;
   overview: string;
   production: string;
+  quality: string;
   roleLabel: string;
   services: string;
   staff: string;
+  toolsGroup: string;
   userLabel: string;
+  work: string;
+  workExperience: string;
+  workGroup: string;
 };
 
 type DashboardShellProps = {
@@ -66,14 +74,22 @@ export function DashboardShell({
               alertCount={alertCount}
               text={{
                 alerts: text.alerts,
+                controlCenter: text.controlCenter,
+                controlGroup: text.controlGroup,
                 customers: text.customers,
                 dailyClose: text.dailyClose,
                 delivery: text.delivery,
+                managementGroup: text.managementGroup,
                 orders: text.orders,
                 overview: text.overview,
                 production: text.production,
+                quality: text.quality,
                 services: text.services,
                 staff: text.staff,
+                toolsGroup: text.toolsGroup,
+                work: text.work,
+                workExperience: text.workExperience,
+                workGroup: text.workGroup,
               }}
             />
           </div>
@@ -108,14 +124,22 @@ export function DashboardShell({
             alertCount={alertCount}
             text={{
               alerts: text.alerts,
+              controlCenter: text.controlCenter,
+              controlGroup: text.controlGroup,
               customers: text.customers,
               dailyClose: text.dailyClose,
               delivery: text.delivery,
+              managementGroup: text.managementGroup,
               orders: text.orders,
               overview: text.overview,
               production: text.production,
+              quality: text.quality,
               services: text.services,
               staff: text.staff,
+              toolsGroup: text.toolsGroup,
+              work: text.work,
+              workExperience: text.workExperience,
+              workGroup: text.workGroup,
             }}
           />
 
@@ -133,14 +157,22 @@ export function DashboardShell({
         alertCount={alertCount}
         text={{
           alerts: text.alerts,
+          controlCenter: text.controlCenter,
+          controlGroup: text.controlGroup,
           customers: text.customers,
           dailyClose: text.dailyClose,
           delivery: text.delivery,
+          managementGroup: text.managementGroup,
           orders: text.orders,
           overview: text.overview,
           production: text.production,
+          quality: text.quality,
           services: text.services,
           staff: text.staff,
+          toolsGroup: text.toolsGroup,
+          work: text.work,
+          workExperience: text.workExperience,
+          workGroup: text.workGroup,
         }}
       />
     </main>

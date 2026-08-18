@@ -26,20 +26,28 @@ export default async function DashboardLayout({
       locale={locale}
       text={{
         alerts: t("alerts"),
+        controlCenter: t("controlCenter"),
+        controlGroup: t("controlGroup"),
         dailyClose: t("dailyClose"),
         delivery: t("delivery"),
         foundation: t("foundation"),
         logout: t("logout"),
+        managementGroup: t("managementGroup"),
         navigationLabel: t("navigationLabel"),
         customers: t("customers"),
         orders: t("orders"),
         organizationLabel: t("organizationLabel"),
         overview: t("overview"),
         production: t("production"),
+        quality: t("quality"),
         roleLabel: t("roleLabel"),
         services: t("services"),
         staff: t("staff"),
+        toolsGroup: t("toolsGroup"),
         userLabel: t("userLabel"),
+        work: t("work"),
+        workExperience: t("workExperience"),
+        workGroup: t("workGroup"),
       }}
     >
       {children}
