@@ -49,7 +49,9 @@ export async function getOrderPhotos(locale: string, orderId: string): Promise<O
         .from(row.storage_bucket)
         .createSignedUrl(row.storage_path, 600);
       signedUrl = result.data?.signedUrl ?? null;
-      if (result.error) console.error("Photo signed URL failed", result.error.message);
+      if (result.error && result.error.message !== "Object not found") {
+        console.error("Photo signed URL failed", result.error.message);
+      }
     }
 
     return {
