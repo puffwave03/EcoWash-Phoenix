@@ -845,6 +845,7 @@
     "resetPassword": "Invia reset password",
     "emailSent": "Email sicura inviata.",
     "emailActionError": "L'email di accesso sicuro non può essere inviata.",
+    "authUnavailable": "Supabase Auth non è temporaneamente disponibile. Nessuna email di accesso è stata inviata; riprova più tardi.",
     "saving": "Salvataggio...",
     "success": "Invito inviato e membership preparata.",
     "updateSuccess": "Collaboratore aggiornato.",

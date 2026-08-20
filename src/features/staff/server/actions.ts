@@ -19,6 +19,17 @@ const initialState: StaffActionState = { fieldErrors: {}, formError: null, succe
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ROLES: AppRole[] = ["owner", "manager", "staff"];
 
+type AuthFailure = {
+  code?: string;
+  message?: string;
+  name?: string;
+  status?: number;
+};
+
+type StaffAuthPreparation =
+  | { accessEmailPending: boolean; error: null; userId: string }
+  | { accessEmailPending: false; error: "authUnavailable" | "invite"; userId: null };
+
 function fail(formError: string | null = "generic", fieldErrors: Record<string, string> = {}) {
   return { fieldErrors, formError, success: false };
 }
@@ -39,23 +50,97 @@ function revalidateStaff(locale: string) {
   revalidatePath(`/${locale}/app/staff`);
 }
 
-async function existingUserIdByEmail(email: string) {
-  const admin = createSupabaseAdminClient();
-  let page = 1;
+function authFailure(error: unknown): AuthFailure {
+  if (!error || typeof error !== "object") return {};
 
-  while (page <= 10) {
-    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 100 });
+  return error as AuthFailure;
+}
 
-    if (error) throw error;
+function isExistingAuthUser(error: unknown) {
+  const { code, message, status } = authFailure(error);
+  const normalizedMessage = message?.toLowerCase() ?? "";
 
-    const user = data.users.find((candidate) => candidate.email?.toLowerCase() === email);
-    if (user) return user.id;
-    if (data.users.length < 100) return null;
+  return code === "email_exists"
+    || code === "user_already_exists"
+    || (status === 422 && normalizedMessage.includes("already"));
+}
 
-    page += 1;
+function isAuthUnavailable(error: unknown) {
+  const { name, status } = authFailure(error);
+
+  return name === "AuthRetryableFetchError"
+    || status === 0
+    || status === 429
+    || (typeof status === "number" && status >= 500);
+}
+
+function logAuthFailure(context: string, error: unknown) {
+  const { code, name, status } = authFailure(error);
+
+  console.error(context, {
+    code: code ?? "unknown",
+    name: name ?? "unknown",
+    status: status ?? "unknown",
+  });
+}
+
+async function prepareStaffAuthUser({
+  admin,
+  email,
+  name,
+  redirectTo,
+}: {
+  admin: ReturnType<typeof createSupabaseAdminClient>;
+  email: string;
+  name: string;
+  redirectTo: string;
+}): Promise<StaffAuthPreparation> {
+  try {
+    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
+      data: { display_name: name || email.split("@")[0] },
+      redirectTo,
+    });
+
+    if (!error && data.user) {
+      return { accessEmailPending: false, error: null, userId: data.user.id };
+    }
+
+    if (!isExistingAuthUser(error)) {
+      logAuthFailure("Staff invite failed", error);
+
+      return {
+        accessEmailPending: false,
+        error: isAuthUnavailable(error) ? "authUnavailable" : "invite",
+        userId: null,
+      };
+    }
+
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      email,
+      options: { redirectTo },
+      type: "magiclink",
+    });
+
+    if (linkError || !linkData.user) {
+      logAuthFailure("Existing staff Auth lookup failed", linkError);
+
+      return {
+        accessEmailPending: false,
+        error: isAuthUnavailable(linkError) ? "authUnavailable" : "invite",
+        userId: null,
+      };
+    }
+
+    return { accessEmailPending: true, error: null, userId: linkData.user.id };
+  } catch (error) {
+    logAuthFailure("Staff Auth request failed", error);
+
+    return {
+      accessEmailPending: false,
+      error: isAuthUnavailable(error) ? "authUnavailable" : "invite",
+      userId: null,
+    };
   }
-
-  return null;
 }
 
 export async function inviteStaffMemberAction(
@@ -79,25 +164,13 @@ export async function inviteStaffMemberAction(
   if (!hasSupabaseAdminConfig()) return fail("configuration");
 
   const admin = createSupabaseAdminClient();
-  let invitedUserId = await existingUserIdByEmail(email);
-
-  if (!invitedUserId) {
-    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
-      data: { display_name: name || email.split("@")[0] },
-      redirectTo: `${siteConfig.url}/${locale}/app`,
-    });
-
-    if (error || !data.user) {
-      console.error("Staff invite failed", error?.code ?? error?.status ?? "unknown");
-      return fail("invite");
-    }
-
-    invitedUserId = data.user.id;
-  }
+  const redirectTo = `${siteConfig.url}/${locale}/app`;
+  const authPreparation = await prepareStaffAuthUser({ admin, email, name, redirectTo });
+  if (authPreparation.error) return fail(authPreparation.error);
 
   const supabase = await createSupabaseServerClient();
   const { data: membershipId, error } = await supabase.rpc("upsert_staff_membership", {
-    target_profile_id: invitedUserId,
+    target_profile_id: authPreparation.userId,
     target_role: role,
   });
 
@@ -117,6 +190,23 @@ export async function inviteStaffMemberAction(
   if (capabilitiesError) {
     console.error("Staff capabilities update failed", capabilitiesError.code);
     return fail("capabilities");
+  }
+
+  if (authPreparation.accessEmailPending) {
+    try {
+      const { error: accessEmailError } = await admin.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo, shouldCreateUser: false },
+      });
+
+      if (accessEmailError) {
+        logAuthFailure("Existing staff access email failed", accessEmailError);
+        return fail(isAuthUnavailable(accessEmailError) ? "authUnavailable" : "invite");
+      }
+    } catch (accessEmailError) {
+      logAuthFailure("Existing staff access email request failed", accessEmailError);
+      return fail(isAuthUnavailable(accessEmailError) ? "authUnavailable" : "invite");
+    }
   }
 
   revalidateStaff(locale);
@@ -179,28 +269,48 @@ export async function sendStaffAccessEmailAction(
   if (membershipError || !membership) return fail("membership");
 
   const admin = createSupabaseAdminClient();
-  const { data: userData, error: userError } = await admin.auth.admin.getUserById(
-    membership.profile_id,
-  );
+  let userData;
+
+  try {
+    const result = await admin.auth.admin.getUserById(membership.profile_id);
+
+    if (result.error) {
+      logAuthFailure("Staff Auth user lookup failed", result.error);
+      return fail(isAuthUnavailable(result.error) ? "authUnavailable" : "emailAction");
+    }
+
+    userData = result.data;
+  } catch (userError) {
+    logAuthFailure("Staff Auth user lookup request failed", userError);
+    return fail(isAuthUnavailable(userError) ? "authUnavailable" : "emailAction");
+  }
+
   const email = userData.user?.email;
 
-  if (userError || !email) return fail("emailAction");
+  if (!email) return fail("emailAction");
 
   const redirectUrl = new URL(`/${locale}/auth/callback`, siteConfig.url);
   redirectUrl.searchParams.set(
     "next",
     intent === "reset" ? `/${locale}/update-password` : `/${locale}/app`,
   );
-  const { error } = intent === "reset"
-    ? await admin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl.toString() })
-    : await admin.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: redirectUrl.toString(), shouldCreateUser: false },
-      });
+  let error;
+
+  try {
+    ({ error } = intent === "reset"
+      ? await admin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl.toString() })
+      : await admin.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: redirectUrl.toString(), shouldCreateUser: false },
+        }));
+  } catch (authError) {
+    logAuthFailure("Staff access email request failed", authError);
+    return fail(isAuthUnavailable(authError) ? "authUnavailable" : "emailAction");
+  }
 
   if (error) {
-    console.error("Staff access email failed", error.code ?? error.status ?? "unknown");
-    return fail("emailAction");
+    logAuthFailure("Staff access email failed", error);
+    return fail(isAuthUnavailable(error) ? "authUnavailable" : "emailAction");
   }
 
   revalidateStaff(locale);

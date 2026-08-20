@@ -845,6 +845,7 @@
     "resetPassword": "Send password reset",
     "emailSent": "Secure email sent.",
     "emailActionError": "The secure access email could not be sent.",
+    "authUnavailable": "Supabase Auth is temporarily unavailable. No access email was sent; try again later.",
     "saving": "Saving...",
     "success": "Invite sent and membership prepared.",
     "updateSuccess": "Staff member updated.",

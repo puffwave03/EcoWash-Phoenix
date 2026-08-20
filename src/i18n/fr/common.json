@@ -845,6 +845,7 @@
     "resetPassword": "Envoyer la réinitialisation du mot de passe",
     "emailSent": "E-mail sécurisé envoyé.",
     "emailActionError": "L'e-mail d'accès sécurisé n'a pas pu être envoyé.",
+    "authUnavailable": "Supabase Auth est temporairement indisponible. Aucun e-mail d'accès n'a été envoyé ; réessayez plus tard.",
     "saving": "Enregistrement...",
     "success": "Invitation envoyée et membership préparée.",
     "updateSuccess": "Collaborateur mis à jour.",

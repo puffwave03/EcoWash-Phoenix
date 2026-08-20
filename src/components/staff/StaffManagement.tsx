@@ -19,6 +19,7 @@ type StaffText = {
   accessLink: string;
   active: string;
   add: string;
+  authUnavailable: string;
   capabilities: string;
   capabilitiesDescription: string;
   capabilitiesError: string;
@@ -59,6 +60,7 @@ const initialState: StaffActionState = { fieldErrors: {}, formError: null, succe
 const roleOptions: AppRole[] = ["owner", "manager", "staff"];
 
 function errorText(error: string | null, text: StaffText) {
+  if (error === "authUnavailable") return text.authUnavailable;
   if (error === "configuration") return text.configuration;
   if (error === "duplicate") return text.duplicate;
   if (error === "invite") return text.inviteError;

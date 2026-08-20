@@ -9,6 +9,7 @@ export function createSupabaseAdminClient() {
   return createClient(url, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
+      detectSessionInUrl: false,
       persistSession: false,
     },
   });

@@ -38,6 +38,7 @@ export default async function StaffPage({ params }: StaffPageProps) {
           active: t("active"),
           accessLink: t("accessLink"),
           add: t("add"),
+          authUnavailable: t("authUnavailable"),
           capabilities: t("capabilities"),
           capabilitiesDescription: t("capabilitiesDescription"),
           capabilitiesError: t("capabilitiesError"),

@@ -845,6 +845,7 @@
     "resetPassword": "Enviar restablecimiento de contraseña",
     "emailSent": "Correo seguro enviado.",
     "emailActionError": "No se pudo enviar el correo de acceso seguro.",
+    "authUnavailable": "Supabase Auth no está disponible temporalmente. No se envió ningún correo de acceso; inténtalo de nuevo más tarde.",
     "saving": "Guardando...",
     "success": "Invitación enviada y membresía preparada.",
     "updateSuccess": "Colaborador actualizado.",
