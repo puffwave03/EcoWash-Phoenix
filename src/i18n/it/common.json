@@ -173,6 +173,7 @@
     "emptyDescription": "Le nuove attività assegnate appariranno qui automaticamente.",
     "openPickup": "Apri ritiro",
     "viewPickups": "Vedi ritiri",
+    "viewDeliveries": "Vedi consegne",
     "viewProduction": "Vedi produzione",
     "viewQuality": "Vedi qualità e confezionamento",
     "openProduction": "Apri produzione",
@@ -518,6 +519,60 @@
       "selectPhase": "Sposta ordine a",
       "title": "Dettaglio qualità e confezionamento",
       "workflow": "Workflow qualità e confezionamento"
+    }
+  },
+  "deliveryWorkspace": {
+    "assignedTo": "Assegnata a",
+    "empty": "Nessuna consegna assegnata per oggi.",
+    "nextDelivery": "Prossima consegna",
+    "nextEmpty": "Non ci sono prossime consegne al momento.",
+    "noTime": "Senza orario",
+    "openDelivery": "Apri consegna",
+    "order": "Ordine",
+    "priorities": {
+      "overdue": "In ritardo",
+      "in_progress": "In corso",
+      "upcoming": "Imminente",
+      "scheduled": "Programmata oggi",
+      "assigned": "Assegnata"
+    },
+    "queue": "Coda consegne",
+    "queueMine": "Le mie consegne",
+    "queueTeam": "Consegne del team",
+    "status": "Stato",
+    "statuses": {
+      "not_required": "Non richiesta",
+      "scheduled": "Programmata",
+      "in_progress": "In corso",
+      "completed": "Completata",
+      "cancelled": "Annullata"
+    },
+    "subtitle": "Controlla il giro di consegne di oggi e apri la prossima fermata per agire.",
+    "summary": {
+      "inProgress": "In corso",
+      "overdue": "In ritardo",
+      "toDo": "Da fare"
+    },
+    "tasks": "consegne",
+    "title": "Workspace consegne",
+    "today": "Oggi",
+    "actions": {
+      "complete": "Completa consegna",
+      "start": "Inizia consegna"
+    },
+    "detail": {
+      "address": "Indirizzo",
+      "back": "Torna alle consegne",
+      "contact": "Contatto consegna",
+      "customer": "Cliente",
+      "details": "Dettagli consegna",
+      "noNotes": "Nessuna nota di consegna.",
+      "notes": "Nota operativa",
+      "openOrder": "Apri ordine",
+      "phone": "Telefono",
+      "property": "Proprietà",
+      "scheduledAt": "Programmata per",
+      "title": "Consegna"
     }
   },
   "deliveryQueue": {

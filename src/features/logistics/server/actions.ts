@@ -22,6 +22,7 @@ function revalidateOrder(locale: string, orderId: string) {
   revalidatePath(`/${locale}/app/orders/${orderId}`);
   revalidatePath(`/${locale}/app/delivery`);
   revalidatePath(`/${locale}/app/work`);
+  revalidatePath(`/${locale}/app/work/deliveries`);
   revalidatePath(`/${locale}/app/work/pickups`);
 }
 
@@ -201,8 +202,25 @@ export async function transitionDeliveryAction(locale: string, orderId: string, 
 
   if (!deliveryId || !targetStatus) return;
 
-  await requireMembership(locale);
+  const { membership, profile } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const { data: delivery, error: deliveryError } = await supabase
+    .from("deliveries")
+    .select("assigned_to")
+    .eq("organization_id", membership.organization.id)
+    .eq("order_id", orderId)
+    .eq("id", deliveryId)
+    .maybeSingle<{ assigned_to: string | null }>();
+
+  if (
+    deliveryError ||
+    !delivery ||
+    (membership.role === "staff" && delivery.assigned_to !== profile.id)
+  ) {
+    if (deliveryError) console.error("Delivery transition authorization failed", deliveryError.code);
+    return;
+  }
+
   const { error } = await supabase.rpc("transition_delivery_status", {
     target_delivery_id: deliveryId,
     target_reason: optionalDbValue(reason),
@@ -211,4 +229,5 @@ export async function transitionDeliveryAction(locale: string, orderId: string, 
 
   if (error) console.error("Delivery transition failed", error.code);
   revalidateOrder(locale, orderId);
+  revalidatePath(`/${locale}/app/work/deliveries/${deliveryId}`);
 }

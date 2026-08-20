@@ -173,6 +173,7 @@
     "emptyDescription": "Les nouvelles activités assignées apparaîtront ici automatiquement.",
     "openPickup": "Ouvrir la collecte",
     "viewPickups": "Voir les collectes",
+    "viewDeliveries": "Voir les livraisons",
     "viewProduction": "Voir la production",
     "viewQuality": "Voir qualité et emballage",
     "openProduction": "Ouvrir la production",
@@ -518,6 +519,60 @@
       "selectPhase": "Déplacer la commande vers",
       "title": "Détails qualité et emballage",
       "workflow": "Flux qualité et emballage"
+    }
+  },
+  "deliveryWorkspace": {
+    "assignedTo": "Assignée à",
+    "empty": "Aucune livraison n’est assignée pour aujourd’hui.",
+    "nextDelivery": "Prochaine livraison",
+    "nextEmpty": "Il n’y a aucune prochaine livraison pour le moment.",
+    "noTime": "Sans horaire",
+    "openDelivery": "Ouvrir la livraison",
+    "order": "Commande",
+    "priorities": {
+      "overdue": "En retard",
+      "in_progress": "En cours",
+      "upcoming": "Imminente",
+      "scheduled": "Planifiée aujourd’hui",
+      "assigned": "Assignée"
+    },
+    "queue": "File des livraisons",
+    "queueMine": "Mes livraisons",
+    "queueTeam": "Livraisons de l’équipe",
+    "status": "Statut",
+    "statuses": {
+      "not_required": "Non requise",
+      "scheduled": "Planifiée",
+      "in_progress": "En cours",
+      "completed": "Terminée",
+      "cancelled": "Annulée"
+    },
+    "subtitle": "Consultez la tournée de livraison du jour et ouvrez le prochain arrêt pour agir.",
+    "summary": {
+      "inProgress": "En cours",
+      "overdue": "En retard",
+      "toDo": "À faire"
+    },
+    "tasks": "livraisons",
+    "title": "Espace livraisons",
+    "today": "Aujourd’hui",
+    "actions": {
+      "complete": "Terminer la livraison",
+      "start": "Démarrer la livraison"
+    },
+    "detail": {
+      "address": "Adresse",
+      "back": "Retour aux livraisons",
+      "contact": "Contact de livraison",
+      "customer": "Client",
+      "details": "Détails de la livraison",
+      "noNotes": "Aucune note de livraison.",
+      "notes": "Note opérationnelle",
+      "openOrder": "Ouvrir la commande",
+      "phone": "Téléphone",
+      "property": "Propriété",
+      "scheduledAt": "Planifiée pour",
+      "title": "Livraison"
     }
   },
   "deliveryQueue": {

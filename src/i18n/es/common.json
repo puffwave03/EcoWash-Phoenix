@@ -173,6 +173,7 @@
     "emptyDescription": "El nuevo trabajo asignado aparecerá aquí automáticamente.",
     "openPickup": "Abrir recogida",
     "viewPickups": "Ver recogidas",
+    "viewDeliveries": "Ver entregas",
     "viewProduction": "Ver producción",
     "viewQuality": "Ver calidad y empaquetado",
     "openProduction": "Abrir producción",
@@ -518,6 +519,60 @@
       "selectPhase": "Mover pedido a",
       "title": "Detalles de calidad y empaquetado",
       "workflow": "Flujo de calidad y empaquetado"
+    }
+  },
+  "deliveryWorkspace": {
+    "assignedTo": "Asignada a",
+    "empty": "No hay entregas asignadas para hoy.",
+    "nextDelivery": "Próxima entrega",
+    "nextEmpty": "No hay una próxima entrega en este momento.",
+    "noTime": "Sin hora",
+    "openDelivery": "Abrir entrega",
+    "order": "Pedido",
+    "priorities": {
+      "overdue": "Atrasada",
+      "in_progress": "En curso",
+      "upcoming": "Próxima",
+      "scheduled": "Programada hoy",
+      "assigned": "Asignada"
+    },
+    "queue": "Cola de entregas",
+    "queueMine": "Mis entregas",
+    "queueTeam": "Entregas del equipo",
+    "status": "Estado",
+    "statuses": {
+      "not_required": "No requerida",
+      "scheduled": "Programada",
+      "in_progress": "En curso",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    },
+    "subtitle": "Revisa la ruta de entregas de hoy y abre la próxima parada para actuar.",
+    "summary": {
+      "inProgress": "En curso",
+      "overdue": "Atrasadas",
+      "toDo": "Por hacer"
+    },
+    "tasks": "entregas",
+    "title": "Espacio de entregas",
+    "today": "Hoy",
+    "actions": {
+      "complete": "Completar entrega",
+      "start": "Iniciar entrega"
+    },
+    "detail": {
+      "address": "Dirección",
+      "back": "Volver a entregas",
+      "contact": "Contacto de entrega",
+      "customer": "Cliente",
+      "details": "Detalles de la entrega",
+      "noNotes": "No hay notas de entrega.",
+      "notes": "Nota operativa",
+      "openOrder": "Abrir pedido",
+      "phone": "Teléfono",
+      "property": "Propiedad",
+      "scheduledAt": "Programada para",
+      "title": "Entrega"
     }
   },
   "deliveryQueue": {

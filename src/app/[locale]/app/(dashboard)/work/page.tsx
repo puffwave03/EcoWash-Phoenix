@@ -37,6 +37,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
         today: t("today"),
         todaySummary: t("todaySummary"),
         urgent: t("urgent"),
+        viewDeliveries: t("viewDeliveries"),
         viewPickups: t("viewPickups"),
         viewProduction: t("viewProduction"),
         viewQuality: t("viewQuality"),

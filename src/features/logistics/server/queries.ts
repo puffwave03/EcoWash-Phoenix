@@ -176,25 +176,32 @@ export async function getOrderLogistics(locale: string, orderId: string): Promis
 }
 
 export async function listDeliveryQueueTasks(locale: string): Promise<DeliveryQueueTask[]> {
-  const { membership } = await requireMembership(locale);
+  const { membership, profile } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const isSupervision = membership.role === "owner" || membership.role === "manager";
+  let pickupQuery = supabase
+    .from("pickups")
+    .select(PICKUP_TASK_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .in("status", ["scheduled", "in_progress", "completed"])
+    .order("scheduled_at", { ascending: true, nullsFirst: false })
+    .limit(100);
+  let deliveryQuery = supabase
+    .from("deliveries")
+    .select(DELIVERY_TASK_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .in("status", ["scheduled", "in_progress", "completed"])
+    .order("scheduled_at", { ascending: true, nullsFirst: false })
+    .limit(100);
+
+  if (!isSupervision) {
+    pickupQuery = pickupQuery.eq("assigned_to", profile.id);
+    deliveryQuery = deliveryQuery.eq("assigned_to", profile.id);
+  }
+
   const [pickupResult, deliveryResult] = await Promise.all([
-    supabase
-      .from("pickups")
-      .select(PICKUP_TASK_SELECT)
-      .eq("organization_id", membership.organization.id)
-      .in("status", ["scheduled", "in_progress", "completed"])
-      .order("scheduled_at", { ascending: true, nullsFirst: false })
-      .limit(100)
-      .returns<DeliveryTaskRow[]>(),
-    supabase
-      .from("deliveries")
-      .select(DELIVERY_TASK_SELECT)
-      .eq("organization_id", membership.organization.id)
-      .in("status", ["scheduled", "in_progress", "completed"])
-      .order("scheduled_at", { ascending: true, nullsFirst: false })
-      .limit(100)
-      .returns<DeliveryTaskRow[]>(),
+    pickupQuery.returns<DeliveryTaskRow[]>(),
+    deliveryQuery.returns<DeliveryTaskRow[]>(),
   ]);
 
   if (pickupResult.error) console.error("Delivery queue pickup query failed", pickupResult.error.code);

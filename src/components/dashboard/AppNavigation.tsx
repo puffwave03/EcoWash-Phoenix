@@ -76,7 +76,7 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
-  if (href === "/app/delivery") {
+  if (href === "/app/delivery" || href === "/app/work/deliveries") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M3 6h11v11H3V6Zm11 4h4l3 3v4h-7v-7ZM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -117,7 +117,7 @@ export function AppNavigation({
             { href: "/app/work", label: text.work, match: "/app/work" },
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
-            { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
+            { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
           ],
           label: text.workGroup,
         },
@@ -143,7 +143,7 @@ export function AppNavigation({
             { href: "/app/work", label: text.work, match: "/app/work" },
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
-            { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
+            { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
           ],
           label: text.workGroup,
         },
@@ -155,7 +155,7 @@ export function AppNavigation({
         ? pathname === item.match
         : pathname.startsWith(item.match),
     ) ?? navigationItems[0];
-  const activeExperience = activeItem.href === "/app/work" || activeItem.href === "/app/work/production" || activeItem.href === "/app/work/quality" || activeItem.href === "/app/delivery"
+  const activeExperience = activeItem.href === "/app/work" || activeItem.href.startsWith("/app/work/")
     ? text.workExperience
     : text.controlCenter;
 

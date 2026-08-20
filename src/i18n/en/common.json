@@ -173,6 +173,7 @@
     "emptyDescription": "New assigned work will appear here automatically.",
     "openPickup": "Open pickup",
     "viewPickups": "View pickups",
+    "viewDeliveries": "View deliveries",
     "viewProduction": "View production",
     "viewQuality": "View quality & packing",
     "openProduction": "Open production",
@@ -518,6 +519,60 @@
       "selectPhase": "Move order to",
       "title": "Quality & packing details",
       "workflow": "Quality & packing workflow"
+    }
+  },
+  "deliveryWorkspace": {
+    "assignedTo": "Assigned to",
+    "empty": "No deliveries are assigned for today.",
+    "nextDelivery": "Next delivery",
+    "nextEmpty": "There is no next delivery right now.",
+    "noTime": "No time",
+    "openDelivery": "Open delivery",
+    "order": "Order",
+    "priorities": {
+      "overdue": "Overdue",
+      "in_progress": "In progress",
+      "upcoming": "Upcoming",
+      "scheduled": "Scheduled today",
+      "assigned": "Assigned"
+    },
+    "queue": "Delivery queue",
+    "queueMine": "My deliveries",
+    "queueTeam": "Team deliveries",
+    "status": "Status",
+    "statuses": {
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "subtitle": "Review today's delivery route and open the next stop to take action.",
+    "summary": {
+      "inProgress": "In progress",
+      "overdue": "Overdue",
+      "toDo": "To do"
+    },
+    "tasks": "deliveries",
+    "title": "Delivery workspace",
+    "today": "Today",
+    "actions": {
+      "complete": "Complete delivery",
+      "start": "Start delivery"
+    },
+    "detail": {
+      "address": "Address",
+      "back": "Back to deliveries",
+      "contact": "Delivery contact",
+      "customer": "Customer",
+      "details": "Delivery details",
+      "noNotes": "No delivery notes.",
+      "notes": "Operational note",
+      "openOrder": "Open order",
+      "phone": "Phone",
+      "property": "Property",
+      "scheduledAt": "Scheduled for",
+      "title": "Delivery"
     }
   },
   "deliveryQueue": {

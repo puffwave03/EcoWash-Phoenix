@@ -173,6 +173,7 @@
     "emptyDescription": "Neu zugewiesene Arbeit erscheint hier automatisch.",
     "openPickup": "Abholung öffnen",
     "viewPickups": "Abholungen ansehen",
+    "viewDeliveries": "Lieferungen anzeigen",
     "viewProduction": "Produktion ansehen",
     "viewQuality": "Qualität und Verpackung ansehen",
     "openProduction": "Produktion öffnen",
@@ -518,6 +519,60 @@
       "selectPhase": "Auftrag verschieben nach",
       "title": "Details zu Qualität und Verpackung",
       "workflow": "Ablauf Qualität und Verpackung"
+    }
+  },
+  "deliveryWorkspace": {
+    "assignedTo": "Zugewiesen an",
+    "empty": "Für heute sind keine Lieferungen zugewiesen.",
+    "nextDelivery": "Nächste Lieferung",
+    "nextEmpty": "Im Moment steht keine nächste Lieferung an.",
+    "noTime": "Ohne Uhrzeit",
+    "openDelivery": "Lieferung öffnen",
+    "order": "Auftrag",
+    "priorities": {
+      "overdue": "Überfällig",
+      "in_progress": "In Bearbeitung",
+      "upcoming": "Demnächst",
+      "scheduled": "Heute geplant",
+      "assigned": "Zugewiesen"
+    },
+    "queue": "Lieferwarteschlange",
+    "queueMine": "Meine Lieferungen",
+    "queueTeam": "Lieferungen des Teams",
+    "status": "Status",
+    "statuses": {
+      "not_required": "Nicht erforderlich",
+      "scheduled": "Geplant",
+      "in_progress": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    },
+    "subtitle": "Prüfen Sie die heutige Liefertour und öffnen Sie den nächsten Stopp, um weiterzuarbeiten.",
+    "summary": {
+      "inProgress": "In Bearbeitung",
+      "overdue": "Überfällig",
+      "toDo": "Zu erledigen"
+    },
+    "tasks": "Lieferungen",
+    "title": "Lieferungsarbeitsbereich",
+    "today": "Heute",
+    "actions": {
+      "complete": "Lieferung abschließen",
+      "start": "Lieferung starten"
+    },
+    "detail": {
+      "address": "Adresse",
+      "back": "Zurück zu den Lieferungen",
+      "contact": "Lieferkontakt",
+      "customer": "Kunde",
+      "details": "Lieferdetails",
+      "noNotes": "Keine Lieferhinweise.",
+      "notes": "Betrieblicher Hinweis",
+      "openOrder": "Auftrag öffnen",
+      "phone": "Telefon",
+      "property": "Objekt",
+      "scheduledAt": "Geplant für",
+      "title": "Lieferung"
     }
   },
   "deliveryQueue": {
