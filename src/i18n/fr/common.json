@@ -258,6 +258,78 @@
       "title": "Collecte"
     }
   },
+  "controlCenter": {
+    "today": "Opérations du jour",
+    "title": "Centre de contrôle opérationnel",
+    "description": "Visualisez ce qui se passe aujourd’hui, les points d’attention et la répartition du travail actif dans l’équipe.",
+    "assignedTo": "Assignée à",
+    "order": "Commande",
+    "noTime": "Sans horaire planifié",
+    "open": "Ouvrir",
+    "summary": {
+      "title": "État opérationnel du jour",
+      "labels": {
+        "pickups": "Collectes actives",
+        "production": "Production active",
+        "quality": "Qualité et emballage",
+        "deliveries": "Livraisons actives",
+        "overdue": "En retard",
+        "inProgress": "En cours"
+      }
+    },
+    "exceptions": {
+      "title": "Exceptions opérationnelles",
+      "description": "Les problèmes actifs les plus urgents, classés par gravité et horaire.",
+      "empty": "Aucune exception opérationnelle ne nécessite d’attention."
+    },
+    "exceptionTypes": {
+      "overdue": "En retard",
+      "blocked": "Bloquée",
+      "unassigned": "Non assignée",
+      "upcoming": "Dans les 2 heures"
+    },
+    "upcoming": {
+      "title": "Prochaines activités",
+      "description": "Une vue courte du prochain travail assigné depuis Ma journée.",
+      "empty": "Aucune activité assignée à venir."
+    },
+    "workload": {
+      "title": "Charge de l’équipe",
+      "description": "Agrégation simple du travail actif, en retard et en cours par personne assignée.",
+      "empty": "Aucune charge active assignée.",
+      "active": "Actives",
+      "overdue": "En retard",
+      "inProgress": "En cours",
+      "highestLoad": "Charge la plus élevée",
+      "unknownAssignee": "Membre de l’équipe"
+    },
+    "quickLinks": {
+      "title": "Espaces opérationnels",
+      "description": "Passez directement de la supervision à la file opérationnelle pertinente."
+    },
+    "kinds": {
+      "pickup": "Collecte",
+      "production": "Production",
+      "quality": "Qualité et emballage",
+      "delivery": "Livraison"
+    },
+    "priorities": {
+      "overdue": "En retard",
+      "in_progress": "En cours",
+      "upcoming": "Imminente",
+      "scheduled": "Planifiée aujourd’hui",
+      "assigned": "Assignée"
+    },
+    "links": {
+      "pickups": "Collectes",
+      "production": "Production",
+      "quality": "Qualité et emballage",
+      "deliveries": "Livraisons",
+      "orders": "Commandes",
+      "alerts": "Alertes",
+      "dailyClose": "Clôture quotidienne"
+    }
+  },
   "dashboard": {
     "summary": {
       "title": "Vue opérationnelle",

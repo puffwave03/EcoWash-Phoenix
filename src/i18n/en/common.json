@@ -258,6 +258,78 @@
       "title": "Pickup"
     }
   },
+  "controlCenter": {
+    "today": "Today’s operations",
+    "title": "Operations Control Center",
+    "description": "See what is happening today, where attention is needed and how active work is distributed across the team.",
+    "assignedTo": "Assigned to",
+    "order": "Order",
+    "noTime": "No scheduled time",
+    "open": "Open",
+    "summary": {
+      "title": "Operational status today",
+      "labels": {
+        "pickups": "Active pickups",
+        "production": "Active production",
+        "quality": "Quality & packing",
+        "deliveries": "Active deliveries",
+        "overdue": "Overdue",
+        "inProgress": "In progress"
+      }
+    },
+    "exceptions": {
+      "title": "Operational exceptions",
+      "description": "The most urgent active issues, ordered by severity and time.",
+      "empty": "No operational exceptions require attention right now."
+    },
+    "exceptionTypes": {
+      "overdue": "Overdue",
+      "blocked": "Blocked",
+      "unassigned": "Unassigned",
+      "upcoming": "Due within 2 hours"
+    },
+    "upcoming": {
+      "title": "Next activities",
+      "description": "A short view of the next assigned work from My Day.",
+      "empty": "No upcoming assigned activities."
+    },
+    "workload": {
+      "title": "Team workload",
+      "description": "Simple aggregation of active, overdue and in-progress work by assignee.",
+      "empty": "No active assigned workload.",
+      "active": "Active",
+      "overdue": "Overdue",
+      "inProgress": "In progress",
+      "highestLoad": "Highest load",
+      "unknownAssignee": "Team member"
+    },
+    "quickLinks": {
+      "title": "Operational workspaces",
+      "description": "Move directly from supervision to the relevant operational queue."
+    },
+    "kinds": {
+      "pickup": "Pickup",
+      "production": "Production",
+      "quality": "Quality & packing",
+      "delivery": "Delivery"
+    },
+    "priorities": {
+      "overdue": "Overdue",
+      "in_progress": "In progress",
+      "upcoming": "Upcoming",
+      "scheduled": "Scheduled today",
+      "assigned": "Assigned"
+    },
+    "links": {
+      "pickups": "Pickups",
+      "production": "Production",
+      "quality": "Quality & packing",
+      "deliveries": "Deliveries",
+      "orders": "Orders",
+      "alerts": "Alerts",
+      "dailyClose": "Daily close"
+    }
+  },
   "dashboard": {
     "summary": {
       "title": "Operational overview",

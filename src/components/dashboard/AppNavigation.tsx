@@ -36,7 +36,7 @@ type AppNavigationProps = {
 function NavigationIcon({ href }: { href: string }) {
   const iconClasses = "h-5 w-5";
 
-  if (href === "/app") {
+  if (href === "/app" || href === "/app/control") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -107,7 +107,7 @@ export function AppNavigation({
     ? [
         {
           items: [
-            { href: "/app", label: text.overview, match: "/app" },
+            { href: "/app/control", label: text.controlCenter, match: "/app/control" },
             { href: "/app/orders", label: text.orders, match: "/app/orders" },
           ],
           label: text.controlGroup,
@@ -183,7 +183,7 @@ export function AppNavigation({
 
   if (mode === "mobile") {
     const primaryItems = isControlRole
-      ? navigationItems.filter((item) => ["/app", "/app/orders", "/app/work", "/app/alerts"].includes(item.href))
+      ? navigationItems.filter((item) => ["/app/control", "/app/orders", "/app/work", "/app/alerts"].includes(item.href))
       : navigationItems;
 
     return (

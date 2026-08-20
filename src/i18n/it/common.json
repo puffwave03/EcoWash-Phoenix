@@ -258,6 +258,78 @@
       "title": "Ritiro"
     }
   },
+  "controlCenter": {
+    "today": "Operazioni di oggi",
+    "title": "Control Center operativo",
+    "description": "Vedi cosa sta succedendo oggi, dove serve attenzione e come il lavoro attivo è distribuito nel team.",
+    "assignedTo": "Assegnata a",
+    "order": "Ordine",
+    "noTime": "Senza orario",
+    "open": "Apri",
+    "summary": {
+      "title": "Stato operativo di oggi",
+      "labels": {
+        "pickups": "Ritiri attivi",
+        "production": "Produzione attiva",
+        "quality": "Qualità e confezionamento",
+        "deliveries": "Consegne attive",
+        "overdue": "In ritardo",
+        "inProgress": "In corso"
+      }
+    },
+    "exceptions": {
+      "title": "Eccezioni operative",
+      "description": "I problemi attivi più urgenti, ordinati per gravità e orario.",
+      "empty": "Nessuna eccezione operativa richiede attenzione al momento."
+    },
+    "exceptionTypes": {
+      "overdue": "In ritardo",
+      "blocked": "Bloccata",
+      "unassigned": "Non assegnata",
+      "upcoming": "Entro 2 ore"
+    },
+    "upcoming": {
+      "title": "Prossime attività",
+      "description": "Una vista breve del prossimo lavoro assegnato da My Day.",
+      "empty": "Nessuna prossima attività assegnata."
+    },
+    "workload": {
+      "title": "Carico del team",
+      "description": "Aggregazione semplice del lavoro attivo, in ritardo e in corso per assegnatario.",
+      "empty": "Nessun carico attivo assegnato.",
+      "active": "Attive",
+      "overdue": "In ritardo",
+      "inProgress": "In corso",
+      "highestLoad": "Carico maggiore",
+      "unknownAssignee": "Membro del team"
+    },
+    "quickLinks": {
+      "title": "Workspace operativi",
+      "description": "Passa direttamente dalla supervisione alla coda operativa pertinente."
+    },
+    "kinds": {
+      "pickup": "Ritiro",
+      "production": "Produzione",
+      "quality": "Qualità e confezionamento",
+      "delivery": "Consegna"
+    },
+    "priorities": {
+      "overdue": "In ritardo",
+      "in_progress": "In corso",
+      "upcoming": "Imminente",
+      "scheduled": "Programmata oggi",
+      "assigned": "Assegnata"
+    },
+    "links": {
+      "pickups": "Ritiri",
+      "production": "Produzione",
+      "quality": "Qualità e confezionamento",
+      "deliveries": "Consegne",
+      "orders": "Ordini",
+      "alerts": "Avvisi",
+      "dailyClose": "Chiusura giornaliera"
+    }
+  },
   "dashboard": {
     "summary": {
       "title": "Panoramica operativa",

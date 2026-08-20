@@ -258,6 +258,78 @@
       "title": "Recogida"
     }
   },
+  "controlCenter": {
+    "today": "Operaciones de hoy",
+    "title": "Centro de control operativo",
+    "description": "Consulta qué ocurre hoy, dónde se necesita atención y cómo se distribuye el trabajo activo en el equipo.",
+    "assignedTo": "Asignada a",
+    "order": "Pedido",
+    "noTime": "Sin hora programada",
+    "open": "Abrir",
+    "summary": {
+      "title": "Estado operativo de hoy",
+      "labels": {
+        "pickups": "Recogidas activas",
+        "production": "Producción activa",
+        "quality": "Calidad y empaquetado",
+        "deliveries": "Entregas activas",
+        "overdue": "Atrasadas",
+        "inProgress": "En curso"
+      }
+    },
+    "exceptions": {
+      "title": "Excepciones operativas",
+      "description": "Los problemas activos más urgentes, ordenados por gravedad y hora.",
+      "empty": "Ninguna excepción operativa requiere atención ahora."
+    },
+    "exceptionTypes": {
+      "overdue": "Atrasada",
+      "blocked": "Bloqueada",
+      "unassigned": "Sin asignar",
+      "upcoming": "Dentro de 2 horas"
+    },
+    "upcoming": {
+      "title": "Próximas actividades",
+      "description": "Una vista breve del próximo trabajo asignado desde Mi día.",
+      "empty": "No hay próximas actividades asignadas."
+    },
+    "workload": {
+      "title": "Carga del equipo",
+      "description": "Agregación simple del trabajo activo, atrasado y en curso por persona asignada.",
+      "empty": "No hay carga activa asignada.",
+      "active": "Activas",
+      "overdue": "Atrasadas",
+      "inProgress": "En curso",
+      "highestLoad": "Mayor carga",
+      "unknownAssignee": "Miembro del equipo"
+    },
+    "quickLinks": {
+      "title": "Espacios operativos",
+      "description": "Pasa directamente de la supervisión a la cola operativa correspondiente."
+    },
+    "kinds": {
+      "pickup": "Recogida",
+      "production": "Producción",
+      "quality": "Calidad y empaquetado",
+      "delivery": "Entrega"
+    },
+    "priorities": {
+      "overdue": "Atrasada",
+      "in_progress": "En curso",
+      "upcoming": "Próxima",
+      "scheduled": "Programada hoy",
+      "assigned": "Asignada"
+    },
+    "links": {
+      "pickups": "Recogidas",
+      "production": "Producción",
+      "quality": "Calidad y empaquetado",
+      "deliveries": "Entregas",
+      "orders": "Pedidos",
+      "alerts": "Alertas",
+      "dailyClose": "Cierre diario"
+    }
+  },
   "dashboard": {
     "summary": {
       "title": "Resumen operativo",

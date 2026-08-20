@@ -258,6 +258,78 @@
       "title": "Abholung"
     }
   },
+  "controlCenter": {
+    "today": "Heutiger Betrieb",
+    "title": "Betriebliche Steuerzentrale",
+    "description": "Sehen Sie, was heute geschieht, wo Handlungsbedarf besteht und wie die aktive Arbeit im Team verteilt ist.",
+    "assignedTo": "Zugewiesen an",
+    "order": "Auftrag",
+    "noTime": "Ohne geplante Uhrzeit",
+    "open": "Öffnen",
+    "summary": {
+      "title": "Heutiger Betriebsstatus",
+      "labels": {
+        "pickups": "Aktive Abholungen",
+        "production": "Aktive Produktion",
+        "quality": "Qualität und Verpackung",
+        "deliveries": "Aktive Lieferungen",
+        "overdue": "Überfällig",
+        "inProgress": "In Bearbeitung"
+      }
+    },
+    "exceptions": {
+      "title": "Betriebliche Ausnahmen",
+      "description": "Die dringendsten aktiven Probleme, nach Schweregrad und Zeit geordnet.",
+      "empty": "Derzeit erfordert keine betriebliche Ausnahme Aufmerksamkeit."
+    },
+    "exceptionTypes": {
+      "overdue": "Überfällig",
+      "blocked": "Blockiert",
+      "unassigned": "Nicht zugewiesen",
+      "upcoming": "Innerhalb von 2 Stunden"
+    },
+    "upcoming": {
+      "title": "Nächste Aktivitäten",
+      "description": "Eine kurze Ansicht der nächsten zugewiesenen Arbeit aus Mein Tag.",
+      "empty": "Keine bevorstehenden zugewiesenen Aktivitäten."
+    },
+    "workload": {
+      "title": "Teamauslastung",
+      "description": "Einfache Aggregation aktiver, überfälliger und laufender Arbeit pro zugewiesener Person.",
+      "empty": "Keine aktive zugewiesene Auslastung.",
+      "active": "Aktiv",
+      "overdue": "Überfällig",
+      "inProgress": "In Bearbeitung",
+      "highestLoad": "Höchste Auslastung",
+      "unknownAssignee": "Teammitglied"
+    },
+    "quickLinks": {
+      "title": "Betriebliche Arbeitsbereiche",
+      "description": "Wechseln Sie direkt von der Aufsicht zur relevanten betrieblichen Warteschlange."
+    },
+    "kinds": {
+      "pickup": "Abholung",
+      "production": "Produktion",
+      "quality": "Qualität und Verpackung",
+      "delivery": "Lieferung"
+    },
+    "priorities": {
+      "overdue": "Überfällig",
+      "in_progress": "In Bearbeitung",
+      "upcoming": "Demnächst",
+      "scheduled": "Heute geplant",
+      "assigned": "Zugewiesen"
+    },
+    "links": {
+      "pickups": "Abholungen",
+      "production": "Produktion",
+      "quality": "Qualität und Verpackung",
+      "deliveries": "Lieferungen",
+      "orders": "Aufträge",
+      "alerts": "Warnungen",
+      "dailyClose": "Tagesabschluss"
+    }
+  },
   "dashboard": {
     "summary": {
       "title": "Operative Übersicht",
