@@ -158,24 +158,46 @@
     }
   },
   "work": {
-    "eyebrow": "Arbeit",
-    "title": "Beginnen Sie mit der aktuellen Arbeit",
-    "staffTitle": "Ihr operativer Arbeitsbereich",
-    "staffDescription": "Nutzen Sie diesen Bereich, um schnell in zugewiesene Produktion, Abholungen und Lieferungen zu wechseln, ohne administrativen Ballast.",
-    "controlTitle": "Arbeitserlebnis für das Team",
-    "controlDescription": "Dies ist der operative Einstiegspunkt für das Team. Die Kontrolle für Owner und Manager bleibt im Kontrollzentrum verfügbar.",
-    "nextTitle": "Grundlage",
-    "nextDescription": "Mein Tag wird zugewiesene Abholungen, Produktion, Qualität und Lieferungen aus vorhandenen operativen Daten zusammenführen.",
-    "startProduction": "Produktion öffnen",
-    "startDelivery": "Logistik öffnen",
-    "pickup": "Abholung",
-    "pickupDescription": "Zugewiesene Abholungen und Kontext zum Kundenstopp.",
-    "production": "Produktion",
-    "productionDescription": "Aktive Aufträge nach Produktionsphase gruppiert.",
-    "quality": "Qualität und Verpackung",
-    "qualityDescription": "Vorbereitet auf Basis der vorhandenen Status für Qualitätsprüfung und Verpackung.",
-    "delivery": "Lieferung",
-    "deliveryDescription": "Zugewiesene Lieferungen und Kontext zum Stopp."
+    "today": "Heute",
+    "greeting": "Guten Tag",
+    "todaySummary": "zugewiesene Aufgaben",
+    "urgent": "dringend",
+    "nextActivity": "Nächste Aufgabe",
+    "myActivities": "Meine Aufgaben",
+    "teamActivities": "Teamaufgaben",
+    "assignedTo": "Zugewiesen an",
+    "order": "Auftrag",
+    "noTime": "Ohne Uhrzeit",
+    "nextEmpty": "Im Moment gibt es keine nächste Aufgabe.",
+    "emptyTitle": "Heute sind keine Aufgaben zugewiesen",
+    "emptyDescription": "Neu zugewiesene Arbeit erscheint hier automatisch.",
+    "openPickup": "Abholung öffnen",
+    "openProduction": "Produktion öffnen",
+    "openDelivery": "Lieferung öffnen",
+    "resumeActivity": "Aufgabe fortsetzen",
+    "activityKinds": {
+      "pickup": "Abholung",
+      "production": "Produktion",
+      "quality": "Qualität und Verpackung",
+      "delivery": "Lieferung"
+    },
+    "priorityLabels": {
+      "overdue": "Überfällig",
+      "in_progress": "In Arbeit",
+      "upcoming": "Als Nächstes",
+      "scheduled": "Heute geplant",
+      "assigned": "Zugewiesen"
+    },
+    "workflowStatuses": {
+      "received": "Eingegangen",
+      "washing": "Waschen",
+      "drying": "Trocknen",
+      "ironing": "Bügeln",
+      "quality_check": "Qualitätsprüfung",
+      "packing": "Verpacken",
+      "scheduled": "Geplant",
+      "in_progress": "In Arbeit"
+    }
   },
   "dashboard": {
     "summary": {

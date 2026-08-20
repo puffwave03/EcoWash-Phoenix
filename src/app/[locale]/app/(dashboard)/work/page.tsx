@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { WorkExperienceLanding } from "@/components/work/WorkExperienceLanding";
-import { requireMembership } from "@/lib/auth/require-membership";
+import { MyDayDashboard } from "@/components/work/MyDayDashboard";
+import { getMyDayData } from "@/features/work/server/queries";
 
 type WorkPageProps = {
   params: Promise<{ locale: string }>;
@@ -8,35 +8,36 @@ type WorkPageProps = {
 
 export default async function WorkPage({ params }: WorkPageProps) {
   const { locale } = await params;
-  const [access, t] = await Promise.all([
-    requireMembership(locale),
+  const [data, t] = await Promise.all([
+    getMyDayData(locale),
     getTranslations({ locale, namespace: "common.work" }),
   ]);
 
   return (
-    <WorkExperienceLanding
-      isControlRole={access.membership.role === "owner" || access.membership.role === "manager"}
+    <MyDayDashboard
+      data={data}
       locale={locale}
-      profileName={access.profile.displayName || access.user.email || ""}
       text={{
-        controlDescription: t("controlDescription"),
-        controlTitle: t("controlTitle"),
-        delivery: t("delivery"),
-        deliveryDescription: t("deliveryDescription"),
-        eyebrow: t("eyebrow"),
-        nextDescription: t("nextDescription"),
-        nextTitle: t("nextTitle"),
-        pickup: t("pickup"),
-        pickupDescription: t("pickupDescription"),
-        production: t("production"),
-        productionDescription: t("productionDescription"),
-        quality: t("quality"),
-        qualityDescription: t("qualityDescription"),
-        staffDescription: t("staffDescription"),
-        staffTitle: t("staffTitle"),
-        startDelivery: t("startDelivery"),
-        startProduction: t("startProduction"),
-        title: t("title"),
+        activityKinds: t.raw("activityKinds"),
+        assignedTo: t("assignedTo"),
+        emptyDescription: t("emptyDescription"),
+        emptyTitle: t("emptyTitle"),
+        greeting: t("greeting"),
+        myActivities: t("myActivities"),
+        nextActivity: t("nextActivity"),
+        nextEmpty: t("nextEmpty"),
+        noTime: t("noTime"),
+        openDelivery: t("openDelivery"),
+        openPickup: t("openPickup"),
+        openProduction: t("openProduction"),
+        order: t("order"),
+        priorityLabels: t.raw("priorityLabels"),
+        resumeActivity: t("resumeActivity"),
+        teamActivities: t("teamActivities"),
+        today: t("today"),
+        todaySummary: t("todaySummary"),
+        urgent: t("urgent"),
+        workflowStatuses: t.raw("workflowStatuses"),
       }}
     />
   );

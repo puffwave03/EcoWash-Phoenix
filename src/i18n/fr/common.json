@@ -158,24 +158,46 @@
     }
   },
   "work": {
-    "eyebrow": "Travail",
-    "title": "Commencez par le travail devant vous",
-    "staffTitle": "Votre espace opérationnel",
-    "staffDescription": "Utilisez cet espace pour accéder vite à la production, aux collectes et aux livraisons assignées sans bruit administratif.",
-    "controlTitle": "Expérience de travail du personnel",
-    "controlDescription": "C'est le point d'entrée opérationnel du personnel. Le contrôle owner et manager reste disponible depuis le Centre de contrôle.",
-    "nextTitle": "Fondation",
-    "nextDescription": "Ma journée agrégera les collectes, la production, la qualité et les livraisons assignées à partir des données opérationnelles existantes.",
-    "startProduction": "Ouvrir production",
-    "startDelivery": "Ouvrir logistique",
-    "pickup": "Collecte",
-    "pickupDescription": "Collectes assignées et contexte de l'arrêt client.",
-    "production": "Production",
-    "productionDescription": "Commandes actives regroupées par étape de production.",
-    "quality": "Qualité et emballage",
-    "qualityDescription": "Préparé autour des statuts existants de contrôle qualité et d'emballage.",
-    "delivery": "Livraison",
-    "deliveryDescription": "Livraisons assignées et contexte de l'arrêt."
+    "today": "Aujourd'hui",
+    "greeting": "Bonne journée",
+    "todaySummary": "activités assignées",
+    "urgent": "urgentes",
+    "nextActivity": "Prochaine activité",
+    "myActivities": "Mes activités",
+    "teamActivities": "Activités de l'équipe",
+    "assignedTo": "Assignée à",
+    "order": "Commande",
+    "noTime": "Sans horaire",
+    "nextEmpty": "Aucune prochaine activité pour le moment.",
+    "emptyTitle": "Aucune activité assignée aujourd'hui",
+    "emptyDescription": "Les nouvelles activités assignées apparaîtront ici automatiquement.",
+    "openPickup": "Ouvrir la collecte",
+    "openProduction": "Ouvrir la production",
+    "openDelivery": "Ouvrir la livraison",
+    "resumeActivity": "Reprendre l'activité",
+    "activityKinds": {
+      "pickup": "Collecte",
+      "production": "Production",
+      "quality": "Qualité et emballage",
+      "delivery": "Livraison"
+    },
+    "priorityLabels": {
+      "overdue": "En retard",
+      "in_progress": "En cours",
+      "upcoming": "Prochaine",
+      "scheduled": "Planifiée aujourd'hui",
+      "assigned": "Assignée"
+    },
+    "workflowStatuses": {
+      "received": "Reçue",
+      "washing": "Lavage",
+      "drying": "Séchage",
+      "ironing": "Repassage",
+      "quality_check": "Contrôle qualité",
+      "packing": "Emballage",
+      "scheduled": "Planifiée",
+      "in_progress": "En cours"
+    }
   },
   "dashboard": {
     "summary": {

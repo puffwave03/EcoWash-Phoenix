@@ -158,24 +158,46 @@
     }
   },
   "work": {
-    "eyebrow": "Work",
-    "title": "Start from the work in front of you",
-    "staffTitle": "Your operational workspace",
-    "staffDescription": "Use this area to move quickly into assigned production, pickup and delivery work without the administration noise.",
-    "controlTitle": "Staff work experience",
-    "controlDescription": "This is the operational entry point for staff. Owner and manager control remains available from the Control Center.",
-    "nextTitle": "Foundation",
-    "nextDescription": "My Day will aggregate assigned pickups, production, quality and delivery work from the existing operational data.",
-    "startProduction": "Open production",
-    "startDelivery": "Open logistics",
-    "pickup": "Pickup",
-    "pickupDescription": "Assigned pickup tasks and customer stop context.",
-    "production": "Production",
-    "productionDescription": "Active orders grouped by production stage.",
-    "quality": "Quality & packing",
-    "qualityDescription": "Prepared around the existing quality check and packing statuses.",
-    "delivery": "Delivery",
-    "deliveryDescription": "Assigned delivery tasks and stop context."
+    "today": "Today",
+    "greeting": "Good day",
+    "todaySummary": "activities assigned",
+    "urgent": "urgent",
+    "nextActivity": "Next activity",
+    "myActivities": "My activities",
+    "teamActivities": "Team activities",
+    "assignedTo": "Assigned to",
+    "order": "Order",
+    "noTime": "No time",
+    "nextEmpty": "There is no next activity right now.",
+    "emptyTitle": "No activities assigned for today",
+    "emptyDescription": "New assigned work will appear here automatically.",
+    "openPickup": "Open pickup",
+    "openProduction": "Open production",
+    "openDelivery": "Open delivery",
+    "resumeActivity": "Resume activity",
+    "activityKinds": {
+      "pickup": "Pickup",
+      "production": "Production",
+      "quality": "Quality & packing",
+      "delivery": "Delivery"
+    },
+    "priorityLabels": {
+      "overdue": "Overdue",
+      "in_progress": "In progress",
+      "upcoming": "Next",
+      "scheduled": "Scheduled today",
+      "assigned": "Assigned"
+    },
+    "workflowStatuses": {
+      "received": "Received",
+      "washing": "Washing",
+      "drying": "Drying",
+      "ironing": "Ironing",
+      "quality_check": "Quality check",
+      "packing": "Packing",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress"
+    }
   },
   "dashboard": {
     "summary": {

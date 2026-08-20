@@ -158,24 +158,46 @@
     }
   },
   "work": {
-    "eyebrow": "Trabajo",
-    "title": "Empieza por el trabajo que tienes delante",
-    "staffTitle": "Tu espacio operativo",
-    "staffDescription": "Usa esta área para entrar rápido en producción, recogidas y entregas asignadas sin ruido administrativo.",
-    "controlTitle": "Experiencia de trabajo del equipo",
-    "controlDescription": "Este es el punto de entrada operativo para el equipo. El control de owner y manager sigue disponible en el Centro de control.",
-    "nextTitle": "Base",
-    "nextDescription": "Mi día agregará recogidas, producción, calidad y entregas asignadas desde los datos operativos existentes.",
-    "startProduction": "Abrir producción",
-    "startDelivery": "Abrir logística",
-    "pickup": "Recogida",
-    "pickupDescription": "Recogidas asignadas y contexto de la parada del cliente.",
-    "production": "Producción",
-    "productionDescription": "Pedidos activos agrupados por fase de producción.",
-    "quality": "Calidad y embalaje",
-    "qualityDescription": "Preparado sobre los estados existentes de control de calidad y embalaje.",
-    "delivery": "Entrega",
-    "deliveryDescription": "Entregas asignadas y contexto de la parada."
+    "today": "Hoy",
+    "greeting": "Buen día",
+    "todaySummary": "actividades asignadas",
+    "urgent": "urgentes",
+    "nextActivity": "Próxima actividad",
+    "myActivities": "Mis actividades",
+    "teamActivities": "Actividades del equipo",
+    "assignedTo": "Asignada a",
+    "order": "Pedido",
+    "noTime": "Sin hora",
+    "nextEmpty": "No hay una próxima actividad ahora mismo.",
+    "emptyTitle": "No hay actividades asignadas para hoy",
+    "emptyDescription": "El nuevo trabajo asignado aparecerá aquí automáticamente.",
+    "openPickup": "Abrir recogida",
+    "openProduction": "Abrir producción",
+    "openDelivery": "Abrir entrega",
+    "resumeActivity": "Retomar actividad",
+    "activityKinds": {
+      "pickup": "Recogida",
+      "production": "Producción",
+      "quality": "Calidad y embalaje",
+      "delivery": "Entrega"
+    },
+    "priorityLabels": {
+      "overdue": "Atrasada",
+      "in_progress": "En curso",
+      "upcoming": "Próxima",
+      "scheduled": "Programada hoy",
+      "assigned": "Asignada"
+    },
+    "workflowStatuses": {
+      "received": "Recibido",
+      "washing": "Lavado",
+      "drying": "Secado",
+      "ironing": "Planchado",
+      "quality_check": "Control de calidad",
+      "packing": "Embalaje",
+      "scheduled": "Programada",
+      "in_progress": "En curso"
+    }
   },
   "dashboard": {
     "summary": {

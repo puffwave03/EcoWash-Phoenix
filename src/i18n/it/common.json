@@ -158,24 +158,46 @@
     }
   },
   "work": {
-    "eyebrow": "Lavoro",
-    "title": "Parti dal lavoro davanti a te",
-    "staffTitle": "Il tuo spazio operativo",
-    "staffDescription": "Usa quest'area per entrare rapidamente in produzione, ritiri e consegne assegnati senza il rumore amministrativo.",
-    "controlTitle": "Esperienza di lavoro staff",
-    "controlDescription": "Questo è il punto di ingresso operativo per lo staff. Il controllo owner e manager resta disponibile dal Centro controllo.",
-    "nextTitle": "Fondazione",
-    "nextDescription": "La mia giornata aggregherà ritiri, produzione, qualità e consegne assegnati dai dati operativi esistenti.",
-    "startProduction": "Apri produzione",
-    "startDelivery": "Apri logistica",
-    "pickup": "Ritiro",
-    "pickupDescription": "Ritiri assegnati e contesto della fermata cliente.",
-    "production": "Produzione",
-    "productionDescription": "Ordini attivi raggruppati per fase produttiva.",
-    "quality": "Qualità e confezionamento",
-    "qualityDescription": "Preparato sugli stati esistenti di controllo qualità e confezionamento.",
-    "delivery": "Consegna",
-    "deliveryDescription": "Consegne assegnate e contesto della fermata."
+    "today": "Oggi",
+    "greeting": "Buona giornata",
+    "todaySummary": "attività assegnate",
+    "urgent": "urgenti",
+    "nextActivity": "Prossima attività",
+    "myActivities": "Le mie attività",
+    "teamActivities": "Attività del team",
+    "assignedTo": "Assegnata a",
+    "order": "Ordine",
+    "noTime": "Senza orario",
+    "nextEmpty": "Non ci sono prossime attività al momento.",
+    "emptyTitle": "Nessuna attività assegnata per oggi",
+    "emptyDescription": "Le nuove attività assegnate appariranno qui automaticamente.",
+    "openPickup": "Apri ritiro",
+    "openProduction": "Apri produzione",
+    "openDelivery": "Apri consegna",
+    "resumeActivity": "Riprendi attività",
+    "activityKinds": {
+      "pickup": "Ritiro",
+      "production": "Produzione",
+      "quality": "Qualità e confezionamento",
+      "delivery": "Consegna"
+    },
+    "priorityLabels": {
+      "overdue": "Arretrata",
+      "in_progress": "In corso",
+      "upcoming": "Prossima",
+      "scheduled": "Programmata oggi",
+      "assigned": "Assegnata"
+    },
+    "workflowStatuses": {
+      "received": "Ricevuto",
+      "washing": "Lavaggio",
+      "drying": "Asciugatura",
+      "ironing": "Stiratura",
+      "quality_check": "Controllo qualità",
+      "packing": "Confezionamento",
+      "scheduled": "Programmata",
+      "in_progress": "In corso"
+    }
   },
   "dashboard": {
     "summary": {
