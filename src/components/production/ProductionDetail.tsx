@@ -43,14 +43,16 @@ export type ProductionDetailText = {
 type ProductionDetailProps = {
   action: (formData: FormData) => Promise<void>;
   allowedTransitions: ProductionStatus[];
+  backHref?: string;
   isSupervision: boolean;
   locale: string;
   task: ProductionTask;
   text: ProductionDetailText;
   timeZone: string;
+  workflowPhases?: ProductionStatus[];
 };
 
-const workflowPhases: ProductionStatus[] = [
+const defaultWorkflowPhases: ProductionStatus[] = [
   "draft",
   "received",
   "washing",
@@ -94,11 +96,13 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 export function ProductionDetail({
   action,
   allowedTransitions,
+  backHref = "/app/work/production",
   isSupervision,
   locale,
   task,
   text,
   timeZone,
+  workflowPhases = defaultWorkflowPhases,
 }: ProductionDetailProps) {
   const workflowCurrentStatus = task.productionStatus === "on_hold"
     ? task.previousStatus
@@ -108,7 +112,7 @@ export function ProductionDetail({
     <div className="mx-auto max-w-4xl space-y-4 sm:space-y-5">
       <Link
         className="inline-flex min-h-11 items-center gap-2 rounded-control px-1 text-sm font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        href="/app/work/production"
+        href={backHref}
         locale={locale}
       >
         <span aria-hidden="true">←</span> {text.back}

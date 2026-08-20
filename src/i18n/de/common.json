@@ -174,6 +174,7 @@
     "openPickup": "Abholung öffnen",
     "viewPickups": "Abholungen ansehen",
     "viewProduction": "Produktion ansehen",
+    "viewQuality": "Qualität und Verpackung ansehen",
     "openProduction": "Produktion öffnen",
     "openDelivery": "Lieferung öffnen",
     "resumeActivity": "Aufgabe fortsetzen",
@@ -447,6 +448,76 @@
       "selectPhase": "Auftrag verschieben nach",
       "title": "Produktionsdetails",
       "workflow": "Produktionsablauf"
+    }
+  },
+  "qualityWorkspace": {
+    "title": "Arbeitsbereich Qualität und Verpackung",
+    "subtitle": "Sehen Sie, welche Aufträge jetzt geprüft oder verpackt werden müssen, und führen Sie sie im zulässigen Ablauf weiter.",
+    "today": "Heute",
+    "tasks": "aktive Aufträge",
+    "nextOrder": "Diesen Auftrag jetzt bearbeiten",
+    "nextEmpty": "Keine Aufträge warten auf Qualitätsprüfung oder Verpackung.",
+    "queueMine": "Meine Qualitäts- und Verpackungsliste",
+    "queueTeam": "Qualitäts- und Verpackungsliste des Teams",
+    "openTask": "Aufgabe öffnen",
+    "noDeadline": "Keine Frist",
+    "order": "Auftrag",
+    "property": "Objekt",
+    "priority": "Priorität",
+    "due": "Fällig",
+    "assignedTo": "Zugewiesen an",
+    "services": "Leistungen",
+    "empty": "Keine Aufträge in dieser Gruppe.",
+    "groups": {
+      "toCheck": "Zu prüfen",
+      "toPack": "Zu verpacken"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Entwurf",
+      "received": "Eingegangen",
+      "washing": "Waschen",
+      "drying": "Trocknen",
+      "ironing": "Bügeln",
+      "quality_check": "Qualitätskontrolle",
+      "packing": "Verpacken",
+      "ready": "Bereit",
+      "completed": "Produktion abgeschlossen",
+      "on_hold": "Pausiert",
+      "cancelled": "Storniert"
+    },
+    "units": {
+      "piece": "Stk.",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "Überfällig",
+      "in_progress": "In Bearbeitung",
+      "due_soon": "Bald fällig",
+      "scheduled": "Geplant",
+      "unscheduled": "Keine Frist"
+    },
+    "detail": {
+      "back": "Zurück zu Qualität und Verpackung",
+      "blocked": "Arbeit blockiert",
+      "currentPhase": "Aktuelle Phase",
+      "customer": "Kunde",
+      "items": "Tatsächliche Mengen und Leistungen",
+      "markReady": "Als bereit markieren",
+      "nextPhase": "Nächste zulässige Phase",
+      "noActions": "Keine weitere Qualitäts- oder Verpackungsaktion verfügbar.",
+      "noItems": "Keine aktiven Auftragspositionen.",
+      "noNotes": "Keine betrieblichen Notizen.",
+      "notes": "Betriebliche Notiz",
+      "openOrder": "Vollständigen Auftrag öffnen",
+      "passToPacking": "Zur Verpackung weitergeben",
+      "reason": "Grund",
+      "selectPhase": "Auftrag verschieben nach",
+      "title": "Details zu Qualität und Verpackung",
+      "workflow": "Ablauf Qualität und Verpackung"
     }
   },
   "deliveryQueue": {

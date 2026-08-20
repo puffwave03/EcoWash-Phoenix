@@ -16,6 +16,7 @@ import type {
   ProductionTaskItem,
   ProductionUrgency,
   ProductionWorkspaceData,
+  QualityWorkspaceData,
 } from "@/features/production/types";
 import type { ServiceUnitType } from "@/features/services/types";
 import { requireMembership } from "@/lib/auth/require-membership";
@@ -69,6 +70,10 @@ const PROCESSING_STATUSES: ProductionStatus[] = [
   "on_hold",
 ];
 const DUE_SOON_WINDOW_MS = 2 * 60 * 60 * 1000;
+const QUALITY_WORKSPACE_STATUSES: ProductionStatus[] = [
+  "quality_check",
+  "packing",
+];
 const PRODUCTION_SELECT =
   "id, order_number, production_status, priority, due_at, assigned_to, internal_notes, on_hold_reason, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name), items:order_items!order_items_order_same_organization(description, unit_type, quantity, notes, is_active)";
 
@@ -168,9 +173,10 @@ function productionTaskSort(a: ProductionTask, b: ProductionTask) {
   return a.orderNumber.localeCompare(b.orderNumber);
 }
 
-export async function getProductionWorkspaceData(
+async function listProductionTasks(
   locale: string,
-): Promise<ProductionWorkspaceData> {
+  statuses: ProductionStatus[],
+) {
   const { membership, profile } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { now, timeZone } = todayWindow(membership.organization.timezone);
@@ -180,7 +186,7 @@ export async function getProductionWorkspaceData(
     .select(PRODUCTION_SELECT)
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
-    .in("production_status", ACTIVE_PRODUCTION_STATUSES)
+    .in("production_status", statuses)
     .order("due_at", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(150);
@@ -189,11 +195,26 @@ export async function getProductionWorkspaceData(
 
   const { data, error } = await query.returns<ProductionOrderRow[]>();
 
-  if (error) console.error("Production workspace query failed", error.code);
+  return {
+    error,
+    isSupervision,
+    now,
+    tasks: (data ?? [])
+      .map((row) => mapProductionTask(row, now))
+      .sort(productionTaskSort),
+    timeZone,
+  };
+}
 
-  const tasks = (data ?? [])
-    .map((row) => mapProductionTask(row, now))
-    .sort(productionTaskSort);
+export async function getProductionWorkspaceData(
+  locale: string,
+): Promise<ProductionWorkspaceData> {
+  const { error, isSupervision, now, tasks, timeZone } = await listProductionTasks(
+    locale,
+    ACTIVE_PRODUCTION_STATUSES,
+  );
+
+  if (error) console.error("Production workspace query failed", error.code);
 
   return {
     generatedAt: now.toISOString(),
@@ -204,6 +225,30 @@ export async function getProductionWorkspaceData(
       ready: tasks.filter((task) => task.group === "ready").length,
       toCheck: tasks.filter((task) => task.group === "toCheck").length,
       toStart: tasks.filter((task) => task.group === "toStart").length,
+      total: tasks.length,
+    },
+    tasks,
+    timeZone,
+  };
+}
+
+export async function getQualityWorkspaceData(
+  locale: string,
+): Promise<QualityWorkspaceData> {
+  const { error, isSupervision, now, tasks, timeZone } = await listProductionTasks(
+    locale,
+    QUALITY_WORKSPACE_STATUSES,
+  );
+
+  if (error) console.error("Quality workspace query failed", error.code);
+
+  return {
+    generatedAt: now.toISOString(),
+    isSupervision,
+    nextOrder: tasks[0] ?? null,
+    summary: {
+      toCheck: tasks.filter((task) => task.productionStatus === "quality_check").length,
+      toPack: tasks.filter((task) => task.productionStatus === "packing").length,
       total: tasks.length,
     },
     tasks,
@@ -251,5 +296,25 @@ export async function getProductionWorkspaceTask(
     isSupervision,
     task,
     timeZone,
+  };
+}
+
+export async function getQualityWorkspaceTask(
+  locale: string,
+  orderId: string,
+) {
+  const result = await getProductionWorkspaceTask(locale, orderId);
+
+  if (!QUALITY_WORKSPACE_STATUSES.includes(result.task.productionStatus)) notFound();
+
+  const targetStatus: ProductionStatus = result.task.productionStatus === "quality_check"
+    ? "packing"
+    : "ready";
+
+  if (!result.allowedTransitions.includes(targetStatus)) notFound();
+
+  return {
+    ...result,
+    allowedTransitions: [targetStatus],
   };
 }

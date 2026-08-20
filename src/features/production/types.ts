@@ -53,3 +53,14 @@ export type ProductionWorkspaceData = {
   tasks: ProductionTask[];
   timeZone: string;
 };
+
+export type QualityGroup = "toCheck" | "toPack";
+
+export type QualityWorkspaceData = {
+  generatedAt: string;
+  isSupervision: boolean;
+  nextOrder: ProductionTask | null;
+  summary: Record<QualityGroup, number> & { total: number };
+  tasks: ProductionTask[];
+  timeZone: string;
+};

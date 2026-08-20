@@ -29,9 +29,11 @@ function revalidateOrders(locale: string, orderId?: string) {
   revalidatePath(`/${locale}/app/production`);
   revalidatePath(`/${locale}/app/work`);
   revalidatePath(`/${locale}/app/work/production`);
+  revalidatePath(`/${locale}/app/work/quality`);
   if (orderId) {
     revalidatePath(`/${locale}/app/orders/${orderId}`);
     revalidatePath(`/${locale}/app/work/production/${orderId}`);
+    revalidatePath(`/${locale}/app/work/quality/${orderId}`);
   }
 }
 

@@ -39,6 +39,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
         urgent: t("urgent"),
         viewPickups: t("viewPickups"),
         viewProduction: t("viewProduction"),
+        viewQuality: t("viewQuality"),
         workflowStatuses: t.raw("workflowStatuses"),
       }}
     />

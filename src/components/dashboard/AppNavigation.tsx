@@ -116,6 +116,7 @@ export function AppNavigation({
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
+            { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
             { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
           ],
           label: text.workGroup,
@@ -141,6 +142,7 @@ export function AppNavigation({
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
+            { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
             { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
           ],
           label: text.workGroup,
@@ -153,7 +155,7 @@ export function AppNavigation({
         ? pathname === item.match
         : pathname.startsWith(item.match),
     ) ?? navigationItems[0];
-  const activeExperience = activeItem.href === "/app/work" || activeItem.href === "/app/work/production" || activeItem.href === "/app/delivery"
+  const activeExperience = activeItem.href === "/app/work" || activeItem.href === "/app/work/production" || activeItem.href === "/app/work/quality" || activeItem.href === "/app/delivery"
     ? text.workExperience
     : text.controlCenter;
 

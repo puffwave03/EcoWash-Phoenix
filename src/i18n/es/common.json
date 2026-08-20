@@ -174,6 +174,7 @@
     "openPickup": "Abrir recogida",
     "viewPickups": "Ver recogidas",
     "viewProduction": "Ver producción",
+    "viewQuality": "Ver calidad y empaquetado",
     "openProduction": "Abrir producción",
     "openDelivery": "Abrir entrega",
     "resumeActivity": "Retomar actividad",
@@ -447,6 +448,76 @@
       "selectPhase": "Mover pedido a",
       "title": "Detalles de producción",
       "workflow": "Flujo de producción"
+    }
+  },
+  "qualityWorkspace": {
+    "title": "Espacio de calidad y empaquetado",
+    "subtitle": "Consulta qué pedidos revisar o empaquetar ahora y hazlos avanzar por el flujo permitido.",
+    "today": "Hoy",
+    "tasks": "pedidos activos",
+    "nextOrder": "Gestiona este pedido ahora",
+    "nextEmpty": "No hay pedidos esperando control de calidad o empaquetado.",
+    "queueMine": "Mi cola de calidad y empaquetado",
+    "queueTeam": "Cola de calidad y empaquetado del equipo",
+    "openTask": "Abrir tarea",
+    "noDeadline": "Sin fecha límite",
+    "order": "Pedido",
+    "property": "Propiedad",
+    "priority": "Prioridad",
+    "due": "Vencimiento",
+    "assignedTo": "Asignado a",
+    "services": "Servicios",
+    "empty": "No hay pedidos en este grupo.",
+    "groups": {
+      "toCheck": "Por revisar",
+      "toPack": "Por empaquetar"
+    },
+    "priorities": {
+      "normal": "Normal",
+      "express": "Express"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "received": "Recibido",
+      "washing": "Lavado",
+      "drying": "Secado",
+      "ironing": "Planchado",
+      "quality_check": "Control de calidad",
+      "packing": "Empaquetado",
+      "ready": "Listo",
+      "completed": "Producción completada",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado"
+    },
+    "units": {
+      "piece": "uds.",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "Atrasado",
+      "in_progress": "En proceso",
+      "due_soon": "Vence pronto",
+      "scheduled": "Programado",
+      "unscheduled": "Sin fecha límite"
+    },
+    "detail": {
+      "back": "Volver a calidad y empaquetado",
+      "blocked": "Trabajo bloqueado",
+      "currentPhase": "Fase actual",
+      "customer": "Cliente",
+      "items": "Cantidades y servicios reales",
+      "markReady": "Marcar como listo",
+      "nextPhase": "Siguiente fase permitida",
+      "noActions": "No hay más acciones de calidad o empaquetado disponibles.",
+      "noItems": "No hay líneas de pedido activas.",
+      "noNotes": "No hay notas operativas.",
+      "notes": "Nota operativa",
+      "openOrder": "Abrir pedido completo",
+      "passToPacking": "Pasar a empaquetado",
+      "reason": "Motivo",
+      "selectPhase": "Mover pedido a",
+      "title": "Detalles de calidad y empaquetado",
+      "workflow": "Flujo de calidad y empaquetado"
     }
   },
   "deliveryQueue": {

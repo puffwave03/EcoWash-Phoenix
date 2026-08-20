@@ -28,6 +28,7 @@ type MyDayDashboardText = {
   urgent: string;
   viewPickups: string;
   viewProduction: string;
+  viewQuality: string;
   workflowStatuses: Record<string, string>;
 };
 
@@ -86,7 +87,11 @@ function activityHref(activity: MyDayActivity) {
     return `/app/work/pickups/${activity.id.slice("pickup-".length)}`;
   }
 
-  if (activity.kind === "production" || activity.kind === "quality") {
+  if (activity.kind === "quality") {
+    return `/app/work/quality/${activity.orderId}`;
+  }
+
+  if (activity.kind === "production") {
     return `/app/work/production/${activity.orderId}`;
   }
 
@@ -284,6 +289,13 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
               locale={locale}
             >
               {text.viewProduction}
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              href="/app/work/quality"
+              locale={locale}
+            >
+              {text.viewQuality}
             </Link>
           </div>
         </div>
