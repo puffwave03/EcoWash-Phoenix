@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { StaffManagement } from "@/components/staff/StaffManagement";
 import {
   inviteStaffMemberAction,
+  removeStaffMembershipAction,
   sendStaffAccessEmailAction,
   updateStaffCapabilitiesAction,
   updateStaffMembershipAction,
@@ -34,9 +35,11 @@ export default async function StaffPage({ params }: StaffPageProps) {
         inviteAction={inviteStaffMemberAction.bind(null, locale)}
         locale={locale}
         members={members}
+        removeAction={removeStaffMembershipAction.bind(null, locale)}
         text={{
           active: t("active"),
           accessLink: t("accessLink"),
+          activeAssignmentsError: t("activeAssignmentsError"),
           add: t("add"),
           authUnavailable: t("authUnavailable"),
           capabilities: t("capabilities"),
@@ -46,8 +49,11 @@ export default async function StaffPage({ params }: StaffPageProps) {
           capabilityLabels: t.raw("capabilityLabels"),
           configuration: t("configuration"),
           confirmDeactivate: t("confirmDeactivate"),
+          confirmRemoval: t("confirmRemoval"),
+          confirmRemovalLabel: t("confirmRemovalLabel"),
           currentUser: t("currentUser"),
           deactivate: t("deactivate"),
+          deactivateFirstError: t("deactivateFirstError"),
           duplicate: t("duplicate"),
           email: t("email"),
           emailActionError: t("emailActionError"),
@@ -58,11 +64,17 @@ export default async function StaffPage({ params }: StaffPageProps) {
           invite: t("invite"),
           inviteError: t("inviteError"),
           invitedAt: t("invitedAt"),
+          lastOwnerError: t("lastOwnerError"),
           memberError: t("memberError"),
+          membershipRemoved: t("membershipRemoved"),
           name: t("name"),
           noEmail: t("noEmail"),
           pending: t("pending"),
           reactivate: t("reactivate"),
+          removalConfirmationError: t("removalConfirmationError"),
+          removeMembership: t("removeMembership"),
+          removeMembershipDescription: t("removeMembershipDescription"),
+          removeMembershipError: t("removeMembershipError"),
           resetPassword: t("resetPassword"),
           role: t("role"),
           roleManagedCapabilities: t("roleManagedCapabilities"),
@@ -70,8 +82,10 @@ export default async function StaffPage({ params }: StaffPageProps) {
           save: t("save"),
           saveCapabilities: t("saveCapabilities"),
           saving: t("saving"),
+          selfRemovalError: t("selfRemovalError"),
           status: t("status"),
           success: t("success"),
+          unnamedMember: t("unnamedMember"),
           updateSuccess: t("updateSuccess"),
         }}
         updateAction={updateStaffMembershipAction.bind(null, locale)}

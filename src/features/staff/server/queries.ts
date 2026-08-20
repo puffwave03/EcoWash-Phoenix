@@ -63,7 +63,9 @@ export async function getStaffAccess(locale: string) {
 
 export async function listStaffMembers(locale: string): Promise<StaffMember[]> {
   const access = await getStaffAccess(locale);
-  const supabase = await createSupabaseServerClient();
+  const supabase = hasSupabaseAdminConfig()
+    ? createSupabaseAdminClient()
+    : await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("organization_memberships")
     .select("id, profile_id, role, is_active, operational_capabilities, created_at, profile:profiles!organization_memberships_profile_id_fkey(display_name), invited_by_profile:profiles!organization_memberships_invited_by_fkey(display_name)")
@@ -94,7 +96,7 @@ export async function listStaffMembers(locale: string): Promise<StaffMember[]> {
       isActive: row.is_active,
       isCurrentUser: row.profile_id === access.profile.id,
       isInvitePending: details?.isInvitePending ?? false,
-      name: relationName(row.profile) ?? row.profile_id,
+      name: relationName(row.profile) ?? details?.email ?? "",
       profileId: row.profile_id,
       role: row.role,
     };

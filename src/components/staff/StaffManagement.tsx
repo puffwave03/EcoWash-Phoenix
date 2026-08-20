@@ -18,6 +18,7 @@ import type { AppRole } from "@/lib/auth/types";
 type StaffText = {
   accessLink: string;
   active: string;
+  activeAssignmentsError: string;
   add: string;
   authUnavailable: string;
   capabilities: string;
@@ -27,8 +28,11 @@ type StaffText = {
   capabilityLabels: Record<OperationalCapability, string>;
   configuration: string;
   confirmDeactivate: string;
+  confirmRemoval: string;
+  confirmRemovalLabel: string;
   currentUser: string;
   deactivate: string;
+  deactivateFirstError: string;
   duplicate: string;
   email: string;
   emailActionError: string;
@@ -39,11 +43,17 @@ type StaffText = {
   invite: string;
   inviteError: string;
   invitedAt: string;
+  lastOwnerError: string;
   memberError: string;
+  membershipRemoved: string;
   name: string;
   noEmail: string;
   pending: string;
   reactivate: string;
+  removalConfirmationError: string;
+  removeMembership: string;
+  removeMembershipDescription: string;
+  removeMembershipError: string;
   resetPassword: string;
   role: string;
   roleManagedCapabilities: string;
@@ -51,15 +61,18 @@ type StaffText = {
   save: string;
   saveCapabilities: string;
   saving: string;
+  selfRemovalError: string;
   status: string;
   success: string;
   updateSuccess: string;
+  unnamedMember: string;
 };
 
 const initialState: StaffActionState = { fieldErrors: {}, formError: null, success: false };
 const roleOptions: AppRole[] = ["owner", "manager", "staff"];
 
 function errorText(error: string | null, text: StaffText) {
+  if (error === "activeAssignments") return text.activeAssignmentsError;
   if (error === "authUnavailable") return text.authUnavailable;
   if (error === "configuration") return text.configuration;
   if (error === "duplicate") return text.duplicate;
@@ -67,6 +80,11 @@ function errorText(error: string | null, text: StaffText) {
   if (error === "membership") return text.memberError;
   if (error === "capabilities") return text.capabilitiesError;
   if (error === "emailAction") return text.emailActionError;
+  if (error === "deactivateFirst") return text.deactivateFirstError;
+  if (error === "removalConfirmation") return text.removalConfirmationError;
+  if (error === "selfRemoval") return text.selfRemovalError;
+  if (error === "lastOwner") return text.lastOwnerError;
+  if (error === "removeMembership") return text.removeMembershipError;
   if (error) return text.error;
 
   return null;
@@ -177,12 +195,60 @@ function EmailAction({
   );
 }
 
+function RemovalAction({
+  action,
+  memberName,
+  text,
+}: {
+  action: (state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
+  memberName: string;
+  text: StaffText;
+}) {
+  const [state, formAction, isPending] = useActionState(action, initialState);
+
+  return (
+    <form
+      action={formAction}
+      className="space-y-3 border-t border-red-200 pt-3"
+      onSubmit={(event) => {
+        if (!window.confirm(text.confirmRemoval)) event.preventDefault();
+      }}
+    >
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-red-800">{text.removeMembership}</p>
+        <p className="text-xs leading-5 text-red-700">{text.removeMembershipDescription}</p>
+      </div>
+      <label className="block space-y-1 text-xs font-semibold text-red-800">
+        <span>{text.confirmRemovalLabel}</span>
+        <input
+          autoComplete="off"
+          className="min-h-11 w-full rounded-control border border-red-200 bg-white px-3 text-sm font-normal text-foreground outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+          name="confirmation"
+          placeholder={memberName}
+          required
+          type="text"
+        />
+      </label>
+      <button
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-control border border-red-300 bg-white px-4 py-2.5 text-sm font-semibold text-red-800 transition-standard hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={isPending}
+        type="submit"
+      >
+        {isPending ? text.saving : text.removeMembership}
+      </button>
+      {state.formError ? <p className="text-xs text-red-700">{errorText(state.formError, text)}</p> : null}
+      {state.success ? <p className="text-xs font-medium text-green-700">{text.membershipRemoved}</p> : null}
+    </form>
+  );
+}
+
 function MemberCard({
   capabilityAction,
   emailAction,
   locale,
   member,
   membershipAction,
+  removeAction,
   text,
 }: {
   capabilityAction: (membershipId: string, state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
@@ -190,20 +256,23 @@ function MemberCard({
   locale: string;
   member: StaffMember;
   membershipAction: (membershipId: string, state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
+  removeAction: (membershipId: string, state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
   text: StaffText;
 }) {
   const [membershipState, membershipFormAction, isMembershipPending] = useActionState(membershipAction.bind(null, member.id), initialState);
   const [statusState, statusAction, isStatusPending] = useActionState(membershipAction.bind(null, member.id), initialState);
   const [capabilityState, capabilityFormAction, isCapabilityPending] = useActionState(capabilityAction.bind(null, member.id), initialState);
   const manageable = !member.isCurrentUser;
-  const message = errorText(membershipState.formError ?? statusState.formError, text);
+  const memberName = member.name || member.email || text.unnamedMember;
+  const membershipMessage = errorText(membershipState.formError, text);
+  const statusMessage = errorText(statusState.formError, text);
 
   return (
     <article className="rounded-card border border-border bg-white p-4 shadow-sm sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate text-base font-semibold text-primary">{member.name}</h3>
+            <h3 className="truncate text-base font-semibold text-primary">{memberName}</h3>
             {member.isCurrentUser ? <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">{text.currentUser}</span> : null}
             {member.isInvitePending ? <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">{text.pending}</span> : null}
           </div>
@@ -244,7 +313,7 @@ function MemberCard({
       </div>
 
       {manageable ? (
-        <div className="mt-5 grid gap-4 border-t border-border pt-4 xl:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="mt-5 grid gap-4 border-t border-border pt-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             {member.role === "staff" ? (
               <form action={capabilityFormAction} className="space-y-3">
@@ -274,28 +343,43 @@ function MemberCard({
               </div>
             </form>
 
-            <form
-              action={statusAction}
-              onSubmit={(event) => {
-                if (member.isActive && !window.confirm(text.confirmDeactivate)) event.preventDefault();
-              }}
-            >
-              <input name="role" type="hidden" value={member.role} />
-              <input name="isActive" type="hidden" value={member.isActive ? "false" : "true"} />
-              <Button className="w-full sm:w-auto" disabled={isStatusPending} type="submit" variant={member.isActive ? "secondary" : "primary"}>
-                {isStatusPending ? text.saving : member.isActive ? text.deactivate : text.reactivate}
-              </Button>
-            </form>
-            {message ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</p> : null}
-            {membershipState.success || statusState.success ? <p className="text-sm font-medium text-green-700">{text.updateSuccess}</p> : null}
+            {membershipMessage ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{membershipMessage}</p> : null}
+            {membershipState.success ? <p className="text-sm font-medium text-green-700">{text.updateSuccess}</p> : null}
           </div>
 
-          {member.email ? (
+          <div className="space-y-3">
             <div className="space-y-2 rounded-control border border-border bg-[#f7f8f7] p-3">
               <EmailAction action={emailAction.bind(null, member.id)} intent="access" label={text.accessLink} text={text} />
-              <EmailAction action={emailAction.bind(null, member.id)} intent="reset" label={text.resetPassword} text={text} />
+              {member.email ? (
+                <EmailAction action={emailAction.bind(null, member.id)} intent="reset" label={text.resetPassword} text={text} />
+              ) : null}
             </div>
-          ) : null}
+
+            <div className="space-y-3 rounded-control border border-border bg-[#f7f8f7] p-3">
+              <form
+                action={statusAction}
+                onSubmit={(event) => {
+                  if (member.isActive && !window.confirm(text.confirmDeactivate)) event.preventDefault();
+                }}
+              >
+                <input name="role" type="hidden" value={member.role} />
+                <input name="isActive" type="hidden" value={member.isActive ? "false" : "true"} />
+                <Button className="w-full" disabled={isStatusPending} type="submit" variant={member.isActive ? "secondary" : "primary"}>
+                  {isStatusPending ? text.saving : member.isActive ? text.deactivate : text.reactivate}
+                </Button>
+              </form>
+              {statusMessage ? <p className="text-xs text-red-700">{statusMessage}</p> : null}
+              {statusState.success ? <p className="text-xs font-medium text-green-700">{text.updateSuccess}</p> : null}
+
+              {!member.isActive ? (
+                <RemovalAction
+                  action={removeAction.bind(null, member.id)}
+                  memberName={memberName}
+                  text={text}
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
       ) : null}
     </article>
@@ -308,6 +392,7 @@ export function StaffManagement({
   inviteAction,
   locale,
   members,
+  removeAction,
   text,
   updateAction,
 }: {
@@ -316,6 +401,7 @@ export function StaffManagement({
   inviteAction: (state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
   locale: string;
   members: StaffMember[];
+  removeAction: (membershipId: string, state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
   text: StaffText;
   updateAction: (membershipId: string, state: StaffActionState, formData: FormData) => Promise<StaffActionState>;
 }) {
@@ -344,6 +430,7 @@ export function StaffManagement({
                   locale={locale}
                   member={member}
                   membershipAction={updateAction}
+                  removeAction={removeAction}
                   text={text}
                 />
               ))}

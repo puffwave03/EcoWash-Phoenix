@@ -199,7 +199,13 @@ export function AppNavigation({
 
   if (mode === "mobile") {
     const primaryItems = isControlRole
-      ? navigationItems.filter((item) => ["/app/control", "/app/orders", "/app/work", "/app/alerts"].includes(item.href))
+      ? navigationItems.filter((item) => [
+          "/app/control",
+          "/app/orders",
+          "/app/work",
+          "/app/alerts",
+          ...(role === "owner" ? ["/app/staff"] : []),
+        ].includes(item.href))
       : navigationItems;
 
     return (
@@ -214,7 +220,9 @@ export function AppNavigation({
               ? "grid-cols-2"
               : primaryItems.length === 3
                 ? "grid-cols-3"
-                : "grid-cols-4"
+                : primaryItems.length === 5
+                  ? "grid-cols-5"
+                  : "grid-cols-4"
         }`}>
           {primaryItems.map((item) => {
             const isActive = item.href === activeItem.href;

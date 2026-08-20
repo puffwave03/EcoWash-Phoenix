@@ -30,6 +30,13 @@ type StaffAuthPreparation =
   | { accessEmailPending: boolean; error: null; userId: string }
   | { accessEmailPending: false; error: "authUnavailable" | "invite"; userId: null };
 
+type RemovalMembershipRow = {
+  is_active: boolean;
+  profile: { display_name: string } | { display_name: string }[] | null;
+  profile_id: string;
+  role: AppRole;
+};
+
 function fail(formError: string | null = "generic", fieldErrors: Record<string, string> = {}) {
   return { fieldErrors, formError, success: false };
 }
@@ -48,6 +55,62 @@ function capabilitiesFromForm(formData: FormData): OperationalCapability[] {
 
 function revalidateStaff(locale: string) {
   revalidatePath(`/${locale}/app/staff`);
+}
+
+function profileDisplayName(
+  profile: RemovalMembershipRow["profile"],
+) {
+  const relation = Array.isArray(profile) ? profile[0] : profile;
+
+  return relation?.display_name ?? null;
+}
+
+async function hasActiveAssignments(
+  admin: ReturnType<typeof createSupabaseAdminClient>,
+  organizationId: string,
+  profileId: string,
+) {
+  const [orders, pickups, deliveries] = await Promise.all([
+    admin
+      .from("orders")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("assigned_to", profileId)
+      .not("production_status", "in", "(completed,cancelled)")
+      .limit(1)
+      .maybeSingle<{ id: string }>(),
+    admin
+      .from("pickups")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("assigned_to", profileId)
+      .not("status", "in", "(completed,cancelled)")
+      .limit(1)
+      .maybeSingle<{ id: string }>(),
+    admin
+      .from("deliveries")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("assigned_to", profileId)
+      .not("status", "in", "(completed,cancelled)")
+      .limit(1)
+      .maybeSingle<{ id: string }>(),
+  ]);
+
+  if (orders.error || pickups.error || deliveries.error) {
+    console.error("Staff active assignment check failed", {
+      deliveries: deliveries.error?.code ?? "ok",
+      orders: orders.error?.code ?? "ok",
+      pickups: pickups.error?.code ?? "ok",
+    });
+
+    return { error: true, hasAssignments: false };
+  }
+
+  return {
+    error: false,
+    hasAssignments: Boolean(orders.data || pickups.data || deliveries.data),
+  };
 }
 
 function authFailure(error: unknown): AuthFailure {
@@ -164,7 +227,9 @@ export async function inviteStaffMemberAction(
   if (!hasSupabaseAdminConfig()) return fail("configuration");
 
   const admin = createSupabaseAdminClient();
-  const redirectTo = `${siteConfig.url}/${locale}/app`;
+  const redirectUrl = new URL(`/${locale}/auth/callback`, siteConfig.url);
+  redirectUrl.searchParams.set("next", `/${locale}/app/work`);
+  const redirectTo = redirectUrl.toString();
   const authPreparation = await prepareStaffAuthUser({ admin, email, name, redirectTo });
   if (authPreparation.error) return fail(authPreparation.error);
 
@@ -292,7 +357,7 @@ export async function sendStaffAccessEmailAction(
   const redirectUrl = new URL(`/${locale}/auth/callback`, siteConfig.url);
   redirectUrl.searchParams.set(
     "next",
-    intent === "reset" ? `/${locale}/update-password` : `/${locale}/app`,
+    intent === "reset" ? `/${locale}/update-password` : `/${locale}/app/work`,
   );
   let error;
 
@@ -341,6 +406,74 @@ export async function updateStaffMembershipAction(
   if (error) {
     console.error("Staff membership update failed", error.code);
     return fail("membership");
+  }
+
+  revalidateStaff(locale);
+  return { fieldErrors: {}, formError: null, success: true };
+}
+
+export async function removeStaffMembershipAction(
+  locale: string,
+  membershipId: string,
+  _state: StaffActionState = initialState,
+  formData: FormData,
+) {
+  void _state;
+
+  const access = await getStaffAccess(locale);
+  if (!hasSupabaseAdminConfig()) return fail("configuration");
+
+  const confirmation = String(formData.get("confirmation") ?? "").trim();
+  const organizationId = access.membership.organization.id;
+  const admin = createSupabaseAdminClient();
+  const { data: membership, error: membershipError } = await admin
+    .from("organization_memberships")
+    .select("profile_id, role, is_active, profile:profiles!organization_memberships_profile_id_fkey(display_name)")
+    .eq("id", membershipId)
+    .eq("organization_id", organizationId)
+    .maybeSingle<RemovalMembershipRow>();
+
+  if (membershipError || !membership) return fail("removeMembership");
+  if (membership.profile_id === access.profile.id) return fail("selfRemoval");
+
+  const displayName = profileDisplayName(membership.profile);
+  if (!displayName || confirmation !== displayName) return fail("removalConfirmation");
+  if (membership.is_active) return fail("deactivateFirst");
+
+  if (membership.role === "owner") {
+    const { count, error: ownerCountError } = await admin
+      .from("organization_memberships")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organizationId)
+      .eq("role", "owner")
+      .eq("is_active", true);
+
+    if (ownerCountError) return fail("removeMembership");
+    if ((count ?? 0) < 1) return fail("lastOwner");
+  }
+
+  const assignmentCheck = await hasActiveAssignments(
+    admin,
+    organizationId,
+    membership.profile_id,
+  );
+
+  if (assignmentCheck.error) return fail("removeMembership");
+  if (assignmentCheck.hasAssignments) return fail("activeAssignments");
+
+  const { data: removedMembership, error: removalError } = await admin
+    .from("organization_memberships")
+    .delete()
+    .eq("id", membershipId)
+    .eq("organization_id", organizationId)
+    .eq("profile_id", membership.profile_id)
+    .eq("is_active", false)
+    .select("id")
+    .maybeSingle<{ id: string }>();
+
+  if (removalError || !removedMembership) {
+    console.error("Staff membership removal failed", removalError?.code ?? "missing_result");
+    return fail("removeMembership");
   }
 
   revalidateStaff(locale);
