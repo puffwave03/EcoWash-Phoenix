@@ -21,6 +21,8 @@ function fail(fieldErrors: Record<string, string> = {}, formError: string | null
 function revalidateOrder(locale: string, orderId: string) {
   revalidatePath(`/${locale}/app/orders/${orderId}`);
   revalidatePath(`/${locale}/app/delivery`);
+  revalidatePath(`/${locale}/app/work`);
+  revalidatePath(`/${locale}/app/work/pickups`);
 }
 
 async function existingAssignment(table: "deliveries" | "pickups", organizationId: string, orderId: string, recordId: string) {
@@ -162,8 +164,25 @@ export async function transitionPickupAction(locale: string, orderId: string, fo
 
   if (!pickupId || !targetStatus) return;
 
-  await requireMembership(locale);
+  const { membership, profile } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const { data: pickup, error: pickupError } = await supabase
+    .from("pickups")
+    .select("assigned_to")
+    .eq("organization_id", membership.organization.id)
+    .eq("order_id", orderId)
+    .eq("id", pickupId)
+    .maybeSingle<{ assigned_to: string | null }>();
+
+  if (
+    pickupError ||
+    !pickup ||
+    (membership.role === "staff" && pickup.assigned_to !== profile.id)
+  ) {
+    if (pickupError) console.error("Pickup transition authorization failed", pickupError.code);
+    return;
+  }
+
   const { error } = await supabase.rpc("transition_pickup_status", {
     target_pickup_id: pickupId,
     target_reason: optionalDbValue(reason),
@@ -172,6 +191,7 @@ export async function transitionPickupAction(locale: string, orderId: string, fo
 
   if (error) console.error("Pickup transition failed", error.code);
   revalidateOrder(locale, orderId);
+  revalidatePath(`/${locale}/app/work/pickups/${pickupId}`);
 }
 
 export async function transitionDeliveryAction(locale: string, orderId: string, formData: FormData) {

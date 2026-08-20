@@ -172,6 +172,7 @@
     "emptyTitle": "No activities assigned for today",
     "emptyDescription": "New assigned work will appear here automatically.",
     "openPickup": "Open pickup",
+    "viewPickups": "View pickups",
     "openProduction": "Open production",
     "openDelivery": "Open delivery",
     "resumeActivity": "Resume activity",
@@ -197,6 +198,61 @@
       "packing": "Packing",
       "scheduled": "Scheduled",
       "in_progress": "In progress"
+    }
+  },
+  "pickupWorkspace": {
+    "allCompleted": "All assigned pickups for today are complete.",
+    "assignedTo": "Assigned to",
+    "empty": "No pickups are assigned for today.",
+    "nextEmpty": "There is no next pickup right now.",
+    "nextPickup": "Next pickup",
+    "noTime": "No time",
+    "openPickup": "Open pickup",
+    "order": "Order",
+    "priorities": {
+      "overdue": "Overdue",
+      "in_progress": "In progress",
+      "upcoming": "Upcoming",
+      "scheduled": "Scheduled today",
+      "assigned": "Assigned"
+    },
+    "queue": "Pickup queue",
+    "queueMine": "My pickups",
+    "queueTeam": "Team pickups",
+    "status": "Status",
+    "statuses": {
+      "not_required": "Not required",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "subtitle": "Review today's pickup route and open the next stop to take action.",
+    "summary": {
+      "inProgress": "In progress",
+      "overdue": "Overdue",
+      "toDo": "To do"
+    },
+    "tasks": "pickups",
+    "title": "Pickup workspace",
+    "today": "Today",
+    "actions": {
+      "complete": "Complete pickup",
+      "start": "Start pickup"
+    },
+    "detail": {
+      "address": "Address",
+      "back": "Back to pickups",
+      "contact": "Pickup contact",
+      "customer": "Customer",
+      "details": "Pickup details",
+      "noNotes": "No pickup notes.",
+      "notes": "Notes",
+      "openOrder": "Open order",
+      "phone": "Phone",
+      "property": "Property",
+      "scheduledAt": "Scheduled for",
+      "title": "Pickup"
     }
   },
   "dashboard": {

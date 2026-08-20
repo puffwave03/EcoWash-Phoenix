@@ -172,6 +172,7 @@
     "emptyTitle": "Nessuna attività assegnata per oggi",
     "emptyDescription": "Le nuove attività assegnate appariranno qui automaticamente.",
     "openPickup": "Apri ritiro",
+    "viewPickups": "Vedi ritiri",
     "openProduction": "Apri produzione",
     "openDelivery": "Apri consegna",
     "resumeActivity": "Riprendi attività",
@@ -197,6 +198,61 @@
       "packing": "Confezionamento",
       "scheduled": "Programmata",
       "in_progress": "In corso"
+    }
+  },
+  "pickupWorkspace": {
+    "allCompleted": "Tutti i ritiri assegnati per oggi sono completati.",
+    "assignedTo": "Assegnato a",
+    "empty": "Nessun ritiro assegnato per oggi.",
+    "nextEmpty": "Non ci sono prossimi ritiri al momento.",
+    "nextPickup": "Prossimo ritiro",
+    "noTime": "Senza orario",
+    "openPickup": "Apri ritiro",
+    "order": "Ordine",
+    "priorities": {
+      "overdue": "In ritardo",
+      "in_progress": "In corso",
+      "upcoming": "Imminente",
+      "scheduled": "Programmato oggi",
+      "assigned": "Assegnato"
+    },
+    "queue": "Coda ritiri",
+    "queueMine": "I miei ritiri",
+    "queueTeam": "Ritiri del team",
+    "status": "Stato",
+    "statuses": {
+      "not_required": "Non richiesto",
+      "scheduled": "Programmato",
+      "in_progress": "In corso",
+      "completed": "Completato",
+      "cancelled": "Annullato"
+    },
+    "subtitle": "Controlla il percorso dei ritiri di oggi e apri la prossima tappa per intervenire.",
+    "summary": {
+      "inProgress": "In corso",
+      "overdue": "In ritardo",
+      "toDo": "Da fare"
+    },
+    "tasks": "ritiri",
+    "title": "Workspace ritiri",
+    "today": "Oggi",
+    "actions": {
+      "complete": "Completa ritiro",
+      "start": "Avvia ritiro"
+    },
+    "detail": {
+      "address": "Indirizzo",
+      "back": "Torna ai ritiri",
+      "contact": "Contatto per il ritiro",
+      "customer": "Cliente",
+      "details": "Dettagli ritiro",
+      "noNotes": "Nessuna nota per il ritiro.",
+      "notes": "Note",
+      "openOrder": "Apri ordine",
+      "phone": "Telefono",
+      "property": "Struttura",
+      "scheduledAt": "Programmato per",
+      "title": "Ritiro"
     }
   },
   "dashboard": {

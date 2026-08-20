@@ -172,6 +172,7 @@
     "emptyTitle": "No hay actividades asignadas para hoy",
     "emptyDescription": "El nuevo trabajo asignado aparecerá aquí automáticamente.",
     "openPickup": "Abrir recogida",
+    "viewPickups": "Ver recogidas",
     "openProduction": "Abrir producción",
     "openDelivery": "Abrir entrega",
     "resumeActivity": "Retomar actividad",
@@ -197,6 +198,61 @@
       "packing": "Embalaje",
       "scheduled": "Programada",
       "in_progress": "En curso"
+    }
+  },
+  "pickupWorkspace": {
+    "allCompleted": "Todas las recogidas asignadas para hoy están completadas.",
+    "assignedTo": "Asignada a",
+    "empty": "No hay recogidas asignadas para hoy.",
+    "nextEmpty": "No hay una próxima recogida en este momento.",
+    "nextPickup": "Próxima recogida",
+    "noTime": "Sin hora",
+    "openPickup": "Abrir recogida",
+    "order": "Pedido",
+    "priorities": {
+      "overdue": "Atrasada",
+      "in_progress": "En curso",
+      "upcoming": "Próxima",
+      "scheduled": "Programada hoy",
+      "assigned": "Asignada"
+    },
+    "queue": "Cola de recogidas",
+    "queueMine": "Mis recogidas",
+    "queueTeam": "Recogidas del equipo",
+    "status": "Estado",
+    "statuses": {
+      "not_required": "No requerida",
+      "scheduled": "Programada",
+      "in_progress": "En curso",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    },
+    "subtitle": "Revisa la ruta de recogidas de hoy y abre la próxima parada para actuar.",
+    "summary": {
+      "inProgress": "En curso",
+      "overdue": "Atrasadas",
+      "toDo": "Por hacer"
+    },
+    "tasks": "recogidas",
+    "title": "Espacio de recogidas",
+    "today": "Hoy",
+    "actions": {
+      "complete": "Completar recogida",
+      "start": "Iniciar recogida"
+    },
+    "detail": {
+      "address": "Dirección",
+      "back": "Volver a recogidas",
+      "contact": "Contacto de recogida",
+      "customer": "Cliente",
+      "details": "Detalles de la recogida",
+      "noNotes": "No hay notas de recogida.",
+      "notes": "Notas",
+      "openOrder": "Abrir pedido",
+      "phone": "Teléfono",
+      "property": "Propiedad",
+      "scheduledAt": "Programada para",
+      "title": "Recogida"
     }
   },
   "dashboard": {

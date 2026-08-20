@@ -172,6 +172,7 @@
     "emptyTitle": "Aucune activité assignée aujourd'hui",
     "emptyDescription": "Les nouvelles activités assignées apparaîtront ici automatiquement.",
     "openPickup": "Ouvrir la collecte",
+    "viewPickups": "Voir les collectes",
     "openProduction": "Ouvrir la production",
     "openDelivery": "Ouvrir la livraison",
     "resumeActivity": "Reprendre l'activité",
@@ -197,6 +198,61 @@
       "packing": "Emballage",
       "scheduled": "Planifiée",
       "in_progress": "En cours"
+    }
+  },
+  "pickupWorkspace": {
+    "allCompleted": "Toutes les collectes assignées aujourd'hui sont terminées.",
+    "assignedTo": "Assignée à",
+    "empty": "Aucune collecte n'est assignée aujourd'hui.",
+    "nextEmpty": "Il n'y a aucune prochaine collecte pour le moment.",
+    "nextPickup": "Prochaine collecte",
+    "noTime": "Sans horaire",
+    "openPickup": "Ouvrir la collecte",
+    "order": "Commande",
+    "priorities": {
+      "overdue": "En retard",
+      "in_progress": "En cours",
+      "upcoming": "Imminente",
+      "scheduled": "Planifiée aujourd'hui",
+      "assigned": "Assignée"
+    },
+    "queue": "File des collectes",
+    "queueMine": "Mes collectes",
+    "queueTeam": "Collectes de l'équipe",
+    "status": "Statut",
+    "statuses": {
+      "not_required": "Non requise",
+      "scheduled": "Planifiée",
+      "in_progress": "En cours",
+      "completed": "Terminée",
+      "cancelled": "Annulée"
+    },
+    "subtitle": "Consultez la tournée de collecte du jour et ouvrez le prochain arrêt pour agir.",
+    "summary": {
+      "inProgress": "En cours",
+      "overdue": "En retard",
+      "toDo": "À faire"
+    },
+    "tasks": "collectes",
+    "title": "Espace collectes",
+    "today": "Aujourd'hui",
+    "actions": {
+      "complete": "Terminer la collecte",
+      "start": "Démarrer la collecte"
+    },
+    "detail": {
+      "address": "Adresse",
+      "back": "Retour aux collectes",
+      "contact": "Contact de la collecte",
+      "customer": "Client",
+      "details": "Détails de la collecte",
+      "noNotes": "Aucune note de collecte.",
+      "notes": "Notes",
+      "openOrder": "Ouvrir la commande",
+      "phone": "Téléphone",
+      "property": "Établissement",
+      "scheduledAt": "Planifiée pour",
+      "title": "Collecte"
     }
   },
   "dashboard": {

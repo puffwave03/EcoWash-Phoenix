@@ -26,6 +26,7 @@ type MyDayDashboardText = {
   today: string;
   todaySummary: string;
   urgent: string;
+  viewPickups: string;
   workflowStatuses: Record<string, string>;
 };
 
@@ -80,7 +81,11 @@ function formatActivityTime(
 }
 
 function activityHref(activity: MyDayActivity) {
-  const section = activity.kind === "pickup" || activity.kind === "delivery"
+  if (activity.kind === "pickup") {
+    return `/app/work/pickups/${activity.id.slice("pickup-".length)}`;
+  }
+
+  const section = activity.kind === "delivery"
     ? "logistics"
     : "production";
 
@@ -261,9 +266,18 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
               {formatToday(data.generatedAt, locale, data.timeZone)}
             </p>
           </div>
-          <p className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
-            {data.summary.total} {text.todaySummary} · {data.summary.urgent} {text.urgent}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
+              {data.summary.total} {text.todaySummary} · {data.summary.urgent} {text.urgent}
+            </p>
+            <Link
+              className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              href="/app/work/pickups"
+              locale={locale}
+            >
+              {text.viewPickups}
+            </Link>
+          </div>
         </div>
       </section>
 

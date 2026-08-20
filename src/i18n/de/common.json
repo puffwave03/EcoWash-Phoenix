@@ -172,6 +172,7 @@
     "emptyTitle": "Heute sind keine Aufgaben zugewiesen",
     "emptyDescription": "Neu zugewiesene Arbeit erscheint hier automatisch.",
     "openPickup": "Abholung öffnen",
+    "viewPickups": "Abholungen ansehen",
     "openProduction": "Produktion öffnen",
     "openDelivery": "Lieferung öffnen",
     "resumeActivity": "Aufgabe fortsetzen",
@@ -197,6 +198,61 @@
       "packing": "Verpacken",
       "scheduled": "Geplant",
       "in_progress": "In Arbeit"
+    }
+  },
+  "pickupWorkspace": {
+    "allCompleted": "Alle für heute zugewiesenen Abholungen sind abgeschlossen.",
+    "assignedTo": "Zugewiesen an",
+    "empty": "Für heute sind keine Abholungen zugewiesen.",
+    "nextEmpty": "Derzeit gibt es keine nächste Abholung.",
+    "nextPickup": "Nächste Abholung",
+    "noTime": "Keine Uhrzeit",
+    "openPickup": "Abholung öffnen",
+    "order": "Auftrag",
+    "priorities": {
+      "overdue": "Überfällig",
+      "in_progress": "In Arbeit",
+      "upcoming": "Demnächst",
+      "scheduled": "Heute geplant",
+      "assigned": "Zugewiesen"
+    },
+    "queue": "Abholliste",
+    "queueMine": "Meine Abholungen",
+    "queueTeam": "Abholungen des Teams",
+    "status": "Status",
+    "statuses": {
+      "not_required": "Nicht erforderlich",
+      "scheduled": "Geplant",
+      "in_progress": "In Arbeit",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    },
+    "subtitle": "Prüfen Sie die heutige Abholroute und öffnen Sie den nächsten Stopp, um fortzufahren.",
+    "summary": {
+      "inProgress": "In Arbeit",
+      "overdue": "Überfällig",
+      "toDo": "Offen"
+    },
+    "tasks": "Abholungen",
+    "title": "Abhol-Arbeitsbereich",
+    "today": "Heute",
+    "actions": {
+      "complete": "Abholung abschließen",
+      "start": "Abholung starten"
+    },
+    "detail": {
+      "address": "Adresse",
+      "back": "Zurück zu Abholungen",
+      "contact": "Abholkontakt",
+      "customer": "Kunde",
+      "details": "Abholdetails",
+      "noNotes": "Keine Abholnotizen.",
+      "notes": "Notizen",
+      "openOrder": "Auftrag öffnen",
+      "phone": "Telefon",
+      "property": "Objekt",
+      "scheduledAt": "Geplant für",
+      "title": "Abholung"
     }
   },
   "dashboard": {
