@@ -33,6 +33,64 @@ type AppNavigationProps = {
   text: AppNavigationText;
 };
 
+function NavigationIcon({ href }: { href: string }) {
+  const iconClasses = "h-5 w-5";
+
+  if (href === "/app") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/orders") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M8 5h10a2 2 0 0 1 2 2v12H8a3 3 0 0 1-3-3V5m0 11a3 3 0 0 1 3-3h12M5 5h3v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/work") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="m5 7 1.5 1.5L9 6M12 7h7M5 12l1.5 1.5L9 11m3 1h7M5 17l1.5 1.5L9 16m3 1h7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/alerts") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/production") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M4 19h16M6 19v-8l4 3v-4l4 3V7h4v12M15 7V4h3v3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/delivery") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M3 6h11v11H3V6Zm11 4h4l3 3v4h-7v-7ZM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 export function AppNavigation({
   alertCount = 0,
   locale,
@@ -127,29 +185,28 @@ export function AppNavigation({
     return (
       <nav
         aria-label={navigationLabel}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-card backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 px-2.5 pb-[max(env(safe-area-inset-bottom),0.375rem)] pt-1.5 shadow-[0_-8px_24px_rgb(15_59_46_/_0.08)] backdrop-blur-lg lg:hidden"
       >
-        <div className={`grid gap-1 ${primaryItems.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
+        <div className={`mx-auto grid max-w-lg gap-1 ${primaryItems.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
           {primaryItems.map((item) => {
             const isActive = item.href === activeItem.href;
 
             return (
               <Link
                 aria-current={isActive ? "page" : undefined}
-                className={`flex min-h-14 items-center justify-center rounded-control px-1.5 text-center text-[0.68rem] font-semibold leading-tight transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                className={`relative flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-1 text-center text-xs font-semibold leading-none transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
                   isActive
-                    ? "bg-primary !text-white shadow-card hover:!text-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
-                    : "text-muted hover:bg-primary-soft hover:text-primary"
+                    ? "bg-primary-soft text-primary"
+                    : "text-muted hover:bg-[#f5f7f5] hover:text-primary"
                 }`}
                 href={item.href}
                 key={item.href}
                 locale={locale}
               >
-                <span className="min-w-0 truncate">{item.label}</span>
+                <NavigationIcon href={item.href} />
+                <span className="block max-w-full truncate px-0.5">{item.label}</span>
                 {item.alertBadge && alertCount > 0 ? (
-                  <span className={`ml-1 min-w-5 rounded-full px-1.5 py-0.5 text-center text-[0.65rem] font-semibold ${
-                    isActive ? "bg-white text-primary" : "bg-secondary text-primary"
-                  }`}>
+                  <span className="absolute right-[calc(50%_-_1.45rem)] top-0.5 min-w-4 rounded-full bg-secondary px-1 py-0.5 text-center text-[0.625rem] font-bold leading-none text-primary shadow-sm">
                     {alertCount}
                   </span>
                 ) : null}

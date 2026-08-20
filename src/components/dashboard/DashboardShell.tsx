@@ -143,7 +143,7 @@ export function DashboardShell({
             }}
           />
 
-          <section className="px-4 py-5 pb-24 sm:px-5 lg:px-8 lg:py-6 lg:pb-8">
+          <section className="px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-5 lg:px-8 lg:py-6 lg:pb-8">
             {children}
           </section>
         </div>
