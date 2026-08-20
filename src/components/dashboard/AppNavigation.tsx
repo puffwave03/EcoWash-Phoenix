@@ -68,7 +68,7 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
-  if (href === "/app/production") {
+  if (href === "/app/production" || href === "/app/work/production") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M4 19h16M6 19v-8l4 3v-4l4 3V7h4v12M15 7V4h3v3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -115,7 +115,7 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
-            { href: "/app/production", label: text.production, match: "/app/production" },
+            { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
           ],
           label: text.workGroup,
@@ -140,7 +140,7 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
-            { href: "/app/production", label: text.production, match: "/app/production" },
+            { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/delivery", label: text.delivery, match: "/app/delivery" },
           ],
           label: text.workGroup,
@@ -149,9 +149,11 @@ export function AppNavigation({
   const navigationItems = navigationGroups.flatMap((group) => group.items);
   const activeItem =
     navigationItems.find((item) =>
-      item.match === "/app" ? pathname === "/app" : pathname.startsWith(item.match),
+      item.match === "/app" || item.match === "/app/work"
+        ? pathname === item.match
+        : pathname.startsWith(item.match),
     ) ?? navigationItems[0];
-  const activeExperience = activeItem.href === "/app/work" || activeItem.href === "/app/production" || activeItem.href === "/app/delivery"
+  const activeExperience = activeItem.href === "/app/work" || activeItem.href === "/app/work/production" || activeItem.href === "/app/delivery"
     ? text.workExperience
     : text.controlCenter;
 

@@ -173,6 +173,7 @@
     "emptyDescription": "Les nouvelles activités assignées apparaîtront ici automatiquement.",
     "openPickup": "Ouvrir la collecte",
     "viewPickups": "Voir les collectes",
+    "viewProduction": "Voir la production",
     "openProduction": "Ouvrir la production",
     "openDelivery": "Ouvrir la livraison",
     "resumeActivity": "Reprendre l'activité",
@@ -369,7 +370,17 @@
     }
   },
   "production": {
-    "title": "Production",
+    "title": "Espace production",
+    "subtitle": "Consultez la commande à traiter maintenant, sa phase actuelle et la prochaine action autorisée.",
+    "today": "Aujourd'hui",
+    "tasks": "commandes actives",
+    "nextOrder": "Traiter cette commande maintenant",
+    "nextEmpty": "Aucune commande de production n'est à traiter pour le moment.",
+    "queueMine": "Ma file de production",
+    "queueTeam": "File de production de l'équipe",
+    "openTask": "Ouvrir la tâche de production",
+    "noDeadline": "Sans échéance",
+    "services": "Services",
     "description": "Suivez les commandes actives par étape de production et ouvrez le détail quand le travail doit avancer.",
     "order": "Commande",
     "property": "Propriété",
@@ -384,8 +395,10 @@
       "unassigned": "Non assignées"
     },
     "groups": {
+      "toStart": "À démarrer",
       "todo": "À faire",
       "inProgress": "En cours",
+      "toCheck": "À contrôler",
       "onHold": "En pause",
       "ready": "Prêtes"
     },
@@ -405,6 +418,35 @@
       "completed": "Production terminée",
       "on_hold": "En pause",
       "cancelled": "Annulée"
+    },
+    "units": {
+      "piece": "pces",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "En retard",
+      "in_progress": "En cours",
+      "due_soon": "Échéance proche",
+      "scheduled": "Planifiée",
+      "unscheduled": "Sans échéance"
+    },
+    "detail": {
+      "action": "Mettre à jour la phase de production",
+      "back": "Retour à la production",
+      "blocked": "Production bloquée",
+      "currentPhase": "Phase actuelle",
+      "customer": "Client",
+      "items": "Quantités et services réels",
+      "nextPhase": "Prochaine phase autorisée",
+      "noActions": "Aucune autre action de production n'est disponible.",
+      "noItems": "Aucune ligne de commande active.",
+      "noNotes": "Aucune note opérationnelle.",
+      "notes": "Note opérationnelle",
+      "openOrder": "Ouvrir la commande complète",
+      "reason": "Motif",
+      "selectPhase": "Déplacer la commande vers",
+      "title": "Détails de production",
+      "workflow": "Flux de production"
     }
   },
   "deliveryQueue": {

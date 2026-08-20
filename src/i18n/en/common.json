@@ -173,6 +173,7 @@
     "emptyDescription": "New assigned work will appear here automatically.",
     "openPickup": "Open pickup",
     "viewPickups": "View pickups",
+    "viewProduction": "View production",
     "openProduction": "Open production",
     "openDelivery": "Open delivery",
     "resumeActivity": "Resume activity",
@@ -369,7 +370,17 @@
     }
   },
   "production": {
-    "title": "Production",
+    "title": "Production workspace",
+    "subtitle": "See what to work on now, the current phase and the next supported action.",
+    "today": "Today",
+    "tasks": "active orders",
+    "nextOrder": "Work this order next",
+    "nextEmpty": "There is no production order to work on right now.",
+    "queueMine": "My production queue",
+    "queueTeam": "Team production queue",
+    "openTask": "Open production task",
+    "noDeadline": "No deadline",
+    "services": "Services",
     "description": "Track active orders by production stage and open the order detail when work needs to move.",
     "order": "Order",
     "property": "Property",
@@ -384,8 +395,10 @@
       "unassigned": "Unassigned"
     },
     "groups": {
+      "toStart": "To start",
       "todo": "To do",
       "inProgress": "In progress",
+      "toCheck": "To check",
       "onHold": "On hold",
       "ready": "Ready"
     },
@@ -405,6 +418,35 @@
       "completed": "Production completed",
       "on_hold": "On hold",
       "cancelled": "Cancelled"
+    },
+    "units": {
+      "piece": "pcs",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "Overdue",
+      "in_progress": "In progress",
+      "due_soon": "Due soon",
+      "scheduled": "Scheduled",
+      "unscheduled": "No deadline"
+    },
+    "detail": {
+      "action": "Update production phase",
+      "back": "Back to production",
+      "blocked": "Production blocked",
+      "currentPhase": "Current phase",
+      "customer": "Customer",
+      "items": "Real quantities and services",
+      "nextPhase": "Next supported phase",
+      "noActions": "No further production action is available.",
+      "noItems": "No active order items.",
+      "noNotes": "No operational notes.",
+      "notes": "Operational note",
+      "openOrder": "Open full order",
+      "reason": "Reason",
+      "selectPhase": "Move order to",
+      "title": "Production details",
+      "workflow": "Production workflow"
     }
   },
   "deliveryQueue": {

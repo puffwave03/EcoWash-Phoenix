@@ -27,7 +27,12 @@ function revalidateOrders(locale: string, orderId?: string) {
   revalidatePath(`/${locale}/app`);
   revalidatePath(`/${locale}/app/orders`);
   revalidatePath(`/${locale}/app/production`);
-  if (orderId) revalidatePath(`/${locale}/app/orders/${orderId}`);
+  revalidatePath(`/${locale}/app/work`);
+  revalidatePath(`/${locale}/app/work/production`);
+  if (orderId) {
+    revalidatePath(`/${locale}/app/orders/${orderId}`);
+    revalidatePath(`/${locale}/app/work/production/${orderId}`);
+  }
 }
 
 function optionalAssignment(value: FormDataEntryValue | null) {
@@ -211,8 +216,24 @@ export async function transitionOrderStatusAction(
 
   if (!targetStatus) return;
 
-  await requireMembership(locale);
+  const { membership, profile } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .select("assigned_to")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", orderId)
+    .maybeSingle<{ assigned_to: string | null }>();
+
+  if (
+    orderError ||
+    !order ||
+    (membership.role === "staff" && order.assigned_to !== profile.id)
+  ) {
+    if (orderError) console.error("Order transition authorization failed", orderError.code);
+    return;
+  }
+
   const { error } = await supabase.rpc("transition_order_status", {
     target_order_id: orderId,
     target_reason: optionalDbValue(reason),

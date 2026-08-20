@@ -173,6 +173,7 @@
     "emptyDescription": "El nuevo trabajo asignado aparecerá aquí automáticamente.",
     "openPickup": "Abrir recogida",
     "viewPickups": "Ver recogidas",
+    "viewProduction": "Ver producción",
     "openProduction": "Abrir producción",
     "openDelivery": "Abrir entrega",
     "resumeActivity": "Retomar actividad",
@@ -369,7 +370,17 @@
     }
   },
   "production": {
-    "title": "Producción",
+    "title": "Espacio de producción",
+    "subtitle": "Consulta qué pedido trabajar ahora, la fase actual y la siguiente acción permitida.",
+    "today": "Hoy",
+    "tasks": "pedidos activos",
+    "nextOrder": "Trabaja este pedido ahora",
+    "nextEmpty": "No hay pedidos para trabajar en producción ahora mismo.",
+    "queueMine": "Mi cola de producción",
+    "queueTeam": "Cola de producción del equipo",
+    "openTask": "Abrir tarea de producción",
+    "noDeadline": "Sin fecha límite",
+    "services": "Servicios",
     "description": "Sigue los pedidos activos por fase de producción y abre el detalle cuando el trabajo deba avanzar.",
     "order": "Pedido",
     "property": "Propiedad",
@@ -384,8 +395,10 @@
       "unassigned": "Sin asignar"
     },
     "groups": {
+      "toStart": "Por iniciar",
       "todo": "Por hacer",
       "inProgress": "En producción",
+      "toCheck": "Por revisar",
       "onHold": "En pausa",
       "ready": "Listos"
     },
@@ -405,6 +418,35 @@
       "completed": "Producción completada",
       "on_hold": "En pausa",
       "cancelled": "Cancelado"
+    },
+    "units": {
+      "piece": "uds.",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "Atrasado",
+      "in_progress": "En producción",
+      "due_soon": "Vence pronto",
+      "scheduled": "Programado",
+      "unscheduled": "Sin fecha límite"
+    },
+    "detail": {
+      "action": "Actualizar fase de producción",
+      "back": "Volver a producción",
+      "blocked": "Producción bloqueada",
+      "currentPhase": "Fase actual",
+      "customer": "Cliente",
+      "items": "Cantidades y servicios reales",
+      "nextPhase": "Siguiente fase permitida",
+      "noActions": "No hay más acciones de producción disponibles.",
+      "noItems": "No hay líneas de pedido activas.",
+      "noNotes": "No hay notas operativas.",
+      "notes": "Nota operativa",
+      "openOrder": "Abrir pedido completo",
+      "reason": "Motivo",
+      "selectPhase": "Mover pedido a",
+      "title": "Detalles de producción",
+      "workflow": "Flujo de producción"
     }
   },
   "deliveryQueue": {

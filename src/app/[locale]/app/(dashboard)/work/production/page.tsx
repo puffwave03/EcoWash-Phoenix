@@ -1,10 +1,10 @@
 import { ProductionWorkspacePage } from "@/components/production/ProductionWorkspacePage";
 
-type ProductionPageProps = {
+type WorkProductionPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProductionPage({ params }: ProductionPageProps) {
+export default async function WorkProductionPage({ params }: WorkProductionPageProps) {
   const { locale } = await params;
 
   return <ProductionWorkspacePage locale={locale} />;

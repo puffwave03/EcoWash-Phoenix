@@ -173,6 +173,7 @@
     "emptyDescription": "Neu zugewiesene Arbeit erscheint hier automatisch.",
     "openPickup": "Abholung öffnen",
     "viewPickups": "Abholungen ansehen",
+    "viewProduction": "Produktion ansehen",
     "openProduction": "Produktion öffnen",
     "openDelivery": "Lieferung öffnen",
     "resumeActivity": "Aufgabe fortsetzen",
@@ -369,7 +370,17 @@
     }
   },
   "production": {
-    "title": "Produktion",
+    "title": "Produktionsarbeitsbereich",
+    "subtitle": "Sehen Sie, welcher Auftrag jetzt bearbeitet werden soll, die aktuelle Phase und die nächste zulässige Aktion.",
+    "today": "Heute",
+    "tasks": "aktive Aufträge",
+    "nextOrder": "Diesen Auftrag jetzt bearbeiten",
+    "nextEmpty": "Derzeit ist kein Produktionsauftrag zu bearbeiten.",
+    "queueMine": "Meine Produktionsliste",
+    "queueTeam": "Produktionsliste des Teams",
+    "openTask": "Produktionsaufgabe öffnen",
+    "noDeadline": "Keine Frist",
+    "services": "Leistungen",
     "description": "Verfolgen Sie aktive Aufträge nach Produktionsphase und öffnen Sie den Auftrag, wenn Arbeit weitergehen muss.",
     "order": "Auftrag",
     "property": "Objekt",
@@ -384,8 +395,10 @@
       "unassigned": "Nicht zugewiesen"
     },
     "groups": {
+      "toStart": "Zu starten",
       "todo": "Zu erledigen",
       "inProgress": "In Bearbeitung",
+      "toCheck": "Zu prüfen",
       "onHold": "Pausiert",
       "ready": "Bereit"
     },
@@ -405,6 +418,35 @@
       "completed": "Produktion abgeschlossen",
       "on_hold": "Pausiert",
       "cancelled": "Storniert"
+    },
+    "units": {
+      "piece": "Stk.",
+      "weight": "kg"
+    },
+    "urgencies": {
+      "overdue": "Überfällig",
+      "in_progress": "In Bearbeitung",
+      "due_soon": "Bald fällig",
+      "scheduled": "Geplant",
+      "unscheduled": "Keine Frist"
+    },
+    "detail": {
+      "action": "Produktionsphase aktualisieren",
+      "back": "Zurück zur Produktion",
+      "blocked": "Produktion blockiert",
+      "currentPhase": "Aktuelle Phase",
+      "customer": "Kunde",
+      "items": "Tatsächliche Mengen und Leistungen",
+      "nextPhase": "Nächste zulässige Phase",
+      "noActions": "Keine weitere Produktionsaktion verfügbar.",
+      "noItems": "Keine aktiven Auftragspositionen.",
+      "noNotes": "Keine betrieblichen Notizen.",
+      "notes": "Betriebliche Notiz",
+      "openOrder": "Vollständigen Auftrag öffnen",
+      "reason": "Grund",
+      "selectPhase": "Auftrag verschieben nach",
+      "title": "Produktionsdetails",
+      "workflow": "Produktionsablauf"
     }
   },
   "deliveryQueue": {
