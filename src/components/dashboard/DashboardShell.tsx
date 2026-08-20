@@ -67,6 +67,7 @@ export function DashboardShell({
             </div>
 
             <AppNavigation
+              capabilities={access.membership.capabilities}
               locale={locale}
               mode="desktop"
               navigationLabel={text.navigationLabel}
@@ -115,6 +116,7 @@ export function DashboardShell({
 
         <div className="min-w-0">
           <AppNavigation
+            capabilities={access.membership.capabilities}
             locale={locale}
             mode="header"
             navigationLabel={text.navigationLabel}
@@ -150,6 +152,7 @@ export function DashboardShell({
       </div>
 
       <AppNavigation
+        capabilities={access.membership.capabilities}
         locale={locale}
         mode="mobile"
         navigationLabel={text.navigationLabel}

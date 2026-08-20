@@ -7,6 +7,10 @@ import {
   type CurrentMembership,
   type MembershipAccessIssue,
 } from "@/lib/auth/types";
+import {
+  effectiveOperationalCapabilities,
+  isOperationalCapability,
+} from "@/lib/auth/capabilities";
 
 type RawOrganization = {
   id: string;
@@ -18,6 +22,7 @@ type RawOrganization = {
 type RawMembership = {
   id: string;
   is_active: boolean;
+  operational_capabilities: string[];
   organization: RawOrganization | RawOrganization[] | null;
   role: string;
 };
@@ -46,7 +51,7 @@ export async function getCurrentMembership(
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("organization_memberships")
-    .select("id, role, is_active, organization:organizations!inner(id, name, status, timezone)")
+    .select("id, role, is_active, operational_capabilities, organization:organizations!inner(id, name, status, timezone)")
     .eq("profile_id", profileId)
     .eq("is_active", true)
     .returns<RawMembership[]>();
@@ -73,6 +78,10 @@ export async function getCurrentMembership(
   return {
     issue: null,
     membership: {
+      capabilities: effectiveOperationalCapabilities(
+        row.role,
+        (row.operational_capabilities ?? []).filter(isOperationalCapability),
+      ),
       id: row.id,
       organization,
       role: row.role,

@@ -13,7 +13,7 @@ import type {
   PickupWorkspaceData,
 } from "@/features/pickups/types";
 import type { ProductionStatus } from "@/features/orders/types";
-import { requireMembership } from "@/lib/auth/require-membership";
+import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type PickupOrderRelation = {
@@ -125,7 +125,7 @@ function pickupSort(a: PickupTask, b: PickupTask) {
 export async function getPickupWorkspaceData(
   locale: string,
 ): Promise<PickupWorkspaceData> {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "pickup");
   const supabase = await createSupabaseServerClient();
   const { end, now, start, timeZone } = todayWindow(
     membership.organization.timezone,
@@ -188,7 +188,7 @@ export async function getPickupWorkspaceData(
 }
 
 export async function getPickupWorkspaceTask(locale: string, pickupId: string) {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "pickup");
   const supabase = await createSupabaseServerClient();
   const isSupervision = membership.role === "owner" || membership.role === "manager";
   let query = supabase

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireMembership } from "@/lib/auth/require-membership";
+import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { LogisticsActionState } from "@/features/logistics/types";
 import {
@@ -77,7 +77,7 @@ export async function savePickupAction(
   const { fieldErrors, input, valid } = parseLogisticsForm(formData);
   if (!valid) return fail(fieldErrors, null);
 
-  const { membership } = await requireMembership(locale);
+  const { membership } = await requireOperationalCapability(locale, "pickup");
   const assignedTo = await assignmentForRole({
     inputAssignedTo: input.assignedTo,
     orderId,
@@ -123,7 +123,7 @@ export async function saveDeliveryAction(
   const { fieldErrors, input, valid } = parseLogisticsForm(formData);
   if (!valid) return fail(fieldErrors, null);
 
-  const { membership } = await requireMembership(locale);
+  const { membership } = await requireOperationalCapability(locale, "delivery");
   const assignedTo = await assignmentForRole({
     inputAssignedTo: input.assignedTo,
     orderId,
@@ -165,7 +165,7 @@ export async function transitionPickupAction(locale: string, orderId: string, fo
 
   if (!pickupId || !targetStatus) return;
 
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "pickup");
   const supabase = await createSupabaseServerClient();
   const { data: pickup, error: pickupError } = await supabase
     .from("pickups")
@@ -202,7 +202,7 @@ export async function transitionDeliveryAction(locale: string, orderId: string, 
 
   if (!deliveryId || !targetStatus) return;
 
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "delivery");
   const supabase = await createSupabaseServerClient();
   const { data: delivery, error: deliveryError } = await supabase
     .from("deliveries")

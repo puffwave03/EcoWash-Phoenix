@@ -19,7 +19,8 @@ import type {
   QualityWorkspaceData,
 } from "@/features/production/types";
 import type { ServiceUnitType } from "@/features/services/types";
-import { requireMembership } from "@/lib/auth/require-membership";
+import type { OperationalCapability } from "@/lib/auth/capabilities";
+import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ProductionItemRow = {
@@ -176,8 +177,9 @@ function productionTaskSort(a: ProductionTask, b: ProductionTask) {
 async function listProductionTasks(
   locale: string,
   statuses: ProductionStatus[],
+  capability: OperationalCapability,
 ) {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, capability);
   const supabase = await createSupabaseServerClient();
   const { now, timeZone } = todayWindow(membership.organization.timezone);
   const isSupervision = membership.role === "owner" || membership.role === "manager";
@@ -212,6 +214,7 @@ export async function getProductionWorkspaceData(
   const { error, isSupervision, now, tasks, timeZone } = await listProductionTasks(
     locale,
     ACTIVE_PRODUCTION_STATUSES,
+    "production",
   );
 
   if (error) console.error("Production workspace query failed", error.code);
@@ -238,6 +241,7 @@ export async function getQualityWorkspaceData(
   const { error, isSupervision, now, tasks, timeZone } = await listProductionTasks(
     locale,
     QUALITY_WORKSPACE_STATUSES,
+    "quality",
   );
 
   if (error) console.error("Quality workspace query failed", error.code);
@@ -259,8 +263,9 @@ export async function getQualityWorkspaceData(
 export async function getProductionWorkspaceTask(
   locale: string,
   orderId: string,
+  capability: OperationalCapability = "production",
 ) {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, capability);
   const supabase = await createSupabaseServerClient();
   const { now, timeZone } = todayWindow(membership.organization.timezone);
   const isSupervision = membership.role === "owner" || membership.role === "manager";
@@ -303,7 +308,7 @@ export async function getQualityWorkspaceTask(
   locale: string,
   orderId: string,
 ) {
-  const result = await getProductionWorkspaceTask(locale, orderId);
+  const result = await getProductionWorkspaceTask(locale, orderId, "quality");
 
   if (!QUALITY_WORKSPACE_STATUSES.includes(result.task.productionStatus)) notFound();
 

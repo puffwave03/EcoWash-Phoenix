@@ -1,3 +1,5 @@
+import type { OperationalCapability } from "@/lib/auth/capabilities";
+
 export const APP_ROLES = ["owner", "manager", "staff"] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
@@ -14,6 +16,7 @@ export type CurrentProfile = {
 };
 
 export type CurrentMembership = {
+  capabilities: OperationalCapability[];
   id: string;
   organization: {
     id: string;

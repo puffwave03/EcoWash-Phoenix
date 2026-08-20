@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { OrderActionState } from "@/features/orders/types";
+import type { OrderActionState, ProductionStatus } from "@/features/orders/types";
 import {
   isUuid,
   optionalDbValue,
@@ -222,14 +223,19 @@ export async function transitionOrderStatusAction(
   const supabase = await createSupabaseServerClient();
   const { data: order, error: orderError } = await supabase
     .from("orders")
-    .select("assigned_to")
+    .select("assigned_to, production_status")
     .eq("organization_id", membership.organization.id)
     .eq("id", orderId)
-    .maybeSingle<{ assigned_to: string | null }>();
+    .maybeSingle<{ assigned_to: string | null; production_status: ProductionStatus }>();
+
+  const requiredCapability = order && ["quality_check", "packing"].includes(order.production_status)
+    ? "quality"
+    : "production";
 
   if (
     orderError ||
     !order ||
+    !hasOperationalCapability(membership, requiredCapability) ||
     (membership.role === "staff" && order.assigned_to !== profile.id)
   ) {
     if (orderError) console.error("Order transition authorization failed", orderError.code);

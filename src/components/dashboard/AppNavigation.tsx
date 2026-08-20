@@ -1,6 +1,9 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { hasOperationalCapability } from "@/lib/auth/capabilities";
+import type { OperationalCapability } from "@/lib/auth/capabilities";
+import type { AppRole } from "@/lib/auth/types";
 
 type AppNavigationText = {
   alerts: string;
@@ -24,12 +27,13 @@ type AppNavigationText = {
 
 type AppNavigationProps = {
   alertCount?: number;
+  capabilities?: OperationalCapability[];
   locale: string;
   mode: "desktop" | "header" | "mobile";
   navigationLabel: string;
   organizationLabel?: string;
   organizationName?: string;
-  role?: string;
+  role?: AppRole;
   text: AppNavigationText;
 };
 
@@ -93,6 +97,7 @@ function NavigationIcon({ href }: { href: string }) {
 
 export function AppNavigation({
   alertCount = 0,
+  capabilities = [],
   locale,
   mode,
   navigationLabel,
@@ -103,6 +108,9 @@ export function AppNavigation({
 }: AppNavigationProps) {
   const pathname = usePathname();
   const isControlRole = role === "owner" || role === "manager";
+  const canUse = (capability: OperationalCapability) => role
+    ? hasOperationalCapability({ capabilities, role }, capability)
+    : false;
   const navigationGroups = isControlRole
     ? [
         {
@@ -125,7 +133,9 @@ export function AppNavigation({
           items: [
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
             { href: "/app/services", label: text.services, match: "/app/services" },
-            { href: "/app/staff", label: text.staff, match: "/app/staff" },
+            ...(role === "owner"
+              ? [{ href: "/app/staff", label: text.staff, match: "/app/staff" }]
+              : []),
           ],
           label: text.managementGroup,
         },
@@ -141,9 +151,15 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
-            { href: "/app/work/production", label: text.production, match: "/app/work/production" },
-            { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
-            { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
+            ...(canUse("production")
+              ? [{ href: "/app/work/production", label: text.production, match: "/app/work/production" }]
+              : []),
+            ...(canUse("quality")
+              ? [{ href: "/app/work/quality", label: text.quality, match: "/app/work/quality" }]
+              : []),
+            ...(canUse("delivery")
+              ? [{ href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" }]
+              : []),
           ],
           label: text.workGroup,
         },
@@ -191,7 +207,15 @@ export function AppNavigation({
         aria-label={navigationLabel}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 px-2.5 pb-[max(env(safe-area-inset-bottom),0.375rem)] pt-1.5 shadow-[0_-8px_24px_rgb(15_59_46_/_0.08)] backdrop-blur-lg lg:hidden"
       >
-        <div className={`mx-auto grid max-w-lg gap-1 ${primaryItems.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
+        <div className={`mx-auto grid max-w-lg gap-1 ${
+          primaryItems.length === 1
+            ? "grid-cols-1"
+            : primaryItems.length === 2
+              ? "grid-cols-2"
+              : primaryItems.length === 3
+                ? "grid-cols-3"
+                : "grid-cols-4"
+        }`}>
           {primaryItems.map((item) => {
             const isActive = item.href === activeItem.href;
 

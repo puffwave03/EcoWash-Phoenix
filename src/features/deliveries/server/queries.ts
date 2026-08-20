@@ -13,7 +13,7 @@ import {
   relationOne,
   todayWindow,
 } from "@/features/operations/server/helpers";
-import { requireMembership } from "@/lib/auth/require-membership";
+import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type DeliveryOrderRelation = {
@@ -124,7 +124,7 @@ function deliverySort(a: DeliveryTask, b: DeliveryTask) {
 export async function getDeliveryWorkspaceData(
   locale: string,
 ): Promise<DeliveryWorkspaceData> {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "delivery");
   const supabase = await createSupabaseServerClient();
   const { end, now, timeZone } = todayWindow(membership.organization.timezone);
   const isSupervision = membership.role === "owner" || membership.role === "manager";
@@ -173,7 +173,7 @@ export async function getDeliveryWorkspaceData(
 }
 
 export async function getDeliveryWorkspaceTask(locale: string, deliveryId: string) {
-  const { membership, profile } = await requireMembership(locale);
+  const { membership, profile } = await requireOperationalCapability(locale, "delivery");
   const supabase = await createSupabaseServerClient();
   const isSupervision = membership.role === "owner" || membership.role === "manager";
   let query = supabase

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { requireMembership } from "@/lib/auth/require-membership";
+import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
@@ -172,6 +173,12 @@ export async function getMyDayData(locale: string): Promise<MyDayData> {
   const supabase = await createSupabaseServerClient();
   const { end, now, timeZone } = todayWindow(membership.organization.timezone);
   const isSupervision = membership.role === "owner" || membership.role === "manager";
+  const availableKinds: MyDayActivityKind[] = [
+    ...(hasOperationalCapability(membership, "pickup") ? ["pickup" as const] : []),
+    ...(hasOperationalCapability(membership, "production") ? ["production" as const] : []),
+    ...(hasOperationalCapability(membership, "quality") ? ["quality" as const] : []),
+    ...(hasOperationalCapability(membership, "delivery") ? ["delivery" as const] : []),
+  ];
 
   let ordersQuery = supabase
     .from("orders")
@@ -234,10 +241,13 @@ export async function getMyDayData(locale: string): Promise<MyDayData> {
 
     return activity ? [activity] : [];
   });
-  const activities = [...orders, ...pickups, ...deliveries].sort(activitySort);
+  const activities = [...orders, ...pickups, ...deliveries]
+    .filter((activity) => availableKinds.includes(activity.kind))
+    .sort(activitySort);
 
   return {
     activities,
+    availableKinds,
     generatedAt: now.toISOString(),
     isSupervision,
     nextActivity: activities[0] ?? null,

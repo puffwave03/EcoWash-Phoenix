@@ -22,6 +22,7 @@ export type MyDayActivity = {
 
 export type MyDayData = {
   activities: MyDayActivity[];
+  availableKinds: MyDayActivityKind[];
   generatedAt: string;
   isSupervision: boolean;
   nextActivity: MyDayActivity | null;

@@ -255,7 +255,7 @@ function ActivityCard({
 }
 
 export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
-  const summaryKinds: MyDayActivityKind[] = ["pickup", "production", "quality", "delivery"];
+  const summaryKinds = data.availableKinds;
   const activitiesTitle = data.isSupervision ? text.teamActivities : text.myActivities;
 
   return (
@@ -277,34 +277,34 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
             <p className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
               {data.summary.total} {text.todaySummary} · {data.summary.urgent} {text.urgent}
             </p>
-            <Link
+            {data.availableKinds.includes("pickup") ? <Link
               className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href="/app/work/pickups"
               locale={locale}
             >
               {text.viewPickups}
-            </Link>
-            <Link
+            </Link> : null}
+            {data.availableKinds.includes("delivery") ? <Link
               className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href="/app/work/deliveries"
               locale={locale}
             >
               {text.viewDeliveries}
-            </Link>
-            <Link
+            </Link> : null}
+            {data.availableKinds.includes("production") ? <Link
               className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href="/app/work/production"
               locale={locale}
             >
               {text.viewProduction}
-            </Link>
-            <Link
+            </Link> : null}
+            {data.availableKinds.includes("quality") ? <Link
               className="inline-flex min-h-11 items-center justify-center rounded-control border border-primary/20 bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href="/app/work/quality"
               locale={locale}
             >
               {text.viewQuality}
-            </Link>
+            </Link> : null}
           </div>
         </div>
       </section>
