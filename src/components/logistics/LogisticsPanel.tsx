@@ -55,7 +55,7 @@ type LogisticsPanelProps = {
 const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
 
 function fieldClass(hasError = false) {
-  return `min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+  return `min-h-11 w-full min-w-0 max-w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
     hasError ? "border-red-300" : "border-border"
   }`;
 }
@@ -91,21 +91,21 @@ function LogisticsForm({
   return (
     <form action={formAction} className="space-y-4">
       <input name="recordId" type="hidden" value={record?.id ?? ""} />
-      <div className="flex items-center justify-between gap-3">
-        <h4 className="text-lg font-semibold text-primary">{title}</h4>
-        <span className="rounded-control bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h4 className="min-w-0 text-lg font-semibold text-primary">{title}</h4>
+        <span className="max-w-full rounded-control bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
           {record ? text.statuses[record.status] : text.empty}
         </span>
       </div>
       {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
       {state.success ? <p className="rounded-control border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{text.success}</p> : null}
-      <div className="grid gap-3 md:grid-cols-2">
-        <label className="space-y-2 text-sm font-semibold text-primary">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="min-w-0 space-y-2 text-sm font-semibold text-primary">
           <span>{text.scheduledAt}</span>
           <input className={fieldClass(Boolean(state.fieldErrors.scheduledAt))} defaultValue={toInputDate(record?.scheduledAt ?? null)} name="scheduledAt" type="datetime-local" />
         </label>
         {canAssign ? (
-          <label className="space-y-2 text-sm font-semibold text-primary">
+          <label className="min-w-0 space-y-2 text-sm font-semibold text-primary">
             <span>{text.assignedTo}</span>
             <select
               className={fieldClass(Boolean(state.fieldErrors.assignedTo))}
@@ -120,7 +120,7 @@ function LogisticsForm({
             </select>
           </label>
         ) : (
-          <div className="space-y-2 text-sm font-semibold text-primary">
+          <div className="min-w-0 space-y-2 text-sm font-semibold text-primary">
             <input name="assignedTo" type="hidden" value={record?.assignedTo ?? ""} />
             <span>{text.assignedTo}</span>
             <p className="min-h-11 rounded-control border border-border bg-white px-3 py-3 text-sm font-normal text-muted">
@@ -165,7 +165,7 @@ function LogisticsForm({
         <span>{text.notes}</span>
         <textarea className={`${fieldClass()} min-h-24 py-3`} defaultValue={record?.notes ?? ""} name="notes" />
       </label>
-      <Button disabled={isPending} type="submit">{isPending ? text.saving : text.save}</Button>
+      <Button className="w-full sm:w-auto" disabled={isPending} type="submit">{isPending ? text.saving : text.save}</Button>
     </form>
   );
 }
@@ -183,15 +183,15 @@ function TransitionButtons({
   if (!record || statuses.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-3 border-t border-border pt-4">
+    <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
       {statuses.map((status) => (
-        <form action={action} className="flex flex-wrap gap-2" key={status}>
+        <form action={action} className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap" key={status}>
           <input name="recordId" type="hidden" value={record.id} />
           <input name="targetStatus" type="hidden" value={status} />
           {status === "cancelled" ? (
-            <input className="min-h-11 rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.cancelledReason} required />
+            <input className="min-h-11 w-full min-w-0 rounded-control border border-border px-3 text-sm sm:w-auto" name="reason" placeholder={text.cancelledReason} required />
           ) : null}
-          <Button type="submit" variant="secondary">
+          <Button className="w-full sm:w-auto" type="submit" variant="secondary">
             {text.statuses[status]}
           </Button>
         </form>
@@ -202,17 +202,17 @@ function TransitionButtons({
 
 export function LogisticsPanel({ actions, assignments, canAssign, logistics, text }: LogisticsPanelProps) {
   return (
-    <Card className="space-y-6">
+    <Card className="space-y-5 !p-4 sm:!p-6">
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
-      <div className="grid gap-6 xl:grid-cols-2">
-        <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
+        <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
           <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} title={text.pickup} />
           <TransitionButtons action={actions.transitionPickup} record={logistics.pickup} text={text} />
-        </div>
-        <div className="space-y-4">
+        </section>
+        <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
           <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} title={text.delivery} />
           <TransitionButtons action={actions.transitionDelivery} record={logistics.delivery} text={text} />
-        </div>
+        </section>
       </div>
     </Card>
   );

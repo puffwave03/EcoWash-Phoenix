@@ -114,7 +114,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
               {order.orderNumber}
             </p>
-            <h2 className="mt-2 truncate text-2xl font-semibold text-white lg:text-3xl">
+            <h2 className="mt-2 break-words text-2xl font-semibold text-white lg:truncate lg:text-3xl">
               {order.customerName}
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -129,8 +129,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               </span>
             </div>
           </div>
-          <Link href={`/app/orders/${order.id}/edit`} locale={locale}>
-            <Button variant="secondary">{t("edit")}</Button>
+          <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
+            <Button className="w-full lg:w-auto" variant="secondary">{t("edit")}</Button>
           </Link>
         </div>
 
@@ -154,11 +154,11 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         </dl>
       </section>
 
-      <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-border bg-[#eef1ee]/95 px-4 py-2 backdrop-blur lg:top-[4.5rem] lg:mx-0 lg:rounded-card lg:border lg:bg-white lg:shadow-card" aria-label={t("title")}>
-        <div className="flex min-w-max gap-2">
+      <nav className="sticky top-16 z-20 -mx-4 border-y border-border bg-[#eef1ee]/95 px-4 py-2 backdrop-blur lg:top-[4.5rem] lg:mx-0 lg:rounded-card lg:border lg:bg-white lg:shadow-card" aria-label={t("title")}>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap">
           {sectionLinks.map((link) => (
             <a
-              className="inline-flex min-h-11 items-center justify-center rounded-control border border-border bg-white px-3 text-sm font-semibold text-primary transition-standard hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="inline-flex min-h-11 min-w-0 items-center justify-center rounded-control border border-border bg-white px-2 text-center text-sm font-semibold leading-tight text-primary transition-standard hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-3 lg:w-auto"
               href={link.href}
               key={link.href}
             >
