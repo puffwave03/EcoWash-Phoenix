@@ -160,10 +160,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `8ce8a8e`
-- Current mission: `UI-001 — Operational Dashboard Visual Refinement`
+- Latest approved and pushed commit: `ecf0c8a`
+- Current mission: complete Production, Quality and Delivery staging validation after the temporary Supabase Auth email rate limit clears
 - Current release state: staging online and validated; production deferred
-- Next macro-task: refine the visual quality of the operational dashboards without changing business logic
+- Next action: send one access link to Production Test after the rate limit clears, then test the existing clean operational fixtures
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -219,8 +219,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-08-03
+Last Updated: 2026-08-21
 
-Current Mission: UI-001
+Current Mission: Operational workspace access testing
 
-Next Action: refine `/app/orders`, `/app/daily-close` and `/app/alerts` presentation only
+Next Action: resume Production, Quality and Delivery tests after the Supabase Auth email rate limit clears

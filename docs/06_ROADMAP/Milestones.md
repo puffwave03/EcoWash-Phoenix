@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-03
+Last Updated: 2026-08-21
 
-Current Mission: UI-001
+Current Mission: Operational workspace access testing
 
-Next Action: refine operational dashboard visuals without changing logic
+Next Action: resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
 
 ---
 
@@ -128,12 +128,21 @@ Approved and current areas:
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP: Completed and pushed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
+- UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
+- UX-OPS-001.3 — Pickup Workspace: Completed and pushed
+- UX-OPS-001.4 — Production Workspace: Completed and pushed
+- UX-OPS-001.5 — Quality & Packing Workspace: Completed and pushed
+- UX-OPS-001.6 — Delivery Workspace: Completed and pushed
+- UX-OPS-001.7 — Owner Operations Control Center: Completed and pushed
+- UX-OPS-001.8 — Access & Capabilities Management: Completed and pushed
+- UI-003 — Operational primary CTA consistency: Completed and pushed
+- BUG-ASSIGN — Persistent capability-aware logistics assignment: Completed and pushed
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
-Current approved task:
+Current resume task:
 
-- UI-001 — Operational Dashboard Visual Refinement
+- complete the real staging Production, Quality and Delivery tests after the temporary Supabase Auth email rate limit clears
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -223,8 +232,22 @@ Official sequence after SEC-001:
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
-- UI-001 — Operational Dashboard Visual Refinement, next
+- UI-001 — Operational Dashboard Visual Refinement, completed
+- UX-OPS-001.3 through UX-OPS-001.8 — operational workspaces, owner control and access management, completed
+- UI-003 — operational CTA consistency, completed
+- BUG-ASSIGN — persistent capability-aware logistics assignment, completed
+- Operational access testing — Pickup passed end to end; Production, Quality and Delivery wait only on the temporary Supabase Auth email rate limit
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
+
+Current staging validation checkpoint:
+
+- `TEST-PICKUP-01` → Speed; validated in Pickup Workspace and My Day
+- `TEST-PRODUCTION-01` → Production Test
+- `TEST-QUALITY-01` → EcoWash staff test
+- `TEST-DELIVERY-01` → EcoWash staff test
+- Production Test Auth is valid; the current block is `429 over_email_send_rate_limit`, not a malformed Auth record
+- old test orders remain intentionally untouched because safe hard cleanup would require an unnecessarily invasive administrative procedure
+- resume by sending one access link to Production Test after the limit clears, using the newest email in a fresh incognito session, then test Production, Quality and Delivery in that order
 
 PILOT-001 planning scope:
 
@@ -235,14 +258,15 @@ PILOT-001 planning scope:
 - Define dependencies, implementation order and acceptance criteria for the real pilot.
 - Do not implement routes, UI, schema, migrations, policies or Supabase changes in PILOT-001.
 
-PILOT-001 canonical decisions:
+PILOT-001 canonical decisions, refined by the completed access model:
 
-- M1 internal roles stay `owner`, `manager` and `staff`; production operator and delivery operator are personas/capabilities only.
-- Route architecture uses `/[locale]/app`, `/[locale]/app/orders`, `/[locale]/app/customers`, `/[locale]/app/services`, `/[locale]/app/payments`, `/[locale]/app/production`, `/[locale]/app/production/orders/[orderId]`, `/[locale]/app/delivery`, `/[locale]/app/delivery/pickups`, `/[locale]/app/delivery/deliveries`, `/[locale]/app/delivery/tasks/[taskId]`, `/[locale]/portal`, `/[locale]/portal/orders`, `/[locale]/portal/orders/[orderRef]`, `/[locale]/portal/requests/new` and `/[locale]/portal/access`.
+- M1 internal roles stay `owner`, `manager` and `staff`; operational access uses the centralized `pickup`, `production`, `quality`, `delivery` and `supervision` capabilities.
+- Current operational route architecture includes owner/manager `/[locale]/app/control` and staff-focused `/[locale]/app/work`, `/work/pickups`, `/work/production`, `/work/quality` and `/work/deliveries`, plus the existing localized owner and customer portal routes.
 - Do not introduce `/[locale]/app/admin` for M1.
 - Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; do not use organization memberships, do not add `customer` to `app_role` and do not use public order tokens as the primary M1 model.
 - Location scope is one organization and one operational location for M1; the model is location-aware, while location-based authorization is future work.
-- UI hiding is not authorization; Server Actions/RPCs must enforce capability checks.
+- Owner has full access; manager has operational supervision without Staff Access Management; staff requires both the relevant capability and assignment.
+- UI hiding is not authorization; server-side guards and RPCs enforce tenant, membership, capability and assignment checks.
 
 Operational pilot definition:
 
@@ -296,7 +320,6 @@ Priority class: P2.
 
 Candidate missions:
 
-- UI-001 — Operational Dashboard Visual Refinement.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.

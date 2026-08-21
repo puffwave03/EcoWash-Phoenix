@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-30
+Last Updated: 2026-08-21
 
-Current Mission: INFRA-001.1
+Current Mission: Operational workspace access testing
 
-Next Action: Reconcile Supabase migration history and finalize smoke baseline
+Next Action: Resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
 
 ---
 
@@ -41,8 +41,8 @@ Define the current Git workflow for EcoWash Phoenix so application work, review,
 
 The latest approved and pushed development commit is:
 
-`f94df88 INFRA-001-SMOKE fix: resolve staging smoke test blockers`
+`ecf0c8a BUG-AUTH-005 fix: harden staff auth callback and rate-limit handling`
 
-INFRA-001.1 is the next approved mission. Before starting it, confirm `main` is clean and synchronized with `origin/main`, review the documentation entry points, and verify the Supabase target before any migration-history operation.
+The current resume point is functional staging validation, not migration work. Confirm `main` is clean and synchronized with `origin/main`, then follow `docs/00_START_HERE/SESSION_HANDOVER.md`. Do not repeat malformed-Auth diagnosis for Production Test without new evidence; the current block is the Supabase Auth email rate limit.
 
-Do not use `git add .` for documentation-only closeouts. Stage only the Markdown files intentionally updated. Keep UX-002 and any staging cleanup in separate future commits.
+Do not use `git add .` for documentation-only closeouts. Stage only the Markdown files intentionally updated. Keep staging cleanup separate and do not delete old test orders without explicit approval.

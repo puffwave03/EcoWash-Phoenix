@@ -2,21 +2,21 @@
 
 Status: Active
 
-Date: 2026-08-03
+Date: 2026-08-21
 
-Approximate closeout time: after OPS-001.6 Operational Alerts MVP approval
+Approximate closeout time: after clean staging operational fixtures were created and verified
 
-Session checkpoint: OPS-001.6 completed and pushed; UI-001 next
+Session checkpoint: operational access model is implemented; Pickup passed end to end; remaining workspace tests wait on the Supabase Auth email rate limit
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `8ce8a8e OPS-001.6 feat: add operational alerts dashboard`
+Latest approved and pushed commit: `ecf0c8a BUG-AUTH-005 fix: harden staff auth callback and rate-limit handling`
 
-Origin/main status: local `main` and `origin/main` point to `8ce8a8e`.
+Origin/main status: local `main` and `origin/main` point to `ecf0c8a` before this documentation-only update.
 
-Working tree status after OPS-001.6 closeout: clean
+Working tree status before DOCS-OPS-016: clean
 
 Commit status: no code commit pending.
 
@@ -65,6 +65,18 @@ Commit status: no code commit pending.
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
+- UI-001 — Operational Dashboard Visual Refinement
+- UX-OPS-001.3 — Pickup Workspace
+- UX-OPS-001.4 — Production Workspace
+- UX-OPS-001.5 — Quality & Packing Workspace
+- UX-OPS-001.6 — Delivery Workspace
+- UX-OPS-001.7 — Owner Operations Control Center
+- UX-OPS-001.8 — Access & Capabilities Management
+- UI-003 — Operational primary CTA consistency
+- BUG-ASSIGN — Persistent capability-aware logistics assignment
+- ACCESS-OPS-001 — Refined owner-only staff access and membership removal
+- BUG-AUTH-005 — Hardened staff Auth callback and rate-limit handling
+- DEV-ENV — Next.js local development switched to Webpack for stable routing
 
 ## Supabase Staging State
 
@@ -151,9 +163,11 @@ Available now:
 - production and logistics assignment
 - queue filters: All, Assigned to me, Unassigned
 - staff management at `/[locale]/app/staff`
-- owner/manager invitation flow for staff and managers
+- owner-only invitation and access-management flow for staff and managers
 - staff activation and deactivation
-- owner, manager and staff authorization rules
+- centralized operational capability and assignment authorization rules
+- staff legacy `/[locale]/app` server-side redirect to `/[locale]/app/work`
+- hardened Auth callback for invalid links, stale sessions and email rate-limit errors
 - secure customer portal routes under `/[locale]/portal`
 - customer overview, order list and order detail
 - customer-visible pickup, delivery and essential status history
@@ -173,15 +187,21 @@ Available now:
 
 Role summary:
 
-- `owner`: full organization, staff and operational control.
-- `manager`: operational control, staff management and customer portal access management.
-- `staff`: production/logistics work without staff management or customer access management.
+- `owner`: full organization, staff-access and operational control; all operational capabilities are available.
+- `manager`: operational supervision, without Staff Access Management.
+- `staff`: only work allowed by both an active organization membership, the required capability and the matching assignment; no Staff Access Management.
 - `customer`: separate portal user linked to `customers`, never an `organization_memberships` role.
 
 Test data notes:
 
-- Temporary users created for OPS-001.4 invite testing were removed.
-- At most one active staff test user from OPS-001.3 may remain for visual review and assignment checks.
+- Capability values are `pickup`, `production`, `quality`, `delivery` and `supervision`.
+- Pickup passed end to end with Speed, including assignment persistence and visibility in Pickup Workspace and My Day.
+- `TEST-PICKUP-01` is assigned to Speed.
+- `TEST-PRODUCTION-01` is assigned to Production Test.
+- `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
+- Production Test has a valid Supabase Auth record. Do not diagnose it as malformed unless new evidence appears.
+- Production, Quality and Delivery real functional tests are pending only because Auth email sending is rate-limited with `429 over_email_send_rate_limit`.
+- Older test orders were intentionally not deleted; safe hard cleanup would require an unnecessarily invasive administrative procedure.
 - The PORTAL-001 customer test fixture remains active for review.
 - Do not document credentials, email addresses, UUIDs or customer personal data.
 
@@ -401,28 +421,29 @@ Out of scope confirmed:
 - new tables, migrations or RPCs
 - new dependencies
 
-## Next Approved Task
+## Current Block And Resume Point
 
-`UI-001 — Operational Dashboard Visual Refinement`
+Supabase Auth is currently refusing staff access and reset emails with `429 over_email_send_rate_limit`. Production Test's Auth record is valid; do not repeat the malformed-record diagnosis unless new evidence appears. Do not send repeated emails while the rate limit is active.
 
-Practical objective:
+When the rate limit clears:
 
-- improve visual consistency, readability and perceived quality for `/[locale]/app/orders`, `/[locale]/app/daily-close` and `/[locale]/app/alerts`
-- keep the work presentation-only: components, CSS, spacing, typography, cards, responsive behavior, icons and visual states
-- do not change queries, Server Actions, permissions, RLS, migrations, RPCs, counts, filters, business logic or dependencies
+1. Send exactly one access link to Production Test.
+2. Open only the newest email in a fresh incognito session.
+3. Test `TEST-PRODUCTION-01` in My Day and Production Workspace.
+4. Test `TEST-QUALITY-01` in My Day and Quality & Packing Workspace.
+5. Test `TEST-DELIVERY-01` in My Day and Delivery Workspace.
+6. Record real functional or visual defects found during those checks.
+7. Avoid creating more fixtures unless a verified test gap requires one.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
 Official working loop:
 
-1. Cristiano describes the operational result.
-2. ChatGPT defines the solution and prompt.
-3. Codex implements.
-4. Run lint/build.
-5. Product Owner completes visual review.
-6. Commit and push.
-7. Vercel staging deploys from `main`.
-8. Move to the next task.
+1. The Product Owner defines the desired behavior and performs simple visual or functional checks.
+2. ChatGPT acts as CTO, architect and reviewer, then prepares the Codex task.
+3. Codex implements and validates the scoped change.
+4. Keep the Product Owner's technical workload minimal.
+5. Commit, push and deploy only after Product Owner approval.
 
 ## Resume Commands
 
@@ -442,8 +463,12 @@ http://localhost:3000/it/app
 http://localhost:3000/it/app/customers
 http://localhost:3000/it/app/services
 http://localhost:3000/it/app/orders
-http://localhost:3000/it/app/production
-http://localhost:3000/it/app/delivery
+http://localhost:3000/it/app/control
+http://localhost:3000/it/app/work
+http://localhost:3000/it/app/work/pickups
+http://localhost:3000/it/app/work/production
+http://localhost:3000/it/app/work/quality
+http://localhost:3000/it/app/work/deliveries
 http://localhost:3000/it/app/staff
 http://localhost:3000/it/app/alerts
 http://localhost:3000/it/portal

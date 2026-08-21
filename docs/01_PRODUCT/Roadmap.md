@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-03
+Last Updated: 2026-08-21
 
-Current Mission: UI-001
+Current Mission: Operational workspace access testing
 
-Next Action: Refine operational dashboard visuals without changing logic
+Next Action: Resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
 
 ---
 
@@ -137,7 +137,10 @@ Implemented and smoke-validated:
 - Production Queue
 - Delivery Queue
 - production and logistics assignment with All, Assigned to me and Unassigned filters
-- owner/manager staff management, invitation, activation and deactivation
+- owner-only Staff Access Management, invitation, activation, deactivation and organization-membership removal
+- capability-aware Pickup, Production, Quality & Packing and Delivery workspaces
+- Owner Operations Control Center
+- staff My Day filtered by capability and assignment
 - secure customer portal with customer-scoped order visibility and access management
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
@@ -154,7 +157,6 @@ Missing for commercial readiness:
 
 - production deployment and domain readiness, deferred until the pilot product is functionally complete
 - repeatable smoke/regression checklist for production release
-- visual refinement of operational dashboards before the next pilot review pass
 - organization and location settings UI
 - global search
 - structured notes and issues
@@ -188,7 +190,9 @@ P2 — remaining portal MVPs and strong commercial differentiators after the fir
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP. Completed.
 - OPS-001.5 — Daily Close MVP. Completed.
 - OPS-001.6 — Operational Alerts MVP. Completed.
-- UI-001 — Operational Dashboard Visual Refinement. Next.
+- UI-001 — Operational Dashboard Visual Refinement. Completed.
+- UX-OPS-001.3 through UX-OPS-001.8 — Operational workspaces, owner control and access management. Completed.
+- UI-003 — Operational primary CTA consistency. Completed.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -230,8 +234,18 @@ Scope:
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
-- UI-001 — Operational Dashboard Visual Refinement, next
+- UI-001 — Operational Dashboard Visual Refinement, completed
+- UX-OPS-001.3 through UX-OPS-001.8 — operational workspaces, owner control and access management, completed
+- UI-003 — operational CTA consistency, completed
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
+
+Current staging validation checkpoint:
+
+- Pickup passed end to end with Speed using `TEST-PICKUP-01`.
+- `TEST-PRODUCTION-01` is assigned to Production Test; `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
+- Production Test Auth is valid. The current block is Supabase Auth `429 over_email_send_rate_limit`, not malformed Auth.
+- Resume with one access link to Production Test, opened from the newest email in fresh incognito, then test Production, Quality and Delivery in order.
+- Old test orders remain intentionally untouched; do not create more fixtures unless a verified gap requires one.
 
 PILOT-001 planning scope:
 
@@ -244,9 +258,9 @@ PILOT-001 planning scope:
 
 PILOT-001 canonical decisions:
 
-- M1 internal roles stay `owner`, `manager` and `staff`.
-- Production operator and delivery operator are personas/capabilities, not new `app_role` values.
-- Do not introduce `/[locale]/app/admin` for M1; `/[locale]/app` remains the administrative dashboard surface.
+- M1 internal roles stay `owner`, `manager` and `staff`; capabilities are `pickup`, `production`, `quality`, `delivery` and `supervision`.
+- Owner has full access; manager has operational supervision without Staff Access Management; staff requires both capability and assignment.
+- Do not introduce `/[locale]/app/admin` for M1; staff visiting `/[locale]/app` is redirected server-side to `/[locale]/app/work` before owner dashboard data loads.
 - Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; magic link is authentication, not authorization.
 - Customer portal must not use `organization_memberships`, must not add `customer` to `app_role` and must not call internal staff RPCs directly.
 - Location scope is one organization and one operational location for M1; the model remains location-aware, but location-based authorization is future work.

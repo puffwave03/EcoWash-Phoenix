@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-03
+Last Updated: 2026-08-21
 
-Current Mission: UI-001
+Current Mission: Operational workspace access testing
 
-Next Action: refine operational dashboard visuals without changing logic
+Next Action: wait for the Supabase Auth email rate limit to clear, then send one access link to Production Test
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | UI-001 — Operational Dashboard Visual Refinement |
-| Last completed mission | OPS-001.6 — Operational Alerts MVP |
-| Latest approved and pushed commit | 8ce8a8e |
+| Current mission | Complete real staging validation of Production, Quality and Delivery workspaces |
+| Last completed mission | BUG-AUTH-005 — Staff Auth callback and rate-limit hardening |
+| Latest approved and pushed commit | ecf0c8a |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -70,10 +70,49 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PORTAL-001 / PORTAL-001.1 status | Completed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
+| UI-001 status | Completed and pushed |
+| UX-OPS-001.3 through UX-OPS-001.8 status | Completed and pushed |
+| UI-003 status | Completed and pushed |
+| BUG-ASSIGN status | Completed and pushed |
+| Staff access/removal refinement | Completed and pushed |
+| Current staging test block | Supabase Auth email rate limit: `429 over_email_send_rate_limit` |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned; staging Vercel online; owner login verified; operational smoke baseline, OPS queues/staff flows and secure customer portal validated |
-| Commercial readiness | Staging is online and functional for internal operations, customer portal review, daily close review and operational alerts; UI refinement, QA and later production planning remain before the real operational pilot |
+| Backend/SaaS implementation | Supabase Staging connected and aligned; capability-aware operational workspaces, owner control, staff access flows and secure customer portal implemented |
+| Commercial readiness | Pickup is validated end to end; Production, Quality and Delivery await real login testing after the temporary Supabase email rate limit clears |
+
+## Operational Access Testing Checkpoint
+
+Completed and available:
+
+- Pickup, Production, Quality & Packing and Delivery staff workspaces
+- Owner Operations Control Center
+- Access & Capabilities Management
+- consistent operational primary CTA styling
+- persistent capability-aware pickup and delivery assignment
+- owner-only staff invite, access-link, deactivate/reactivate and organization-membership removal flows
+- server-side redirect from the legacy staff `/[locale]/app` route to `/[locale]/app/work`, before owner dashboard data is queried
+- Auth callback protection against invalid links, stale sessions and email rate-limit errors
+- Next.js local development through Webpack for stable route behavior
+
+Authorization model:
+
+- operational capabilities are `pickup`, `production`, `quality`, `delivery` and `supervision`
+- owner has full access
+- manager has operational supervision but no Staff Access Management
+- staff requires an active tenant membership, the relevant capability and the matching assignment
+- capability does not replace tenant scope or assignment checks
+
+Staging validation:
+
+- Pickup passed end to end with Speed.
+- `TEST-PICKUP-01` is assigned to Speed.
+- `TEST-PRODUCTION-01` is assigned to Production Test.
+- `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
+- Production Test has a valid Auth record.
+- Production, Quality and Delivery real functional tests are pending only because Supabase Auth email sending is temporarily rate-limited with `429 over_email_send_rate_limit`.
+- Older test orders were intentionally not deleted because safe hard cleanup would require an unnecessarily invasive administrative procedure.
+- No additional fixtures should be created unless a verified test gap requires one.
 
 ## Development Status
 
@@ -137,7 +176,15 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PORTAL-001 / PORTAL-001.1 | Secure Customer Portal MVP | Completed |
 | OPS-001.5 | Daily Close MVP | Completed |
 | OPS-001.6 | Operational Alerts MVP | Completed |
-| UI-001 | Operational Dashboard Visual Refinement | Next |
+| UI-001 | Operational Dashboard Visual Refinement | Completed |
+| UX-OPS-001.3 | Pickup Workspace | Completed |
+| UX-OPS-001.4 | Production Workspace | Completed |
+| UX-OPS-001.5 | Quality & Packing Workspace | Completed |
+| UX-OPS-001.6 | Delivery Workspace | Completed |
+| UX-OPS-001.7 | Owner Operations Control Center | Completed |
+| UX-OPS-001.8 | Access & Capabilities Management | Completed |
+| UI-003 | Operational primary CTA consistency | Completed |
+| BUG-ASSIGN | Persistent capability-aware logistics assignment | Completed |
 
 ## Commit History
 
@@ -225,7 +272,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `8ce8a8e` at the OPS-001.6 baseline.
+- Local `main` and `origin/main` point to `ecf0c8a` before DOCS-OPS-016.
 
 ## DEV-009.5 Completed State
 
@@ -314,7 +361,7 @@ Implemented features:
 - Delivery Queue
 - production and logistics assignment
 - All, Assigned to me and Unassigned queue filters
-- owner/manager staff management, invitations, activation and deactivation
+- owner-only staff access management, invitations, activation, deactivation and organization-membership removal
 - secure customer portal under `/[locale]/portal`
 - customer-scoped overview, order list, order detail, pickup/delivery, essential history and customer-visible photos
 - owner/manager customer access management with resend, reset password and rate-limit handling
@@ -328,7 +375,6 @@ Partially implemented features:
 
 Missing commercial-readiness features:
 
-- Operational Dashboard Visual Refinement
 - production deployment readiness and domain/environment decision, deferred until pilot product completion
 - repeatable smoke/regression checklist for release
 - organization and location settings UI
@@ -344,7 +390,7 @@ Priority classification:
 | --- | --- | --- |
 | P0 | Required before commercial pilot | UX-002, SEC-001, PILOT-001 and staging release validation completed; QA-001 pending |
 | P1 | Required for first paid internal operations | ORG-001, CATALOG-002, SEARCH-001, AUDIT-001 |
-| P2 | Operational/commercial differentiators after portal MVP | UI-001, REPORT-001, REPORT-002, EXPORT-001, QR-001 |
+| P2 | Operational/commercial differentiators after portal MVP | REPORT-001, REPORT-002, EXPORT-001, QR-001 |
 | P3 | Future growth after internal stability | PAY-001, DOC-001, NOTIFY-001, MOBILE-001, OCR-001, ANALYTICS-001, OFFLINE-001, REALTIME-001, EDGE-001 |
 
 M1 — Commercial Pilot Baseline:
@@ -367,7 +413,9 @@ M1 — Commercial Pilot Baseline:
 - PORTAL-001 / PORTAL-001.1 Secure Customer Portal MVP — completed
 - OPS-001.5 Daily Close MVP — completed
 - OPS-001.6 Operational Alerts MVP — completed
-- UI-001 Operational Dashboard Visual Refinement — next
+- UI-001 Operational Dashboard Visual Refinement — completed
+- UX-OPS-001.3 through UX-OPS-001.8 operational workspaces, owner control and access management — completed
+- UI-003 operational CTA consistency — completed
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved operational closeout support
 
 PILOT-001 planning scope:
@@ -381,14 +429,14 @@ PILOT-001 planning scope:
 
 PILOT-001 canonical decisions:
 
-- M1 internal roles stay `owner`, `manager` and `staff`; production operator and delivery operator are personas/capabilities only.
-- `/[locale]/app` remains the administrative dashboard surface; do not introduce `/[locale]/app/admin` for M1.
-- Internal routes are `/[locale]/app`, `/[locale]/app/orders`, `/[locale]/app/customers`, `/[locale]/app/services`, `/[locale]/app/payments`, `/[locale]/app/production`, `/[locale]/app/production/orders/[orderId]`, `/[locale]/app/delivery`, `/[locale]/app/delivery/pickups`, `/[locale]/app/delivery/deliveries` and `/[locale]/app/delivery/tasks/[taskId]`.
+- M1 internal roles stay `owner`, `manager` and `staff`; operational access is further constrained by centralized capabilities.
+- `/[locale]/app` remains an owner/manager dashboard surface; staff is redirected server-side to `/[locale]/app/work` before dashboard data loads.
+- Current operational routes include owner/manager `/[locale]/app/control` and staff-focused `/[locale]/app/work`, `/work/pickups`, `/work/production`, `/work/quality` and `/work/deliveries`, all under the localized app prefix.
 - Customer routes are `/[locale]/portal`, `/[locale]/portal/orders`, `/[locale]/portal/orders/[orderRef]`, `/[locale]/portal/requests/new` and `/[locale]/portal/access`.
 - Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; magic link is authentication, not authorization.
 - Customer portal must not use `organization_memberships`, must not add `customer` to `app_role`, must not use public order tokens as the primary M1 model and must not call internal staff RPCs directly.
 - Location scope is one organization and one operational location for M1; the model is location-aware, while location-based authorization is future work.
-- Owner has full tenant control; manager has operational and ordinary financial control; staff has operational production/delivery access.
+- Owner has full tenant and Staff Access Management control; manager has operational supervision without Staff Access Management; staff requires both the relevant capability and assignment.
 - Staff cannot apply discounts, void/refund payments or access catalog/settings. Delivery assignment/scheduling are owner/manager capabilities; delivery status transitions are for assigned staff, manager and owner. Staff payment recording is conditional and must be decided in OPS-002.
 - UI hiding is not authorization; Server Actions/RPCs must enforce capability checks.
 
@@ -420,7 +468,6 @@ M2 — First Paid Operations:
 
 M3 — Operational Scale And Management Control:
 
-- UI-001 Operational Dashboard Visual Refinement
 - REPORT-001 daily payment close
 - REPORT-002 open balance report
 - EXPORT-001 CSV export
@@ -608,11 +655,13 @@ Validation passed: real owner access, local UI review, badge/page total consiste
 
 Still to verify when dedicated accounts are available: real manager access and real staff denial. These are not FAIL results and are not blocking.
 
-Next approved task:
+Current resume task:
 
-- `UI-001 — Operational Dashboard Visual Refinement`
-
-UI-001 should improve visual consistency, readability and perceived quality for `/[locale]/app/orders`, `/[locale]/app/daily-close` and `/[locale]/app/alerts`. It must be presentation-only: no query, Server Action, permission, RLS, migration, RPC, count, filter, business-logic or dependency changes.
+- wait for the Supabase Auth email rate limit to clear
+- send exactly one access link to Production Test
+- open only the newest email in a fresh incognito session
+- validate `TEST-PRODUCTION-01`, followed by `TEST-QUALITY-01` and `TEST-DELIVERY-01`
+- record only real functional or visual defects; do not create additional fixtures unless necessary
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -852,25 +901,27 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da UI-001 e rifiniamo visivamente le dashboard operative senza cambiare logica.”
+“Buongiorno, riprendiamo EcoWash Phoenix dal test operativo staging. Verifichiamo prima se il rate limit email Supabase è terminato.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` expected at `8ce8a8e`
+- Local `main` and `origin/main` were at `ecf0c8a` before DOCS-OPS-016
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
-- PILOT-001 is architecture-approved; PORTAL-001, OPS-001.5 and OPS-001.6 are completed; UI-001 is next
+- UI-001, UX-OPS-001.3 through UX-OPS-001.8, UI-003 and the capability-aware assignment/access hardening are completed
+- Pickup passed end to end with Speed
+- Production Test Auth is valid; current email failure is `429 over_email_send_rate_limit`
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations or alter Supabase remote state during RELEASE-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Keep UI-001 presentation-only after confirming the current staging/customer-portal/alerts baseline
+- Do not repeat malformed-Auth diagnosis for Production Test without new evidence
 
 First checks:
 
@@ -887,6 +938,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Audit Supabase RLS, Storage policies, grants, RPCs and helper functions.
-4. Audit browser/server environment-variable boundaries.
-5. Classify findings by severity before proposing fixes.
+3. Check whether the Supabase email rate limit has cleared without sending repeated test emails.
+4. Send one access link to Production Test and open the newest email in fresh incognito.
+5. Test `TEST-PRODUCTION-01`, then `TEST-QUALITY-01`, then `TEST-DELIVERY-01`.
+6. Record real functional or visual defects and avoid creating additional fixtures unless necessary.
