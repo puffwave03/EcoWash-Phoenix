@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type {
   PickupPriority,
   PickupTask,
@@ -141,7 +142,7 @@ function NextPickup({ data, locale, text }: PickupWorkspaceProps) {
           ) : null}
         </div>
         <Link
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-5 text-center text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className={operationalPrimaryActionClasses}
           href={`/app/work/pickups/${pickup.id}`}
           locale={locale}
         >

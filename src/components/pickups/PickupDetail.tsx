@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type { PickupTask } from "@/features/pickups/types";
 
 export type PickupDetailText = {
@@ -146,7 +147,7 @@ export function PickupDetail({
               <form action={action}>
                 <input name="recordId" type="hidden" value={task.id} />
                 <input name="targetStatus" type="hidden" value={targetStatus} />
-                <button className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" type="submit">
+                <button className={operationalPrimaryActionClasses} type="submit">
                   {actionLabel}
                 </button>
               </form>

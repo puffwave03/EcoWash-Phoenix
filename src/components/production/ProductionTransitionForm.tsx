@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type { ProductionStatus } from "@/features/orders/types";
 import { requiresReason } from "@/features/orders/workflow";
 
@@ -56,7 +57,7 @@ export function ProductionTransitionForm({
         </label>
       ) : null}
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className={operationalPrimaryActionClasses}
         type="submit"
       >
         {text.action}

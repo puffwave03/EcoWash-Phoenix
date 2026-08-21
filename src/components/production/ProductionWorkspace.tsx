@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type {
   ProductionGroup,
   ProductionTask,
@@ -209,7 +210,7 @@ function ProductionTaskCard({
             <span>{text.assignedTo}: {task.assignedToName}</span>
           ) : null}
           <Link
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:ml-auto sm:w-auto"
+            className={`${operationalPrimaryActionClasses} sm:ml-auto sm:w-auto`}
             href={`/app/work/production/${task.id}`}
             locale={locale}
           >
@@ -260,7 +261,7 @@ function NextOrder({ data, locale, text }: ProductionWorkspaceProps) {
         </div>
         <QuantitySummary locale={locale} task={task} text={text} />
         <Link
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className={operationalPrimaryActionClasses}
           href={`/app/work/production/${task.id}`}
           locale={locale}
         >

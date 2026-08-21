@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 
+export const operationalPrimaryActionClasses =
+  "inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary/25 bg-primary-soft px-5 text-center text-sm font-semibold text-primary-strong shadow-sm transition-standard hover:border-primary/35 hover:bg-[#dcebe4] hover:text-primary-strong active:bg-[#d1e4da] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+
 export type Tone = "critical" | "info" | "neutral" | "success" | "warning";
 
 const toneClasses: Record<Tone, {

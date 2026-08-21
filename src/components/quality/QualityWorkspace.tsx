@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type {
   OrderPriority,
   ProductionStatus,
@@ -171,7 +172,7 @@ function QualityCard({
         ) : null}
 
         <Link
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className={operationalPrimaryActionClasses}
           href={`/app/work/quality/${task.id}`}
           locale={locale}
         >
@@ -223,7 +224,7 @@ function NextQualityOrder({ data, locale, text }: QualityWorkspaceProps) {
         </div>
         <QuantitySummary locale={locale} task={task} text={text} />
         <Link
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-control bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className={operationalPrimaryActionClasses}
           href={`/app/work/quality/${task.id}`}
           locale={locale}
         >
