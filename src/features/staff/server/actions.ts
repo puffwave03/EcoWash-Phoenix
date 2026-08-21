@@ -137,6 +137,16 @@ function isAuthUnavailable(error: unknown) {
     || (typeof status === "number" && status >= 500);
 }
 
+function isEmailRateLimit(error: unknown) {
+  const { code, message, status } = authFailure(error);
+  const normalizedMessage = message?.toLowerCase() ?? "";
+
+  return code === "over_email_send_rate_limit"
+    || status === 429
+    || normalizedMessage.includes("email rate limit")
+    || normalizedMessage.includes("too many");
+}
+
 function logAuthFailure(context: string, error: unknown) {
   const { code, name, status } = authFailure(error);
 
@@ -359,6 +369,7 @@ export async function sendStaffAccessEmailAction(
     "next",
     intent === "reset" ? `/${locale}/update-password` : `/${locale}/app/work`,
   );
+  const operation = intent === "reset" ? "resetPasswordForEmail" : "signInWithOtp";
   let error;
 
   try {
@@ -369,12 +380,16 @@ export async function sendStaffAccessEmailAction(
           options: { emailRedirectTo: redirectUrl.toString(), shouldCreateUser: false },
         }));
   } catch (authError) {
-    logAuthFailure("Staff access email request failed", authError);
+    logAuthFailure(`Staff ${operation} request failed`, authError);
+    if (isEmailRateLimit(authError)) return fail("rateLimit");
+
     return fail(isAuthUnavailable(authError) ? "authUnavailable" : "emailAction");
   }
 
   if (error) {
-    logAuthFailure("Staff access email failed", error);
+    logAuthFailure(`Staff ${operation} failed`, error);
+    if (isEmailRateLimit(error)) return fail("rateLimit");
+
     return fail(isAuthUnavailable(error) ? "authUnavailable" : "emailAction");
   }
 

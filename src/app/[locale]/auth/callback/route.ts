@@ -82,19 +82,14 @@ function callbackBridgeHtml(locale: string, nextPath: string) {
         const accessToken = params.get("access_token");
         const refreshToken = params.get("refresh_token");
 
-        if (!accessToken || !refreshToken) {
-          window.location.replace(${JSON.stringify(loginPath)});
-          return;
-        }
-
         try {
           const response = await fetch(window.location.pathname + window.location.search, {
             method: "POST",
             headers: { "content-type": "application/json" },
             credentials: "same-origin",
             body: JSON.stringify({
-              access_token: accessToken,
-              refresh_token: refreshToken,
+              access_token: accessToken || undefined,
+              refresh_token: refreshToken || undefined,
               next: ${JSON.stringify(nextPath)}
             })
           });
@@ -124,6 +119,14 @@ function createCallbackClient(request: NextRequest) {
   });
 
   return { cookiesToSet, supabase };
+}
+
+async function clearCurrentSession(
+  supabase: ReturnType<typeof createCallbackClient>["supabase"],
+) {
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+
+  if (error) console.error("Auth callback local session clear failed");
 }
 
 export async function GET(
@@ -160,6 +163,7 @@ export async function GET(
 
   if (error) {
     console.error("Auth callback failed");
+    await clearCurrentSession(supabase);
 
     return responseWithCookies(NextResponse.redirect(errorUrl), cookiesToSet);
   }
@@ -197,7 +201,12 @@ export async function POST(
   const { cookiesToSet, supabase } = createCallbackClient(request);
 
   if (!body.access_token || !body.refresh_token) {
-    return NextResponse.json({ redirectTo: errorUrl.pathname + errorUrl.search }, { status: 400 });
+    await clearCurrentSession(supabase);
+
+    return responseWithCookies(
+      NextResponse.json({ redirectTo: errorUrl.pathname + errorUrl.search }, { status: 400 }),
+      cookiesToSet,
+    );
   }
 
   const { error } = await supabase.auth.setSession({
@@ -207,6 +216,7 @@ export async function POST(
 
   if (error) {
     console.error("Auth callback session persistence failed");
+    await clearCurrentSession(supabase);
 
     return responseWithCookies(
       NextResponse.json({ redirectTo: errorUrl.pathname + errorUrl.search }, { status: 400 }),

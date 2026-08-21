@@ -1,5 +1,6 @@
 import "server-only";
 
+import { redirect } from "next/navigation";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
@@ -301,6 +302,11 @@ function canViewFinancialAggregates(role: string) {
 
 export async function getDashboardOverview(locale: string): Promise<DashboardOverview> {
   const { membership } = await requireMembership(locale);
+
+  if (membership.role === "staff") {
+    redirect(`/${locale}/app/work`);
+  }
+
   const supabase = await createSupabaseServerClient();
   const { end, now, start } = nowWindow(membership.organization.timezone);
   const includeFinancialAggregates = canViewFinancialAggregates(membership.role);

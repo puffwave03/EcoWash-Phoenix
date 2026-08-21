@@ -857,6 +857,7 @@
     "emailSent": "Correo seguro enviado.",
     "emailActionError": "No se pudo enviar el correo de acceso seguro.",
     "authUnavailable": "Supabase Auth no está disponible temporalmente. No se envió ningún correo de acceso; inténtalo de nuevo más tarde.",
+    "rateLimit": "Se ha alcanzado el límite temporal de envío de correos. Espera unos minutos antes de intentarlo de nuevo.",
     "saving": "Guardando...",
     "success": "Invitación enviada y membresía preparada.",
     "updateSuccess": "Colaborador actualizado.",

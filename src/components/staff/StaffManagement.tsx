@@ -49,6 +49,7 @@ type StaffText = {
   name: string;
   noEmail: string;
   pending: string;
+  rateLimit: string;
   reactivate: string;
   removalConfirmationError: string;
   removeMembership: string;
@@ -80,6 +81,7 @@ function errorText(error: string | null, text: StaffText) {
   if (error === "membership") return text.memberError;
   if (error === "capabilities") return text.capabilitiesError;
   if (error === "emailAction") return text.emailActionError;
+  if (error === "rateLimit") return text.rateLimit;
   if (error === "deactivateFirst") return text.deactivateFirstError;
   if (error === "removalConfirmation") return text.removalConfirmationError;
   if (error === "selfRemoval") return text.selfRemovalError;

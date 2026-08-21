@@ -857,6 +857,7 @@
     "emailSent": "Secure email sent.",
     "emailActionError": "The secure access email could not be sent.",
     "authUnavailable": "Supabase Auth is temporarily unavailable. No access email was sent; try again later.",
+    "rateLimit": "The temporary email sending limit has been reached. Wait a few minutes before trying again.",
     "saving": "Saving...",
     "success": "Invite sent and membership prepared.",
     "updateSuccess": "Staff member updated.",

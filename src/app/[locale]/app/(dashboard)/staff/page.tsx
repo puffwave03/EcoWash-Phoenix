@@ -70,6 +70,7 @@ export default async function StaffPage({ params }: StaffPageProps) {
           name: t("name"),
           noEmail: t("noEmail"),
           pending: t("pending"),
+          rateLimit: t("rateLimit"),
           reactivate: t("reactivate"),
           removalConfirmationError: t("removalConfirmationError"),
           removeMembership: t("removeMembership"),

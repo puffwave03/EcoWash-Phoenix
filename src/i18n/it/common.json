@@ -857,6 +857,7 @@
     "emailSent": "Email sicura inviata.",
     "emailActionError": "L'email di accesso sicuro non può essere inviata.",
     "authUnavailable": "Supabase Auth non è temporaneamente disponibile. Nessuna email di accesso è stata inviata; riprova più tardi.",
+    "rateLimit": "È stato raggiunto il limite temporaneo di invio email. Attendi qualche minuto prima di riprovare.",
     "saving": "Salvataggio...",
     "success": "Invito inviato e membership preparata.",
     "updateSuccess": "Collaboratore aggiornato.",

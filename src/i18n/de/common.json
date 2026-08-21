@@ -857,6 +857,7 @@
     "emailSent": "Sichere E-Mail gesendet.",
     "emailActionError": "Die sichere Zugangs-E-Mail konnte nicht gesendet werden.",
     "authUnavailable": "Supabase Auth ist vorübergehend nicht verfügbar. Es wurde keine Zugangs-E-Mail gesendet; bitte später erneut versuchen.",
+    "rateLimit": "Das temporäre E-Mail-Versandlimit wurde erreicht. Warten Sie einige Minuten, bevor Sie es erneut versuchen.",
     "saving": "Speichern...",
     "success": "Einladung gesendet und Mitgliedschaft vorbereitet.",
     "updateSuccess": "Mitarbeiter aktualisiert.",
