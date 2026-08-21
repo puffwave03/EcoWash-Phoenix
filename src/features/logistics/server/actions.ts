@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isAssignableStaffForCapability } from "@/features/logistics/server/queries";
 import type { LogisticsActionState } from "@/features/logistics/types";
 import {
   optionalDbValue,
@@ -47,23 +48,37 @@ async function existingAssignment(table: "deliveries" | "pickups", organizationI
 }
 
 async function assignmentForRole({
+  capability,
   inputAssignedTo,
+  locale,
   orderId,
   organizationId,
   recordId,
   role,
   table,
 }: {
+  capability: "delivery" | "pickup";
   inputAssignedTo: string;
+  locale: string;
   orderId: string;
   organizationId: string;
   recordId: string;
   role: AppRole;
   table: "deliveries" | "pickups";
 }) {
-  if (ASSIGNMENT_ROLES.includes(role)) return inputAssignedTo;
+  if (ASSIGNMENT_ROLES.includes(role)) {
+    if (!inputAssignedTo) return { assignedTo: null, valid: true };
 
-  return existingAssignment(table, organizationId, orderId, recordId);
+    return {
+      assignedTo: inputAssignedTo,
+      valid: await isAssignableStaffForCapability(locale, inputAssignedTo, capability),
+    };
+  }
+
+  return {
+    assignedTo: await existingAssignment(table, organizationId, orderId, recordId),
+    valid: true,
+  };
 }
 
 export async function savePickupAction(
@@ -78,19 +93,23 @@ export async function savePickupAction(
   if (!valid) return fail(fieldErrors, null);
 
   const { membership } = await requireOperationalCapability(locale, "pickup");
-  const assignedTo = await assignmentForRole({
+  const assignment = await assignmentForRole({
+    capability: "pickup",
     inputAssignedTo: input.assignedTo,
+    locale,
     orderId,
     organizationId: membership.organization.id,
     recordId: input.recordId,
     role: membership.role,
     table: "pickups",
   });
+  if (!assignment.valid) return fail({ assignedTo: "invalid" }, null);
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("create_or_update_pickup", {
     target_address_line1: optionalDbValue(input.addressLine1),
     target_address_line2: optionalDbValue(input.addressLine2),
-    target_assigned_to: optionalDbValue(assignedTo ?? ""),
+    target_assigned_to: optionalDbValue(assignment.assignedTo ?? ""),
     target_city: optionalDbValue(input.city),
     target_contact_name: optionalDbValue(input.contactName),
     target_contact_phone: optionalDbValue(input.contactPhone),
@@ -124,19 +143,23 @@ export async function saveDeliveryAction(
   if (!valid) return fail(fieldErrors, null);
 
   const { membership } = await requireOperationalCapability(locale, "delivery");
-  const assignedTo = await assignmentForRole({
+  const assignment = await assignmentForRole({
+    capability: "delivery",
     inputAssignedTo: input.assignedTo,
+    locale,
     orderId,
     organizationId: membership.organization.id,
     recordId: input.recordId,
     role: membership.role,
     table: "deliveries",
   });
+  if (!assignment.valid) return fail({ assignedTo: "invalid" }, null);
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("create_or_update_delivery", {
     target_address_line1: optionalDbValue(input.addressLine1),
     target_address_line2: optionalDbValue(input.addressLine2),
-    target_assigned_to: optionalDbValue(assignedTo ?? ""),
+    target_assigned_to: optionalDbValue(assignment.assignedTo ?? ""),
     target_city: optionalDbValue(input.city),
     target_contact_name: optionalDbValue(input.contactName),
     target_contact_phone: optionalDbValue(input.contactPhone),

@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  hasOperationalCapability,
+  isOperationalCapability,
+} from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
@@ -8,6 +12,20 @@ import type {
   OrderLogistics,
 } from "@/features/logistics/types";
 import type { AssignmentOption } from "@/features/orders/server/queries";
+import type { AppRole } from "@/lib/auth/types";
+
+export type AssignableStaffOptions = {
+  all: AssignmentOption[];
+  delivery: AssignmentOption[];
+  pickup: AssignmentOption[];
+};
+
+type AssignableMembershipRow = {
+  operational_capabilities: string[];
+  profile: { display_name: string } | { display_name: string }[] | null;
+  profile_id: string;
+  role: AppRole;
+};
 
 type LogisticsRow = {
   address_line1: string | null;
@@ -229,22 +247,53 @@ export async function listDeliveryQueueTasks(locale: string): Promise<DeliveryQu
   });
 }
 
-export async function listAssignableStaff(locale: string): Promise<AssignmentOption[]> {
+export async function listAssignableStaff(locale: string): Promise<AssignableStaffOptions> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("organization_memberships")
-    .select("profile_id, profile:profiles(display_name)")
+    .select("profile_id, role, operational_capabilities, profile:profiles!organization_memberships_profile_id_fkey(display_name)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
     .eq("role", "staff")
     .order("profile_id", { ascending: true })
-    .returns<{ profile: { display_name: string } | { display_name: string }[] | null; profile_id: string }[]>();
+    .returns<AssignableMembershipRow[]>();
 
-  if (error || !data) return [];
+  if (error || !data) {
+    console.error("Assignable staff query failed", error?.code ?? "missing_data");
+    return { all: [], delivery: [], pickup: [] };
+  }
 
-  return data.map((row) => ({
-    id: row.profile_id,
-    label: relationName(row.profile) ?? row.profile_id,
-  }));
+  const staff = data.map((row) => {
+    const capabilities = (row.operational_capabilities ?? []).filter(isOperationalCapability);
+
+    return {
+      capabilities,
+      option: {
+        id: row.profile_id,
+        label: relationName(row.profile) ?? row.profile_id,
+      },
+      role: row.role,
+    };
+  });
+
+  return {
+    all: staff.map(({ option }) => option),
+    delivery: staff
+      .filter(({ capabilities, role }) => hasOperationalCapability({ capabilities, role }, "delivery"))
+      .map(({ option }) => option),
+    pickup: staff
+      .filter(({ capabilities, role }) => hasOperationalCapability({ capabilities, role }, "pickup"))
+      .map(({ option }) => option),
+  };
+}
+
+export async function isAssignableStaffForCapability(
+  locale: string,
+  profileId: string,
+  capability: "delivery" | "pickup",
+) {
+  const assignments = await listAssignableStaff(locale);
+
+  return assignments[capability].some((assignment) => assignment.id === profileId);
 }

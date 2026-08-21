@@ -144,7 +144,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <dd className="mt-2 font-semibold text-white">{order.dueAt ? new Date(order.dueAt).toLocaleString(locale) : "-"}</dd>
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
-            <dt className="text-xs font-semibold uppercase text-white/68">{t("assigned")}</dt>
+            <dt className="text-xs font-semibold uppercase text-white/68">{t("assignment.assignedTo")}</dt>
             <dd className="mt-2 font-semibold text-white">{order.assignedToName || "-"}</dd>
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
@@ -171,8 +171,28 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <dl className="grid gap-4 lg:grid-cols-4">
         <Card className="lg:col-span-2">
           <dl className="grid gap-3 sm:grid-cols-2">
-            <div><dt className="text-sm text-muted">{t("logistics.pickup")}</dt><dd className="font-semibold text-primary">{logistics.pickup ? logisticsStatusLabels[logistics.pickup.status] : t("logistics.empty")}</dd></div>
-            <div><dt className="text-sm text-muted">{t("logistics.delivery")}</dt><dd className="font-semibold text-primary">{logistics.delivery ? logisticsStatusLabels[logistics.delivery.status] : t("logistics.empty")}</dd></div>
+            <div>
+              <dt className="text-sm text-muted">{t("logistics.pickup")}</dt>
+              <dd className="font-semibold text-primary">
+                {logistics.pickup ? logisticsStatusLabels[logistics.pickup.status] : t("logistics.empty")}
+              </dd>
+              {logistics.pickup ? (
+                <dd className="mt-1 text-sm text-muted">
+                  {t("logistics.assignedTo")}: {logistics.pickup.assignedToName || t("assignment.none")}
+                </dd>
+              ) : null}
+            </div>
+            <div>
+              <dt className="text-sm text-muted">{t("logistics.delivery")}</dt>
+              <dd className="font-semibold text-primary">
+                {logistics.delivery ? logisticsStatusLabels[logistics.delivery.status] : t("logistics.empty")}
+              </dd>
+              {logistics.delivery ? (
+                <dd className="mt-1 text-sm text-muted">
+                  {t("logistics.assignedTo")}: {logistics.delivery.assignedToName || t("assignment.none")}
+                </dd>
+              ) : null}
+            </div>
           </dl>
         </Card>
         <Card>
@@ -271,7 +291,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               action={updateOrderAssignmentAction.bind(null, locale, order.id)}
               assignedTo={order.assignedTo}
               assignedToName={order.assignedToName}
-              assignments={assignments}
+              assignments={assignments.all}
               canAssign={canManageAssignments}
               text={{
                 assignedTo: t("assignment.assignedTo"),
@@ -295,7 +315,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id),
             transitionPickup: transitionPickupAction.bind(null, locale, order.id),
           }}
-          assignments={assignments}
+          assignments={{
+            delivery: assignments.delivery,
+            pickup: assignments.pickup,
+          }}
           canAssign={canManageAssignments}
           logistics={logistics}
           text={{

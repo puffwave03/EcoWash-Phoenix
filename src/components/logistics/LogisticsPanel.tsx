@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import type {
@@ -43,7 +43,10 @@ type LogisticsPanelProps = {
     transitionDelivery: (formData: FormData) => Promise<void>;
     transitionPickup: (formData: FormData) => Promise<void>;
   };
-  assignments: AssignmentOption[];
+  assignments: {
+    delivery: AssignmentOption[];
+    pickup: AssignmentOption[];
+  };
   canAssign: boolean;
   logistics: OrderLogistics;
   text: LogisticsPanelText;
@@ -83,6 +86,7 @@ function LogisticsForm({
   title: string;
 }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const [assignedTo, setAssignedTo] = useState(record?.assignedTo ?? "");
 
   return (
     <form action={formAction} className="space-y-4">
@@ -103,7 +107,12 @@ function LogisticsForm({
         {canAssign ? (
           <label className="space-y-2 text-sm font-semibold text-primary">
             <span>{text.assignedTo}</span>
-            <select className={fieldClass(Boolean(state.fieldErrors.assignedTo))} defaultValue={record?.assignedTo ?? ""} name="assignedTo">
+            <select
+              className={fieldClass(Boolean(state.fieldErrors.assignedTo))}
+              name="assignedTo"
+              onChange={(event) => setAssignedTo(event.target.value)}
+              value={assignedTo}
+            >
               <option value="">{text.unassigned}</option>
               {assignments.map((assignment) => (
                 <option key={assignment.id} value={assignment.id}>{assignment.label}</option>
@@ -197,11 +206,11 @@ export function LogisticsPanel({ actions, assignments, canAssign, logistics, tex
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="space-y-4">
-          <LogisticsForm action={actions.savePickup} assignments={assignments} canAssign={canAssign} record={logistics.pickup} text={text} title={text.pickup} />
+          <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} title={text.pickup} />
           <TransitionButtons action={actions.transitionPickup} record={logistics.pickup} text={text} />
         </div>
         <div className="space-y-4">
-          <LogisticsForm action={actions.saveDelivery} assignments={assignments} canAssign={canAssign} record={logistics.delivery} text={text} title={text.delivery} />
+          <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} title={text.delivery} />
           <TransitionButtons action={actions.transitionDelivery} record={logistics.delivery} text={text} />
         </div>
       </div>
