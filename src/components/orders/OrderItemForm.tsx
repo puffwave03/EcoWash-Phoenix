@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/Button";
 import type { OrderActionState, OrderItem } from "@/features/orders/types";
 import type { Service } from "@/features/services/types";
+import { formatNumberInput } from "@/lib/number-format";
 
 type OrderItemFormText = {
   addItem: string;
@@ -48,6 +49,11 @@ export function OrderItemForm({ action, item, onCancel, onSuccess, services, tex
   const [isSubmitLocked, setIsSubmitLocked] = useState(false);
   const [state, formAction, isPending] = useActionState(guardedAction, initialState);
   const [selectedServiceId, setSelectedServiceId] = useState(item?.serviceId ?? "");
+  const [unitType, setUnitType] = useState(
+    item?.unitType
+      ?? services.find((service) => service.id === item?.serviceId)?.unitType
+      ?? "piece",
+  );
   const selectedService = useMemo(
     () => services.find((service) => service.id === selectedServiceId),
     [selectedServiceId, services],
@@ -91,7 +97,11 @@ export function OrderItemForm({ action, item, onCancel, onSuccess, services, tex
           className={fieldClass(false)}
           disabled={isLocked}
           name="serviceId"
-          onChange={(event) => setSelectedServiceId(event.target.value)}
+          onChange={(event) => {
+            const serviceId = event.target.value;
+            setSelectedServiceId(serviceId);
+            setUnitType(services.find((service) => service.id === serviceId)?.unitType ?? "piece");
+          }}
           value={selectedServiceId}
         >
           <option value="" />
@@ -108,18 +118,18 @@ export function OrderItemForm({ action, item, onCancel, onSuccess, services, tex
       </label>
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.unitType}</span>
-        <select className={fieldClass(Boolean(state.fieldErrors.unitType))} defaultValue={item?.unitType ?? selectedService?.unitType ?? "piece"} disabled={isLocked} key={`unit-${selectedServiceId}`} name="unitType">
+        <select className={fieldClass(Boolean(state.fieldErrors.unitType))} disabled={isLocked} name="unitType" onChange={(event) => setUnitType(event.target.value as "piece" | "weight")} value={unitType}>
           <option value="piece">{text.piece}</option>
           <option value="weight">{text.weight}</option>
         </select>
       </label>
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.quantity}</span>
-        <input className={fieldClass(Boolean(state.fieldErrors.quantity))} defaultValue={item?.quantity ?? "1"} disabled={isLocked} min="0.001" name="quantity" step="0.001" type="number" />
+        <input className={fieldClass(Boolean(state.fieldErrors.quantity))} defaultValue={formatNumberInput(item?.quantity ?? 1, 3)} disabled={isLocked} min={unitType === "piece" ? "1" : "0.001"} name="quantity" step={unitType === "piece" ? "1" : "0.001"} type="number" />
       </label>
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.unitPrice}</span>
-        <input className={fieldClass(Boolean(state.fieldErrors.unitPrice))} defaultValue={item?.unitPrice ?? selectedService?.amount ?? "0"} disabled={isLocked} key={`price-${selectedServiceId}`} min="0" name="unitPrice" step="0.01" type="number" />
+        <input className={fieldClass(Boolean(state.fieldErrors.unitPrice))} defaultValue={formatNumberInput(item?.unitPrice ?? selectedService?.amount ?? 0, 2)} disabled={isLocked} key={`price-${selectedServiceId}`} min="0" name="unitPrice" step="0.01" type="number" />
       </label>
       <input name="notes" type="hidden" value={item?.notes ?? ""} />
       <div className="flex flex-wrap gap-2">

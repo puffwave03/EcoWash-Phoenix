@@ -2,6 +2,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Link } from "@/i18n/navigation";
 import type { Service } from "@/features/services/types";
+import { formatCurrency } from "@/lib/number-format";
 
 type ServiceListText = {
   active: string;
@@ -42,7 +43,7 @@ export function ServiceList({
               <p className="text-sm text-muted">{service.code || service.category || "-"}</p>
             </div>
             <p className="text-sm text-muted">
-              {service.amount === null ? "-" : `${service.amount.toFixed(2)} ${service.currency ?? "EUR"}`}
+              {service.amount === null ? "-" : formatCurrency(service.amount, service.currency ?? "EUR", locale)}
             </p>
             <p className="text-sm text-muted">{service.isActive ? text.active : text.inactive}</p>
             <p className="text-sm text-muted">{service.unitType === "weight" ? text.weight : text.piece}</p>

@@ -8,6 +8,7 @@ import type {
   ProductionTask,
   ProductionUrgency,
 } from "@/features/production/types";
+import { formatQuantity } from "@/lib/number-format";
 
 export type ProductionDetailText = {
   action: string;
@@ -76,10 +77,6 @@ function formatDateTime(
         timeZone,
       }).format(new Date(value))
     : fallback;
-}
-
-function formatQuantity(value: number, locale: string) {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value);
 }
 
 function DetailRow({ label, value }: { label: string; value: string | null }) {

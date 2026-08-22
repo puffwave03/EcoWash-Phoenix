@@ -11,6 +11,7 @@ import type {
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { DerivedPaymentStatus } from "@/features/payments/types";
+import { formatCurrency } from "@/lib/number-format";
 
 type DashboardText = {
   activity: {
@@ -102,17 +103,13 @@ type OperationalDashboardProps = {
   text: DashboardText;
 };
 
-function formatMoney(amount: string | number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, { currency, style: "currency" }).format(Number(amount));
-}
-
 function formatCurrencyAmounts(
   amounts: NonNullable<DashboardOverview["summary"]["balanceDueTotals"]>,
   locale: string,
 ) {
   if (amounts.length === 0) return "-";
 
-  return amounts.map((item) => formatMoney(item.amount, item.currency, locale)).join(" · ");
+  return amounts.map((item) => formatCurrency(item.amount, item.currency, locale)).join(" · ");
 }
 
 function formatDateTime(value: string | null, locale: string) {
@@ -199,8 +196,8 @@ function QueueList({
             <p>{showReadyAt ? `${text.production.readyAt}: ${formatDateTime(item.readyAt, locale)}` : `${text.labels.due}: ${formatDateTime(item.dueAt, locale)}`}</p>
           </div>
           <div className="text-sm text-muted">
-            <p>{formatMoney(item.total, item.currency, locale)}</p>
-            <p>{text.summary.balanceDue}: {formatMoney(item.balanceDue, item.currency, locale)}</p>
+            <p>{formatCurrency(item.total, item.currency, locale)}</p>
+            <p>{text.summary.balanceDue}: {formatCurrency(item.balanceDue, item.currency, locale)}</p>
           </div>
           <OrderLink id={item.id} locale={locale} text={text.labels.view} />
         </div>
@@ -258,9 +255,9 @@ function BalanceList({
             <p className="font-semibold text-primary">{item.orderNumber}</p>
             <p className="text-sm text-muted">{item.customerName}</p>
           </div>
-          <p className="text-sm text-muted">{text.balances.total}: {formatMoney(item.total, item.currency, locale)}</p>
-          <p className="text-sm text-muted">{text.balances.totalPaid}: {formatMoney(item.totalPaid, item.currency, locale)}</p>
-          <p className="text-sm text-muted">{text.statuses.payment[item.paymentStatus]} · {formatMoney(item.balanceDue, item.currency, locale)}</p>
+          <p className="text-sm text-muted">{text.balances.total}: {formatCurrency(item.total, item.currency, locale)}</p>
+          <p className="text-sm text-muted">{text.balances.totalPaid}: {formatCurrency(item.totalPaid, item.currency, locale)}</p>
+          <p className="text-sm text-muted">{text.statuses.payment[item.paymentStatus]} · {formatCurrency(item.balanceDue, item.currency, locale)}</p>
           <OrderLink id={item.id} locale={locale} text={text.labels.view} />
         </div>
       ))}

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/Button";
 import type { Service, ServiceActionState } from "@/features/services/types";
+import { formatNumberInput } from "@/lib/number-format";
 
 type ServiceFormText = {
   amount: string;
@@ -72,7 +73,7 @@ export function ServiceForm({ action, service, text }: ServiceFormProps) {
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.amount}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.amount))} defaultValue={service?.amount ?? "0"} min="0" name="amount" step="0.01" type="number" />
+          <input className={fieldClass(Boolean(state.fieldErrors.amount))} defaultValue={formatNumberInput(service?.amount ?? 0, 2)} min="0" name="amount" step="0.01" type="number" />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.currency}</span>

@@ -9,6 +9,7 @@ import type {
   LogisticsRecord,
   OrderLogistics,
 } from "@/features/logistics/types";
+import { formatNumberInput } from "@/lib/number-format";
 import type { AssignmentOption } from "@/features/orders/server/queries";
 
 type LogisticsPanelText = {
@@ -150,7 +151,7 @@ function LogisticsForm({
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.fee}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.fee))} defaultValue={record?.fee ?? "0"} min="0" name="fee" step="0.01" type="number" />
+          <input className={fieldClass(Boolean(state.fieldErrors.fee))} defaultValue={formatNumberInput(record?.fee ?? 0, 2)} min="0" name="fee" step="0.01" type="number" />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.contactName}</span>

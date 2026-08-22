@@ -12,6 +12,7 @@ import type {
   CustomerPortalOrderDetail,
 } from "@/features/portal/types";
 import type { ProductionStatus } from "@/features/orders/types";
+import { formatQuantity } from "@/lib/number-format";
 
 type StatusText = Record<ProductionStatus, string>;
 type FulfillmentText = Record<FulfillmentStatus, string>;
@@ -298,7 +299,7 @@ export function CustomerPortalOrderDetail({
           {order.items.map((item) => (
             <div className="border-b border-border pb-3 last:border-b-0 last:pb-0" key={item.id}>
               <p className="font-semibold text-primary">{item.description}</p>
-              <p className="text-sm text-muted">{item.quantity} · {item.unitType}</p>
+              <p className="text-sm text-muted">{formatQuantity(item.quantity, locale)} · {item.unitType}</p>
             </div>
           ))}
         </Card>

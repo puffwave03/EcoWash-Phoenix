@@ -2,6 +2,7 @@ import { Card } from "@/components/Card";
 import { StatusBadge, type Tone } from "@/components/operational/OperationalUi";
 import { Link } from "@/i18n/navigation";
 import type { Order, OrderPriority, ProductionStatus } from "@/features/orders/types";
+import { formatCurrency } from "@/lib/number-format";
 
 type OrderListText = {
   created: string;
@@ -15,10 +16,6 @@ type OrderListText = {
   total: string;
   view: string;
 };
-
-function formatMoney(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, { currency, style: "currency" }).format(amount);
-}
 
 function formatDate(value: string | null, locale: string) {
   return value ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value)) : "-";
@@ -90,7 +87,7 @@ export function OrderList({
                 {readableToken(order.priority)}
               </StatusBadge>
             </div>
-            <p className="text-sm font-semibold text-primary">{formatMoney(order.total, order.currency, locale)}</p>
+            <p className="text-sm font-semibold text-primary">{formatCurrency(order.total, order.currency, locale)}</p>
             <p className="text-sm text-muted">{formatDate(order.dueAt, locale)}</p>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-control border border-primary px-3 text-sm font-semibold text-primary transition-standard hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"

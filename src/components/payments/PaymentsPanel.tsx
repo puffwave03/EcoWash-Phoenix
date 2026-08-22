@@ -10,6 +10,7 @@ import type {
   PaymentRecordStatus,
   PaymentSummary,
 } from "@/features/payments/types";
+import { formatCurrency } from "@/lib/number-format";
 
 type PaymentsPanelText = {
   actor: string;
@@ -59,10 +60,6 @@ function fieldClass(hasError = false) {
   }`;
 }
 
-function formatMoney(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, { currency, style: "currency" }).format(amount);
-}
-
 export function PaymentsPanel({
   actions,
   canManageCorrections,
@@ -82,9 +79,9 @@ export function PaymentsPanel({
           <p className="mt-1 text-sm text-muted">{text.paymentStatus}: {text.statuses[summary.paymentStatus]}</p>
         </div>
         <dl className="grid grid-cols-3 gap-3 text-sm">
-          <div><dt className="text-muted">{text.totalDue}</dt><dd className="font-semibold text-primary">{formatMoney(summary.totalDue, currency, locale)}</dd></div>
-          <div><dt className="text-muted">{text.totalPaid}</dt><dd className="font-semibold text-primary">{formatMoney(summary.totalPaid, currency, locale)}</dd></div>
-          <div><dt className="text-muted">{text.balanceDue}</dt><dd className="font-semibold text-primary">{formatMoney(summary.balanceDue, currency, locale)}</dd></div>
+          <div><dt className="text-muted">{text.totalDue}</dt><dd className="font-semibold text-primary">{formatCurrency(summary.totalDue, currency, locale)}</dd></div>
+          <div><dt className="text-muted">{text.totalPaid}</dt><dd className="font-semibold text-primary">{formatCurrency(summary.totalPaid, currency, locale)}</dd></div>
+          <div><dt className="text-muted">{text.balanceDue}</dt><dd className="font-semibold text-primary">{formatCurrency(summary.balanceDue, currency, locale)}</dd></div>
         </dl>
       </div>
 
@@ -122,7 +119,7 @@ export function PaymentsPanel({
         ) : payments.map((payment) => (
           <div className="grid gap-3 p-4 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-start" key={payment.id}>
             <div>
-              <p className="font-semibold text-primary">{formatMoney(payment.amount, currency, locale)}</p>
+              <p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p>
               <p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p>
             </div>
             <p className="text-sm text-muted">{text.date}: {new Date(payment.paidAt).toLocaleString(locale)}</p>

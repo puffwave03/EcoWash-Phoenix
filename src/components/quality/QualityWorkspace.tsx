@@ -10,6 +10,7 @@ import type {
   QualityGroup,
   QualityWorkspaceData,
 } from "@/features/production/types";
+import { formatQuantity } from "@/lib/number-format";
 
 export type QualityWorkspaceText = {
   assignedTo: string;
@@ -85,10 +86,6 @@ function formatDue(
     minute: "2-digit",
     timeZone,
   }).format(due);
-}
-
-function formatQuantity(value: number, locale: string) {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value);
 }
 
 function groupForTask(task: ProductionTask): QualityGroup {

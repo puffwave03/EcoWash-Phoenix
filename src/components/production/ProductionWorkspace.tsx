@@ -6,6 +6,7 @@ import type {
   ProductionUrgency,
   ProductionWorkspaceData,
 } from "@/features/production/types";
+import { formatQuantity } from "@/lib/number-format";
 import type {
   OrderPriority,
   ProductionStatus,
@@ -90,10 +91,6 @@ function formatDue(
     minute: "2-digit",
     timeZone,
   }).format(due);
-}
-
-function formatQuantity(value: number, locale: string) {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value);
 }
 
 function ProductionContext({ task }: { task: ProductionTask }) {

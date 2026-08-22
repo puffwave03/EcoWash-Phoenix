@@ -50,14 +50,11 @@ import { listActiveServicesForOrder } from "@/features/services/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
 import { canEditCatalog } from "@/features/orders/workflow";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { formatCurrency, formatNumberInput } from "@/lib/number-format";
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
 };
-
-function formatMoney(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, { currency, style: "currency" }).format(amount);
-}
 
 function SectionShell({
   children,
@@ -149,7 +146,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
             <dt className="text-xs font-semibold uppercase text-white/68">{t("total")}</dt>
-            <dd className="mt-2 text-xl font-semibold text-white">{formatMoney(order.total, order.currency, locale)}</dd>
+            <dd className="mt-2 text-xl font-semibold text-white">{formatCurrency(order.total, order.currency, locale)}</dd>
           </div>
         </dl>
       </section>
@@ -197,7 +194,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("payments.balanceDue")}</dt>
-          <dd className="mt-1 text-xl font-semibold text-primary">{formatMoney(paymentSummary.balanceDue, order.currency, locale)}</dd>
+          <dd className="mt-1 text-xl font-semibold text-primary">{formatCurrency(paymentSummary.balanceDue, order.currency, locale)}</dd>
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("photos.title")}</dt>
@@ -262,7 +259,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <form action={updateOrderDiscountAction.bind(null, locale, order.id)} className="flex flex-col gap-3">
                 <label className="space-y-2 text-sm font-semibold text-primary">
                   <span>{t("discount")}</span>
-                  <input className="min-h-11 rounded-control border border-border px-3 text-sm" defaultValue={order.discountAmount} min="0" name="discountAmount" step="0.01" type="number" />
+                  <input className="min-h-11 rounded-control border border-border px-3 text-sm" defaultValue={formatNumberInput(order.discountAmount, 2)} min="0" name="discountAmount" step="0.01" type="number" />
                 </label>
                 <Button type="submit">{t("updateDiscount")}</Button>
               </form>
