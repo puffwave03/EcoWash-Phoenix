@@ -232,8 +232,8 @@ export function AppNavigation({
                 aria-current={isActive ? "page" : undefined}
                 className={`relative flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-1 text-center text-xs font-semibold leading-none transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
                   isActive
-                    ? "bg-primary-soft text-primary"
-                    : "text-muted hover:bg-[#f5f7f5] hover:text-primary"
+                    ? "bg-primary-soft !text-primary"
+                    : "!text-muted hover:bg-[#f5f7f5] hover:!text-primary"
                 }`}
                 href={item.href}
                 key={item.href}
@@ -269,14 +269,19 @@ export function AppNavigation({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={`block min-h-11 rounded-control px-3 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-[#09291f] ${
-                    isActive ? "bg-white text-primary shadow-card" : "text-white/78 hover:bg-white/10 hover:text-white"
+                    isActive
+                      ? "bg-primary-soft !text-primary shadow-card ring-1 ring-inset ring-white/15 hover:bg-[#e2eee8] hover:!text-primary"
+                      : "!text-white/78 hover:bg-white/10 hover:!text-white"
                   }`}
                   href={item.href}
                   key={item.href}
                   locale={locale}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span>{item.label}</span>
+                    <span className="flex min-w-0 items-center gap-3">
+                      <NavigationIcon href={item.href} />
+                      <span className="min-w-0 truncate">{item.label}</span>
+                    </span>
                     {item.alertBadge && alertCount > 0 ? (
                       <span className="min-w-6 rounded-full bg-secondary px-2 py-0.5 text-center text-xs font-semibold text-primary">
                         {alertCount}
