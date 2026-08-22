@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
-Next Action: Resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
+Next Action: Prepare QA-001 and select the next approved product phase
 
 ---
 
@@ -103,9 +103,8 @@ Completed or validated areas:
 - Supabase migration history reconciliation
 - Public login entry and mobile navigation correction
 
-Pending areas:
+Remaining areas:
 
-- UX-002 app landing/dashboard and operational layout refinement completed through UX-002.5
 - Public deployment
 - Production-ready release
 - Reporting beyond the MVP operational dashboard
@@ -141,6 +140,9 @@ Implemented and smoke-validated:
 - capability-aware Pickup, Production, Quality & Packing and Delivery workspaces
 - Owner Operations Control Center
 - staff My Day filtered by capability and assignment
+- end-to-end validation of Pickup, Production, Quality & Packing and Delivery, including terminal redirects without 404
+- validated owner, manager and staff route/access boundaries
+- Resend Custom SMTP for operational Supabase Auth email delivery
 - secure customer portal with customer-scoped order visibility and access management
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
@@ -193,6 +195,10 @@ P2 — remaining portal MVPs and strong commercial differentiators after the fir
 - UI-001 — Operational Dashboard Visual Refinement. Completed.
 - UX-OPS-001.3 through UX-OPS-001.8 — Operational workspaces, owner control and access management. Completed.
 - UI-003 — Operational primary CTA consistency. Completed.
+- UI-MOBILE-001 — Mobile order/logistics refinement with desktop/mobile data parity. Completed.
+- UI-BUG-004 — Desktop staff sidebar active-state readability. Completed.
+- UI-FORMAT-005 — Shared quantity, currency and numeric-input formatting. Completed.
+- BUG-PROD-006 — Terminal operational transition redirects. Completed.
 - REPORT-001 — Daily payment close by currency and method.
 - REPORT-002 — Open balance and overdue collection report.
 - EXPORT-001 — CSV export for accounting or operational handoff.
@@ -237,14 +243,17 @@ Scope:
 - UI-001 — Operational Dashboard Visual Refinement, completed
 - UX-OPS-001.3 through UX-OPS-001.8 — operational workspaces, owner control and access management, completed
 - UI-003 — operational CTA consistency, completed
+- UI-MOBILE-001, UI-BUG-004 and UI-FORMAT-005 — mobile, navigation and numeric-format refinement, completed
+- BUG-PROD-006 — terminal operational transition redirects, completed
+- AUTH-INFRA-001 — Resend Custom SMTP enabled and operational for Supabase Auth
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
 
-- Pickup passed end to end with Speed using `TEST-PICKUP-01`.
-- `TEST-PRODUCTION-01` is assigned to Production Test; `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
-- Production Test Auth is valid. The current block is Supabase Auth `429 over_email_send_rate_limit`, not malformed Auth.
-- Resume with one access link to Production Test, opened from the newest email in fresh incognito, then test Production, Quality and Delivery in order.
+- Pickup, Production, Quality & Packing and Delivery passed end to end using `TEST-PICKUP-01`, `TEST-PRODUCTION-01`, `TEST-QUALITY-01` and `TEST-DELIVERY-01`.
+- Operational test purposes are Speed for Pickup, Production Test for Production, Quality Test for Quality & Packing, Delivery Test for Delivery and Manager Test for manager access validation.
+- Supabase Custom SMTP through Resend is operational; a real Auth email was sent and received. The configured limit is 30 emails/hour, while endpoint-specific throttling remains independent.
+- `QA-001` is the next existing M1/P0 gate. After it is prepared, the Product Owner selects full-app visual/product refinement or the next approved business module.
 - Old test orders remain intentionally untouched; do not create more fixtures unless a verified gap requires one.
 
 PILOT-001 planning scope:

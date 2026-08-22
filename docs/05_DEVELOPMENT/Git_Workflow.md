@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
-Next Action: Resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
+Next Action: Prepare QA-001 and select the next approved product phase
 
 ---
 
@@ -39,10 +39,12 @@ Define the current Git workflow for EcoWash Phoenix so application work, review,
 
 ## Current Handover Note
 
-The latest approved and pushed development commit is:
+The latest approved and pushed development commit before DOCS-OPS-017 is:
 
-`ecf0c8a BUG-AUTH-005 fix: harden staff auth callback and rate-limit handling`
+`edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`
 
-The current resume point is functional staging validation, not migration work. Confirm `main` is clean and synchronized with `origin/main`, then follow `docs/00_START_HERE/SESSION_HANDOVER.md`. Do not repeat malformed-Auth diagnosis for Production Test without new evidence; the current block is the Supabase Auth email rate limit.
+The operational role/workspace phase is validated. Confirm `main` is clean and synchronized with `origin/main`, then follow `docs/00_START_HERE/SESSION_HANDOVER.md`. `QA-001` remains the next existing M1/P0 gate; the Product Owner chooses whether the following macro-phase is full-app visual/product refinement or the next approved business module.
+
+Working loop: the Product Owner defines behavior and performs simple visual/functional checks; ChatGPT acts as CTO, architect and reviewer and prepares Codex tasks; Codex implements and reports. Keep the Product Owner's technical burden minimal and keep one task per logical commit.
 
 Do not use `git add .` for documentation-only closeouts. Stage only the Markdown files intentionally updated. Keep staging cleanup separate and do not delete old test orders without explicit approval.

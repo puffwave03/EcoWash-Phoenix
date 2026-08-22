@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
-Next Action: resume Production, Quality and Delivery staging tests after the Supabase Auth email rate limit clears
+Next Action: prepare QA-001 and select the next approved product phase
 
 ---
 
@@ -137,12 +137,17 @@ Approved and current areas:
 - UX-OPS-001.8 — Access & Capabilities Management: Completed and pushed
 - UI-003 — Operational primary CTA consistency: Completed and pushed
 - BUG-ASSIGN — Persistent capability-aware logistics assignment: Completed and pushed
+- BUG-PROD-006 — Terminal operational transition redirects: Completed and pushed
+- UI-MOBILE-001 — Mobile order/logistics refinement: Completed and pushed
+- UI-BUG-004 — Desktop staff navigation readability: Completed and pushed
+- UI-FORMAT-005 — Shared quantity and currency formatting: Completed and pushed
+- AUTH-INFRA-001 — Resend Custom SMTP for Supabase Auth: Completed and operational
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
 Current resume task:
 
-- complete the real staging Production, Quality and Delivery tests after the temporary Supabase Auth email rate limit clears
+- prepare `QA-001`, then let the Product Owner select full-app visual/product refinement or the next approved business module
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -171,7 +176,7 @@ Corrective work committed in `f94df88`:
 
 Not yet completed:
 
-- Operational Dashboard Visual Refinement
+- QA-001 repeatable smoke/regression checklist
 - production-ready release
 - real production environment
 
@@ -236,18 +241,19 @@ Official sequence after SEC-001:
 - UX-OPS-001.3 through UX-OPS-001.8 — operational workspaces, owner control and access management, completed
 - UI-003 — operational CTA consistency, completed
 - BUG-ASSIGN — persistent capability-aware logistics assignment, completed
-- Operational access testing — Pickup passed end to end; Production, Quality and Delivery wait only on the temporary Supabase Auth email rate limit
+- Operational access testing — Pickup, Production, Quality & Packing and Delivery validated end to end
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
 
 Current staging validation checkpoint:
 
 - `TEST-PICKUP-01` → Speed; validated in Pickup Workspace and My Day
-- `TEST-PRODUCTION-01` → Production Test
-- `TEST-QUALITY-01` → EcoWash staff test
-- `TEST-DELIVERY-01` → EcoWash staff test
-- Production Test Auth is valid; the current block is `429 over_email_send_rate_limit`, not a malformed Auth record
+- `TEST-PRODUCTION-01` → Production Test; validated in Production Workspace and My Day
+- `TEST-QUALITY-01` → Quality Test; validated in Quality & Packing Workspace and My Day
+- `TEST-DELIVERY-01` → Delivery Test; validated in Delivery Workspace and My Day
+- Manager Test validated manager supervision and Staff & Access denial
+- Resend Custom SMTP is operational for Supabase Auth; configured limit 30 emails/hour, with endpoint-specific throttling still independent
 - old test orders remain intentionally untouched because safe hard cleanup would require an unnecessarily invasive administrative procedure
-- resume by sending one access link to Production Test after the limit clears, using the newest email in a fresh incognito session, then test Production, Quality and Delivery in that order
+- next approved gate is QA-001; do not create additional fixtures unless a verified regression gap requires one
 
 PILOT-001 planning scope:
 

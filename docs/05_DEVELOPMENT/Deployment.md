@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
 ---
 
@@ -25,13 +25,15 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Current Release Position
 
 - `main` is the only release branch.
-- Latest confirmed operational baseline: `8ce8a8e OPS-001.6 feat: add operational alerts dashboard`.
+- Latest confirmed operational baseline before DOCS-OPS-017: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
 - RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
 - RELEASE-001.3 production environment design is completed.
 - Vercel staging project `ecowash-phoenix-staging` is online at `https://ecowash-phoenix-staging.vercel.app`.
 - Automatic deploy from `main` to the staging project is working.
+- Pickup, Production, Quality & Packing and Delivery have been validated end to end on staging.
+- Resend Custom SMTP is enabled and operational for Supabase Auth email delivery.
 - OPS-001.6 deployed successfully to staging; unauthenticated `/it/app/alerts` returns a safe 307 redirect to login, no HTTP 500 was observed and `/robots.txt` still returns `Disallow: /`.
 - No production environment is confirmed.
 - No production Supabase project is inventoried.
@@ -78,11 +80,10 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Staging Blockers
 
 - Supabase CLI authentication must be available in the active release shell before read-only remote checks.
-- Staging hosting and environment contract are not yet approved.
 - Staging migration history must be rechecked immediately before release candidate review.
-- Staging Auth redirect URLs must be verified against the chosen staging/preview URL.
 - Staging/preview indexing policy must be explicit through `NEXT_PUBLIC_SITE_INDEXING=false`.
 - Remaining smoke gaps need a QA decision: negative upload tests, overpayment behavior and payment actor visibility.
+- Auth endpoint-specific throttling can still apply independently from successful Custom SMTP delivery.
 
 ## Production Blockers
 
@@ -90,7 +91,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 - No hosting project is configured.
 - No production Supabase project is confirmed.
 - No production Auth redirect model is applied or verified.
-- No production environment design is approved.
+- The production environment design is documented, but no production resources or environment values have been applied.
 - No production backup/rollback plan is approved.
 - No production observability/logging policy is approved.
 - No production smoke checklist is approved.
@@ -153,6 +154,20 @@ Rules:
 - Browser-provided redirect URLs must not be accepted.
 - Password recovery tokens and URLs must not be logged.
 - Public signup remains disabled.
+
+## Supabase Auth Custom SMTP
+
+AUTH-INFRA-001 result: completed and operational on EcoWash Staging.
+
+- Provider: Resend.
+- Verified sending domain: `ecowashlatejita.com`.
+- Sender: `access@ecowashlatejita.com`.
+- Supabase Custom SMTP: enabled.
+- Real Auth email delivery: sent and received successfully.
+- Configured Supabase Auth email limit: 30 emails/hour.
+- Endpoint-specific Supabase Auth throttling can still apply independently from SMTP transport.
+
+Never document or commit Resend API keys, SMTP passwords, tokens, generated links or secret values. SMTP and service-role credentials remain server-side only.
 
 ## Supabase Environment Strategy
 
@@ -393,6 +408,8 @@ Current staging status:
 
 - Vercel staging is ready.
 - Supabase Auth staging is configured and validated.
+- Resend Custom SMTP is enabled and a real Supabase Auth email was successfully sent and received.
+- Supabase Auth email limit is configured to 30 emails/hour; endpoint-specific throttling remains independent.
 - Indexing is disabled.
 - `/robots.txt` returns `Disallow: /`.
 - Customer portal routes are deployed and protected.

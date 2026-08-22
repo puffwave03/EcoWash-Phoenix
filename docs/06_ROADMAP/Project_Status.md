@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
-Next Action: wait for the Supabase Auth email rate limit to clear, then send one access link to Production Test
+Next Action: prepare QA-001 and select the next approved product phase
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | Complete real staging validation of Production, Quality and Delivery workspaces |
-| Last completed mission | BUG-AUTH-005 — Staff Auth callback and rate-limit hardening |
-| Latest approved and pushed commit | ecf0c8a |
+| Current mission | Preserve the validated operational baseline and select the next approved roadmap phase |
+| Last completed implementation mission | UI-FORMAT-005 — Shared quantity and currency formatting |
+| Latest approved and pushed commit | edebb79 |
 | Remote status | main synchronized with origin/main |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -74,12 +74,17 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | UX-OPS-001.3 through UX-OPS-001.8 status | Completed and pushed |
 | UI-003 status | Completed and pushed |
 | BUG-ASSIGN status | Completed and pushed |
+| BUG-PROD-006 status | Completed and pushed |
+| UI-MOBILE-001 status | Completed and pushed |
+| UI-BUG-004 status | Completed and pushed |
+| UI-FORMAT-005 status | Completed and pushed |
+| AUTH-INFRA-001 status | Completed; Resend Custom SMTP operational |
 | Staff access/removal refinement | Completed and pushed |
-| Current staging test block | Supabase Auth email rate limit: `429 over_email_send_rate_limit` |
+| Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected and aligned; capability-aware operational workspaces, owner control, staff access flows and secure customer portal implemented |
-| Commercial readiness | Pickup is validated end to end; Production, Quality and Delivery await real login testing after the temporary Supabase email rate limit clears |
+| Commercial readiness | Pickup, Production, Quality & Packing and Delivery are validated end to end; QA-001 remains the next M1/P0 gate |
 
 ## Operational Access Testing Checkpoint
 
@@ -94,6 +99,8 @@ Completed and available:
 - server-side redirect from the legacy staff `/[locale]/app` route to `/[locale]/app/work`, before owner dashboard data is queried
 - Auth callback protection against invalid links, stale sessions and email rate-limit errors
 - Next.js local development through Webpack for stable route behavior
+- terminal operational redirects that return users to valid workspaces without 404
+- responsive mobile logistics, readable desktop staff navigation and shared numeric formatting
 
 Authorization model:
 
@@ -105,12 +112,13 @@ Authorization model:
 
 Staging validation:
 
-- Pickup passed end to end with Speed.
-- `TEST-PICKUP-01` is assigned to Speed.
-- `TEST-PRODUCTION-01` is assigned to Production Test.
-- `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
-- Production Test has a valid Auth record.
-- Production, Quality and Delivery real functional tests are pending only because Supabase Auth email sending is temporarily rate-limited with `429 over_email_send_rate_limit`.
+- Pickup passed end to end with Speed using `TEST-PICKUP-01`.
+- Production passed end to end with Production Test using `TEST-PRODUCTION-01`.
+- Quality & Packing passed end to end with Quality Test using `TEST-QUALITY-01`.
+- Delivery passed end to end with Delivery Test using `TEST-DELIVERY-01`.
+- Manager Test validated manager supervision and denial of Staff & Access management.
+- Each operational test covered staff assignment, capability, My Day, dedicated workspace, activity detail, transitions, terminal transition and final redirect without 404.
+- Resend Custom SMTP is operational for Supabase Auth; a real Auth email was sent and received. The configured limit is 30 emails/hour, while endpoint-specific throttling remains independent.
 - Older test orders were intentionally not deleted because safe hard cleanup would require an unnecessarily invasive administrative procedure.
 - No additional fixtures should be created unless a verified test gap requires one.
 
@@ -185,6 +193,11 @@ Staging validation:
 | UX-OPS-001.8 | Access & Capabilities Management | Completed |
 | UI-003 | Operational primary CTA consistency | Completed |
 | BUG-ASSIGN | Persistent capability-aware logistics assignment | Completed |
+| BUG-PROD-006 | Terminal operational transition redirects | Completed |
+| UI-MOBILE-001 | Mobile order/logistics refinement | Completed |
+| UI-BUG-004 | Desktop staff navigation readability | Completed |
+| UI-FORMAT-005 | Shared quantity, currency and numeric-input formatting | Completed |
+| AUTH-INFRA-001 | Resend Custom SMTP for Supabase Auth | Completed; operational |
 
 ## Commit History
 
@@ -272,7 +285,7 @@ Staging validation:
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `ecf0c8a` before DOCS-OPS-016.
+- Local `main` and `origin/main` point to `edebb79` before DOCS-OPS-017.
 
 ## DEV-009.5 Completed State
 
@@ -653,14 +666,13 @@ OPS-001.6 also added `/[locale]/app/alerts` for owner and manager. It shows late
 
 Validation passed: real owner access, local UI review, badge/page total consistency, severity counts and urgency ordering, duplicate review, mobile layout, order links, lint, build, diff-check, staging deploy, unauthenticated safe redirect and robots `Disallow: /`.
 
-Still to verify when dedicated accounts are available: real manager access and real staff denial. These are not FAIL results and are not blocking.
+Manager Test access and real staff denial are validated for Operational Alerts.
 
 Current resume task:
 
-- wait for the Supabase Auth email rate limit to clear
-- send exactly one access link to Production Test
-- open only the newest email in a fresh incognito session
-- validate `TEST-PRODUCTION-01`, followed by `TEST-QUALITY-01` and `TEST-DELIVERY-01`
+- preserve the validated operational fixtures and account purposes
+- prepare `QA-001`, the next existing M1/P0 gate
+- let the Product Owner select full-app visual/product refinement or the next approved business module after QA planning
 - record only real functional or visual defects; do not create additional fixtures unless necessary
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
@@ -901,27 +913,27 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix dal test operativo staging. Verifichiamo prima se il rate limit email Supabase è terminato.”
+“Buongiorno, riprendiamo EcoWash Phoenix dalla fase operativa validata e scegliamo la prossima missione approvata della roadmap.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` were at `ecf0c8a` before DOCS-OPS-016
+- Local `main` and `origin/main` were at `edebb79` before DOCS-OPS-017
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
 - UX-002 is completed and pushed through UX-002.5
 - UI-001, UX-OPS-001.3 through UX-OPS-001.8, UI-003 and the capability-aware assignment/access hardening are completed
-- Pickup passed end to end with Speed
-- Production Test Auth is valid; current email failure is `429 over_email_send_rate_limit`
+- Pickup, Production, Quality & Packing and Delivery passed end to end with their dedicated test accounts and fixtures
+- Resend Custom SMTP is operational; do not store API keys, SMTP passwords, tokens or access links in documentation
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars
 - Do not apply migrations or alter Supabase remote state during RELEASE-001
 - Do not run `supabase db reset --linked`
 - Keep one task per commit
-- Do not repeat malformed-Auth diagnosis for Production Test without new evidence
+- Preserve the validated capability-plus-assignment authorization model
 
 First checks:
 
@@ -938,7 +950,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Check whether the Supabase email rate limit has cleared without sending repeated test emails.
-4. Send one access link to Production Test and open the newest email in fresh incognito.
-5. Test `TEST-PRODUCTION-01`, then `TEST-QUALITY-01`, then `TEST-DELIVERY-01`.
-6. Record real functional or visual defects and avoid creating additional fixtures unless necessary.
+3. Prepare `QA-001`, the repeatable smoke/regression checklist already present in the approved roadmap.
+4. Ask the Product Owner to select the following macro-phase: full-app visual/product refinement or the next approved business module.
+5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
+6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

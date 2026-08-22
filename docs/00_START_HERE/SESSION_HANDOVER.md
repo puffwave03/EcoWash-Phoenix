@@ -2,21 +2,21 @@
 
 Status: Active
 
-Date: 2026-08-21
+Date: 2026-08-22
 
-Approximate closeout time: after clean staging operational fixtures were created and verified
+Approximate closeout time: after final operational role/workspace validation and Custom SMTP verification
 
-Session checkpoint: operational access model is implemented; Pickup passed end to end; remaining workspace tests wait on the Supabase Auth email rate limit
+Session checkpoint: operational role/workspace phase validated end to end; Supabase Custom SMTP is operational
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `ecf0c8a BUG-AUTH-005 fix: harden staff auth callback and rate-limit handling`
+Latest approved and pushed commit: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`
 
-Origin/main status: local `main` and `origin/main` point to `ecf0c8a` before this documentation-only update.
+Origin/main status: local `main` and `origin/main` point to `edebb79` before this documentation-only update.
 
-Working tree status before DOCS-OPS-016: clean
+Working tree status before DOCS-OPS-017: clean
 
 Commit status: no code commit pending.
 
@@ -74,9 +74,14 @@ Commit status: no code commit pending.
 - UX-OPS-001.8 — Access & Capabilities Management
 - UI-003 — Operational primary CTA consistency
 - BUG-ASSIGN — Persistent capability-aware logistics assignment
+- BUG-PROD-006 — Terminal operational transition redirects
+- UI-MOBILE-001 — Mobile order/logistics refinement and desktop/mobile data parity
+- UI-BUG-004 — Readable desktop staff sidebar active state
+- UI-FORMAT-005 — Shared quantity, currency and numeric-input formatting
 - ACCESS-OPS-001 — Refined owner-only staff access and membership removal
 - BUG-AUTH-005 — Hardened staff Auth callback and rate-limit handling
-- DEV-ENV — Next.js local development switched to Webpack for stable routing
+- AUTH-INFRA-001 — Resend Custom SMTP for Supabase Auth
+- DEV-ENV — Local `next dev --webpack` avoids stale Turbopack localized Orders route manifests; the production build remains unchanged
 
 ## Supabase Staging State
 
@@ -100,6 +105,8 @@ Completed on EcoWash Staging:
 - The staging project's main target is configured for this staging deployment path; no real production environment has been created.
 - Staging indexing is disabled and `/robots.txt` returns `Disallow: /`.
 - Supabase Auth staging Site URL and Redirect URLs are configured and validated.
+- Supabase Custom SMTP is enabled and operational through Resend. The verified sending domain is `ecowashlatejita.com`, the sender is `access@ecowashlatejita.com`, and a real Auth email was sent and received successfully.
+- The configured Supabase Auth email rate limit is 30 emails/hour. Auth endpoint-specific throttling can still apply independently from SMTP delivery.
 - `SUPABASE_SERVICE_ROLE_KEY` is configured only server-side for staff invitations, is not prefixed with `NEXT_PUBLIC_` and is not tracked in Git.
 - `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is configured only as a server-side Vercel staging variable for the customer portal review helper.
 - Customer portal staging validation passed with no HTTP 500: protected portal routes, customer `/app` denial and customer-scoped order access were verified.
@@ -168,6 +175,7 @@ Available now:
 - centralized operational capability and assignment authorization rules
 - staff legacy `/[locale]/app` server-side redirect to `/[locale]/app/work`
 - hardened Auth callback for invalid links, stale sessions and email rate-limit errors
+- operational Auth email delivery through Resend Custom SMTP
 - secure customer portal routes under `/[locale]/portal`
 - customer overview, order list and order detail
 - customer-visible pickup, delivery and essential status history
@@ -187,23 +195,56 @@ Available now:
 
 Role summary:
 
-- `owner`: full organization, staff-access and operational control; all operational capabilities are available.
-- `manager`: operational supervision, without Staff Access Management.
-- `staff`: only work allowed by both an active organization membership, the required capability and the matching assignment; no Staff Access Management.
+- `owner`: full Control Center, Orders, operational workspaces, Staff & Access, Alerts, Daily Close and capability management; all operational capabilities are available.
+- `manager`: Control Center, Orders, My Day, Alerts and operational supervision; no Staff Access Management, and direct `/[locale]/app/staff` access is denied or redirected.
+- `staff`: capability-based navigation and assignment-scoped work; `/[locale]/app` redirects server-side to `/[locale]/app/work` before owner data loads; no Control Center or Staff Access Management.
 - `customer`: separate portal user linked to `customers`, never an `organization_memberships` role.
 
 Test data notes:
 
 - Capability values are `pickup`, `production`, `quality`, `delivery` and `supervision`.
-- Pickup passed end to end with Speed, including assignment persistence and visibility in Pickup Workspace and My Day.
-- `TEST-PICKUP-01` is assigned to Speed.
-- `TEST-PRODUCTION-01` is assigned to Production Test.
-- `TEST-QUALITY-01` and `TEST-DELIVERY-01` are assigned to EcoWash staff test.
-- Production Test has a valid Supabase Auth record. Do not diagnose it as malformed unless new evidence appears.
-- Production, Quality and Delivery real functional tests are pending only because Auth email sending is rate-limited with `429 over_email_send_rate_limit`.
+- Operational accounts are Speed for Pickup, Production Test for Production, Quality Test for Quality & Packing, Delivery Test for Delivery and Manager Test for manager validation.
+- `TEST-PICKUP-01`, `TEST-PRODUCTION-01`, `TEST-QUALITY-01` and `TEST-DELIVERY-01` are the clean operational fixtures used for validation.
+- Pickup, Production, Quality & Packing and Delivery all passed end to end: assignment, capability, My Day, dedicated workspace, activity detail, transitions, terminal transition and final redirect without 404.
 - Older test orders were intentionally not deleted; safe hard cleanup would require an unnecessarily invasive administrative procedure.
 - The PORTAL-001 customer test fixture remains active for review.
-- Do not document credentials, email addresses, UUIDs or customer personal data.
+- Do not document test-account/customer email addresses, credentials, UUIDs or customer personal data; the approved SMTP sender identity above is the only intentional email address in this handover.
+
+## Final Operational Validation
+
+Validated consistency for all four operational workspaces:
+
+- assignment uses the persisted profile ID and explicit profile relation
+- staff capability and matching assignment are both required
+- My Day and the dedicated workspace read the same operational identity
+- activity detail supports the approved transitions
+- terminal transitions leave detail routes that are no longer operationally valid
+
+BUG-PROD-006 final redirects:
+
+- Production `completed` → Production workspace
+- Quality `packing → ready` → Quality workspace
+- Pickup `completed` → Pickup workspace
+- Delivery `completed` → Delivery workspace
+
+BUG-ASSIGN is validated with capability-aware, organization-scoped, active-membership assignment; Pickup and Delivery use separate compatible-staff lists, the controlled select preserves the saved value, and order summary/workspace/My Day remain consistent while the activity is operational and within date rules.
+
+UI validation completed:
+
+- UI-003 shared high-contrast operational CTA styling across My Day and all four workspaces
+- UI-MOBILE-001 responsive order/logistics layout with the same data and business logic as desktop; staff dropdown verified on iPhone staging
+- UI-BUG-004 readable desktop staff sidebar active item
+- UI-FORMAT-005 shared formatting: integer quantities have no unnecessary decimals, real fractional quantities keep only needed decimals, and EUR values always show two decimals
+
+Auth hardening preserved:
+
+- staff invitation no longer depends on Admin `listUsers` enumeration
+- invalid or expired callback links clear stale browser sessions before showing an error
+- a failed link for one user cannot silently appear authenticated as another cached session
+- Auth throttling failures are returned as clear application messages rather than browser 500s
+- passwords are never readable or stored by the application
+- owner can send passwordless access links and password-reset emails without exposing generated links or tokens
+- normal account removal is conservative and membership-oriented; Auth deletion remains separate technical maintenance
 
 ## INFRA-001-SMOKE Result
 
@@ -406,11 +447,8 @@ Validation:
 - unauthenticated route access: safe 307 redirect to login
 - robots remains `Disallow: /`
 - no HTTP 500 observed
-
-Still to verify when dedicated accounts are available:
-
-- real manager access
-- real staff denial
+- real manager access with Manager Test: PASS
+- real staff denial: PASS
 
 These are not FAIL results and are not blocking.
 
@@ -421,19 +459,17 @@ Out of scope confirmed:
 - new tables, migrations or RPCs
 - new dependencies
 
-## Current Block And Resume Point
+## Current Resume Point
 
-Supabase Auth is currently refusing staff access and reset emails with `429 over_email_send_rate_limit`. Production Test's Auth record is valid; do not repeat the malformed-record diagnosis unless new evidence appears. Do not send repeated emails while the rate limit is active.
+There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-When the rate limit clears:
+The operational role/workspace phase is validated. Resume with the existing approved roadmap:
 
-1. Send exactly one access link to Production Test.
-2. Open only the newest email in a fresh incognito session.
-3. Test `TEST-PRODUCTION-01` in My Day and Production Workspace.
-4. Test `TEST-QUALITY-01` in My Day and Quality & Packing Workspace.
-5. Test `TEST-DELIVERY-01` in My Day and Delivery Workspace.
-6. Record real functional or visual defects found during those checks.
-7. Avoid creating more fixtures unless a verified test gap requires one.
+1. Preserve the validated operational fixtures and accounts; do not create more unless a verified regression gap requires one.
+2. Prepare `QA-001`, the repeatable smoke/regression checklist already defined as the next M1/P0 gate.
+3. Let the Product Owner select the following macro-phase: full-app visual/product refinement or the next approved business module.
+4. If proceeding to a business module, follow the existing P1 order in the roadmap rather than inventing a new mission.
+5. Record only real functional or visual defects and keep one task per logical commit.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -443,7 +479,7 @@ Official working loop:
 2. ChatGPT acts as CTO, architect and reviewer, then prepares the Codex task.
 3. Codex implements and validates the scoped change.
 4. Keep the Product Owner's technical workload minimal.
-5. Commit, push and deploy only after Product Owner approval.
+5. Keep one task per logical commit; commit, push and deploy only after Product Owner approval.
 
 ## Resume Commands
 

@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-01
+Last Updated: 2026-08-22
 
-Current Mission: RELEASE-001
+Current Mission: Operational role/workspace phase validated; QA-001 next
 
 ---
 
@@ -36,7 +36,7 @@ Validate dashboard “today” windows against the active organization timezone.
 AUTH-001 also requires manual staging validation with Supabase Auth redirect URLs configured:
 
 - forgot-password form sends a recovery email
-- Supabase `over_email_send_rate_limit` / email rate-limit responses show a safe retry-later message
+- when Supabase returns an endpoint-specific email-throttling response, the UI shows a safe retry-later message
 - recovery link opens `/{locale}/update-password`
 - invalid or expired recovery links show a safe error
 - mismatched or weak passwords are rejected
@@ -59,6 +59,23 @@ Current real-test status:
 - SEC-001 completed the Supabase security audit.
 - SEC-001.1 applied database privilege, RPC and Storage policy hardening through migration `20260801000100`.
 - SEC-001.2 authenticated mutation regression passed with rollback-only tests and no smoke baseline drift.
+- Pickup, Production, Quality & Packing and Delivery passed real end-to-end staging validation.
+- Owner, manager and staff access boundaries passed real functional validation.
+- Resend Custom SMTP sent and delivered a real Supabase Auth email successfully.
+
+Final operational fixtures and account purposes:
+
+- `TEST-PICKUP-01` → Speed → Pickup
+- `TEST-PRODUCTION-01` → Production Test → Production
+- `TEST-QUALITY-01` → Quality Test → Quality & Packing
+- `TEST-DELIVERY-01` → Delivery Test → Delivery
+- Manager Test → manager supervision and Staff & Access denial
+
+Each workspace validation covered assignment, capability, My Day visibility, dedicated workspace, activity detail, operational transitions, terminal transition and final redirect without 404. BUG-PROD-006 redirects terminal Production, Quality, Pickup and Delivery flows to their valid workspace list. No credentials, access links, tokens or test-account email addresses belong in this document.
+
+AUTH-INFRA-001 uses Resend Custom SMTP with the verified `ecowashlatejita.com` domain and `access@ecowashlatejita.com` sender. The configured Supabase Auth email limit is 30 emails/hour; endpoint-specific throttling remains independent from SMTP transport.
+
+`QA-001` is the next approved M1/P0 gate: turn the validated paths into a repeatable staging and future production regression checklist without creating new fixtures unless a verified gap requires one.
 
 INFRA-001-SMOKE validated with real staging data:
 

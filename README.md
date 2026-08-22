@@ -73,6 +73,11 @@ The purpose of EcoWash Phoenix is to establish a multilingual, premium public pr
 | PORTAL-001 / PORTAL-001.1 | Completed — Secure Customer Portal MVP |
 | OPS-001.5 | Completed — Daily Close MVP |
 | OPS-001.6 | Completed — Operational Alerts MVP |
+| UX-OPS-001.3–001.8 | Validated — Operational workspaces, Control Center and Access & Capabilities |
+| BUG-PROD-006 | Completed — Terminal operational transitions redirect to the correct workspace |
+| UI-MOBILE-001 / UI-BUG-004 | Completed — Mobile logistics and desktop staff navigation refinement |
+| UI-FORMAT-005 | Completed — Shared quantity, currency and numeric-input formatting |
+| AUTH-INFRA-001 | Completed — Resend custom SMTP enabled and operational for Supabase Auth |
 
 Current public website includes:
 
@@ -144,6 +149,9 @@ Important limitations:
 - Secure customer portal MVP is implemented with customer-scoped access, order visibility, logistics, customer-visible photos and owner/manager access management
 - Daily Close MVP is implemented for owner/manager operational review with organization-scoped KPI sections and order links
 - Operational Alerts MVP is implemented for owner/manager issue triage with severity counts, navigation badge, direct order links and organization-scoped data
+- Pickup, Production, Quality & Packing and Delivery have been validated end to end with capability-aware staff assignment, My Day visibility, dedicated detail flows, terminal transitions and final redirects without 404s
+- Owner, manager and staff access boundaries have been validated; staff work requires both capability and assignment
+- Supabase Custom SMTP is enabled through Resend for Auth email delivery; endpoint-specific Auth throttling still applies independently
 - No contact-form email sending
 - Contact form does not transmit data
 - No Docker
@@ -160,10 +168,10 @@ Repository information:
 
 - GitHub remote: `https://github.com/puffwave03/EcoWash-Phoenix.git`
 - Branch: `main`
-- Latest approved and pushed commit: `ecf0c8a`
-- Current mission: complete Production, Quality and Delivery staging validation after the temporary Supabase Auth email rate limit clears
+- Latest approved and pushed commit: `edebb79`
+- Current mission: operational role/workspace validation is complete; select the next approved roadmap mission
 - Current release state: staging online and validated; production deferred
-- Next action: send one access link to Production Test after the rate limit clears, then test the existing clean operational fixtures
+- Next action: plan `QA-001`, the next existing M1/P0 gate, then let the Product Owner choose between full-app visual refinement and the next approved business module
 - Handover: `docs/00_START_HERE/SESSION_HANDOVER.md`
 
 Current visual direction:
@@ -219,8 +227,8 @@ Placeholder (TBD)
 
 Document Status: Active
 
-Last Updated: 2026-08-21
+Last Updated: 2026-08-22
 
-Current Mission: Operational workspace access testing
+Current Mission: Operational role/workspace phase validated
 
-Next Action: resume Production, Quality and Delivery tests after the Supabase Auth email rate limit clears
+Next Action: prepare QA-001 and select the next approved product phase
