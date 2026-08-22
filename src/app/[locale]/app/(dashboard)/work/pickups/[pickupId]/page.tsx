@@ -16,7 +16,7 @@ export default async function PickupDetailPage({ params }: PickupDetailPageProps
 
   return (
     <PickupDetail
-      action={transitionPickupAction.bind(null, locale, task.orderId)}
+      action={transitionPickupAction.bind(null, locale, task.orderId, "workspace")}
       isSupervision={isSupervision}
       locale={locale}
       task={task}

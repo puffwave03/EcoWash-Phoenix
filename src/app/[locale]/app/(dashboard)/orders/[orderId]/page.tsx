@@ -275,7 +275,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <Card>
             <StatusTransitionForm
-              action={transitionOrderStatusAction.bind(null, locale, order.id)}
+              action={transitionOrderStatusAction.bind(null, locale, order.id, "order")}
               currentStatus={order.productionStatus}
               history={history}
               text={{
@@ -312,8 +312,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           actions={{
             saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
             savePickup: savePickupAction.bind(null, locale, order.id),
-            transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id),
-            transitionPickup: transitionPickupAction.bind(null, locale, order.id),
+            transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id, "order"),
+            transitionPickup: transitionPickupAction.bind(null, locale, order.id, "order"),
           }}
           assignments={{
             delivery: assignments.delivery,

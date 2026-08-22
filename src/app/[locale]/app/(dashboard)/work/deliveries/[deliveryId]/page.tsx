@@ -16,7 +16,7 @@ export default async function DeliveryDetailPage({ params }: DeliveryDetailPageP
 
   return (
     <DeliveryDetail
-      action={transitionDeliveryAction.bind(null, locale, task.orderId)}
+      action={transitionDeliveryAction.bind(null, locale, task.orderId, "workspace")}
       isSupervision={isSupervision}
       locale={locale}
       task={task}

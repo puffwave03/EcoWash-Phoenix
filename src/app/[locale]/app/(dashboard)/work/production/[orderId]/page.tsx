@@ -16,7 +16,7 @@ export default async function ProductionDetailPage({ params }: ProductionDetailP
 
   return (
     <ProductionDetail
-      action={transitionOrderStatusAction.bind(null, locale, task.id)}
+      action={transitionOrderStatusAction.bind(null, locale, task.id, "production")}
       allowedTransitions={allowedTransitions}
       isSupervision={isSupervision}
       locale={locale}

@@ -1,10 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isAssignableStaffForCapability } from "@/features/logistics/server/queries";
-import type { LogisticsActionState } from "@/features/logistics/types";
+import type {
+  FulfillmentStatus,
+  LogisticsActionState,
+} from "@/features/logistics/types";
 import {
   optionalDbValue,
   parseFulfillmentStatus,
@@ -14,6 +18,18 @@ import type { AppRole } from "@/lib/auth/types";
 
 const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
 const ASSIGNMENT_ROLES: AppRole[] = ["owner", "manager"];
+type LogisticsTransitionSurface = "order" | "workspace";
+
+function transitionLeavesLogisticsSurface(
+  surface: LogisticsTransitionSurface,
+  targetStatus: FulfillmentStatus,
+) {
+  return surface === "workspace" && ["completed", "cancelled"].includes(targetStatus);
+}
+
+function logisticsWorkspacePath(locale: string, kind: "deliveries" | "pickups") {
+  return `/${locale}/app/work/${kind}`;
+}
 
 function fail(fieldErrors: Record<string, string> = {}, formError: string | null = "generic") {
   return { fieldErrors, formError, success: false };
@@ -181,7 +197,12 @@ export async function saveDeliveryAction(
   return { fieldErrors: {}, formError: null, success: true };
 }
 
-export async function transitionPickupAction(locale: string, orderId: string, formData: FormData) {
+export async function transitionPickupAction(
+  locale: string,
+  orderId: string,
+  surface: LogisticsTransitionSurface,
+  formData: FormData,
+) {
   const pickupId = String(formData.get("recordId") ?? "");
   const targetStatus = parseFulfillmentStatus(String(formData.get("targetStatus") ?? ""));
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 600);
@@ -213,12 +234,25 @@ export async function transitionPickupAction(locale: string, orderId: string, fo
     target_status: targetStatus,
   });
 
-  if (error) console.error("Pickup transition failed", error.code);
+  if (error) {
+    console.error("Pickup transition failed", error.code);
+    return;
+  }
+
   revalidateOrder(locale, orderId);
   revalidatePath(`/${locale}/app/work/pickups/${pickupId}`);
+
+  if (transitionLeavesLogisticsSurface(surface, targetStatus)) {
+    redirect(logisticsWorkspacePath(locale, "pickups"));
+  }
 }
 
-export async function transitionDeliveryAction(locale: string, orderId: string, formData: FormData) {
+export async function transitionDeliveryAction(
+  locale: string,
+  orderId: string,
+  surface: LogisticsTransitionSurface,
+  formData: FormData,
+) {
   const deliveryId = String(formData.get("recordId") ?? "");
   const targetStatus = parseFulfillmentStatus(String(formData.get("targetStatus") ?? ""));
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 600);
@@ -250,7 +284,15 @@ export async function transitionDeliveryAction(locale: string, orderId: string, 
     target_status: targetStatus,
   });
 
-  if (error) console.error("Delivery transition failed", error.code);
+  if (error) {
+    console.error("Delivery transition failed", error.code);
+    return;
+  }
+
   revalidateOrder(locale, orderId);
   revalidatePath(`/${locale}/app/work/deliveries/${deliveryId}`);
+
+  if (transitionLeavesLogisticsSurface(surface, targetStatus)) {
+    redirect(logisticsWorkspacePath(locale, "deliveries"));
+  }
 }

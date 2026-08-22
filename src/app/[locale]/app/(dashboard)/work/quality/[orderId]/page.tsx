@@ -19,7 +19,7 @@ export default async function QualityDetailPage({ params }: QualityDetailPagePro
 
   return (
     <ProductionDetail
-      action={transitionOrderStatusAction.bind(null, locale, task.id)}
+      action={transitionOrderStatusAction.bind(null, locale, task.id, "quality")}
       allowedTransitions={allowedTransitions}
       backHref="/app/work/quality"
       isSupervision={isSupervision}

@@ -13,9 +13,32 @@ import {
   parseOrderItemForm,
   parseProductionStatus,
 } from "@/features/orders/validation";
+import { FINAL_PRODUCTION_STATUSES } from "@/features/orders/workflow";
 
 const initialState: OrderActionState = { fieldErrors: {}, formError: null, success: false };
 const ASSIGNMENT_ROLES = ["owner", "manager"] as const;
+type ProductionTransitionSurface = "order" | "production" | "quality";
+
+function transitionLeavesSurface(
+  surface: ProductionTransitionSurface,
+  targetStatus: ProductionStatus,
+) {
+  if (surface === "production") {
+    return FINAL_PRODUCTION_STATUSES.includes(targetStatus);
+  }
+
+  if (surface === "quality") {
+    return targetStatus === "ready" || FINAL_PRODUCTION_STATUSES.includes(targetStatus);
+  }
+
+  return false;
+}
+
+function productionSurfacePath(locale: string, surface: ProductionTransitionSurface) {
+  if (surface === "quality") return `/${locale}/app/work/quality`;
+
+  return `/${locale}/app/work/production`;
+}
 
 function fail(
   formError: OrderActionState["formError"] = "generic",
@@ -212,6 +235,7 @@ export async function updateOrderDiscountAction(
 export async function transitionOrderStatusAction(
   locale: string,
   orderId: string,
+  surface: ProductionTransitionSurface,
   formData: FormData,
 ) {
   const targetStatus = parseProductionStatus(String(formData.get("targetStatus") ?? ""));
@@ -248,7 +272,14 @@ export async function transitionOrderStatusAction(
     target_status: targetStatus,
   });
 
-  if (error) console.error("Order status transition failed", error.code);
+  if (error) {
+    console.error("Order status transition failed", error.code);
+    return;
+  }
 
   revalidateOrders(locale, orderId);
+
+  if (transitionLeavesSurface(surface, targetStatus)) {
+    redirect(productionSurfacePath(locale, surface));
+  }
 }
