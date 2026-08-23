@@ -2,23 +2,23 @@
 
 Status: Active
 
-Date: 2026-08-22
+Date: 2026-08-23
 
-Approximate closeout time: after final operational role/workspace validation and Custom SMTP verification
+Approximate closeout time: after PORTAL-002.1 Product Owner E2E approval
 
-Session checkpoint: operational role/workspace phase validated end to end; Supabase Custom SMTP is operational
+Session checkpoint: customer order and pickup requests validated end to end against the existing operational engine
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Latest approved and pushed commit: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`
+Approved baseline before this mission: `27b208f STAFF-POLISH-001 feat: add secure logout and user switching`
 
-Origin/main status: local `main` and `origin/main` point to `edebb79` before this documentation-only update.
+Origin/main status: local `main` and `origin/main` pointed to `27b208f` before PORTAL-002.1 closeout.
 
-Working tree status before DOCS-OPS-017: clean
+Working tree status before PORTAL-002.1: clean
 
-Commit status: no code commit pending.
+Closeout commit: `PORTAL-002.1 feat: add customer order and pickup requests`; working tree expected clean after push.
 
 ---
 
@@ -63,6 +63,7 @@ Commit status: no code commit pending.
 - OPS-001.3 — Work Assignment MVP
 - OPS-001.4 — Staff Management MVP
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
+- PORTAL-002.1 — Customer Order Request + Pickup
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -110,6 +111,8 @@ Completed on EcoWash Staging:
 - `SUPABASE_SERVICE_ROLE_KEY` is configured only server-side for staff invitations, is not prefixed with `NEXT_PUBLIC_` and is not tracked in Git.
 - `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is configured only as a server-side Vercel staging variable for the customer portal review helper.
 - Customer portal staging validation passed with no HTTP 500: protected portal routes, customer `/app` denial and customer-scoped order access were verified.
+- PORTAL-002.1 passed Product Owner E2E: customer-created `EW-000005` is visible in both the customer Portal and hosted staff application and enters the existing Pickup engine.
+- Portal Auth/access hardening is complete: direct linked-user validation replaces the fragile global Auth user list and email/Auth failures remain controlled application errors.
 - Automatic deploy from `main` to the Vercel staging project is working.
 
 Applied baseline migrations:
@@ -140,10 +143,12 @@ Customer portal migrations applied on staging:
 - `20260803000100_portal_001_customer_portal.sql`
 - `20260803000200_portal_001_safe_customer_rpc.sql`
 - `20260803000300_portal_001_fix_customer_storage_policy.sql`
+- `20260823000100_portal_002_1_customer_order_request.sql`
+- `20260823000200_portal_002_1_fix_order_request_rpc.sql`
 
 ## Migration History State
 
-Supabase migration history reconciled successfully on 2026-07-30.
+Supabase migration history is aligned through `20260823000200`; both PORTAL-002.1 migrations are applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -178,6 +183,7 @@ Available now:
 - operational Auth email delivery through Resend Custom SMTP
 - secure customer portal routes under `/[locale]/portal`
 - customer overview, order list and order detail
+- mobile-first customer order request with server-side service pricing, customer-property isolation, pickup scheduling and idempotent creation
 - customer-visible pickup, delivery and essential status history
 - customer-visible order photos only
 - customer-scoped isolation through separate Auth user to customer access
@@ -463,12 +469,12 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-The operational role/workspace phase is validated. Resume with the existing approved roadmap:
+PORTAL-002.1 is completed and Product Owner approved. Customer-created `EW-000005` validated customer → operational order → pickup integration, including server-side pricing, property isolation, atomicity and idempotency. Resume without reopening this foundation:
 
-1. Preserve the validated operational fixtures and accounts; do not create more unless a verified regression gap requires one.
-2. Prepare `QA-001`, the repeatable smoke/regression checklist already defined as the next M1/P0 gate.
-3. Let the Product Owner select the following macro-phase: full-app visual/product refinement or the next approved business module.
-4. If proceeding to a business module, follow the existing P1 order in the roadmap rather than inventing a new mission.
+1. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
+2. Scope customer address flexibility and delivery preferences as separate future Portal increments.
+3. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
+4. Do not start PORTAL-002.2 until explicitly approved.
 5. Record only real functional or visual defects and keep one task per logical commit.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.

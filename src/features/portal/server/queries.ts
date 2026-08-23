@@ -15,6 +15,7 @@ import type {
   CustomerPortalNextTask,
   CustomerPortalOrder,
   CustomerPortalOrderDetail,
+  CustomerPortalOrderRequestOptions,
 } from "@/features/portal/types";
 import { requireMembership } from "@/lib/auth/require-membership";
 
@@ -93,6 +94,34 @@ type PortalTaskRow = {
   order_number: string;
   scheduled_at: string | null;
   status: FulfillmentStatus;
+};
+
+type PortalOrderingContextRow = {
+  currency: string;
+  timezone: string;
+};
+
+type PortalOrderServiceRow = {
+  amount: number;
+  category: string | null;
+  currency: string;
+  description: string | null;
+  id: string;
+  name: string;
+  unit_type: CustomerPortalOrderRequestOptions["services"][number]["unitType"];
+};
+
+type PortalOrderPropertyRow = {
+  access_instructions: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  country_code: string | null;
+  id: string;
+  name: string;
+  postal_code: string | null;
 };
 
 function mapPortalOrder(row: PortalOrderRow): CustomerPortalOrder {
@@ -275,6 +304,58 @@ export async function getCustomerPortalOrderDetail(
       pickup: mapLogistics(pickup),
     },
     photos: await Promise.all(((photosResult.data ?? []) as PortalPhotoRow[]).map(signedPortalPhoto)),
+  };
+}
+
+export async function getCustomerPortalOrderRequestOptions(
+  locale: string,
+): Promise<CustomerPortalOrderRequestOptions> {
+  await requireCustomerPortalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const [contextResult, servicesResult, propertiesResult] = await Promise.all([
+    supabase
+      .rpc("get_customer_portal_ordering_context")
+      .maybeSingle<PortalOrderingContextRow>(),
+    supabase
+      .rpc("list_customer_portal_services")
+      .returns<PortalOrderServiceRow[]>(),
+    supabase
+      .rpc("list_customer_portal_properties")
+      .returns<PortalOrderPropertyRow[]>(),
+  ]);
+
+  if (contextResult.error) console.error("Portal ordering context failed", contextResult.error.code);
+  if (servicesResult.error) console.error("Portal ordering services failed", servicesResult.error.code);
+  if (propertiesResult.error) console.error("Portal ordering properties failed", propertiesResult.error.code);
+
+  return {
+    context: contextResult.data
+      ? {
+          currency: contextResult.data.currency,
+          timeZone: contextResult.data.timezone,
+        }
+      : null,
+    properties: ((propertiesResult.data ?? []) as PortalOrderPropertyRow[]).map((property) => ({
+      accessInstructions: property.access_instructions,
+      addressLine1: property.address_line1,
+      addressLine2: property.address_line2,
+      city: property.city,
+      contactName: property.contact_name,
+      contactPhone: property.contact_phone,
+      countryCode: property.country_code,
+      id: property.id,
+      name: property.name,
+      postalCode: property.postal_code,
+    })),
+    services: ((servicesResult.data ?? []) as PortalOrderServiceRow[]).map((service) => ({
+      amount: Number(service.amount),
+      category: service.category,
+      currency: service.currency,
+      description: service.description,
+      id: service.id,
+      name: service.name,
+      unitType: service.unit_type,
+    })),
   };
 }
 

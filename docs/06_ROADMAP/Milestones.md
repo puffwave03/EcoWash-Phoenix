@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-08-23
 
-Current Mission: Operational role/workspace phase validated
+Current Mission: PORTAL-002.1 customer ordering and pickup requests validated
 
-Next Action: prepare QA-001 and select the next approved product phase
+Next Action: preserve the approved baseline and scope the next Portal increment separately
 
 ---
 
@@ -126,6 +126,7 @@ Approved and current areas:
 - OPS-001.3 — Work Assignment MVP: Completed and pushed
 - OPS-001.4 — Staff Management MVP: Completed and pushed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP: Completed and pushed
+- PORTAL-002.1 — Customer Order Request + Pickup: Completed; Product Owner E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -147,7 +148,8 @@ APP-008.1 added the organization timezone foundation for dashboard day windows. 
 
 Current resume task:
 
-- prepare `QA-001`, then let the Product Owner select full-app visual/product refinement or the next approved business module
+- do not start PORTAL-002.2 without approval; next known Portal work is customer address flexibility and delivery preferences
+- keep clearer Customers access in owner/manager navigation as a separate UX backlog item
 
 INFRA-001-SMOKE passed the first real staging flow from owner login through customer, property, service, order, item, production, pickup, delivery, payment, photo, dashboard and logout/login persistence.
 
@@ -235,6 +237,7 @@ Official sequence after SEC-001:
 - OPS-001.3 — Work Assignment MVP, completed
 - OPS-001.4 — Staff Management MVP, completed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
+- PORTAL-002.1 — Customer Order Request + Pickup, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -252,8 +255,11 @@ Current staging validation checkpoint:
 - `TEST-DELIVERY-01` → Delivery Test; validated in Delivery Workspace and My Day
 - Manager Test validated manager supervision and Staff & Access denial
 - Resend Custom SMTP is operational for Supabase Auth; configured limit 30 emails/hour, with endpoint-specific throttling still independent
+- `EW-000005` validates customer-selected services, server-side pricing, customer-property isolation, pickup creation and idempotent entry into the operational engine
+- PORTAL-002.1 migrations `20260823000100` and corrective `20260823000200` are applied to staging and aligned
+- Portal Auth/access hardening is complete and keeps Service Role server-only
 - old test orders remain intentionally untouched because safe hard cleanup would require an unnecessarily invasive administrative procedure
-- next approved gate is QA-001; do not create additional fixtures unless a verified regression gap requires one
+- QA-001 remains a planned M1 gate; no QA-001 implementation was started by PORTAL-002.1
 
 PILOT-001 planning scope:
 

@@ -29,6 +29,7 @@ export default async function CustomerPortalOrdersPage({
       text={{
         logout: t("logout"),
         navigationLabel: t("navigationLabel"),
+        newRequest: t("request.nav"),
         orders: t("orders"),
         overview: t("overview"),
         title: t("title"),

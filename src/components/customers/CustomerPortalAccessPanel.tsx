@@ -10,10 +10,12 @@ import type {
 type CustomerPortalAccessPanelText = {
   accessDisabled: string;
   active: string;
+  authUnavailable: string;
   configurationError: string;
   disable: string;
   disabled: string;
   email: string;
+  emailDelivery: string;
   emailInvalid: string;
   enable: string;
   error: string;
@@ -64,6 +66,8 @@ function formErrorMessage(
   text: CustomerPortalAccessPanelText,
 ) {
   if (error === "configuration") return text.configurationError;
+  if (error === "authUnavailable") return text.authUnavailable;
+  if (error === "emailDelivery") return text.emailDelivery;
   if (error === "invite") return text.inviteError;
   if (error === "access") return text.membershipError;
   if (error === "unauthorized") return text.unauthorized;
@@ -156,35 +160,37 @@ export function CustomerPortalAccessPanel({
         </dl>
       ) : null}
 
-      <form action={formAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.email}</span>
-          <input
-            className={`min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
-              state.fieldErrors.email ? "border-red-300" : "border-border"
-            }`}
-            defaultValue={access?.email ?? defaultEmail ?? ""}
-            name="email"
-            type="email"
-          />
-        </label>
-        <Button disabled={isPending} type="submit">
-          {text.invite}
-        </Button>
-        {state.fieldErrors.email ? (
-          <p className="text-sm text-red-700 sm:col-span-2">{text.emailInvalid}</p>
-        ) : null}
-        {message ? (
-          <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:col-span-2">
-            {message}
-          </p>
-        ) : null}
-        {state.success ? (
-          <p className="rounded-control border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 sm:col-span-2">
-            {successMessage(state.successKey, text)}
-          </p>
-        ) : null}
-      </form>
+      {!access ? (
+        <form action={formAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+          <label className="space-y-2 text-sm font-semibold text-primary">
+            <span>{text.email}</span>
+            <input
+              className={`min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+                state.fieldErrors.email ? "border-red-300" : "border-border"
+              }`}
+              defaultValue={defaultEmail ?? ""}
+              name="email"
+              type="email"
+            />
+          </label>
+          <Button disabled={isPending} type="submit">
+            {text.invite}
+          </Button>
+          {state.fieldErrors.email ? (
+            <p className="text-sm text-red-700 sm:col-span-2">{text.emailInvalid}</p>
+          ) : null}
+          {message ? (
+            <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:col-span-2">
+              {message}
+            </p>
+          ) : null}
+          {state.success ? (
+            <p className="rounded-control border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 sm:col-span-2">
+              {successMessage(state.successKey, text)}
+            </p>
+          ) : null}
+        </form>
+      ) : null}
 
       {access ? (
         <form action={manageFormAction} className="mt-5 flex flex-wrap gap-3">

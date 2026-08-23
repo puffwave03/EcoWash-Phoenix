@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-08-23
 
-Current Mission: Operational role/workspace phase validated
+Current Mission: PORTAL-002.1 customer ordering and pickup requests completed and validated
 
-Next Action: prepare QA-001 and select the next approved product phase
+Next Action: preserve PORTAL-002.1 and approve the next Portal increment before implementation
 
 ---
 
@@ -27,10 +27,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | Preserve the validated operational baseline and select the next approved roadmap phase |
-| Last completed implementation mission | UI-FORMAT-005 — Shared quantity and currency formatting |
-| Latest approved and pushed commit | edebb79 |
-| Remote status | main synchronized with origin/main |
+| Current mission | PORTAL-002.1 Product Owner approved after customer-to-operational-engine E2E |
+| Last completed implementation mission | PORTAL-002.1 — Customer Order Request + Pickup |
+| Approved baseline before current closeout | 27b208f |
+| Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
@@ -68,6 +68,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.3 status | Completed and pushed |
 | OPS-001.4 status | Completed and pushed |
 | PORTAL-001 / PORTAL-001.1 status | Completed and pushed |
+| PORTAL-002.1 status | Completed; Product Owner E2E passed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -83,8 +84,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned; capability-aware operational workspaces, owner control, staff access flows and secure customer portal implemented |
-| Commercial readiness | Pickup, Production, Quality & Packing and Delivery are validated end to end; QA-001 remains the next M1/P0 gate |
+| Backend/SaaS implementation | Supabase Staging connected and aligned; capability-aware operations plus customer-created order and pickup requests are implemented |
+| Commercial readiness | Operational workspaces and the customer → operational engine path are validated end to end; later Portal increments remain separately scoped |
 
 ## Operational Access Testing Checkpoint
 
@@ -182,6 +183,7 @@ Staging validation:
 | OPS-001.3 | Work Assignment MVP | Completed |
 | OPS-001.4 | Staff Management MVP | Completed |
 | PORTAL-001 / PORTAL-001.1 | Secure Customer Portal MVP | Completed |
+| PORTAL-002.1 | Customer Order Request + Pickup | Completed; E2E validated |
 | OPS-001.5 | Daily Close MVP | Completed |
 | OPS-001.6 | Operational Alerts MVP | Completed |
 | UI-001 | Operational Dashboard Visual Refinement | Completed |
@@ -285,7 +287,7 @@ Staging validation:
 - No horizontal overflow
 - No new dependencies added during DEV-009.5, DEV-010.3 or DEV-010.4
 - No Docker files or configuration added
-- Local `main` and `origin/main` point to `edebb79` before DOCS-OPS-017.
+- Local `main` and `origin/main` pointed to `27b208f` before the approved PORTAL-002.1 closeout.
 
 ## DEV-009.5 Completed State
 
@@ -424,6 +426,7 @@ M1 — Commercial Pilot Baseline:
 - OPS-001.3 Work Assignment MVP — completed
 - OPS-001.4 Staff Management MVP — completed
 - PORTAL-001 / PORTAL-001.1 Secure Customer Portal MVP — completed
+- PORTAL-002.1 Customer Order Request + Pickup — completed; `EW-000005` validated customer-to-operational-engine integration
 - OPS-001.5 Daily Close MVP — completed
 - OPS-001.6 Operational Alerts MVP — completed
 - UI-001 Operational Dashboard Visual Refinement — completed
@@ -446,6 +449,7 @@ PILOT-001 canonical decisions:
 - `/[locale]/app` remains an owner/manager dashboard surface; staff is redirected server-side to `/[locale]/app/work` before dashboard data loads.
 - Current operational routes include owner/manager `/[locale]/app/control` and staff-focused `/[locale]/app/work`, `/work/pickups`, `/work/production`, `/work/quality` and `/work/deliveries`, all under the localized app prefix.
 - Customer routes are `/[locale]/portal`, `/[locale]/portal/orders`, `/[locale]/portal/orders/[orderRef]`, `/[locale]/portal/requests/new` and `/[locale]/portal/access`.
+- PORTAL-002.1 uses customer-safe RPCs for server-side current pricing, active customer-property isolation, atomic order/items/history/pickup creation and request-id idempotency.
 - Customer access uses Supabase Auth magic link/OTP plus a future customer-user link; magic link is authentication, not authorization.
 - Customer portal must not use `organization_memberships`, must not add `customer` to `app_role`, must not use public order tokens as the primary M1 model and must not call internal staff RPCs directly.
 - Location scope is one organization and one operational location for M1; the model is location-aware, while location-based authorization is future work.
@@ -466,6 +470,9 @@ Staging state:
 - `SUPABASE_SERVICE_ROLE_KEY` is server-side only, not public, not tracked and used for staff invitations and customer access management.
 - `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-side only on staging for customer portal review and must not be enabled in future real production.
 - PORTAL-001 customer test fixture remains active for review; do not document its email, UUID or credentials.
+- PORTAL-002.1 migrations `20260823000100` and `20260823000200` are applied to staging and aligned; `EW-000005` is the successful E2E validation order.
+- Portal Auth/access hardening is complete; no Portal flow depends on global Auth `listUsers`, and external Auth/email failures are surfaced without browser 500s.
+- Next known Portal work is customer address flexibility and delivery preferences. Clear owner/manager Customers navigation remains a separate UX backlog item.
 
 Production state:
 
@@ -670,10 +677,10 @@ Manager Test access and real staff denial are validated for Operational Alerts.
 
 Current resume task:
 
-- preserve the validated operational fixtures and account purposes
-- prepare `QA-001`, the next existing M1/P0 gate
-- let the Product Owner select full-app visual/product refinement or the next approved business module after QA planning
-- record only real functional or visual defects; do not create additional fixtures unless necessary
+- preserve the validated operational fixtures, account purposes and customer-created `EW-000005`
+- scope customer address flexibility and delivery preferences as separate future Portal increments
+- keep clear Customers access in owner/manager navigation as a separate UX backlog item
+- do not start PORTAL-002.2 without explicit Product Owner approval
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier. Track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -913,13 +920,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix dalla fase operativa validata e scegliamo la prossima missione approvata della roadmap.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-002.1 validato e scegliamo il prossimo incremento Portal approvato.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- Local `main` and `origin/main` were at `edebb79` before DOCS-OPS-017
+- PORTAL-002.1 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -927,6 +934,9 @@ Exact starting state:
 - UI-001, UX-OPS-001.3 through UX-OPS-001.8, UI-003 and the capability-aware assignment/access hardening are completed
 - Pickup, Production, Quality & Packing and Delivery passed end to end with their dedicated test accounts and fixtures
 - Resend Custom SMTP is operational; do not store API keys, SMTP passwords, tokens or access links in documentation
+- Customer-created `EW-000005` validates the customer → operational order → pickup path
+- PORTAL-002.1 migrations `20260823000100` and `20260823000200` are applied to staging and aligned
+- Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
 - Do not put service-role keys in browser-exposed code or env vars

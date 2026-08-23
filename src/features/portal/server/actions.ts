@@ -16,6 +16,15 @@ const initialState: CustomerPortalActionState = {
 };
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+type AuthFailure = {
+  code?: string;
+  error_code?: string;
+  message?: string;
+  name?: string;
+  status?: number;
+  statusCode?: number;
+};
+
 function fail(
   formError: string | null = "generic",
   fieldErrors: Record<string, string> = {},
@@ -42,16 +51,11 @@ function portalRedirectUrl(locale: string, nextPath = `/${locale}/portal`) {
   return redirectUrl.toString();
 }
 
-function isEmailRateLimitError(error: {
-  code?: string;
-  error_code?: string;
-  message?: string;
-  status?: number;
-  statusCode?: number;
-}) {
-  const code = error.code ?? error.error_code ?? "";
-  const message = error.message?.toLowerCase() ?? "";
-  const status = error.status ?? error.statusCode;
+function isEmailRateLimitError(error: unknown) {
+  const failure = authFailure(error);
+  const code = failure.code ?? failure.error_code ?? "";
+  const message = failure.message?.toLowerCase() ?? "";
+  const status = failure.status ?? failure.statusCode;
 
   return (
     code === "over_email_send_rate_limit"
@@ -63,33 +67,62 @@ function isEmailRateLimitError(error: {
   );
 }
 
-async function existingUserIdByEmail(email: string) {
-  const admin = createSupabaseAdminClient();
-  let page = 1;
+function authFailure(error: unknown): AuthFailure {
+  if (!error || typeof error !== "object") return {};
 
-  while (page <= 10) {
-    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 100 });
+  return error as AuthFailure;
+}
 
-    if (error) throw error;
+function isExistingAuthUser(error: unknown) {
+  const { code, message, status } = authFailure(error);
+  const normalizedMessage = message?.toLowerCase() ?? "";
 
-    const user = data.users.find((candidate) => candidate.email?.toLowerCase() === email);
-    if (user) return user.id;
-    if (data.users.length < 100) return null;
+  return code === "email_exists"
+    || code === "user_already_exists"
+    || (status === 422 && normalizedMessage.includes("already"));
+}
 
-    page += 1;
-  }
+function isAuthUnavailable(error: unknown) {
+  const { name, status } = authFailure(error);
 
-  return null;
+  return name === "AuthRetryableFetchError"
+    || status === 0
+    || (typeof status === "number" && status >= 500);
+}
+
+function isEmailDeliveryFailure(error: unknown) {
+  const { code, error_code: errorCode, status, statusCode } = authFailure(error);
+
+  return (code === "unexpected_failure" || errorCode === "unexpected_failure")
+    && (status ?? statusCode) === 500;
+}
+
+function emailActionError(error: unknown, fallback: string) {
+  if (isEmailRateLimitError(error)) return "rateLimit";
+  if (isEmailDeliveryFailure(error)) return "emailDelivery";
+  if (isAuthUnavailable(error)) return "authUnavailable";
+
+  return fallback;
+}
+
+function logAuthFailure(context: string, error: unknown) {
+  const { code, error_code: errorCode, name, status, statusCode } = authFailure(error);
+
+  console.error(context, {
+    code: code ?? errorCode ?? "unknown",
+    name: name ?? "unknown",
+    status: status ?? statusCode ?? "unknown",
+  });
 }
 
 async function currentPortalAccess(customerId: string, organizationId: string) {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("customer_portal_access")
-    .select("id, email, is_active")
+    .select("id, email, is_active, user_id")
     .eq("organization_id", organizationId)
     .eq("customer_id", customerId)
-    .maybeSingle<{ email: string; id: string; is_active: boolean }>();
+    .maybeSingle<{ email: string; id: string; is_active: boolean; user_id: string }>();
 
   if (error) throw error;
 
@@ -111,43 +144,42 @@ export async function inviteCustomerPortalAction(
   if (!EMAIL_PATTERN.test(email)) return fail(null, { email: "invalid" });
   if (!hasSupabaseAdminConfig()) return fail("configuration");
 
-  let userId: string | null;
+  const admin = createSupabaseAdminClient();
+  let userId: string | null = null;
+  let accessEmailPending = false;
 
   try {
-    userId = await existingUserIdByEmail(email);
-  } catch (error) {
-    console.error("Customer portal user lookup failed", error);
-    return fail("invite");
-  }
-
-  if (!userId) {
-    const admin = createSupabaseAdminClient();
-
     const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { display_name: email.split("@")[0] },
       redirectTo: portalRedirectUrl(locale),
     });
 
-    if (error || !data.user) {
-      console.error("Customer portal invite failed", error?.code ?? error?.status ?? "unknown");
-      return fail(error && isEmailRateLimitError(error) ? "rateLimit" : "invite");
-    }
+    if (!error && data.user) {
+      userId = data.user.id;
+    } else if (isExistingAuthUser(error)) {
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+        email,
+        options: { redirectTo: portalRedirectUrl(locale) },
+        type: "magiclink",
+      });
 
-    userId = data.user.id;
-  } else {
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: portalRedirectUrl(locale),
-      },
-    });
+      if (linkError || !linkData.user) {
+        logAuthFailure("Existing customer Portal Auth lookup failed", linkError);
+        return fail(isAuthUnavailable(linkError) ? "authUnavailable" : "invite");
+      }
 
-    if (error) {
-      console.error("Customer portal access link failed", error.code ?? error.status ?? "unknown");
-      return fail(isEmailRateLimitError(error) ? "rateLimit" : "invite");
+      userId = linkData.user.id;
+      accessEmailPending = true;
+    } else {
+      logAuthFailure("Customer portal invite failed", error);
+      return fail(emailActionError(error, "invite"));
     }
+  } catch (error) {
+    logAuthFailure("Customer portal Auth request failed", error);
+    return fail(emailActionError(error, "invite"));
   }
+
+  if (!userId) return fail("invite");
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("upsert_customer_portal_access", {
@@ -159,6 +191,26 @@ export async function inviteCustomerPortalAction(
   if (error) {
     console.error("Customer portal access upsert failed", error.code);
     return fail("access");
+  }
+
+  if (accessEmailPending) {
+    try {
+      const { error: accessEmailError } = await admin.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: portalRedirectUrl(locale),
+          shouldCreateUser: false,
+        },
+      });
+
+      if (accessEmailError) {
+        logAuthFailure("Existing customer Portal access email failed", accessEmailError);
+        return fail(emailActionError(accessEmailError, "invite"));
+      }
+    } catch (accessEmailError) {
+      logAuthFailure("Existing customer Portal access email request failed", accessEmailError);
+      return fail(emailActionError(accessEmailError, "invite"));
+    }
   }
 
   revalidateCustomer(locale, customerId);
@@ -206,37 +258,60 @@ export async function manageCustomerPortalAccessAction(
 
     if (!portalAccess.is_active) return fail("accessDisabled");
 
-    if (intent === "resend") {
-      const supabase = await createSupabaseServerClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: portalAccess.email,
-        options: {
-          emailRedirectTo: portalRedirectUrl(locale),
-        },
-      });
+    if (intent === "resend" || intent === "resetPassword") {
+      const admin = createSupabaseAdminClient();
+      const operation = intent === "resend" ? "signInWithOtp" : "resetPasswordForEmail";
+      const { data: authUser, error: userError } = await admin.auth.admin.getUserById(
+        portalAccess.user_id,
+      );
 
-      if (error) {
-        console.error("Customer portal access link resend failed", error.code ?? error.status ?? "unknown");
-        return fail(isEmailRateLimitError(error) ? "rateLimit" : "invite");
+      if (userError || !authUser.user?.email) {
+        logAuthFailure("Customer Portal Auth user lookup failed", userError);
+        return fail(isAuthUnavailable(userError) ? "authUnavailable" : "invite");
+      }
+
+      if (authUser.user.email.toLowerCase() !== portalAccess.email.toLowerCase()) {
+        console.error("Customer Portal Auth email mismatch");
+        return fail("invite");
+      }
+
+      let emailError;
+
+      try {
+        ({ error: emailError } = intent === "resend"
+          ? await admin.auth.signInWithOtp({
+              email: authUser.user.email,
+              options: {
+                emailRedirectTo: portalRedirectUrl(locale),
+                shouldCreateUser: false,
+              },
+            })
+          : await admin.auth.resetPasswordForEmail(authUser.user.email, {
+              redirectTo: portalRedirectUrl(locale, `/${locale}/update-password`),
+            }));
+      } catch (error) {
+        logAuthFailure(`Customer Portal ${operation} request failed`, error);
+        return fail(emailActionError(
+          error,
+          intent === "resend" ? "invite" : "resetPassword",
+        ));
+      }
+
+      if (emailError) {
+        logAuthFailure(`Customer Portal ${operation} failed`, emailError);
+        return fail(emailActionError(
+          emailError,
+          intent === "resend" ? "invite" : "resetPassword",
+        ));
       }
 
       revalidateCustomer(locale, customerId);
-      return { fieldErrors: {}, formError: null, success: true, successKey: "resend" };
-    }
-
-    if (intent === "resetPassword") {
-      const supabase = await createSupabaseServerClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(portalAccess.email, {
-        redirectTo: portalRedirectUrl(locale, `/${locale}/update-password`),
-      });
-
-      if (error) {
-        console.error("Customer portal password reset failed", error.code ?? error.status ?? "unknown");
-        return fail(isEmailRateLimitError(error) ? "rateLimit" : "resetPassword");
-      }
-
-      revalidateCustomer(locale, customerId);
-      return { fieldErrors: {}, formError: null, success: true, successKey: "resetPassword" };
+      return {
+        fieldErrors: {},
+        formError: null,
+        success: true,
+        successKey: intent,
+      };
     }
   } catch (error) {
     console.error("Customer portal access management failed", error);

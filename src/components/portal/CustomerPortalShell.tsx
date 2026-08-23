@@ -5,6 +5,7 @@ import { LogoutButton } from "@/components/dashboard/LogoutButton";
 type CustomerPortalShellText = {
   logout: string;
   navigationLabel: string;
+  newRequest?: string;
   orders: string;
   overview: string;
   title: string;
@@ -36,6 +37,15 @@ export function CustomerPortalShell({
             ) : null}
           </div>
           <nav aria-label={text.navigationLabel} className="flex flex-wrap items-center gap-2">
+            {text.newRequest ? (
+              <Link
+                className="inline-flex min-h-11 items-center rounded-control bg-primary px-3 text-sm font-semibold text-white transition-standard hover:bg-primary-strong"
+                href="/portal/requests/new"
+                locale={locale}
+              >
+                {text.newRequest}
+              </Link>
+            ) : null}
             <Link
               className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-primary transition-standard hover:bg-primary-soft"
               href="/portal"

@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-08-23
 
-Current Mission: Operational role/workspace phase validated
+Current Mission: PORTAL-002.1 customer ordering and pickup requests completed and validated
 
-Next Action: Prepare QA-001, then select the next approved product phase
+Next Action: preserve the PORTAL-002.1 baseline and approve the next Portal increment before implementation
 
 ---
 
@@ -22,8 +22,8 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
-- Latest approved and pushed commit: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`
-- Current mission: preserve the validated operational baseline and select the next approved roadmap mission.
+- Approved baseline before PORTAL-002.1: `27b208f STAFF-POLISH-001 feat: add secure logout and user switching`
+- Current mission: PORTAL-002.1 is Product Owner approved after customer-to-operational-engine E2E validation.
 - INFRA-001-SMOKE passed with non-blocking issues and is committed.
 - INFRA-001.1 is completed.
 - PRODUCT-001 is completed and pushed.
@@ -35,6 +35,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - RELEASE-001.3 production design completed; production is deferred until the pilot product is functionally complete.
 - OPS-001.1 through OPS-001.4 are completed: Production Queue, completed logistics corrections, Delivery Queue, Work Assignment and Staff Management.
 - PORTAL-001 / PORTAL-001.1 is completed: secure customer portal, customer access management and staging-only customer preview.
+- PORTAL-002.1 is completed: customers can select server-priced services and their own active property, request a pickup and create an idempotent order in the existing operational engine.
 - OPS-001.5 is completed: Daily Close dashboard for owner/manager operational review.
 - OPS-001.6 is completed: Operational Alerts dashboard for owner/manager issue triage.
 - UI-001 and UI-003 are completed, including consistent high-contrast operational primary actions.
@@ -45,6 +46,7 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Staff invite, access-link and membership-removal UX is owner-only, organization-scoped and passwordless.
 - Staff access to the legacy `/[locale]/app` dashboard redirects server-side to `/[locale]/app/work` before owner dashboard queries run.
 - The Auth callback rejects invalid or stale links without silently preserving a different staff session and handles email rate-limit errors safely.
+- Portal Auth/access management no longer depends on the fragile global Auth user list, validates the linked Auth user directly and reports delivery, throttling and Auth availability failures safely.
 - Local development uses `next dev --webpack` to avoid the stale Turbopack route-manifest/runtime 404 behavior observed on localized Orders routes; the production build remains unchanged.
 - UI-MOBILE-001, UI-BUG-004 and UI-FORMAT-005 are completed: mobile logistics parity, readable desktop staff navigation and shared quantity/currency/input formatting.
 - UX-002 is completed and pushed through UX-002.5.
@@ -67,9 +69,11 @@ Start here when resuming EcoWash Phoenix work. This file identifies the current 
 - Older staging test orders remain intentionally untouched because hard cleanup would require an unnecessarily invasive administrative procedure.
 - Smoke data remains on staging.
 - Supabase migration history reconciled successfully on 2026-07-30.
+- PORTAL-002.1 migrations `20260823000100` and corrective `20260823000200` are applied to staging and migration history is aligned.
+- Customer-created order `EW-000005` validated the complete customer → Portal → Orders → Pickup operational path with server-side pricing, property isolation and duplicate-request protection.
 - `order-media` was verified as private with 1 MB image limit and JPEG/PNG/WebP allowlist.
 - Working tree is expected to be clean before the next functional test.
-- `main` and `origin/main` are synchronized at `edebb79` before this documentation-only update.
+- `main` and `origin/main` were synchronized at `27b208f` before the approved PORTAL-002.1 closeout.
 
 ---
 
@@ -108,6 +112,7 @@ Protected staging routes to verify when needed:
 - `/it/app/alerts`
 - `/it/portal`
 - `/it/portal/orders`
+- `/it/portal/requests/new`
 
 ---
 
@@ -115,7 +120,7 @@ Protected staging routes to verify when needed:
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix dalla fase operativa validata e scegliamo la prossima missione approvata della roadmap.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PORTAL-002.1 validato e scegliamo il prossimo incremento Portal approvato.”
 
 Start by confirming:
 
@@ -140,7 +145,7 @@ Do not run destructive Supabase commands. Do not use Docker. Do not modify Supab
 
 Next planning sequence:
 
-1. Preserve the four validated operational fixtures; do not create more unless a verified regression gap requires one.
-2. Prepare `QA-001`, the repeatable smoke/regression checklist already approved as the next M1/P0 gate.
-3. Let the Product Owner choose the following macro-phase: full-app visual/product refinement or the next approved business module in the roadmap.
-4. Keep one task per logical commit and record only defects observed in real functional or visual review.
+1. Preserve the validated operational fixtures and customer-created `EW-000005`; do not create more unless a verified regression gap requires one.
+2. Keep customer address flexibility and delivery preferences as the next known Portal work, to be scoped and approved separately.
+3. Keep clearer Customers access in owner/manager navigation as a separate UX backlog item.
+4. Do not start PORTAL-002.2 without a separate approved mission; keep one task per logical commit.

@@ -86,10 +86,12 @@ export default async function CustomerDetailPage({
           text={{
             active: t("portal.active"),
             accessDisabled: t("portal.accessDisabled"),
+            authUnavailable: t("portal.authUnavailable"),
             configurationError: t("portal.configurationError"),
             disable: t("portal.disable"),
             disabled: t("portal.disabled"),
             email: t("portal.email"),
+            emailDelivery: t("portal.emailDelivery"),
             emailInvalid: t("portal.emailInvalid"),
             enable: t("portal.enable"),
             error: t("portal.error"),

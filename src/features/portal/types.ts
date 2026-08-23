@@ -83,3 +83,50 @@ export type CustomerPortalActionState = {
   success: boolean;
   successKey?: string | null;
 };
+
+export type CustomerPortalOrderingContext = {
+  currency: string;
+  timeZone: string;
+};
+
+export type CustomerPortalOrderService = {
+  amount: number;
+  category: string | null;
+  currency: string;
+  description: string | null;
+  id: string;
+  name: string;
+  unitType: ServiceUnitType;
+};
+
+export type CustomerPortalOrderProperty = {
+  accessInstructions: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  contactName: string | null;
+  contactPhone: string | null;
+  countryCode: string | null;
+  id: string;
+  name: string;
+  postalCode: string | null;
+};
+
+export type CustomerPortalOrderRequestOptions = {
+  context: CustomerPortalOrderingContext | null;
+  properties: CustomerPortalOrderProperty[];
+  services: CustomerPortalOrderService[];
+};
+
+export type CustomerPortalOrderRequestError =
+  | "generic"
+  | "invalidQuantity"
+  | "pickupPast"
+  | "property"
+  | "requestedPickupAt"
+  | "services";
+
+export type CustomerPortalOrderRequestState = {
+  fieldErrors: Record<string, string>;
+  formError: CustomerPortalOrderRequestError | null;
+};
