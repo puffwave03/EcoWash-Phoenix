@@ -1,8 +1,16 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export type LogoutActionState = {
+  failed: boolean;
+};
+
+const initialLogoutState: LogoutActionState = {
+  failed: false,
+};
 
 function safeLocale(value: FormDataEntryValue | null) {
   return routing.locales.includes(value as (typeof routing.locales)[number])
@@ -10,11 +18,24 @@ function safeLocale(value: FormDataEntryValue | null) {
     : routing.defaultLocale;
 }
 
-export async function logoutAction(formData: FormData) {
+export async function logoutAction(
+  state: LogoutActionState = initialLogoutState,
+  formData: FormData,
+): Promise<LogoutActionState> {
+  void state;
+
   const locale = safeLocale(formData.get("locale"));
-  const supabase = await createSupabaseServerClient();
 
-  await supabase.auth.signOut();
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.signOut();
 
-  redirect(`/${locale}/login`);
+    if (error) {
+      return { failed: true };
+    }
+  } catch {
+    return { failed: true };
+  }
+
+  redirect(`/${locale}/login`, RedirectType.replace);
 }

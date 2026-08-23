@@ -11,6 +11,7 @@ type DashboardShellText = {
   delivery: string;
   foundation: string;
   logout: string;
+  logoutError: string;
   managementGroup: string;
   navigationLabel: string;
   customers: string;
@@ -44,6 +45,8 @@ export function DashboardShell({
   locale,
   text,
 }: DashboardShellProps) {
+  const currentUserName = access.profile.displayName || access.user.email || text.userLabel;
+
   return (
     <main className="min-h-screen bg-[#eef1ee] text-foreground">
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
@@ -100,7 +103,7 @@ export function DashboardShell({
               <div>
                 <dt className="text-white/54">{text.userLabel}</dt>
                 <dd className="mt-1 font-semibold text-white">
-                  {access.profile.displayName || access.user.email}
+                  {currentUserName}
                 </dd>
               </div>
               <div>
@@ -110,19 +113,28 @@ export function DashboardShell({
                 </dd>
               </div>
             </dl>
-            <LogoutButton label={text.logout} locale={locale} />
+            <LogoutButton
+              className="w-full"
+              errorLabel={text.logoutError}
+              label={text.logout}
+              locale={locale}
+            />
           </div>
         </aside>
 
         <div className="min-w-0">
           <AppNavigation
             capabilities={access.membership.capabilities}
+            currentUserName={currentUserName}
             locale={locale}
+            logoutErrorLabel={text.logoutError}
+            logoutLabel={text.logout}
             mode="header"
             navigationLabel={text.navigationLabel}
             organizationLabel={text.organizationLabel}
             organizationName={access.membership.organization.name}
             role={access.membership.role}
+            roleLabel={text.roleLabel}
             alertCount={alertCount}
             text={{
               alerts: text.alerts,
@@ -143,6 +155,7 @@ export function DashboardShell({
               workExperience: text.workExperience,
               workGroup: text.workGroup,
             }}
+            userLabel={text.userLabel}
           />
 
           <section className="px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-5 lg:px-8 lg:py-6 lg:pb-8">

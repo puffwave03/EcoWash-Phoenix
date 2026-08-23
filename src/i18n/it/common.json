@@ -128,6 +128,7 @@
       "title": "Panoramica",
       "description": "Gestisci clienti, servizi, ordini, logistica, pagamenti e attività dashboard reali.",
       "logout": "Esci",
+      "logoutError": "Uscita non riuscita. Controlla la connessione e riprova.",
       "navigationLabel": "Navigazione dashboard",
       "controlCenter": "Centro controllo",
       "workExperience": "Esperienza lavoro",

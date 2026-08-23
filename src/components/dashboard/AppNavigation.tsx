@@ -1,6 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import type { OperationalCapability } from "@/lib/auth/capabilities";
 import type { AppRole } from "@/lib/auth/types";
@@ -33,8 +34,13 @@ type AppNavigationProps = {
   navigationLabel: string;
   organizationLabel?: string;
   organizationName?: string;
+  currentUserName?: string;
+  logoutErrorLabel?: string;
+  logoutLabel?: string;
   role?: AppRole;
+  roleLabel?: string;
   text: AppNavigationText;
+  userLabel?: string;
 };
 
 function NavigationIcon({ href }: { href: string }) {
@@ -98,13 +104,18 @@ function NavigationIcon({ href }: { href: string }) {
 export function AppNavigation({
   alertCount = 0,
   capabilities = [],
+  currentUserName,
   locale,
+  logoutErrorLabel,
+  logoutLabel,
   mode,
   navigationLabel,
   organizationLabel,
   organizationName,
   role,
+  roleLabel,
   text,
+  userLabel,
 }: AppNavigationProps) {
   const pathname = usePathname();
   const isControlRole = role === "owner" || role === "manager";
@@ -187,10 +198,56 @@ export function AppNavigation({
               {activeItem.label}
             </p>
           </div>
-          <div className="hidden text-right sm:block">
-            <p className="text-xs font-medium text-muted">{organizationLabel}</p>
-            <p className="text-sm font-semibold text-primary">{organizationName}</p>
-            <p className="text-xs font-semibold uppercase text-secondary">{role}</p>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="hidden text-right md:block">
+              <p className="text-xs font-medium text-muted">{organizationLabel}</p>
+              <p className="text-sm font-semibold text-primary">{organizationName}</p>
+              <p className="text-xs font-semibold uppercase text-secondary">{role}</p>
+            </div>
+
+            {currentUserName && logoutLabel ? (
+              <details className="group relative lg:hidden">
+                <summary
+                  aria-label={`${userLabel}: ${currentUserName}`}
+                  className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control border border-border bg-white px-3 py-2 text-primary shadow-sm transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden"
+                >
+                  <svg aria-hidden="true" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+                  </svg>
+                  <span className="max-w-24 truncate text-sm font-semibold sm:max-w-36">
+                    {currentUserName}
+                  </span>
+                  <svg aria-hidden="true" className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24">
+                    <path d="m7 10 5 5 5-5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+                  </svg>
+                </summary>
+
+                <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 max-w-[calc(100vw-2rem)] rounded-card border border-border bg-white p-4 shadow-luxury">
+                  <dl className="space-y-3 text-sm">
+                    <div>
+                      <dt className="text-xs font-medium text-muted">{userLabel}</dt>
+                      <dd className="mt-1 break-words font-semibold text-primary">
+                        {currentUserName}
+                      </dd>
+                    </div>
+                    {role ? (
+                      <div>
+                        <dt className="text-xs font-medium text-muted">{roleLabel}</dt>
+                        <dd className="mt-1 font-semibold uppercase text-secondary">{role}</dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                  <div className="mt-4 border-t border-border pt-4">
+                    <LogoutButton
+                      className="w-full"
+                      errorLabel={logoutErrorLabel}
+                      label={logoutLabel}
+                      locale={locale}
+                    />
+                  </div>
+                </div>
+              </details>
+            ) : null}
           </div>
         </div>
       </header>

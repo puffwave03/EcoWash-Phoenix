@@ -128,6 +128,7 @@
       "title": "Resumen",
       "description": "Gestiona clientes, servicios, pedidos, logística, pagos y actividad real del panel.",
       "logout": "Cerrar sesión",
+      "logoutError": "No se pudo cerrar la sesión. Comprueba la conexión e inténtalo de nuevo.",
       "navigationLabel": "Navegación del panel",
       "controlCenter": "Centro de control",
       "workExperience": "Experiencia de trabajo",
