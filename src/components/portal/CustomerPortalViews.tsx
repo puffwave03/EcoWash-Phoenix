@@ -21,6 +21,7 @@ import type {
   PaymentMethod,
   PaymentRecordStatus,
 } from "@/features/payments/types";
+import type { TenantBrandingExperience } from "@/features/branding/types";
 import {
   DEFAULT_PORTAL_MEDIA,
   portalCategoryMedia,
@@ -72,6 +73,7 @@ type PortalCommonText = {
 type PortalOverviewProps = {
   activeOrders: CustomerPortalOrder[];
   customerName: string;
+  branding?: TenantBrandingExperience;
   locale: string;
   media?: PortalMediaRegistry;
   nextTask: CustomerPortalNextTask | null;
@@ -90,6 +92,7 @@ type PortalOverviewProps = {
     historyLink: string;
     inDelivery: string;
     newRequest: string;
+    promotion: string;
     noActiveOrdersDescription: string;
     noActiveOrdersTitle: string;
     quickActions: string;
@@ -98,6 +101,9 @@ type PortalOverviewProps = {
     servicesDiscovery: string;
     servicesEmpty: string;
     servicesCount: string;
+    supportDetails: string;
+    visitWebsite: string;
+    whatsapp: string;
     unitTypes: Record<ServiceUnitType, string>;
   };
 };
@@ -357,9 +363,10 @@ function PhotoGrid({
 
 export function CustomerPortalOverview({
   activeOrders,
+  branding,
   customerName,
   locale,
-  media = DEFAULT_PORTAL_MEDIA,
+  media = branding?.media ?? DEFAULT_PORTAL_MEDIA,
   nextTask,
   orders,
   services,
@@ -407,13 +414,14 @@ export function CustomerPortalOverview({
           </PortalMedia>
           <div className="p-5 sm:p-7 lg:p-9">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
-              {text.greeting}, {customerName}
+              {branding?.portalTitle || `${text.greeting}, ${customerName}`}
             </p>
             {currentOrder ? (
               <>
                 <h1 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                   {currentStatus}
                 </h1>
+                {branding?.portalSubtitle ? <p className="mt-3 max-w-xl text-sm leading-6 text-muted">{branding.portalSubtitle}</p> : null}
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                     {text.currentOrder}
@@ -474,7 +482,7 @@ export function CustomerPortalOverview({
             ) : (
               <>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.noActiveOrdersTitle}</h1>
-                <p className="mt-3 max-w-xl text-base leading-7 text-muted">{text.noActiveOrdersDescription}</p>
+                <p className="mt-3 max-w-xl text-base leading-7 text-muted">{branding?.portalSubtitle || text.noActiveOrdersDescription}</p>
                 <Link
                   className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary bg-primary px-5 text-sm font-semibold !text-white shadow-sm transition-standard hover:bg-primary-strong hover:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-auto"
                   href="/portal/requests/new"
@@ -545,6 +553,36 @@ export function CustomerPortalOverview({
         </div>
       </section>
 
+      {branding?.promotion ? (
+        <section className="overflow-hidden rounded-[1.5rem] border border-primary/15 bg-white shadow-card" aria-labelledby="portal-promotion">
+          <div className={`grid ${branding.promotion.imagePath ? "md:grid-cols-[minmax(0,1fr)_18rem]" : ""}`}>
+            <div className="p-5 sm:p-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-secondary">{text.promotion}</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground" id="portal-promotion">{branding.promotion.title}</h2>
+              {branding.promotion.body ? <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">{branding.promotion.body}</p> : null}
+              {branding.promotion.ctaHref && branding.promotion.ctaLabel ? (
+                <a
+                  className="mt-5 inline-flex min-h-11 items-center rounded-control border border-primary bg-primary px-4 text-sm font-semibold !text-white transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  href={branding.promotion.ctaHref}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {branding.promotion.ctaLabel}<span aria-hidden="true" className="ml-2">↗</span>
+                </a>
+              ) : null}
+            </div>
+            {branding.promotion.imagePath ? (
+              <PortalMedia
+                alt=""
+                className="aspect-[16/9] border-t border-border md:aspect-auto md:min-h-56 md:border-l md:border-t-0"
+                sizes="(max-width: 767px) 100vw, 18rem"
+                src={branding.promotion.imagePath}
+              />
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{text.servicesDiscovery}</h2>
@@ -574,6 +612,19 @@ export function CustomerPortalOverview({
               <OrderCard key={order.id} locale={locale} order={order} statusLabels={statusLabels} text={text} />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {branding && Object.values(branding.support).some(Boolean) ? (
+        <section className="rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.035)] sm:p-6" aria-labelledby="portal-support-details">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground" id="portal-support-details">{text.supportDetails}</h2>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            {branding.support.email ? <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 font-semibold !text-primary hover:bg-primary-soft" href={`mailto:${branding.support.email}`}>{branding.support.email}</a> : null}
+            {branding.support.phone ? <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 font-semibold !text-primary hover:bg-primary-soft" href={`tel:${branding.support.phone.replace(/[^+0-9]/g, "")}`}>{branding.support.phone}</a> : null}
+            {branding.support.whatsapp ? <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 font-semibold !text-primary hover:bg-primary-soft" href={`https://wa.me/${branding.support.whatsapp.replace(/[^0-9]/g, "")}`} rel="noreferrer" target="_blank">{text.whatsapp}</a> : null}
+            {branding.support.websiteUrl ? <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 font-semibold !text-primary hover:bg-primary-soft" href={branding.support.websiteUrl} rel="noreferrer" target="_blank">{text.visitWebsite}</a> : null}
+          </div>
+          {branding.support.address ? <p className="mt-4 whitespace-pre-line text-sm leading-6 text-muted">{branding.support.address}</p> : null}
         </section>
       ) : null}
     </div>

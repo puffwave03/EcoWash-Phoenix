@@ -1,10 +1,13 @@
-import type { ReactNode } from "react";
+import Image from "next/image";
+import type { CSSProperties, ReactNode } from "react";
 import { AppNavigation } from "@/components/dashboard/AppNavigation";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import type { PortalBrandPresentation } from "@/features/portal/media";
 import type { DashboardAccess } from "@/lib/auth/types";
 
 type DashboardShellText = {
   alerts: string;
+  branding: string;
   controlCenter: string;
   controlGroup: string;
   dailyClose: string;
@@ -33,6 +36,7 @@ type DashboardShellText = {
 type DashboardShellProps = {
   access: DashboardAccess;
   alertCount?: number;
+  brand?: PortalBrandPresentation;
   children: ReactNode;
   locale: string;
   text: DashboardShellText;
@@ -41,14 +45,28 @@ type DashboardShellProps = {
 export function DashboardShell({
   access,
   alertCount = 0,
+  brand = {},
   children,
   locale,
   text,
 }: DashboardShellProps) {
   const currentUserName = access.profile.displayName || access.user.email || text.userLabel;
+  const organizationName = brand.name ?? access.membership.organization.name;
+  const brandStyle = {
+    ...(brand.primaryColor ? { "--color-primary": brand.primaryColor } : {}),
+    ...(brand.primarySoftColor ? { "--color-primary-soft": brand.primarySoftColor } : {}),
+    ...(brand.primaryStrongColor ? { "--color-primary-strong": brand.primaryStrongColor } : {}),
+  } as CSSProperties;
+  const initials = organizationName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground" style={brandStyle}>
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside
           aria-label={text.navigationLabel}
@@ -56,15 +74,25 @@ export function DashboardShell({
         >
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-logo bg-primary-soft text-base font-semibold text-primary ring-1 ring-inset ring-primary/10">
-                EW
+              <div className={`flex h-11 items-center justify-center overflow-hidden rounded-logo bg-primary-soft text-base font-semibold text-primary ring-1 ring-inset ring-primary/10 ${brand.logoPath ? "w-20 px-2" : "w-11"}`}>
+                {brand.logoPath ? (
+                  <Image
+                    alt={brand.logoAlt ?? ""}
+                    className="h-9 w-full object-contain"
+                    height={44}
+                    sizes="80px"
+                    src={brand.logoPath}
+                    unoptimized={/^https?:\/\//.test(brand.logoPath)}
+                    width={96}
+                  />
+                ) : initials}
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                   {text.foundation}
                 </p>
                 <h1 className="mt-1 text-xl font-semibold text-foreground">
-                  {access.membership.organization.name}
+                  {organizationName}
                 </h1>
               </div>
             </div>
@@ -78,6 +106,7 @@ export function DashboardShell({
               alertCount={alertCount}
               text={{
                 alerts: text.alerts,
+                branding: text.branding,
                 controlCenter: text.controlCenter,
                 controlGroup: text.controlGroup,
                 customers: text.customers,
@@ -132,12 +161,13 @@ export function DashboardShell({
             mode="header"
             navigationLabel={text.navigationLabel}
             organizationLabel={text.organizationLabel}
-            organizationName={access.membership.organization.name}
+            organizationName={organizationName}
             role={access.membership.role}
             roleLabel={text.roleLabel}
             alertCount={alertCount}
             text={{
               alerts: text.alerts,
+              branding: text.branding,
               controlCenter: text.controlCenter,
               controlGroup: text.controlGroup,
               customers: text.customers,
@@ -173,6 +203,7 @@ export function DashboardShell({
         alertCount={alertCount}
         text={{
           alerts: text.alerts,
+          branding: text.branding,
           controlCenter: text.controlCenter,
           controlGroup: text.controlGroup,
           customers: text.customers,

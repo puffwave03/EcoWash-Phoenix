@@ -11,6 +11,7 @@ import {
   requireCustomerPortalAccess,
 } from "@/features/portal/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
+import { getTenantBranding } from "@/features/branding/server/queries";
 
 type CustomerPortalPageProps = {
   params: Promise<{ locale: string }>;
@@ -20,11 +21,12 @@ export default async function CustomerPortalPage({
   params,
 }: CustomerPortalPageProps) {
   const { locale } = await params;
-  const [access, orders, nextTask, options, t, catalogT] = await Promise.all([
-    requireCustomerPortalAccess(locale),
+  const access = await requireCustomerPortalAccess(locale);
+  const [orders, nextTask, options, branding, t, catalogT] = await Promise.all([
     listCustomerPortalOrders(locale),
     getNextCustomerPortalTask(locale),
     getCustomerPortalOrderRequestOptions(locale),
+    getTenantBranding(access.organizationId),
     getTranslations({ locale, namespace: "common.portal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
@@ -33,6 +35,7 @@ export default async function CustomerPortalPage({
 
   return (
     <CustomerPortalShell
+      brand={branding.brand}
       customerName={access.customerName}
       locale={locale}
       text={{
@@ -48,6 +51,7 @@ export default async function CustomerPortalPage({
     >
       <CustomerPortalOverview
         activeOrders={activeOrders}
+        branding={branding}
         customerName={access.customerName}
         locale={locale}
         nextTask={nextTask}
@@ -71,6 +75,7 @@ export default async function CustomerPortalPage({
           fromPrice: catalogT("fromPrice"),
           inDelivery: t("inDelivery"),
           newRequest: t("request.nav"),
+          promotion: t("promotion"),
           noActiveOrdersDescription: t("noActiveOrdersDescription"),
           noActiveOrdersTitle: t("noActiveOrdersTitle"),
           nextTask: t("nextTask"),
@@ -87,9 +92,12 @@ export default async function CustomerPortalPage({
           servicesDiscovery: t("servicesDiscovery"),
           servicesEmpty: t("servicesEmpty"),
           servicesCount: catalogT("servicesCount"),
+          supportDetails: t("supportDetails"),
           status: t("status"),
           unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
           viewOrder: t("viewOrder"),
+          visitWebsite: t("visitWebsite"),
+          whatsapp: t("whatsapp"),
         }}
       />
     </CustomerPortalShell>

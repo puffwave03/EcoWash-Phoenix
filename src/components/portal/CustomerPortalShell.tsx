@@ -97,6 +97,7 @@ export function CustomerPortalShell({
                   height={40}
                   sizes="80px"
                   src={brand.logoPath}
+                  unoptimized={/^https?:\/\//.test(brand.logoPath)}
                   width={96}
                 />
               ) : (

@@ -43,6 +43,7 @@ export function PortalMedia({
           sizes={sizes}
           src={src}
           style={{ objectPosition }}
+          unoptimized={/^https?:\/\//.test(src)}
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-primary/70">

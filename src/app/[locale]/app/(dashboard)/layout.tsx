@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { getOperationalAlertCount } from "@/features/alerts/server/queries";
+import { getTenantBranding } from "@/features/branding/server/queries";
 import { requireMembership } from "@/lib/auth/require-membership";
 
 type DashboardLayoutProps = {
@@ -17,15 +18,20 @@ export default async function DashboardLayout({
     requireMembership(locale),
     getTranslations({ locale, namespace: "common.auth.dashboard" }),
   ]);
-  const alertCount = access.membership.role === "staff" ? 0 : await getOperationalAlertCount(locale);
+  const [alertCount, branding] = await Promise.all([
+    access.membership.role === "staff" ? 0 : getOperationalAlertCount(locale),
+    getTenantBranding(access.membership.organization.id),
+  ]);
 
   return (
     <DashboardShell
       access={access}
       alertCount={alertCount}
+      brand={branding.brand}
       locale={locale}
       text={{
         alerts: t("alerts"),
+        branding: t("branding"),
         controlCenter: t("controlCenter"),
         controlGroup: t("controlGroup"),
         dailyClose: t("dailyClose"),

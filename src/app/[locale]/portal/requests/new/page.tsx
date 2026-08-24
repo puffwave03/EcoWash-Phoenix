@@ -8,6 +8,7 @@ import {
   getCustomerPortalOrderRequestOptions,
   requireCustomerPortalAccess,
 } from "@/features/portal/server/queries";
+import { getTenantBranding } from "@/features/branding/server/queries";
 
 type CustomerOrderRequestPageProps = {
   params: Promise<{ locale: string }>;
@@ -35,15 +36,17 @@ export default async function CustomerOrderRequestPage({
   params,
 }: CustomerOrderRequestPageProps) {
   const { locale } = await params;
-  const [access, options, t, catalogT] = await Promise.all([
-    requireCustomerPortalAccess(locale),
+  const access = await requireCustomerPortalAccess(locale);
+  const [options, branding, t, catalogT] = await Promise.all([
     getCustomerPortalOrderRequestOptions(locale),
+    getTenantBranding(access.organizationId),
     getTranslations({ locale, namespace: "common.portal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
 
   return (
     <CustomerPortalShell
+      brand={branding.brand}
       customerName={access.customerName}
       locale={locale}
       text={{
@@ -75,6 +78,7 @@ export default async function CustomerOrderRequestPage({
             action={createCustomerPortalOrderRequestAction.bind(null, locale)}
             currency={options.context.currency}
             locale={locale}
+            media={branding.media}
             minimumPickupAt={localDateTimeMinimum(options.context.timeZone)}
             properties={options.properties}
             requestId={randomUUID()}

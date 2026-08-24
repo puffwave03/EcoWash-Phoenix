@@ -9,6 +9,7 @@ import {
   requireCustomerPortalAccess,
 } from "@/features/portal/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
+import { getTenantBranding } from "@/features/branding/server/queries";
 
 type CustomerPortalOrdersPageProps = {
   params: Promise<{ locale: string }>;
@@ -18,9 +19,10 @@ export default async function CustomerPortalOrdersPage({
   params,
 }: CustomerPortalOrdersPageProps) {
   const { locale } = await params;
-  const [access, orders, t, catalogT] = await Promise.all([
-    requireCustomerPortalAccess(locale),
+  const access = await requireCustomerPortalAccess(locale);
+  const [orders, branding, t, catalogT] = await Promise.all([
     listCustomerPortalOrders(locale),
+    getTenantBranding(access.organizationId),
     getTranslations({ locale, namespace: "common.portal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
@@ -28,6 +30,7 @@ export default async function CustomerPortalOrdersPage({
 
   return (
     <CustomerPortalShell
+      brand={branding.brand}
       customerName={access.customerName}
       locale={locale}
       text={{

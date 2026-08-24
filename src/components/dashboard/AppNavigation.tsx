@@ -8,6 +8,7 @@ import type { AppRole } from "@/lib/auth/types";
 
 type AppNavigationText = {
   alerts: string;
+  branding: string;
   controlCenter: string;
   controlGroup: string;
   customers: string;
@@ -145,7 +146,10 @@ export function AppNavigation({
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
             { href: "/app/services", label: text.services, match: "/app/services" },
             ...(role === "owner"
-              ? [{ href: "/app/staff", label: text.staff, match: "/app/staff" }]
+              ? [
+                  { href: "/app/staff", label: text.staff, match: "/app/staff" },
+                  { href: "/app/settings/branding", label: text.branding, match: "/app/settings/branding" },
+                ]
               : []),
           ],
           label: text.managementGroup,
@@ -237,6 +241,17 @@ export function AppNavigation({
                       </div>
                     ) : null}
                   </dl>
+                  {role === "owner" ? (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <Link
+                        className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        href="/app/settings/branding"
+                        locale={locale}
+                      >
+                        {text.branding}<span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                  ) : null}
                   <div className="mt-4 border-t border-border pt-4">
                     <LogoutButton
                       className="w-full"
