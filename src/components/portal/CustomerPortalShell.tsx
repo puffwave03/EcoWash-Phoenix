@@ -68,8 +68,8 @@ export function CustomerPortalShell({
   );
 
   return (
-    <main className="min-h-screen bg-background text-foreground" data-customer-portal-shell>
-      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,var(--color-primary-soft),transparent_28rem),#f4f7f4] text-foreground" data-customer-portal-shell>
+      <header className="sticky top-0 z-40 border-b border-primary/10 bg-white/92 shadow-[0_4px_18px_rgb(15_59_46_/_0.035)] backdrop-blur-xl">
         <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:min-h-20 sm:px-6 lg:px-8">
           <Link
             aria-label={text.overview}
@@ -87,8 +87,8 @@ export function CustomerPortalShell({
             {navigationItems.map((item) => (
               <Link
                 aria-current={isActive(item) ? "page" : undefined}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-control px-3 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                  isActive(item) ? "bg-primary-soft !text-primary" : "!text-muted hover:bg-[#f5f7f5] hover:!text-primary"
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  isActive(item) ? "bg-primary !text-white shadow-sm" : "!text-muted hover:bg-primary-soft hover:!text-primary"
                 }`}
                 href={item.href}
                 key={item.href}
@@ -123,7 +123,7 @@ export function CustomerPortalShell({
         </div>
       </header>
 
-      <section className="mx-auto max-w-7xl px-4 py-6 pb-[calc(6rem_+_env(safe-area-inset-bottom))] sm:px-6 sm:py-8 lg:px-8 lg:pb-10">
+      <section className="mx-auto max-w-7xl px-4 py-6 pb-[calc(6.5rem_+_env(safe-area-inset-bottom))] sm:px-6 sm:py-9 lg:px-8 lg:pb-12">
         {children}
       </section>
 

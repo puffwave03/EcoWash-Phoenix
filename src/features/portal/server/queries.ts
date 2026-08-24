@@ -131,6 +131,9 @@ type PortalOrderServiceRow = {
   description: string | null;
   id: string;
   name: string;
+  portal_featured: boolean;
+  portal_image_path: string | null;
+  price_is_from: boolean;
   unit_type: CustomerPortalOrderRequestOptions["services"][number]["unitType"];
 };
 
@@ -430,6 +433,9 @@ export async function getCustomerPortalOrderRequestOptions(
       description: service.description,
       id: service.id,
       name: service.name,
+      portalFeatured: service.portal_featured,
+      portalImagePath: service.portal_image_path,
+      priceIsFrom: service.price_is_from,
       unitType: service.unit_type,
     })),
   };

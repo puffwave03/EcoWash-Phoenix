@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import {
   useActionState,
   useMemo,
@@ -14,16 +16,23 @@ import type {
   CustomerPortalOrderRequestState,
   CustomerPortalOrderService,
 } from "@/features/portal/types";
+import { catalogCategoryLabel, groupServicesByCategory } from "@/features/services/catalog";
+import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
 
 type CustomerOrderRequestText = {
   address: string;
   addressIncomplete: string;
+  add: string;
+  allCategories: string;
   back: string;
+  categoryFilter: string;
+  collapse: string;
   confirm: string;
   customerNotes: string;
   customerNotesPlaceholder: string;
   estimatedTotal: string;
+  expand: string;
   errors: {
     generic: string;
     invalidQuantity: string;
@@ -34,19 +43,24 @@ type CustomerOrderRequestText = {
   };
   noProperties: string;
   noServices: string;
-  perPiece: string;
-  perWeight: string;
+  noServicesMatch: string;
+  categoryLabels: Record<string, string>;
+  fromPrice: string;
   pickupHelp: string;
   property: string;
   quantity: string;
   requestedPickupAt: string;
   review: string;
   reviewIntro: string;
+  remove: string;
+  search: string;
+  searchPlaceholder: string;
   selectProperty: string;
   serviceSelection: string;
+  servicesCount: string;
+  servicesSelected: string;
   submitting: string;
-  unitPiece: string;
-  unitWeight: string;
+  unitTypes: Record<ServiceUnitType, string>;
 };
 
 type CustomerOrderRequestFormProps = {
@@ -110,6 +124,12 @@ export function CustomerOrderRequestForm({
   const [propertyId, setPropertyId] = useState("");
   const [requestedPickupAt, setRequestedPickupAt] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
+  const [serviceSearch, setServiceSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const categoryGroups = useMemo(() => groupServicesByCategory(services), [services]);
+  const [openCategories, setOpenCategories] = useState<Set<string>>(
+    () => new Set(categoryGroups.slice(0, 1).map((group) => group.category)),
+  );
   const [state, formAction, isPending] = useActionState(guardedAction, initialState);
   const selectedProperty = properties.find((property) => property.id === propertyId);
   const selectedItems = useMemo(
@@ -127,6 +147,19 @@ export function CustomerOrderRequestForm({
     0,
   );
   const isLocked = isPending || isSubmitLocked;
+  const visibleCategoryGroups = useMemo(() => {
+    const query = serviceSearch.trim().toLocaleLowerCase(locale);
+    const filtered = services.filter((service) => (
+      (categoryFilter === "all" || service.category === categoryFilter)
+      && (!query || [
+        service.name,
+        service.category,
+        catalogCategoryLabel(service.category?.trim() || "other", text.categoryLabels),
+      ].some((value) => value?.toLocaleLowerCase(locale).includes(query)))
+    ));
+
+    return groupServicesByCategory(filtered);
+  }, [categoryFilter, locale, serviceSearch, services, text.categoryLabels]);
 
   async function guardedAction(
     currentState: CustomerPortalOrderRequestState,
@@ -149,6 +182,26 @@ export function CustomerOrderRequestForm({
 
       return next;
     });
+    if (selected && service.category) {
+      setOpenCategories((current) => new Set(current).add(service.category as string));
+    }
+    setReviewing(false);
+  }
+
+  function toggleCategory(category: string) {
+    setOpenCategories((current) => {
+      const next = new Set(current);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  }
+
+  function changeQuantity(service: CustomerPortalOrderService, direction: -1 | 1) {
+    const step = isDiscreteServiceUnit(service.unitType) ? 1 : 0.1;
+    const current = Number(quantities[service.id]) || step;
+    const next = Math.max(step, Math.round((current + direction * step) * 1000) / 1000);
+    setQuantities((values) => ({ ...values, [service.id]: String(next) }));
     setReviewing(false);
   }
 
@@ -159,7 +212,7 @@ export function CustomerOrderRequestForm({
     if (selectedItems.some(({ quantity, service }) => (
       quantity > 10000
       || Number(quantity.toFixed(3)) !== quantity
-      || (service.unitType === "piece" && !Number.isInteger(quantity))
+      || (isDiscreteServiceUnit(service.unitType) && !Number.isInteger(quantity))
     ))) {
       errors.items = text.errors.invalidQuantity;
     }
@@ -228,7 +281,7 @@ export function CustomerOrderRequestForm({
                 <div>
                   <p className="font-semibold text-primary">{service.name}</p>
                   <p className="text-sm text-muted">
-                    {formatQuantity(quantity, locale)} {service.unitType === "piece" ? text.unitPiece : text.unitWeight}
+                    {formatQuantity(quantity, locale)} {text.unitTypes[service.unitType]}
                   </p>
                 </div>
                 <p className="shrink-0 font-semibold text-primary">
@@ -298,54 +351,117 @@ export function CustomerOrderRequestForm({
             {text.noServices}
           </p>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {services.map((service) => {
-              const selected = service.id in quantities;
+          <div className="space-y-4">
+            <div className="sticky top-[4.5rem] z-20 -mx-1 rounded-card border border-border bg-white/95 p-3 shadow-card backdrop-blur sm:top-[5.5rem] sm:p-4">
+              <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.45fr)]">
+                <label className="space-y-1.5 text-sm font-semibold text-primary">
+                  <span>{text.search}</span>
+                  <div className="relative">
+                    <svg aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.8"/><path d="m16 16 4 4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8"/></svg>
+                    <input className={`${fieldClass()} pl-11`} onChange={(event) => setServiceSearch(event.target.value)} placeholder={text.searchPlaceholder} type="search" value={serviceSearch} />
+                  </div>
+                </label>
+                <label className="space-y-1.5 text-sm font-semibold text-primary">
+                  <span>{text.categoryFilter}</span>
+                  <select className={fieldClass()} onChange={(event) => {
+                    const category = event.target.value;
+                    setCategoryFilter(category);
+                    if (category !== "all") setOpenCategories((current) => new Set(current).add(category));
+                  }} value={categoryFilter}>
+                    <option value="all">{text.allCategories}</option>
+                    {categoryGroups.map(({ category }) => <option key={category} value={category}>{catalogCategoryLabel(category, text.categoryLabels)}</option>)}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            {visibleCategoryGroups.length === 0 ? (
+              <p className="rounded-card border border-dashed border-border bg-white p-6 text-center text-sm text-muted">{text.noServicesMatch}</p>
+            ) : visibleCategoryGroups.map(({ category, items }) => {
+              const searchActive = Boolean(serviceSearch.trim());
+              const isOpen = searchActive || openCategories.has(category);
+              const lowestPrice = items.reduce((lowest, service) => service.amount < lowest.amount ? service : lowest);
+              const imagePath = items.find((service) => service.portalImagePath)?.portalImagePath ?? null;
+              const selectedInCategory = items.filter((service) => service.id in quantities).length;
 
               return (
-                <Card
-                  className={`space-y-4 !p-4 transition-standard ${selected ? "border-primary ring-1 ring-primary" : ""}`}
-                  key={service.id}
-                >
-                  <label className="flex min-h-11 cursor-pointer items-start gap-3">
-                    <input
-                      checked={selected}
-                      className="mt-1 h-5 w-5 shrink-0 accent-primary"
-                      onChange={(event) => toggleService(service, event.target.checked)}
-                      type="checkbox"
-                    />
-                    <span className="min-w-0">
-                      <span className="block font-semibold text-primary">{service.name}</span>
-                      {service.description ? (
-                        <span className="mt-1 block text-sm leading-5 text-muted">{service.description}</span>
-                      ) : null}
-                      <span className="mt-2 block text-sm font-semibold text-secondary">
-                        {formatCurrency(service.amount, service.currency, locale)} {service.unitType === "piece" ? text.perPiece : text.perWeight}
+                <section className="scroll-mt-44 overflow-hidden rounded-card border border-border bg-white shadow-card" id={`category-${category}`} key={category}>
+                  <button
+                    aria-expanded={isOpen}
+                    className="group flex min-h-20 w-full items-center gap-3 p-3 text-left transition-standard hover:bg-primary-soft/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:gap-4 sm:p-4"
+                    onClick={() => toggleCategory(category)}
+                    type="button"
+                  >
+                    <span className="flex h-14 w-16 shrink-0 items-center justify-center overflow-hidden rounded-control bg-primary-soft text-primary sm:h-16 sm:w-24">
+                      {imagePath ? <img alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" src={imagePath} /> : <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-semibold text-foreground sm:text-lg">{catalogCategoryLabel(category, text.categoryLabels)}</span>
+                      <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted sm:text-sm">
+                        <span>{items.length} {text.servicesCount}</span>
+                        <span>{items.length > 1 || lowestPrice.priceIsFrom ? `${text.fromPrice} ` : ""}{formatCurrency(lowestPrice.amount, lowestPrice.currency, locale)} / {text.unitTypes[lowestPrice.unitType]}</span>
+                        {selectedInCategory > 0 ? <strong className="text-primary">{text.servicesSelected.replace("{count}", String(selectedInCategory))}</strong> : null}
                       </span>
                     </span>
-                  </label>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-white text-primary" aria-label={isOpen ? text.collapse : text.expand}>
+                      <svg aria-hidden="true" className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                    </span>
+                  </button>
 
-                  {selected ? (
-                    <label className="block space-y-2 text-sm font-semibold text-primary">
-                      <span>{text.quantity}</span>
-                      <input
-                        className={fieldClass(Boolean(clientErrors.items))}
-                        inputMode="decimal"
-                        min={service.unitType === "piece" ? "1" : "0.001"}
-                        onChange={(event) => {
-                          setQuantities((current) => ({
-                            ...current,
-                            [service.id]: event.target.value,
-                          }));
-                          setReviewing(false);
-                        }}
-                        step={service.unitType === "piece" ? "1" : "0.001"}
-                        type="number"
-                        value={quantities[service.id]}
-                      />
-                    </label>
+                  {isOpen ? (
+                    <div className="grid gap-3 border-t border-border bg-[#f8faf8] p-3 sm:p-4 md:grid-cols-2">
+                      {items.map((service) => {
+                        const selected = service.id in quantities;
+                        return (
+                          <article className={`rounded-card border bg-white p-4 transition-standard ${selected ? "border-primary shadow-card ring-1 ring-primary/15" : "border-border"}`} key={service.id}>
+                            <div className="flex min-h-24 flex-col">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <h4 className="font-semibold leading-5 text-foreground">{service.name}</h4>
+                                  {service.description ? <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{service.description}</p> : null}
+                                </div>
+                                <button
+                                  aria-pressed={selected}
+                                  className={`inline-flex min-h-10 shrink-0 items-center rounded-control border px-3 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selected ? "border-primary bg-primary !text-white" : "border-primary/25 bg-primary-soft !text-primary hover:border-primary"}`}
+                                  onClick={() => toggleService(service, !selected)}
+                                  type="button"
+                                >
+                                  {selected ? text.remove : text.add}
+                                </button>
+                              </div>
+                              <p className="mt-auto pt-4 text-lg font-semibold text-primary">
+                                {service.priceIsFrom ? `${text.fromPrice} ` : ""}{formatCurrency(service.amount, service.currency, locale)} <span className="text-sm font-medium text-muted">/ {text.unitTypes[service.unitType]}</span>
+                              </p>
+                            </div>
+
+                            {selected ? (
+                              <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
+                                <span className="text-sm font-semibold text-primary">{text.quantity}</span>
+                                <div className="grid grid-cols-[2.75rem_minmax(4.5rem,6rem)_2.75rem] items-center overflow-hidden rounded-control border border-border bg-white">
+                                  <button className="min-h-11 text-xl font-semibold text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, -1)} type="button" aria-label={`− ${text.quantity}`}>−</button>
+                                  <input
+                                    aria-label={text.quantity}
+                                    className="min-h-11 w-full border-x border-border px-1 text-center text-base font-semibold outline-none focus:bg-primary-soft/50"
+                                    inputMode="decimal"
+                                    min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"}
+                                    onChange={(event) => {
+                                      setQuantities((current) => ({ ...current, [service.id]: event.target.value }));
+                                      setReviewing(false);
+                                    }}
+                                    step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"}
+                                    type="number"
+                                    value={quantities[service.id]}
+                                  />
+                                  <button className="min-h-11 text-xl font-semibold text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, 1)} type="button" aria-label={`+ ${text.quantity}`}>+</button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </article>
+                        );
+                      })}
+                    </div>
                   ) : null}
-                </Card>
+                </section>
               );
             })}
           </div>
@@ -434,15 +550,15 @@ export function CustomerOrderRequestForm({
         {clientErrors.requestedPickupAt ? <p className="text-sm text-red-700" role="alert">{clientErrors.requestedPickupAt}</p> : null}
       </section>
 
-      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 rounded-card border border-border bg-white/95 p-3 shadow-luxury backdrop-blur lg:bottom-3">
-        <div className="mb-3 flex items-center justify-between gap-3 px-1">
-          <span className="text-sm font-medium text-muted">{text.estimatedTotal}</span>
-          <span className="text-lg font-semibold text-primary">
+      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-card border border-primary/15 bg-white/96 p-3 shadow-luxury backdrop-blur lg:bottom-3 lg:flex lg:items-center lg:gap-5 lg:p-4">
+        <div className="mb-3 flex flex-1 items-center justify-between gap-4 px-1 lg:mb-0">
+          <span className="text-sm font-medium text-muted"><strong className="block text-primary">{text.servicesSelected.replace("{count}", String(selectedItems.length))}</strong>{text.estimatedTotal}</span>
+          <span className="text-2xl font-semibold tracking-tight text-primary">
             {formatCurrency(estimatedTotal, currency, locale)}
           </span>
         </div>
         <Button
-          className="w-full"
+          className="w-full lg:w-auto lg:min-w-56"
           disabled={services.length === 0 || properties.length === 0}
           onClick={validateReview}
           type="button"

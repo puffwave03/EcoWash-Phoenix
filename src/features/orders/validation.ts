@@ -12,6 +12,7 @@ import {
   type ProductionStatus,
 } from "@/features/orders/types";
 import {
+  isDiscreteServiceUnit,
   SERVICE_UNIT_TYPES,
   type ServiceUnitType,
 } from "@/features/services/types";
@@ -111,7 +112,7 @@ export function parseOrderItemForm(formData: FormData) {
   if (!description && !serviceId) fieldErrors.description = "required";
   if (!isUnitType(unitType)) fieldErrors.unitType = "invalid";
   if (!Number.isFinite(quantity) || quantity <= 0) fieldErrors.quantity = "invalid";
-  if (unitType === "piece" && !Number.isInteger(quantity)) fieldErrors.quantity = "integer";
+  if (isUnitType(unitType) && isDiscreteServiceUnit(unitType) && !Number.isInteger(quantity)) fieldErrors.quantity = "integer";
   if (!Number.isFinite(unitPrice) || unitPrice < 0) fieldErrors.unitPrice = "invalid";
 
   const input: OrderItemFormInput = {

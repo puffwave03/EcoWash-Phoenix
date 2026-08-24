@@ -18,10 +18,11 @@ export default async function CustomerPortalOrdersPage({
   params,
 }: CustomerPortalOrdersPageProps) {
   const { locale } = await params;
-  const [access, orders, t] = await Promise.all([
+  const [access, orders, t, catalogT] = await Promise.all([
     requireCustomerPortalAccess(locale),
     listCustomerPortalOrders(locale),
     getTranslations({ locale, namespace: "common.portal" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
 
@@ -60,6 +61,8 @@ export default async function CustomerPortalOrdersPage({
           property: t("property"),
           ready: t("ready"),
           status: t("status"),
+          unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
+          viewOrder: t("viewOrder"),
         }}
       />
     </CustomerPortalShell>

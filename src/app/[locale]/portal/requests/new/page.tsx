@@ -35,10 +35,11 @@ export default async function CustomerOrderRequestPage({
   params,
 }: CustomerOrderRequestPageProps) {
   const { locale } = await params;
-  const [access, options, t] = await Promise.all([
+  const [access, options, t, catalogT] = await Promise.all([
     requireCustomerPortalAccess(locale),
     getCustomerPortalOrderRequestOptions(locale),
     getTranslations({ locale, namespace: "common.portal" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
 
   return (
@@ -81,11 +82,16 @@ export default async function CustomerOrderRequestPage({
             text={{
               address: t("request.address"),
               addressIncomplete: t("request.addressIncomplete"),
+              add: catalogT("add"),
+              allCategories: catalogT("allCategories"),
               back: t("request.back"),
+              categoryFilter: catalogT("categoryFilter"),
+              collapse: catalogT("collapse"),
               confirm: t("request.confirm"),
               customerNotes: t("request.customerNotes"),
               customerNotesPlaceholder: t("request.customerNotesPlaceholder"),
               estimatedTotal: t("request.estimatedTotal"),
+              expand: catalogT("expand"),
               errors: {
                 generic: t("request.errors.generic"),
                 invalidQuantity: t("request.errors.invalidQuantity"),
@@ -96,19 +102,24 @@ export default async function CustomerOrderRequestPage({
               },
               noProperties: t("request.noProperties"),
               noServices: t("request.noServices"),
-              perPiece: t("request.perPiece"),
-              perWeight: t("request.perWeight"),
+              noServicesMatch: catalogT("noServicesMatch"),
+              categoryLabels: catalogT.raw("categories") as Record<string, string>,
+              fromPrice: catalogT("fromPrice"),
               pickupHelp: t("request.pickupHelp"),
               property: t("request.property"),
               quantity: t("request.quantity"),
               requestedPickupAt: t("request.requestedPickupAt"),
               review: t("request.review"),
               reviewIntro: t("request.reviewIntro"),
+              remove: catalogT("remove"),
+              search: catalogT("search"),
+              searchPlaceholder: catalogT("searchPlaceholder"),
               selectProperty: t("request.selectProperty"),
               serviceSelection: t("request.serviceSelection"),
+              servicesCount: catalogT("servicesCount"),
+              servicesSelected: catalogT.raw("servicesSelected") as string,
               submitting: t("request.submitting"),
-              unitPiece: t("request.unitPiece"),
-              unitWeight: t("request.unitWeight"),
+              unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
             }}
             timeZone={options.context.timeZone}
           />

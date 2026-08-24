@@ -11,7 +11,10 @@ type NewServicePageProps = {
 export default async function NewServicePage({ params }: NewServicePageProps) {
   const { locale } = await params;
   await requireOwnerOrManager(locale);
-  const t = await getTranslations({ locale, namespace: "common.services.form" });
+  const [t, catalogT] = await Promise.all([
+    getTranslations({ locale, namespace: "common.services.form" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
+  ]);
 
   return (
     <Card className="space-y-6">
@@ -26,13 +29,12 @@ export default async function NewServicePage({ params }: NewServicePageProps) {
           description: t("description"),
           error: t("error"),
           name: t("name"),
-          piece: t("unitTypes.piece"),
           save: t("save"),
           saving: t("saving"),
           unitType: t("unitType"),
           validFrom: t("validFrom"),
           validTo: t("validTo"),
-          weight: t("unitTypes.weight"),
+          unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
         }}
       />
     </Card>

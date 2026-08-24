@@ -77,7 +77,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, t] = await Promise.all([
+  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, t, catalogT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -89,6 +89,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
     getTranslations({ locale, namespace: "common.orders" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
@@ -208,19 +209,22 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <Card className="space-y-4">
               <OrderItemForm
                 action={saveOrderItemAction.bind(null, locale, order.id)}
+                locale={locale}
                 services={services}
                 text={{
                   addItem: t("items.add"),
                   description: t("items.description"),
                   error: t("items.error"),
                   notes: t("items.notes"),
-                  piece: t("unitTypes.piece"),
+                  categoryLabels: catalogT.raw("categories") as Record<string, string>,
                   quantity: t("items.quantity"),
                   saving: t("items.saving"),
+                  search: catalogT("search"),
+                  searchPlaceholder: catalogT("searchPlaceholder"),
                   service: t("items.service"),
                   unitPrice: t("items.unitPrice"),
                   unitType: t("items.unitType"),
-                  weight: t("unitTypes.weight"),
+                  unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
                 }}
               />
             </Card>
@@ -236,18 +240,20 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 edit: t("edit"),
                 error: t("items.error"),
                 lineTotal: t("items.lineTotal"),
-                piece: t("unitTypes.piece"),
+                categoryLabels: catalogT.raw("categories") as Record<string, string>,
                 quantity: t("items.quantity"),
                 remove: t("items.remove"),
                 removing: t("items.removing"),
                 saveEdit: t("items.save"),
                 saving: t("items.saving"),
+                search: catalogT("search"),
+                searchPlaceholder: catalogT("searchPlaceholder"),
                 service: t("items.service"),
                 subtotal: t("subtotal"),
                 total: t("total"),
                 unitPrice: t("items.unitPrice"),
                 unitType: t("items.unitType"),
-                weight: t("unitTypes.weight"),
+                unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
               }}
               onSave={saveOrderItemAction.bind(null, locale, order.id)}
               services={services}

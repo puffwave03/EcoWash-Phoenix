@@ -13,6 +13,8 @@ import type {
   CustomerPortalOrderService,
 } from "@/features/portal/types";
 import type { ProductionStatus } from "@/features/orders/types";
+import { catalogCategoryLabel, groupServicesByCategory } from "@/features/services/catalog";
+import type { ServiceUnitType } from "@/features/services/types";
 import type {
   DerivedPaymentStatus,
   PaymentMethod,
@@ -57,6 +59,8 @@ type PortalCommonText = {
   property: string;
   ready: string;
   status: string;
+  unitTypes: Record<ServiceUnitType, string>;
+  viewOrder: string;
 };
 
 type PortalOverviewProps = {
@@ -71,6 +75,8 @@ type PortalOverviewProps = {
     activeOrders: string;
     assistance: string;
     currentOrder: string;
+    categoryDescription: string;
+    categoryLabels: Record<string, string>;
     fromPrice: string;
     greeting: string;
     historyLink: string;
@@ -83,9 +89,8 @@ type PortalOverviewProps = {
     servicesDescription: string;
     servicesDiscovery: string;
     servicesEmpty: string;
-    servicePerPiece: string;
-    servicePerWeight: string;
-    viewOrder: string;
+    servicesCount: string;
+    unitTypes: Record<ServiceUnitType, string>;
   };
 };
 
@@ -151,16 +156,16 @@ function OrderCard({
 }) {
   return (
     <Link
-      className="group block rounded-card border border-border bg-white p-4 transition-standard hover:border-primary/35 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="group block overflow-hidden rounded-card border border-border bg-white shadow-[0_8px_28px_rgb(15_59_46_/_0.045)] transition-standard hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       href={`/portal/orders/${order.id}`}
       locale={locale}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-secondary">
             {order.orderNumber}
           </p>
-          <h3 className="mt-2 text-lg font-semibold text-foreground">
+          <h3 className="mt-2 inline-flex rounded-full border border-primary/15 bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
             {statusLabels[order.productionStatus]}
           </h3>
           {order.financial ? (
@@ -173,7 +178,7 @@ function OrderCard({
           →
         </span>
       </div>
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+      <dl className="grid gap-3 px-5 pb-5 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted">{text.orderDate}</dt>
           <dd className="mt-1 font-semibold text-foreground">{formatDate(order.createdAt, locale)}</dd>
@@ -184,7 +189,7 @@ function OrderCard({
         </div>
       </dl>
       {order.financial ? (
-        <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4 text-sm">
+        <dl className="grid grid-cols-2 gap-3 border-t border-border bg-[#fafcfa] px-5 py-4 text-sm">
           <div>
             <dt className="text-muted">{text.finance.total}</dt>
             <dd className="mt-1 font-semibold text-foreground">
@@ -199,41 +204,54 @@ function OrderCard({
           </div>
         </dl>
       ) : null}
+      <div className="flex min-h-12 items-center justify-between border-t border-border px-5 text-sm font-semibold text-primary">
+        <span>{text.viewOrder}</span><span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+      </div>
     </Link>
   );
 }
 
-function ServiceCard({
+function CategoryCard({
+  category,
   locale,
-  service,
+  services,
   text,
 }: {
+  category: string;
   locale: string;
-  service: CustomerPortalOrderService;
+  services: CustomerPortalOrderService[];
   text: PortalOverviewProps["text"];
 }) {
+  const lowestPrice = services.reduce((lowest, service) => service.amount < lowest.amount ? service : lowest);
+  const imagePath = services.find((service) => service.portalImagePath)?.portalImagePath ?? null;
+  const label = catalogCategoryLabel(category, text.categoryLabels);
+
   return (
-    <article className="overflow-hidden rounded-card border border-border bg-white">
-      <div className="flex aspect-[16/7] items-center justify-center border-b border-border bg-[linear-gradient(135deg,var(--color-primary-soft),#f8fbf9)] text-primary" data-portal-media-slot>
-        <svg aria-hidden="true" className="h-9 w-9" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>
+    <article className="group overflow-hidden rounded-card border border-border bg-white shadow-[0_8px_28px_rgb(15_59_46_/_0.045)] transition-standard hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-card">
+      <div className="relative flex aspect-[16/8] items-center justify-center overflow-hidden border-b border-border bg-[linear-gradient(135deg,var(--color-primary-soft),#f8fbf9)] text-primary" data-portal-media-slot>
+        {imagePath ? <img alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={imagePath} /> : <svg aria-hidden="true" className="h-9 w-9" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>}
+        <span className="absolute bottom-3 left-3 rounded-full border border-white/40 bg-white/90 px-3 py-1 text-xs font-semibold text-primary shadow-sm backdrop-blur">{services.length} {text.servicesCount}</span>
       </div>
       <div className="space-y-3 p-4">
         <div>
-          <h3 className="font-semibold text-foreground">{service.name}</h3>
-          {service.description ? <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{service.description}</p> : null}
+          <h3 className="font-semibold text-foreground">{label}</h3>
+          <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{text.categoryDescription}</p>
+          <ul className="mt-3 space-y-1 text-xs text-muted">
+            {services.slice(0, 2).map((service) => <li className="truncate" key={service.id}>• {service.name}</li>)}
+          </ul>
         </div>
         <div className="flex items-end justify-between gap-3">
           <p className="text-sm text-muted">
-            {text.fromPrice} <strong className="text-base text-primary">{formatCurrency(service.amount, service.currency, locale)}</strong>{" "}
-            <span>{service.unitType === "weight" ? text.servicePerWeight : text.servicePerPiece}</span>
+            {services.length > 1 || lowestPrice.priceIsFrom ? `${text.fromPrice} ` : ""}<strong className="text-base text-primary">{formatCurrency(lowestPrice.amount, lowestPrice.currency, locale)}</strong>{" "}
+            <span>/ {text.unitTypes[lowestPrice.unitType]}</span>
           </p>
           <Link
-            aria-label={`${text.newRequest}: ${service.name}`}
-            className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold !text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            href="/portal/requests/new"
+            aria-label={`${text.newRequest}: ${label}`}
+            className="inline-flex min-h-11 items-center gap-2 rounded-control border border-primary/20 bg-primary-soft px-3 text-sm font-semibold !text-primary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            href={`/portal/requests/new#category-${category}`}
             locale={locale}
           >
-            →
+            {text.newRequest} <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
@@ -344,10 +362,12 @@ export function CustomerPortalOverview({
     totalPaid: financials.reduce((total, financial) => total + financial.totalPaid, 0),
     totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
   } : null;
+  const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured));
+  const heroImage = featuredCategories.flatMap((group) => group.items).find((service) => service.portalImagePath)?.portalImagePath ?? null;
 
   return (
     <div className="space-y-9 sm:space-y-10">
-      <section className="overflow-hidden rounded-card border border-primary/15 bg-white shadow-card">
+      <section className="overflow-hidden rounded-[1.5rem] border border-primary/15 bg-white shadow-luxury">
         <div className="grid lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.55fr)]">
           <div className="p-5 sm:p-7 lg:p-9">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
@@ -430,8 +450,10 @@ export function CustomerPortalOverview({
             )}
           </div>
 
-          <div className="hidden min-h-80 items-center justify-center border-l border-primary/10 bg-[radial-gradient(circle_at_top_right,#dcebe4,transparent_58%),linear-gradient(145deg,var(--color-primary-soft),#fbfcfb)] text-primary lg:flex" data-portal-media-slot>
-            <div className="flex h-28 w-28 items-center justify-center rounded-full border border-primary/15 bg-white/70 shadow-card">
+          <div className="relative hidden min-h-80 items-center justify-center overflow-hidden border-l border-primary/10 bg-[radial-gradient(circle_at_top_right,#dcebe4,transparent_58%),linear-gradient(145deg,var(--color-primary-soft),#fbfcfb)] text-primary lg:flex" data-portal-media-slot>
+            {heroImage ? <img alt="" className="absolute inset-0 h-full w-full object-cover" src={heroImage} /> : null}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/45 via-primary/5 to-transparent" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-white/45 bg-white/80 shadow-card backdrop-blur">
               <svg aria-hidden="true" className="h-14 w-14" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
             </div>
           </div>
@@ -448,8 +470,9 @@ export function CustomerPortalOverview({
               [text.finance.totalPaid, formatCurrency(accountSummary.totalPaid, summaryCurrency, locale)],
               [text.finance.balanceDue, formatCurrency(accountSummary.balanceDue, summaryCurrency, locale)],
             ].map(([label, value]) => (
-              <div className="rounded-card border border-border bg-white p-4" key={label}>
-                <dt className="text-sm text-muted">{label}</dt>
+              <div className="relative overflow-hidden rounded-card border border-border bg-white p-4 shadow-[0_6px_20px_rgb(15_59_46_/_0.035)]" key={label}>
+                <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-secondary/70" />
+                <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">{label}</dt>
                 <dd className="mt-2 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{value}</dd>
               </div>
             ))}
@@ -498,10 +521,10 @@ export function CustomerPortalOverview({
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{text.servicesDiscovery}</h2>
           <p className="mt-1.5 text-sm leading-6 text-muted">{text.servicesDescription}</p>
         </div>
-        {services.length > 0 ? (
+        {featuredCategories.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {services.slice(0, 6).map((service) => (
-              <ServiceCard key={service.id} locale={locale} service={service} text={text} />
+            {featuredCategories.slice(0, 6).map(({ category, items }) => (
+              <CategoryCard category={category} key={category} locale={locale} services={items} text={text} />
             ))}
           </div>
         ) : (
@@ -535,8 +558,12 @@ export function CustomerPortalOrderList({
   text,
 }: PortalOrderListProps) {
   return (
-    <div className="space-y-5">
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.orders}</h1>
+    <div className="space-y-6">
+      <header className="rounded-[1.5rem] border border-primary/10 bg-[linear-gradient(135deg,var(--color-primary-soft),white)] p-5 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{text.history}</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.orders}</h1>
+        <p className="mt-2 text-sm text-muted">{orders.length} {text.orders.toLocaleLowerCase()}</p>
+      </header>
       {orders.length === 0 ? (
         <p className="rounded-card border border-border bg-white p-4 text-sm text-muted">{text.emptyOrders}</p>
       ) : (
@@ -558,8 +585,8 @@ export function CustomerPortalOrderDetail({
   text,
 }: PortalOrderDetailProps) {
   return (
-    <div className="space-y-6">
-      <section className="rounded-card border border-primary/15 bg-white p-5 shadow-card lg:p-6">
+    <div className="space-y-7">
+      <section className="overflow-hidden rounded-[1.5rem] border border-primary/15 bg-[linear-gradient(135deg,var(--color-primary-soft),white)] p-5 shadow-card lg:p-7">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
           {order.orderNumber}
         </p>
@@ -578,25 +605,25 @@ export function CustomerPortalOrderDetail({
         </dl>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
         <h3 className="text-xl font-semibold text-primary">{text.items}</h3>
-        <Card className="space-y-3">
+        <div className="space-y-3">
           {order.items.map((item) => (
             <div className="border-b border-border pb-3 last:border-b-0 last:pb-0" key={item.id}>
               <p className="font-semibold text-primary">{item.description}</p>
-              <p className="text-sm text-muted">{formatQuantity(item.quantity, locale)} · {item.unitType}</p>
+              <p className="text-sm text-muted">{formatQuantity(item.quantity, locale)} · {text.unitTypes[item.unitType]}</p>
             </div>
           ))}
-        </Card>
+        </div>
       </section>
 
       {order.financial ? (
-        <section className="space-y-4">
+        <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-semibold text-foreground">{text.finance.title}</h2>
             <PaymentStatusBadge status={order.financial.paymentStatus} text={text.finance} />
           </div>
-          <Card className="!p-4 sm:!p-5">
+          <div>
             <dl className="grid grid-cols-2 gap-x-5 gap-y-4 text-sm sm:grid-cols-4">
               <div>
                 <dt className="text-muted">{text.finance.subtotal}</dt>
@@ -621,11 +648,11 @@ export function CustomerPortalOrderDetail({
                 <dd className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{formatCurrency(order.financial.totalDue, order.financial.currency, locale)}</dd>
               </div>
             </dl>
-          </Card>
+          </div>
         </section>
       ) : null}
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
         <h2 className="text-xl font-semibold text-foreground">{text.finance.payments}</h2>
         {order.payments.length === 0 ? (
           <p className="rounded-card border border-dashed border-border bg-white p-5 text-sm leading-6 text-muted">{text.finance.paymentsEmpty}</p>
@@ -651,17 +678,17 @@ export function CustomerPortalOrderDetail({
         )}
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
         <h3 className="text-xl font-semibold text-primary">{text.pickup} / {text.delivery}</h3>
         <LogisticsSummary fulfillmentLabels={fulfillmentLabels} logistics={order.logistics} locale={locale} text={text} />
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
         <h3 className="text-xl font-semibold text-primary">{text.photos}</h3>
         <PhotoGrid photos={order.photos} text={text} />
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-card border border-border bg-white p-5 shadow-[0_8px_28px_rgb(15_59_46_/_0.04)] sm:p-6">
         <h3 className="text-xl font-semibold text-primary">{text.history}</h3>
         {order.history.length === 0 ? (
           <p className="rounded-card border border-border bg-white p-4 text-sm text-muted">{text.history}</p>

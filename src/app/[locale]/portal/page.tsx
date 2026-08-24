@@ -20,12 +20,13 @@ export default async function CustomerPortalPage({
   params,
 }: CustomerPortalPageProps) {
   const { locale } = await params;
-  const [access, orders, nextTask, options, t] = await Promise.all([
+  const [access, orders, nextTask, options, t, catalogT] = await Promise.all([
     requireCustomerPortalAccess(locale),
     listCustomerPortalOrders(locale),
     getNextCustomerPortalTask(locale),
     getCustomerPortalOrderRequestOptions(locale),
     getTranslations({ locale, namespace: "common.portal" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const activeOrders = orders.filter((order) => !["completed", "cancelled"].includes(order.productionStatus));
@@ -64,7 +65,9 @@ export default async function CustomerPortalPage({
           greeting: t("greeting"),
           history: t("history"),
           historyLink: t("historyLink"),
-          fromPrice: t("fromPrice"),
+          categoryDescription: catalogT("categoryDescription"),
+          categoryLabels: catalogT.raw("categories") as Record<string, string>,
+          fromPrice: catalogT("fromPrice"),
           inDelivery: t("inDelivery"),
           newRequest: t("request.nav"),
           noActiveOrdersDescription: t("noActiveOrdersDescription"),
@@ -82,9 +85,9 @@ export default async function CustomerPortalPage({
           servicesDescription: t("servicesDescription"),
           servicesDiscovery: t("servicesDiscovery"),
           servicesEmpty: t("servicesEmpty"),
-          servicePerPiece: t("request.perPiece"),
-          servicePerWeight: t("request.perWeight"),
+          servicesCount: catalogT("servicesCount"),
           status: t("status"),
+          unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
           viewOrder: t("viewOrder"),
         }}
       />

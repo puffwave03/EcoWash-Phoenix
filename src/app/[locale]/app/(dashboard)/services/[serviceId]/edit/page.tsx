@@ -12,9 +12,10 @@ type EditServicePageProps = {
 export default async function EditServicePage({ params }: EditServicePageProps) {
   const { locale, serviceId } = await params;
   await requireOwnerOrManager(locale);
-  const [service, t] = await Promise.all([
+  const [service, t, catalogT] = await Promise.all([
     getServiceById(locale, serviceId),
     getTranslations({ locale, namespace: "common.services.form" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
 
   return (
@@ -31,13 +32,12 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
           description: t("description"),
           error: t("error"),
           name: t("name"),
-          piece: t("unitTypes.piece"),
           save: t("save"),
           saving: t("saving"),
           unitType: t("unitType"),
           validFrom: t("validFrom"),
           validTo: t("validTo"),
-          weight: t("unitTypes.weight"),
+          unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
         }}
       />
     </Card>

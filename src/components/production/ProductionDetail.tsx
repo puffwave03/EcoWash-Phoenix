@@ -8,6 +8,7 @@ import type {
   ProductionTask,
   ProductionUrgency,
 } from "@/features/production/types";
+import type { ServiceUnitType } from "@/features/services/types";
 import { formatQuantity } from "@/lib/number-format";
 
 export type ProductionDetailText = {
@@ -27,7 +28,6 @@ export type ProductionDetailText = {
   notes: string;
   openOrder: string;
   order: string;
-  piece: string;
   priorities: Record<OrderPriority, string>;
   priority: string;
   property: string;
@@ -37,7 +37,7 @@ export type ProductionDetailText = {
   statuses: Record<ProductionStatus, string>;
   title: string;
   urgencies: Record<ProductionUrgency, string>;
-  weight: string;
+  units: Record<ServiceUnitType, string>;
   workflow: string;
 };
 
@@ -173,7 +173,7 @@ export function ProductionDetail({
                     <div className="flex items-start justify-between gap-3">
                       <h4 className="text-sm font-semibold text-primary">{item.description}</h4>
                       <span className="shrink-0 text-sm font-semibold text-foreground">
-                        {formatQuantity(item.quantity, locale)} {item.unitType === "weight" ? text.weight : text.piece}
+                        {formatQuantity(item.quantity, locale)} {text.units[item.unitType]}
                       </span>
                     </div>
                     {item.notes ? <p className="mt-2 text-sm leading-5 text-muted">{item.notes}</p> : null}

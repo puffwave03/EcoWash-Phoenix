@@ -13,18 +13,20 @@ type OrderItemsText = {
   edit: string;
   error: string;
   lineTotal: string;
-  piece: string;
+  categoryLabels: Record<string, string>;
   quantity: string;
   remove: string;
   removing: string;
   saveEdit: string;
   saving: string;
+  search: string;
+  searchPlaceholder: string;
   service: string;
   subtotal: string;
   total: string;
   unitPrice: string;
   unitType: string;
-  weight: string;
+  unitTypes: Record<Service["unitType"], string>;
 };
 
 export function OrderItems({
@@ -59,7 +61,7 @@ export function OrderItems({
               <p className="text-sm font-semibold text-primary">{item.description}</p>
               <p className="flex items-center justify-between gap-3 text-sm text-muted md:block">
                 <span className="font-medium md:hidden">{text.quantity}</span>
-                <span>{formatQuantity(item.quantity, locale)} {item.unitType}</span>
+                <span>{formatQuantity(item.quantity, locale)} {text.unitTypes[item.unitType]}</span>
               </p>
               <p className="flex items-center justify-between gap-3 text-sm text-muted md:block">
                 <span className="font-medium md:hidden">{text.unitPrice}</span>
@@ -92,6 +94,7 @@ export function OrderItems({
                   <OrderItemForm
                     action={onSave}
                     item={item}
+                    locale={locale}
                     onCancel={() => setEditingItemId(null)}
                     onSuccess={() => setEditingItemId(null)}
                     services={services}
@@ -101,13 +104,15 @@ export function OrderItems({
                       description: text.description,
                       error: text.error,
                       notes: "",
-                      piece: text.piece,
+                      categoryLabels: text.categoryLabels,
                       quantity: text.quantity,
                       saving: text.saving,
+                      search: text.search,
+                      searchPlaceholder: text.searchPlaceholder,
                       service: text.service,
                       unitPrice: text.unitPrice,
                       unitType: text.unitType,
-                      weight: text.weight,
+                      unitTypes: text.unitTypes,
                     }}
                   />
                 </div>

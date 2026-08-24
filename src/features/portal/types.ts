@@ -124,6 +124,9 @@ export type CustomerPortalOrderService = {
   description: string | null;
   id: string;
   name: string;
+  portalFeatured: boolean;
+  portalImagePath: string | null;
+  priceIsFrom: boolean;
   unitType: ServiceUnitType;
 };
 

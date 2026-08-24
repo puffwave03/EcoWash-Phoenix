@@ -9,9 +9,10 @@ type ProductionDetailPageProps = {
 
 export default async function ProductionDetailPage({ params }: ProductionDetailPageProps) {
   const { locale, orderId } = await params;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT] = await Promise.all([
     getProductionWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.production" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
 
   return (
@@ -38,7 +39,6 @@ export default async function ProductionDetailPage({ params }: ProductionDetailP
         notes: t("detail.notes"),
         openOrder: t("detail.openOrder"),
         order: t("order"),
-        piece: t("units.piece"),
         priorities: t.raw("priorities"),
         priority: t("priority"),
         property: t("property"),
@@ -48,7 +48,7 @@ export default async function ProductionDetailPage({ params }: ProductionDetailP
         statuses: t.raw("statuses"),
         title: t("detail.title"),
         urgencies: t.raw("urgencies"),
-        weight: t("units.weight"),
+        units: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
         workflow: t("detail.workflow"),
       }}
       timeZone={timeZone}

@@ -52,6 +52,7 @@ export function parseServiceForm(formData: FormData) {
     description: text(formData, "description", 600),
     isActive: formData.get("isActive") !== "false",
     name,
+    priceIsFrom: formData.get("priceIsFrom") === "true",
     unitType: isUnitType(unitType) ? unitType : "piece",
     validFrom,
     validTo,

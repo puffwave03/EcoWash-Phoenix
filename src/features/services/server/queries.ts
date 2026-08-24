@@ -16,18 +16,20 @@ type ServiceRow = {
   price: {
     amount: number;
     currency: string;
+    is_from: boolean;
     valid_from: string;
     valid_to: string | null;
   } | {
     amount: number;
     currency: string;
+    is_from: boolean;
     valid_from: string;
     valid_to: string | null;
   }[] | null;
 };
 
 const SERVICE_SELECT =
-  "id, code, name, description, unit_type, category, is_active, price:service_prices(amount, currency, valid_from, valid_to)";
+  "id, code, name, description, unit_type, category, is_active, price:service_prices(amount, currency, is_from, valid_from, valid_to)";
 
 function currentDateInTimeZone(timeZone: string) {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -67,6 +69,7 @@ function mapService(row: ServiceRow): Service {
     id: row.id,
     isActive: row.is_active,
     name: row.name,
+    priceIsFrom: price?.is_from ?? false,
     unitType: row.unit_type,
     validFrom: price?.valid_from ?? null,
     validTo: price?.valid_to ?? null,
@@ -93,7 +96,7 @@ export async function listServices(
     .limit(1, { referencedTable: "price" })
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true })
-    .limit(100);
+    .limit(500);
 
   if (status !== "all") query = query.eq("is_active", status === "active");
 

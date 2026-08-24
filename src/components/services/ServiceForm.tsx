@@ -13,13 +13,12 @@ type ServiceFormText = {
   description: string;
   error: string;
   name: string;
-  piece: string;
+  unitTypes: Record<Service["unitType"], string>;
   save: string;
   saving: string;
   unitType: string;
   validFrom: string;
   validTo: string;
-  weight: string;
 };
 
 type ServiceFormProps = {
@@ -63,8 +62,7 @@ export function ServiceForm({ action, service, text }: ServiceFormProps) {
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.unitType}</span>
           <select className={fieldClass(Boolean(state.fieldErrors.unitType))} defaultValue={service?.unitType ?? "piece"} name="unitType">
-            <option value="piece">{text.piece}</option>
-            <option value="weight">{text.weight}</option>
+            {Object.entries(text.unitTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
@@ -95,6 +93,7 @@ export function ServiceForm({ action, service, text }: ServiceFormProps) {
       </label>
 
       <input name="isActive" type="hidden" value={service?.isActive === false ? "false" : "true"} />
+      <input name="priceIsFrom" type="hidden" value={service?.priceIsFrom ? "true" : "false"} />
 
       <Button disabled={isPending} type="submit">
         {isPending ? text.saving : text.save}

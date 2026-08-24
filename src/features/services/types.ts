@@ -1,4 +1,4 @@
-export const SERVICE_UNIT_TYPES = ["weight", "piece"] as const;
+export const SERVICE_UNIT_TYPES = ["piece", "weight", "area", "cycle", "service", "day"] as const;
 export const SERVICE_STATUS_FILTERS = ["all", "active", "inactive"] as const;
 
 export type ServiceUnitType = (typeof SERVICE_UNIT_TYPES)[number];
@@ -13,10 +13,15 @@ export type Service = {
   id: string;
   isActive: boolean;
   name: string;
+  priceIsFrom: boolean;
   unitType: ServiceUnitType;
   validFrom: string | null;
   validTo: string | null;
 };
+
+export function isDiscreteServiceUnit(unitType: ServiceUnitType) {
+  return unitType === "piece" || unitType === "cycle" || unitType === "service" || unitType === "day";
+}
 
 export type ServiceFormInput = {
   amount: number;
@@ -26,6 +31,7 @@ export type ServiceFormInput = {
   description: string;
   isActive: boolean;
   name: string;
+  priceIsFrom: boolean;
   unitType: ServiceUnitType;
   validFrom: string;
   validTo: string;
