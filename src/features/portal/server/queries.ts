@@ -127,7 +127,10 @@ type PortalOrderingContextRow = {
 type PortalOrderServiceRow = {
   amount: number;
   category: string | null;
+  category_featured: boolean;
+  category_title: string | null;
   currency: string;
+  customer_orderable: boolean;
   description: string | null;
   id: string;
   name: string;
@@ -429,12 +432,19 @@ export async function getCustomerPortalOrderRequestOptions(
     services: ((servicesResult.data ?? []) as PortalOrderServiceRow[]).map((service) => ({
       amount: Number(service.amount),
       category: service.category,
+      categoryFeatured: service.category_featured,
+      categoryTitle: service.category_title,
       currency: service.currency,
+      customerOrderable: service.customer_orderable,
       description: service.description,
       id: service.id,
       name: service.name,
       portalFeatured: service.portal_featured,
-      portalImagePath: service.portal_image_path,
+      portalImagePath: service.portal_image_path?.startsWith("/")
+        ? service.portal_image_path
+        : service.portal_image_path
+          ? supabase.storage.from("brand-media").getPublicUrl(service.portal_image_path).data.publicUrl
+          : null,
       priceIsFrom: service.price_is_from,
       unitType: service.unit_type,
     })),

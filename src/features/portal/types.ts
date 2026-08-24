@@ -120,7 +120,10 @@ export type CustomerPortalOrderingContext = {
 export type CustomerPortalOrderService = {
   amount: number;
   category: string | null;
+  categoryFeatured: boolean;
+  categoryTitle: string | null;
   currency: string;
+  customerOrderable: boolean;
   description: string | null;
   id: string;
   name: string;

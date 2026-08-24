@@ -109,6 +109,7 @@ export default async function CustomerOrderRequestPage({
               noServicesMatch: catalogT("noServicesMatch"),
               categoryLabels: catalogT.raw("categories") as Record<string, string>,
               fromPrice: catalogT("fromPrice"),
+              informationOnly: catalogT("informationOnly"),
               pickupHelp: t("request.pickupHelp"),
               property: t("request.property"),
               quantity: t("request.quantity"),

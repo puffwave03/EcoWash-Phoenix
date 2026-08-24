@@ -8,6 +8,7 @@ import type { DashboardAccess } from "@/lib/auth/types";
 type DashboardShellText = {
   alerts: string;
   branding: string;
+  catalogAdmin: string;
   controlCenter: string;
   controlGroup: string;
   dailyClose: string;
@@ -107,6 +108,7 @@ export function DashboardShell({
               text={{
                 alerts: text.alerts,
                 branding: text.branding,
+                catalogAdmin: text.catalogAdmin,
                 controlCenter: text.controlCenter,
                 controlGroup: text.controlGroup,
                 customers: text.customers,
@@ -168,6 +170,7 @@ export function DashboardShell({
             text={{
               alerts: text.alerts,
               branding: text.branding,
+              catalogAdmin: text.catalogAdmin,
               controlCenter: text.controlCenter,
               controlGroup: text.controlGroup,
               customers: text.customers,
@@ -204,6 +207,7 @@ export function DashboardShell({
         text={{
           alerts: text.alerts,
           branding: text.branding,
+          catalogAdmin: text.catalogAdmin,
           controlCenter: text.controlCenter,
           controlGroup: text.controlGroup,
           customers: text.customers,

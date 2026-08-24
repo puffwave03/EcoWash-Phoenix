@@ -9,6 +9,7 @@ import type { AppRole } from "@/lib/auth/types";
 type AppNavigationText = {
   alerts: string;
   branding: string;
+  catalogAdmin: string;
   controlCenter: string;
   controlGroup: string;
   customers: string;
@@ -145,6 +146,7 @@ export function AppNavigation({
           items: [
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
             { href: "/app/services", label: text.services, match: "/app/services" },
+            { href: "/app/settings/catalog", label: text.catalogAdmin, match: "/app/settings/catalog" },
             ...(role === "owner"
               ? [
                   { href: "/app/staff", label: text.staff, match: "/app/staff" },
@@ -249,6 +251,17 @@ export function AppNavigation({
                         locale={locale}
                       >
                         {text.branding}<span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                  ) : null}
+                  {isControlRole ? (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <Link
+                        className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        href="/app/settings/catalog"
+                        locale={locale}
+                      >
+                        {text.catalogAdmin}<span aria-hidden="true">→</span>
                       </Link>
                     </div>
                   ) : null}

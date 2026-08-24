@@ -91,6 +91,7 @@ type PortalOverviewProps = {
     greeting: string;
     historyLink: string;
     inDelivery: string;
+    informationOnly: string;
     newRequest: string;
     promotion: string;
     noActiveOrdersDescription: string;
@@ -239,7 +240,7 @@ function CategoryCard({
   text: PortalOverviewProps["text"];
 }) {
   const lowestPrice = services.reduce((lowest, service) => service.amount < lowest.amount ? service : lowest);
-  const label = catalogCategoryLabel(category, text.categoryLabels);
+  const label = services[0]?.categoryTitle || catalogCategoryLabel(category, text.categoryLabels);
   const categoryMedia = portalCategoryMedia(category, media);
   const fallbackImagePath = services.find((service) => service.portalImagePath)?.portalImagePath ?? null;
 
@@ -270,14 +271,16 @@ function CategoryCard({
             {services.length > 1 || lowestPrice.priceIsFrom ? `${text.fromPrice} ` : ""}<strong className="text-base text-primary">{formatCurrency(lowestPrice.amount, lowestPrice.currency, locale)}</strong>{" "}
             <span>/ {text.unitTypes[lowestPrice.unitType]}</span>
           </p>
-          <Link
-            aria-label={`${text.newRequest}: ${label}`}
-            className="inline-flex min-h-11 items-center gap-2 rounded-control border border-primary/20 bg-primary-soft px-3 text-sm font-semibold !text-primary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            href={`/portal/requests/new#category-${category}`}
-            locale={locale}
-          >
-            {text.newRequest} <span aria-hidden="true">→</span>
-          </Link>
+          {services.some((service) => service.customerOrderable) ? (
+            <Link
+              aria-label={`${text.newRequest}: ${label}`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-control border border-primary/20 bg-primary-soft px-3 text-sm font-semibold !text-primary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              href={`/portal/requests/new#category-${category}`}
+              locale={locale}
+            >
+              {text.newRequest} <span aria-hidden="true">→</span>
+            </Link>
+          ) : <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">{text.informationOnly}</span>}
         </div>
       </div>
     </article>
@@ -389,7 +392,7 @@ export function CustomerPortalOverview({
     totalPaid: financials.reduce((total, financial) => total + financial.totalPaid, 0),
     totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
   } : null;
-  const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured));
+  const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured || service.categoryFeatured));
   const heroMedia = currentTask ? media.logistics : media.hero;
 
   return (

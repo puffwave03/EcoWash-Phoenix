@@ -50,6 +50,7 @@ type CustomerOrderRequestText = {
   noServicesMatch: string;
   categoryLabels: Record<string, string>;
   fromPrice: string;
+  informationOnly: string;
   pickupHelp: string;
   property: string;
   quantity: string;
@@ -375,7 +376,7 @@ export function CustomerOrderRequestForm({
                     if (category !== "all") setOpenCategories((current) => new Set(current).add(category));
                   }} value={categoryFilter}>
                     <option value="all">{text.allCategories}</option>
-                    {categoryGroups.map(({ category }) => <option key={category} value={category}>{catalogCategoryLabel(category, text.categoryLabels)}</option>)}
+                    {categoryGroups.map(({ category, items }) => <option key={category} value={category}>{items[0]?.categoryTitle || catalogCategoryLabel(category, text.categoryLabels)}</option>)}
                   </select>
                 </label>
               </div>
@@ -408,7 +409,7 @@ export function CustomerOrderRequestForm({
                       src={categoryMedia?.path ?? fallbackImagePath}
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-base font-semibold text-foreground sm:text-lg">{catalogCategoryLabel(category, text.categoryLabels)}</span>
+                      <span className="block text-base font-semibold text-foreground sm:text-lg">{items[0]?.categoryTitle || catalogCategoryLabel(category, text.categoryLabels)}</span>
                       <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted sm:text-sm">
                         <span>{items.length} {text.servicesCount}</span>
                         <span>{items.length > 1 || lowestPrice.priceIsFrom ? `${text.fromPrice} ` : ""}{formatCurrency(lowestPrice.amount, lowestPrice.currency, locale)} / {text.unitTypes[lowestPrice.unitType]}</span>
@@ -432,14 +433,16 @@ export function CustomerOrderRequestForm({
                                   <h4 className="font-semibold leading-5 text-foreground">{service.name}</h4>
                                   {service.description ? <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{service.description}</p> : null}
                                 </div>
-                                <button
-                                  aria-pressed={selected}
-                                  className={`inline-flex min-h-10 shrink-0 items-center rounded-control border px-3 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selected ? "border-primary bg-primary !text-white" : "border-primary/25 bg-primary-soft !text-primary hover:border-primary"}`}
-                                  onClick={() => toggleService(service, !selected)}
-                                  type="button"
-                                >
-                                  {selected ? text.remove : text.add}
-                                </button>
+                                {service.customerOrderable ? (
+                                  <button
+                                    aria-pressed={selected}
+                                    className={`inline-flex min-h-10 shrink-0 items-center rounded-control border px-3 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selected ? "border-primary bg-primary !text-white" : "border-primary/25 bg-primary-soft !text-primary hover:border-primary"}`}
+                                    onClick={() => toggleService(service, !selected)}
+                                    type="button"
+                                  >
+                                    {selected ? text.remove : text.add}
+                                  </button>
+                                ) : <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">{text.informationOnly}</span>}
                               </div>
                               <p className="mt-auto pt-4 text-lg font-semibold text-primary">
                                 {service.priceIsFrom ? `${text.fromPrice} ` : ""}{formatCurrency(service.amount, service.currency, locale)} <span className="text-sm font-medium text-muted">/ {text.unitTypes[service.unitType]}</span>
@@ -571,7 +574,7 @@ export function CustomerOrderRequestForm({
         </div>
         <Button
           className="w-full lg:w-auto lg:min-w-56"
-          disabled={services.length === 0 || properties.length === 0}
+          disabled={!services.some((service) => service.customerOrderable) || properties.length === 0}
           onClick={validateReview}
           type="button"
         >

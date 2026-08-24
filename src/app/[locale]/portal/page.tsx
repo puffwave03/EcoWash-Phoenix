@@ -74,6 +74,7 @@ export default async function CustomerPortalPage({
           categoryLabels: catalogT.raw("categories") as Record<string, string>,
           fromPrice: catalogT("fromPrice"),
           inDelivery: t("inDelivery"),
+          informationOnly: catalogT("informationOnly"),
           newRequest: t("request.nav"),
           promotion: t("promotion"),
           noActiveOrdersDescription: t("noActiveOrdersDescription"),

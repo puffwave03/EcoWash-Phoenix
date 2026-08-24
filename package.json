@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
+    "test:catalog": "node --test tests/catalog-admin-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"
   },

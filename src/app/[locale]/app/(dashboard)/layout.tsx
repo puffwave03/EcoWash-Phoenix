@@ -32,6 +32,7 @@ export default async function DashboardLayout({
       text={{
         alerts: t("alerts"),
         branding: t("branding"),
+        catalogAdmin: t("catalogAdmin"),
         controlCenter: t("controlCenter"),
         controlGroup: t("controlGroup"),
         dailyClose: t("dailyClose"),
