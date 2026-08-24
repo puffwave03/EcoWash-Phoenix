@@ -130,7 +130,16 @@ export type CustomerPortalOrderService = {
   portalFeatured: boolean;
   portalImagePath: string | null;
   priceIsFrom: boolean;
+  segmentFeatured: boolean;
+  segmentMatch: boolean;
+  segmentSortOrder: number;
   unitType: ServiceUnitType;
+};
+
+export type CustomerPortalSegment = {
+  description: string | null;
+  id: string;
+  name: string;
 };
 
 export type CustomerPortalOrderProperty = {
@@ -149,6 +158,7 @@ export type CustomerPortalOrderProperty = {
 export type CustomerPortalOrderRequestOptions = {
   context: CustomerPortalOrderingContext | null;
   properties: CustomerPortalOrderProperty[];
+  segment: CustomerPortalSegment | null;
   services: CustomerPortalOrderService[];
 };
 

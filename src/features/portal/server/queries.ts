@@ -137,6 +137,12 @@ type PortalOrderServiceRow = {
   portal_featured: boolean;
   portal_image_path: string | null;
   price_is_from: boolean;
+  segment_description: string | null;
+  segment_featured: boolean;
+  segment_id: string | null;
+  segment_match: boolean;
+  segment_name: string | null;
+  segment_sort_order: number;
   unit_type: CustomerPortalOrderRequestOptions["services"][number]["unitType"];
 };
 
@@ -410,6 +416,9 @@ export async function getCustomerPortalOrderRequestOptions(
   if (servicesResult.error) console.error("Portal ordering services failed", servicesResult.error.code);
   if (propertiesResult.error) console.error("Portal ordering properties failed", propertiesResult.error.code);
 
+  const serviceRows = (servicesResult.data ?? []) as PortalOrderServiceRow[];
+  const segmentRow = serviceRows.find((service) => service.segment_id && service.segment_name) ?? null;
+
   return {
     context: contextResult.data
       ? {
@@ -429,7 +438,14 @@ export async function getCustomerPortalOrderRequestOptions(
       name: property.name,
       postalCode: property.postal_code,
     })),
-    services: ((servicesResult.data ?? []) as PortalOrderServiceRow[]).map((service) => ({
+    segment: segmentRow?.segment_id && segmentRow.segment_name
+      ? {
+          description: segmentRow.segment_description,
+          id: segmentRow.segment_id,
+          name: segmentRow.segment_name,
+        }
+      : null,
+    services: serviceRows.map((service) => ({
       amount: Number(service.amount),
       category: service.category,
       categoryFeatured: service.category_featured,
@@ -446,6 +462,9 @@ export async function getCustomerPortalOrderRequestOptions(
           ? supabase.storage.from("brand-media").getPublicUrl(service.portal_image_path).data.publicUrl
           : null,
       priceIsFrom: service.price_is_from,
+      segmentFeatured: service.segment_featured,
+      segmentMatch: service.segment_match,
+      segmentSortOrder: service.segment_sort_order,
       unitType: service.unit_type,
     })),
   };

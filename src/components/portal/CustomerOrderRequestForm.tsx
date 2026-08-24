@@ -19,6 +19,7 @@ import type {
   CustomerPortalOrderProperty,
   CustomerPortalOrderRequestState,
   CustomerPortalOrderService,
+  CustomerPortalSegment,
 } from "@/features/portal/types";
 import { catalogCategoryLabel, groupServicesByCategory } from "@/features/services/catalog";
 import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
@@ -62,6 +63,9 @@ type CustomerOrderRequestText = {
   searchPlaceholder: string;
   selectProperty: string;
   serviceSelection: string;
+  segmentServices: string;
+  segmentServicesDescription: string;
+  completeCatalog: string;
   servicesCount: string;
   servicesSelected: string;
   submitting: string;
@@ -79,6 +83,7 @@ type CustomerOrderRequestFormProps = {
   minimumPickupAt: string;
   properties: CustomerPortalOrderProperty[];
   requestId: string;
+  segment: CustomerPortalSegment | null;
   services: CustomerPortalOrderService[];
   text: CustomerOrderRequestText;
   timeZone: string;
@@ -119,6 +124,7 @@ export function CustomerOrderRequestForm({
   minimumPickupAt,
   properties,
   requestId,
+  segment,
   services,
   text,
   timeZone,
@@ -134,6 +140,10 @@ export function CustomerOrderRequestForm({
   const [serviceSearch, setServiceSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const categoryGroups = useMemo(() => groupServicesByCategory(services), [services]);
+  const segmentServices = useMemo(() => services
+    .filter((service) => service.segmentMatch)
+    .sort((left, right) => Number(right.segmentFeatured) - Number(left.segmentFeatured)
+      || left.segmentSortOrder - right.segmentSortOrder), [services]);
   const [openCategories, setOpenCategories] = useState<Set<string>>(
     () => new Set(categoryGroups.slice(0, 1).map((group) => group.category)),
   );
@@ -359,6 +369,39 @@ export function CustomerOrderRequestForm({
           </p>
         ) : (
           <div className="space-y-4">
+            {segment && segmentServices.length > 0 ? (
+              <section className="space-y-4 rounded-[1.5rem] border border-primary/15 bg-primary-soft/40 p-4 sm:p-5" aria-labelledby="portal-segment-request-services">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.1em] text-secondary">{segment.name}</p>
+                  <h3 className="mt-1 text-xl font-semibold text-primary" id="portal-segment-request-services">{text.segmentServices}</h3>
+                  <p className="mt-1 text-sm leading-6 text-muted">{segment.description || text.segmentServicesDescription}</p>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {segmentServices.map((service) => {
+                    const selected = service.id in quantities;
+                    return (
+                      <article className={`rounded-card border bg-white p-4 ${selected ? "border-primary ring-1 ring-primary/15" : "border-border"}`} key={service.id}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-foreground">{service.name}</h4>
+                            <p className="mt-1 text-sm font-semibold text-primary">{service.priceIsFrom ? `${text.fromPrice} ` : ""}{formatCurrency(service.amount, service.currency, locale)} / {text.unitTypes[service.unitType]}</p>
+                          </div>
+                          <button aria-pressed={selected} className={`min-h-10 shrink-0 rounded-control border px-3 text-sm font-semibold ${selected ? "border-primary bg-primary text-white" : "border-primary/25 bg-primary-soft text-primary"}`} onClick={() => toggleService(service, !selected)} type="button">{selected ? text.remove : text.add}</button>
+                        </div>
+                        {selected ? (
+                          <label className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm font-semibold text-primary">
+                            <span>{text.quantity}</span>
+                            <input className="min-h-10 w-24 rounded-control border border-border px-2 text-center" min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} onChange={(event) => setQuantities((current) => ({ ...current, [service.id]: event.target.value }))} step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} type="number" value={quantities[service.id]} />
+                          </label>
+                        ) : null}
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+
+            {segment && segmentServices.length > 0 ? <h3 className="pt-2 text-xl font-semibold text-primary">{text.completeCatalog}</h3> : null}
             <div className="sticky top-[4.5rem] z-20 -mx-1 rounded-card border border-border bg-white/95 p-3 shadow-card backdrop-blur sm:top-[5.5rem] sm:p-4">
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.45fr)]">
                 <label className="space-y-1.5 text-sm font-semibold text-primary">

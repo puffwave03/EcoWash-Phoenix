@@ -12,6 +12,7 @@ import type {
   CustomerPortalOrder,
   CustomerPortalOrderDetail,
   CustomerPortalOrderService,
+  CustomerPortalSegment,
 } from "@/features/portal/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import { catalogCategoryLabel, groupServicesByCategory } from "@/features/services/catalog";
@@ -78,6 +79,7 @@ type PortalOverviewProps = {
   media?: PortalMediaRegistry;
   nextTask: CustomerPortalNextTask | null;
   orders: CustomerPortalOrder[];
+  segment: CustomerPortalSegment | null;
   services: CustomerPortalOrderService[];
   statusLabels: StatusText;
   text: PortalCommonText & {
@@ -101,6 +103,8 @@ type PortalOverviewProps = {
     servicesDescription: string;
     servicesDiscovery: string;
     servicesEmpty: string;
+    servicesForYou: string;
+    servicesForYouDescription: string;
     servicesCount: string;
     supportDetails: string;
     visitWebsite: string;
@@ -372,6 +376,7 @@ export function CustomerPortalOverview({
   media = branding?.media ?? DEFAULT_PORTAL_MEDIA,
   nextTask,
   orders,
+  segment,
   services,
   statusLabels,
   text,
@@ -393,6 +398,15 @@ export function CustomerPortalOverview({
     totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
   } : null;
   const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured || service.categoryFeatured));
+  const segmentCategories = groupServicesByCategory(
+    services
+      .filter((service) => service.segmentMatch)
+      .sort((left, right) => Number(right.segmentFeatured) - Number(left.segmentFeatured)
+        || left.segmentSortOrder - right.segmentSortOrder),
+  ).sort((left, right) => (
+    Math.min(...left.items.map((service) => service.segmentSortOrder))
+    - Math.min(...right.items.map((service) => service.segmentSortOrder))
+  ));
   const heroMedia = currentTask ? media.logistics : media.hero;
 
   return (
@@ -499,6 +513,21 @@ export function CustomerPortalOverview({
 
         </div>
       </section>
+
+      {segment && segmentCategories.length > 0 ? (
+        <section className="space-y-4 rounded-[1.5rem] border border-primary/15 bg-primary-soft/35 p-5 sm:p-7" aria-labelledby="portal-segment-services">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-secondary">{segment.name}</p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl" id="portal-segment-services">{text.servicesForYou}</h2>
+            <p className="mt-1.5 text-sm leading-6 text-muted">{segment.description || text.servicesForYouDescription}</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {segmentCategories.slice(0, 6).map(({ category, items }) => (
+              <CategoryCard category={category} key={category} locale={locale} media={media} services={items} text={text} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {accountSummary && summaryCurrency ? (
         <section className="space-y-4" aria-labelledby="portal-account-summary">

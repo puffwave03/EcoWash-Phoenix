@@ -56,6 +56,7 @@ export default async function CustomerPortalPage({
         locale={locale}
         nextTask={nextTask}
         orders={orders}
+        segment={options.segment}
         services={options.services}
         statusLabels={statusLabels}
         text={{
@@ -92,6 +93,8 @@ export default async function CustomerPortalPage({
           servicesDescription: t("servicesDescription"),
           servicesDiscovery: t("servicesDiscovery"),
           servicesEmpty: t("servicesEmpty"),
+          servicesForYou: t("segments.servicesForYou"),
+          servicesForYouDescription: t("segments.servicesForYouDescription"),
           servicesCount: catalogT("servicesCount"),
           supportDetails: t("supportDetails"),
           status: t("status"),

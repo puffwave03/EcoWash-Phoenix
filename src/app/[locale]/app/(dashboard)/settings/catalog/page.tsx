@@ -7,6 +7,7 @@ import {
 } from "@/features/catalog-admin/server/actions";
 import { getCatalogAdminSettings } from "@/features/catalog-admin/server/queries";
 import type { ServiceUnitType } from "@/features/services/types";
+import { Link } from "@/i18n/navigation";
 
 type CatalogSettingsPageProps = { params: Promise<{ locale: string }> };
 
@@ -24,6 +25,7 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">{t("eyebrow")}</p>
         <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t("title")}</h1>
         <p className="text-base leading-7 text-muted">{t("description")}</p>
+        <Link className="inline-flex min-h-11 items-center text-sm font-semibold !text-primary hover:underline" href="/app/settings/catalog/segments" locale={locale}>{t("segmentsLink")} →</Link>
       </header>
       {settings.available ? (
         <CatalogManagement

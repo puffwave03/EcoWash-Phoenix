@@ -82,6 +82,7 @@ export default async function CustomerOrderRequestPage({
             minimumPickupAt={localDateTimeMinimum(options.context.timeZone)}
             properties={options.properties}
             requestId={randomUUID()}
+            segment={options.segment}
             services={options.services}
             text={{
               address: t("request.address"),
@@ -121,6 +122,9 @@ export default async function CustomerOrderRequestPage({
               searchPlaceholder: catalogT("searchPlaceholder"),
               selectProperty: t("request.selectProperty"),
               serviceSelection: t("request.serviceSelection"),
+              segmentServices: t("segments.frequentServices"),
+              segmentServicesDescription: t("segments.frequentServicesDescription"),
+              completeCatalog: t("segments.completeCatalog"),
               servicesCount: catalogT("servicesCount"),
               servicesSelected: catalogT.raw("servicesSelected") as string,
               submitting: t("request.submitting"),

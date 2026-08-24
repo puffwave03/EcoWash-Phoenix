@@ -6,6 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "test:catalog": "node --test tests/catalog-admin-contract.test.mjs",
+    "test:segments": "node --test tests/catalog-segments-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"
   },

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { CustomerPortalAccessPanel } from "@/components/customers/CustomerPortalAccessPanel";
+import { CustomerSegmentAssignmentPanel } from "@/components/customers/CustomerSegmentAssignmentPanel";
 import { DeactivateButton } from "@/components/customers/DeactivateButton";
 import { PropertyList } from "@/components/properties/PropertyList";
 import { Link } from "@/i18n/navigation";
@@ -17,6 +18,8 @@ import {
   manageCustomerPortalAccessAction,
 } from "@/features/portal/server/actions";
 import { getCustomerPortalAccessSummary } from "@/features/portal/server/queries";
+import { assignCustomerSegmentAction } from "@/features/catalog-segments/server/actions";
+import { getCustomerSegmentAssignment } from "@/features/catalog-segments/server/queries";
 import { createStagingCustomerPreviewPath } from "@/features/portal/server/preview";
 import { requireMembership } from "@/lib/auth/require-membership";
 
@@ -29,13 +32,14 @@ export default async function CustomerDetailPage({
 }: CustomerDetailPageProps) {
   const { customerId, locale } = await params;
   const t = await getTranslations({ locale, namespace: "common.customers" });
-  const [access, customer, portalAccess, properties] = await Promise.all([
-    requireMembership(locale),
+  const access = await requireMembership(locale);
+  const canManageCustomerPortal = access.membership.role === "owner" || access.membership.role === "manager";
+  const [customer, portalAccess, properties, segmentAssignment] = await Promise.all([
     getCustomerById(locale, customerId),
     getCustomerPortalAccessSummary(locale, customerId),
     listPropertiesByCustomer(locale, customerId),
+    canManageCustomerPortal ? getCustomerSegmentAssignment(locale, customerId) : Promise.resolve(null),
   ]);
-  const canManageCustomerPortal = access.membership.role === "owner" || access.membership.role === "manager";
   const previewUrl = access.membership.role === "owner"
     ? createStagingCustomerPreviewPath(locale, customer.id)
     : null;
@@ -76,44 +80,61 @@ export default async function CustomerDetailPage({
       </Card>
 
       {canManageCustomerPortal ? (
-        <CustomerPortalAccessPanel
-          access={portalAccess}
-          defaultEmail={customer.email}
-          inviteAction={inviteCustomerPortalAction.bind(null, locale, customer.id)}
-          locale={locale}
-          manageAction={manageCustomerPortalAccessAction.bind(null, locale, customer.id)}
-          previewUrl={previewUrl}
-          text={{
-            active: t("portal.active"),
-            accessDisabled: t("portal.accessDisabled"),
-            authUnavailable: t("portal.authUnavailable"),
-            configurationError: t("portal.configurationError"),
-            disable: t("portal.disable"),
-            disabled: t("portal.disabled"),
-            email: t("portal.email"),
-            emailDelivery: t("portal.emailDelivery"),
-            emailInvalid: t("portal.emailInvalid"),
-            enable: t("portal.enable"),
-            error: t("portal.error"),
-            invite: t("portal.invite"),
-            invitedAt: t("portal.invitedAt"),
-            lastSignIn: t("portal.lastSignIn"),
-            inviteError: t("portal.inviteError"),
-            membershipError: t("portal.membershipError"),
-            noLastSignIn: t("portal.noLastSignIn"),
-            pending: t("portal.pending"),
-            preview: t("portal.preview"),
-            rateLimit: t("portal.rateLimit"),
-            resend: t("portal.resend"),
-            resetPassword: t("portal.resetPassword"),
-            resetPasswordError: t("portal.resetPasswordError"),
-            resetPasswordSuccess: t("portal.resetPasswordSuccess"),
-            resendSuccess: t("portal.resendSuccess"),
-            success: t("portal.success"),
-            title: t("portal.title"),
-            unauthorized: t("portal.unauthorized"),
-          }}
-        />
+        <>
+          {segmentAssignment ? (
+            <CustomerSegmentAssignmentPanel
+              action={assignCustomerSegmentAction.bind(null, locale, customer.id)}
+              assignment={segmentAssignment}
+              text={{
+                description: t("segment.description"),
+                error: t("segment.error"),
+                none: t("segment.none"),
+                save: t("segment.save"),
+                saved: t("segment.saved"),
+                saving: t("segment.saving"),
+                title: t("segment.title"),
+              }}
+            />
+          ) : null}
+          <CustomerPortalAccessPanel
+            access={portalAccess}
+            defaultEmail={customer.email}
+            inviteAction={inviteCustomerPortalAction.bind(null, locale, customer.id)}
+            locale={locale}
+            manageAction={manageCustomerPortalAccessAction.bind(null, locale, customer.id)}
+            previewUrl={previewUrl}
+            text={{
+              active: t("portal.active"),
+              accessDisabled: t("portal.accessDisabled"),
+              authUnavailable: t("portal.authUnavailable"),
+              configurationError: t("portal.configurationError"),
+              disable: t("portal.disable"),
+              disabled: t("portal.disabled"),
+              email: t("portal.email"),
+              emailDelivery: t("portal.emailDelivery"),
+              emailInvalid: t("portal.emailInvalid"),
+              enable: t("portal.enable"),
+              error: t("portal.error"),
+              invite: t("portal.invite"),
+              invitedAt: t("portal.invitedAt"),
+              lastSignIn: t("portal.lastSignIn"),
+              inviteError: t("portal.inviteError"),
+              membershipError: t("portal.membershipError"),
+              noLastSignIn: t("portal.noLastSignIn"),
+              pending: t("portal.pending"),
+              preview: t("portal.preview"),
+              rateLimit: t("portal.rateLimit"),
+              resend: t("portal.resend"),
+              resetPassword: t("portal.resetPassword"),
+              resetPasswordError: t("portal.resetPasswordError"),
+              resetPasswordSuccess: t("portal.resetPasswordSuccess"),
+              resendSuccess: t("portal.resendSuccess"),
+              success: t("portal.success"),
+              title: t("portal.title"),
+              unauthorized: t("portal.unauthorized"),
+            }}
+          />
+        </>
       ) : null}
 
       <div className="flex items-center justify-between">
