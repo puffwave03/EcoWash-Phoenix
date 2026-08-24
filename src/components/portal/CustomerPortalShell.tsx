@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 
 type CustomerPortalShellText = {
   logout: string;
@@ -39,7 +40,7 @@ export function CustomerPortalShell({
           <nav aria-label={text.navigationLabel} className="flex flex-wrap items-center gap-2">
             {text.newRequest ? (
               <Link
-                className="inline-flex min-h-11 items-center rounded-control bg-primary px-3 text-sm font-semibold text-white transition-standard hover:bg-primary-strong"
+                className={`${operationalPrimaryActionClasses} !text-primary-strong sm:w-auto`}
                 href="/portal/requests/new"
                 locale={locale}
               >

@@ -29,6 +29,26 @@ type ServiceRow = {
 const SERVICE_SELECT =
   "id, code, name, description, unit_type, category, is_active, price:service_prices(amount, currency, valid_from, valid_to)";
 
+function currentDateInTimeZone(timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  }).formatToParts(new Date());
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value;
+  const year = value("year");
+  const month = value("month");
+  const day = value("day");
+
+  if (!year || !month || !day) {
+    throw new Error("Unable to resolve the organization date");
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
 function currentPrice(row: ServiceRow["price"]) {
   if (Array.isArray(row)) return row[0] ?? null;
 
@@ -59,10 +79,18 @@ export async function listServices(
 ): Promise<Service[]> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const currentDate = currentDateInTimeZone(membership.organization.timezone);
   let query = supabase
     .from("services")
     .select(SERVICE_SELECT)
     .eq("organization_id", membership.organization.id)
+    .eq("price.is_active", true)
+    .lte("price.valid_from", currentDate)
+    .or(`valid_to.is.null,valid_to.gte.${currentDate}`, { referencedTable: "price" })
+    .order("location_id", { ascending: true, nullsFirst: false, referencedTable: "price" })
+    .order("valid_from", { ascending: false, referencedTable: "price" })
+    .order("created_at", { ascending: false, referencedTable: "price" })
+    .limit(1, { referencedTable: "price" })
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true })
     .limit(100);
@@ -80,16 +108,26 @@ export async function listServices(
 }
 
 export async function listActiveServicesForOrder(locale: string) {
-  return listServices(locale, "active");
+  const services = await listServices(locale, "active");
+
+  return services.filter((service) => service.amount !== null);
 }
 
 export async function getServiceById(locale: string, serviceId: string) {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const currentDate = currentDateInTimeZone(membership.organization.timezone);
   const { data, error } = await supabase
     .from("services")
     .select(SERVICE_SELECT)
     .eq("organization_id", membership.organization.id)
+    .eq("price.is_active", true)
+    .lte("price.valid_from", currentDate)
+    .or(`valid_to.is.null,valid_to.gte.${currentDate}`, { referencedTable: "price" })
+    .order("location_id", { ascending: true, nullsFirst: false, referencedTable: "price" })
+    .order("valid_from", { ascending: false, referencedTable: "price" })
+    .order("created_at", { ascending: false, referencedTable: "price" })
+    .limit(1, { referencedTable: "price" })
     .eq("id", serviceId)
     .maybeSingle<ServiceRow>();
 
