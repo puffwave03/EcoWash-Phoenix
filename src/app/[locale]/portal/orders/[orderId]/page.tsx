@@ -1,6 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { CustomerPortalShell } from "@/components/portal/CustomerPortalShell";
-import { CustomerPortalOrderDetail } from "@/components/portal/CustomerPortalViews";
+import {
+  CustomerPortalOrderDetail,
+  type PortalFinanceText,
+} from "@/components/portal/CustomerPortalViews";
 import {
   getCustomerPortalOrderDetail,
   requireCustomerPortalAccess,
@@ -29,11 +32,13 @@ export default async function CustomerPortalOrderDetailPage({
       customerName={access.customerName}
       locale={locale}
       text={{
+        assistance: t("assistance"),
         logout: t("logout"),
         navigationLabel: t("navigationLabel"),
         newRequest: t("request.nav"),
         orders: t("orders"),
         overview: t("overview"),
+        profile: t("profile"),
         title: t("title"),
       }}
     >
@@ -43,9 +48,11 @@ export default async function CustomerPortalOrderDetailPage({
         order={order}
         statusLabels={statusLabels}
         text={{
+          assistance: t("assistance"),
           completed: t("completed"),
           delivery: t("delivery"),
           emptyOrders: t("emptyOrders"),
+          finance: t.raw("finance") as PortalFinanceText,
           history: t("history"),
           items: t("items"),
           nextTask: t("nextTask"),

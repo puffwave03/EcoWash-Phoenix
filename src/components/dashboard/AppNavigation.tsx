@@ -299,7 +299,7 @@ export function AppNavigation({
                 <NavigationIcon href={item.href} />
                 <span className="block max-w-full truncate px-0.5">{item.label}</span>
                 {item.alertBadge && alertCount > 0 ? (
-                  <span className="absolute right-[calc(50%_-_1.45rem)] top-0.5 min-w-4 rounded-full bg-secondary px-1 py-0.5 text-center text-[0.625rem] font-bold leading-none text-primary shadow-sm">
+                  <span className="absolute right-[calc(50%_-_1.45rem)] top-0.5 min-w-4 rounded-full bg-gold px-1 py-0.5 text-center text-[0.625rem] font-bold leading-none text-primary shadow-sm">
                     {alertCount}
                   </span>
                 ) : null}
@@ -315,7 +315,7 @@ export function AppNavigation({
     <nav aria-label={navigationLabel} className="space-y-6">
       {navigationGroups.map((group) => (
         <div className="space-y-2" key={group.label}>
-          <p className="px-3 text-xs font-semibold uppercase tracking-wide text-white/48">
+          <p className="px-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted">
             {group.label}
           </p>
           <div className="space-y-1">
@@ -325,10 +325,10 @@ export function AppNavigation({
               return (
                 <Link
                   aria-current={isActive ? "page" : undefined}
-                  className={`block min-h-11 rounded-control px-3 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-[#09291f] ${
+                  className={`block min-h-11 rounded-control px-3 py-2.5 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     isActive
-                      ? "bg-primary-soft !text-primary shadow-card ring-1 ring-inset ring-white/15 hover:bg-[#e2eee8] hover:!text-primary"
-                      : "!text-white/78 hover:bg-white/10 hover:!text-white"
+                      ? "bg-primary-soft !text-primary ring-1 ring-inset ring-primary/10 hover:bg-[#e2eee8] hover:!text-primary"
+                      : "!text-muted hover:bg-[#f5f7f5] hover:!text-primary"
                   }`}
                   href={item.href}
                   key={item.href}
@@ -340,7 +340,7 @@ export function AppNavigation({
                       <span className="min-w-0 truncate">{item.label}</span>
                     </span>
                     {item.alertBadge && alertCount > 0 ? (
-                      <span className="min-w-6 rounded-full bg-secondary px-2 py-0.5 text-center text-xs font-semibold text-primary">
+                      <span className="min-w-6 rounded-full bg-gold px-2 py-0.5 text-center text-xs font-semibold text-primary">
                         {alertCount}
                       </span>
                     ) : null}

@@ -46,11 +46,13 @@ export default async function CustomerOrderRequestPage({
       customerName={access.customerName}
       locale={locale}
       text={{
+        assistance: t("assistance"),
         logout: t("logout"),
         navigationLabel: t("navigationLabel"),
         newRequest: t("request.nav"),
         orders: t("orders"),
         overview: t("overview"),
+        profile: t("profile"),
         title: t("title"),
       }}
     >

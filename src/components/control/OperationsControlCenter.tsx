@@ -321,7 +321,7 @@ export function OperationsControlCenter({
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {data.workload.map((person) => (
-              <article className="rounded-card border border-border bg-[#fbfbf8] p-4" key={person.assigneeId}>
+              <article className="rounded-card border border-border bg-[#fafbfa] p-4" key={person.assigneeId}>
                 <div className="flex items-start justify-between gap-3">
                   <h4 className="break-words text-base font-semibold text-primary">
                     {person.assigneeName || text.unknownAssignee}
@@ -356,7 +356,7 @@ export function OperationsControlCenter({
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-7">
           {quickLinks.map((item) => (
             <Link
-              className="inline-flex min-h-12 min-w-0 items-center justify-between gap-2 rounded-control border border-border bg-white px-3 py-2 text-sm font-semibold text-primary shadow-sm transition-standard hover:border-primary/30 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 min-w-0 items-center justify-between gap-2 rounded-control border border-border bg-white px-3 py-2 text-sm font-semibold text-primary transition-standard hover:border-primary/30 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               href={item.href}
               key={item.key}
               locale={locale}

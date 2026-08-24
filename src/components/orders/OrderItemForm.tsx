@@ -34,7 +34,7 @@ type OrderItemFormProps = {
 const initialState: OrderActionState = { fieldErrors: {}, formError: null };
 
 function fieldClass(hasError: boolean) {
-  return `min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+  return `min-h-12 w-full rounded-control border bg-white px-3.5 text-base text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
     hasError ? "border-red-300" : "border-border"
   }`;
 }
@@ -88,9 +88,9 @@ export function OrderItemForm({ action, item, onCancel, onSuccess, services, tex
   }
 
   return (
-    <form action={formAction} className="grid gap-4 md:grid-cols-[1fr_1fr_8rem_8rem_8rem_auto] md:items-end" onSubmit={handleSubmit}>
+    <form action={formAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem_auto] xl:items-end" onSubmit={handleSubmit}>
       <input name="itemId" type="hidden" value={item?.id ?? ""} />
-      {state.formError ? <p className="md:col-span-6 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
+      {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 md:col-span-2 xl:col-span-6">{text.error}</p> : null}
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.service}</span>
         <select
@@ -132,8 +132,8 @@ export function OrderItemForm({ action, item, onCancel, onSuccess, services, tex
         <input className={fieldClass(Boolean(state.fieldErrors.unitPrice))} defaultValue={formatNumberInput(item?.unitPrice ?? selectedService?.amount ?? 0, 2)} disabled={isLocked} key={`price-${selectedServiceId}`} min="0" name="unitPrice" step="0.01" type="number" />
       </label>
       <input name="notes" type="hidden" value={item?.notes ?? ""} />
-      <div className="flex flex-wrap gap-2">
-        <Button disabled={isLocked} type="submit">{isLocked ? text.saving : text.addItem}</Button>
+      <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-1">
+        <Button className="w-full sm:w-auto" disabled={isLocked} type="submit">{isLocked ? text.saving : text.addItem}</Button>
         {onCancel ? (
           <Button disabled={isLocked} onClick={onCancel} type="button" variant="secondary">
             {text.cancel}

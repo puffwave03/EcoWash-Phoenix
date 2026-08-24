@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const operationalPrimaryActionClasses =
-  "inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary/25 bg-primary-soft px-5 text-center text-sm font-semibold text-primary-strong shadow-sm transition-standard hover:border-primary/35 hover:bg-[#dcebe4] hover:text-primary-strong active:bg-[#d1e4da] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+  "inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary bg-primary px-5 text-center text-sm font-semibold !text-white shadow-sm transition-standard hover:bg-primary-strong hover:!text-white active:bg-forest-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
 export type Tone = "critical" | "info" | "neutral" | "success" | "warning";
 
@@ -18,13 +18,13 @@ const toneClasses: Record<Tone, {
     number: "text-red-700",
   },
   info: {
-    badge: "border-primary-soft bg-primary-soft text-primary",
-    card: "border-primary-soft bg-primary-soft/45",
-    dot: "bg-primary",
-    number: "text-primary",
+    badge: "border-blue-200 bg-blue-50 text-blue-800",
+    card: "border-blue-200 bg-blue-50/55",
+    dot: "bg-blue-500",
+    number: "text-blue-800",
   },
   neutral: {
-    badge: "border-border bg-[#f7f7f4] text-muted",
+    badge: "border-border bg-[#f7f9f7] text-muted",
     card: "border-border bg-white",
     dot: "bg-muted",
     number: "text-primary",
@@ -55,15 +55,15 @@ export function PageHeader({
   title: string;
 }) {
   return (
-    <header className="rounded-card border border-border bg-white px-5 py-5 shadow-card sm:px-6">
+    <header className="border-b border-border pb-5 sm:pb-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
           {eyebrow ? (
-            <p className="text-xs font-semibold uppercase tracking-wide text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="mt-1 text-2xl font-semibold text-primary sm:text-3xl">
+          <h2 className="mt-1.5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {title}
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
@@ -86,12 +86,12 @@ export function SummaryCard({
   value: number | string;
 }) {
   return (
-    <div className={`rounded-card border px-4 py-4 shadow-sm ${toneClasses[tone].card}`}>
+    <div className={`rounded-card border px-4 py-3.5 ${toneClasses[tone].card}`}>
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-medium text-muted">{label}</p>
         <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ${toneClasses[tone].dot}`} />
       </div>
-      <p className={`mt-3 text-3xl font-semibold leading-none ${toneClasses[tone].number}`}>
+      <p className={`mt-2.5 text-2xl font-semibold leading-none tracking-tight ${toneClasses[tone].number}`}>
         {value}
       </p>
     </div>
@@ -131,7 +131,7 @@ export function SectionHeader({
 
 export function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-card border border-dashed border-border bg-[#fbfbf8] px-4 py-7 text-center text-sm leading-6 text-muted">
+    <div className="rounded-card border border-dashed border-border bg-[#fafbfa] px-4 py-7 text-center text-sm leading-6 text-muted">
       {children}
     </div>
   );

@@ -57,9 +57,18 @@ export function OrderItems({
           {items.map((item) => (
             <div className="grid gap-3 px-5 py-4 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:items-center md:gap-4" key={item.id}>
               <p className="text-sm font-semibold text-primary">{item.description}</p>
-              <p className="text-sm text-muted">{formatQuantity(item.quantity, locale)} {item.unitType}</p>
-              <p className="text-sm text-muted">{formatCurrency(item.unitPrice, order.currency, locale)}</p>
-              <p className="text-sm text-muted">{formatCurrency(item.lineTotal, order.currency, locale)}</p>
+              <p className="flex items-center justify-between gap-3 text-sm text-muted md:block">
+                <span className="font-medium md:hidden">{text.quantity}</span>
+                <span>{formatQuantity(item.quantity, locale)} {item.unitType}</span>
+              </p>
+              <p className="flex items-center justify-between gap-3 text-sm text-muted md:block">
+                <span className="font-medium md:hidden">{text.unitPrice}</span>
+                <span>{formatCurrency(item.unitPrice, order.currency, locale)}</span>
+              </p>
+              <p className="flex items-center justify-between gap-3 text-sm font-semibold text-primary md:block md:font-normal md:text-muted">
+                <span className="font-medium md:hidden">{text.lineTotal}</span>
+                <span>{formatCurrency(item.lineTotal, order.currency, locale)}</span>
+              </p>
               <div className="flex flex-wrap gap-2">
                 <Button
                   disabled={isPending}
@@ -107,9 +116,9 @@ export function OrderItems({
           ))}
         </div>
       </div>
-      <div className="ml-auto grid max-w-sm gap-2 rounded-card border border-border bg-white p-4 text-sm shadow-card">
+      <div className="ml-auto grid w-full max-w-sm gap-3 rounded-card border border-primary/15 bg-primary-soft/55 p-4 text-sm">
         <div className="flex justify-between"><span>{text.subtotal}</span><strong>{formatCurrency(order.subtotal, order.currency, locale)}</strong></div>
-        <div className="flex justify-between"><span>{text.total}</span><strong>{formatCurrency(order.total, order.currency, locale)}</strong></div>
+        <div className="flex justify-between border-t border-primary/10 pt-3 text-base text-primary"><span className="font-semibold">{text.total}</span><strong>{formatCurrency(order.total, order.currency, locale)}</strong></div>
       </div>
     </div>
   );

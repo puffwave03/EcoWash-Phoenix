@@ -48,22 +48,22 @@ export function DashboardShell({
   const currentUserName = access.profile.displayName || access.user.email || text.userLabel;
 
   return (
-    <main className="min-h-screen bg-[#eef1ee] text-foreground">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside
           aria-label={text.navigationLabel}
-          className="hidden flex-col justify-between bg-[#09291f] px-5 py-5 text-white lg:flex lg:min-h-screen"
+          className="hidden flex-col justify-between border-r border-border bg-white px-4 py-5 lg:flex lg:min-h-screen"
         >
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-logo bg-secondary text-base font-semibold text-primary">
+              <div className="flex h-11 w-11 items-center justify-center rounded-logo bg-primary-soft text-base font-semibold text-primary ring-1 ring-inset ring-primary/10">
                 EW
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase text-white/58">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                   {text.foundation}
                 </p>
-                <h1 className="mt-1 text-xl font-semibold text-white">
+                <h1 className="mt-1 text-xl font-semibold text-foreground">
                   {access.membership.organization.name}
                 </h1>
               </div>
@@ -98,16 +98,16 @@ export function DashboardShell({
             />
           </div>
 
-          <div className="mt-8 space-y-4 border-t border-white/12 pt-5">
+          <div className="mt-8 space-y-4 border-t border-border pt-5">
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-white/54">{text.userLabel}</dt>
-                <dd className="mt-1 font-semibold text-white">
+                <dt className="text-muted">{text.userLabel}</dt>
+                <dd className="mt-1 break-words font-semibold text-foreground">
                   {currentUserName}
                 </dd>
               </div>
               <div>
-                <dt className="text-white/54">{text.roleLabel}</dt>
+                <dt className="text-muted">{text.roleLabel}</dt>
                 <dd className="mt-1 font-semibold uppercase text-secondary">
                   {access.membership.role}
                 </dd>
@@ -158,7 +158,7 @@ export function DashboardShell({
             userLabel={text.userLabel}
           />
 
-          <section className="px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-5 lg:px-8 lg:py-6 lg:pb-8">
+          <section className="px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:py-7 lg:pb-10 xl:px-10">
             {children}
           </section>
         </div>

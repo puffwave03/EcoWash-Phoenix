@@ -256,11 +256,11 @@ export function CustomerOrderRequestForm({
           </div>
         </Card>
 
-        <div className="rounded-card bg-[#09291f] p-5 text-white shadow-card">
+        <div className="rounded-card border border-primary/15 bg-primary-soft/65 p-5">
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-secondary">
             {text.estimatedTotal}
           </p>
-          <p className="mt-2 text-3xl font-semibold text-white">
+          <p className="mt-2 text-3xl font-semibold text-primary">
             {formatCurrency(estimatedTotal, currency, locale)}
           </p>
         </div>
@@ -434,7 +434,7 @@ export function CustomerOrderRequestForm({
         {clientErrors.requestedPickupAt ? <p className="text-sm text-red-700" role="alert">{clientErrors.requestedPickupAt}</p> : null}
       </section>
 
-      <div className="sticky bottom-3 z-20 rounded-card border border-border bg-white/95 p-3 shadow-luxury backdrop-blur">
+      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 rounded-card border border-border bg-white/95 p-3 shadow-luxury backdrop-blur lg:bottom-3">
         <div className="mb-3 flex items-center justify-between gap-3 px-1">
           <span className="text-sm font-medium text-muted">{text.estimatedTotal}</span>
           <span className="text-lg font-semibold text-primary">

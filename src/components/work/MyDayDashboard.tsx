@@ -261,20 +261,20 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4 sm:space-y-5 lg:space-y-6">
-      <section className="rounded-card border border-border bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5 lg:px-8">
+      <section className="border-b border-border pb-5 sm:pb-6">
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
               {text.today}
             </p>
-            <h2 className="mt-1.5 text-2xl font-semibold leading-tight text-primary sm:text-3xl">
+            <h2 className="mt-1.5 text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl">
               {text.greeting}{data.profileName ? `, ${data.profileName}` : ""}
             </h2>
             <p className="mt-1 text-sm capitalize text-muted">
               {formatToday(data.generatedAt, locale, data.timeZone)}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="hidden flex-wrap items-center gap-2 sm:flex">
             <p className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
               {data.summary.total} {text.todaySummary} · {data.summary.urgent} {text.urgent}
             </p>
@@ -308,15 +308,6 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
             </Link> : null}
           </div>
         </div>
-      </section>
-
-      <section aria-label={text.todaySummary} className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
-        {summaryKinds.map((kind) => (
-          <div className="rounded-card border border-border bg-white px-3.5 py-3 shadow-sm sm:px-4" key={kind}>
-            <p className="text-xl font-semibold leading-none text-primary sm:text-2xl">{data.summary[kind]}</p>
-            <p className="mt-1.5 text-sm font-medium text-muted">{text.activityKinds[kind]}</p>
-          </div>
-        ))}
       </section>
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.35fr)] lg:gap-6">
@@ -357,6 +348,15 @@ export function MyDayDashboard({ data, locale, text }: MyDayDashboardProps) {
           )}
         </section>
       </div>
+
+      <section aria-label={text.todaySummary} className="grid grid-cols-2 gap-2.5 border-t border-border pt-5 sm:grid-cols-4 sm:gap-3">
+        {summaryKinds.map((kind) => (
+          <div className="rounded-card border border-border bg-white px-3.5 py-3 sm:px-4" key={kind}>
+            <p className="text-xl font-semibold leading-none text-primary sm:text-2xl">{data.summary[kind]}</p>
+            <p className="mt-1.5 text-sm font-medium text-muted">{text.activityKinds[kind]}</p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

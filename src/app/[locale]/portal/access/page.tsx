@@ -18,10 +18,12 @@ export default async function CustomerPortalAccessPage({
     <CustomerPortalShell
       locale={locale}
       text={{
+        assistance: t("assistance"),
         logout: t("logout"),
         navigationLabel: t("navigationLabel"),
         orders: t("orders"),
         overview: t("overview"),
+        profile: t("profile"),
         title: t("title"),
       }}
     >

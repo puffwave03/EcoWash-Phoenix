@@ -1,6 +1,11 @@
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { OrderPhoto } from "@/features/order-photos/types";
+import type {
+  DerivedPaymentStatus,
+  PaymentMethod,
+  PaymentRecordStatus,
+} from "@/features/payments/types";
 import type { ServiceUnitType } from "@/features/services/types";
 
 export type CustomerPortalAccess = {
@@ -16,9 +21,31 @@ export type CustomerPortalOrder = {
   createdAt: string;
   dueAt: string | null;
   id: string;
+  financial: CustomerPortalOrderFinancial | null;
   orderNumber: string;
   productionStatus: ProductionStatus;
   propertyName: string | null;
+};
+
+export type CustomerPortalOrderFinancial = {
+  balanceDue: number;
+  currency: string;
+  discountAmount: number;
+  orderId: string;
+  paymentStatus: DerivedPaymentStatus;
+  subtotal: number;
+  totalDue: number;
+  totalPaid: number;
+};
+
+export type CustomerPortalPayment = {
+  amount: number;
+  currency: string;
+  id: string;
+  method: PaymentMethod;
+  orderId: string;
+  paidAt: string;
+  status: PaymentRecordStatus;
 };
 
 export type CustomerPortalLogisticsRecord = {
@@ -57,6 +84,7 @@ export type CustomerPortalOrderDetail = CustomerPortalOrder & {
   items: CustomerPortalOrderItem[];
   logistics: CustomerPortalLogistics;
   photos: OrderPhoto[];
+  payments: CustomerPortalPayment[];
 };
 
 export type CustomerPortalNextTask = {

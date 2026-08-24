@@ -15,6 +15,8 @@ import type {
   CustomerPortalNextTask,
   CustomerPortalOrder,
   CustomerPortalOrderDetail,
+  CustomerPortalOrderFinancial,
+  CustomerPortalPayment,
   CustomerPortalOrderRequestOptions,
 } from "@/features/portal/types";
 import { requireMembership } from "@/lib/auth/require-membership";
@@ -35,6 +37,27 @@ type PortalOrderRow = {
   order_number: string;
   production_status: ProductionStatus;
   property_name: string | null;
+};
+
+type PortalFinancialRow = {
+  balance_due: number;
+  currency: string;
+  discount_amount: number;
+  order_id: string;
+  payment_status: CustomerPortalOrderFinancial["paymentStatus"];
+  subtotal: number;
+  total_due: number;
+  total_paid: number;
+};
+
+type PortalPaymentRow = {
+  amount: number;
+  currency: string;
+  id: string;
+  method: CustomerPortalPayment["method"];
+  order_id: string;
+  paid_at: string;
+  status: CustomerPortalPayment["status"];
 };
 
 type PortalItemRow = {
@@ -124,11 +147,28 @@ type PortalOrderPropertyRow = {
   postal_code: string | null;
 };
 
-function mapPortalOrder(row: PortalOrderRow): CustomerPortalOrder {
+function mapFinancial(row: PortalFinancialRow): CustomerPortalOrderFinancial {
+  return {
+    balanceDue: Number(row.balance_due),
+    currency: row.currency,
+    discountAmount: Number(row.discount_amount),
+    orderId: row.order_id,
+    paymentStatus: row.payment_status,
+    subtotal: Number(row.subtotal),
+    totalDue: Number(row.total_due),
+    totalPaid: Number(row.total_paid),
+  };
+}
+
+function mapPortalOrder(
+  row: PortalOrderRow,
+  financial: CustomerPortalOrderFinancial | null = null,
+): CustomerPortalOrder {
   return {
     completedAt: row.completed_at,
     createdAt: row.created_at,
     dueAt: row.due_at,
+    financial,
     id: row.id,
     orderNumber: row.order_number,
     productionStatus: row.production_status,
@@ -220,16 +260,30 @@ export async function requireCustomerPortalAccess(locale: string): Promise<Custo
 export async function listCustomerPortalOrders(locale: string): Promise<CustomerPortalOrder[]> {
   await requireCustomerPortalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .rpc("list_customer_portal_orders")
-    .returns<PortalOrderRow[]>();
+  const [ordersResult, financialResult] = await Promise.all([
+    supabase.rpc("list_customer_portal_orders").returns<PortalOrderRow[]>(),
+    supabase.rpc("list_customer_portal_order_financials").returns<PortalFinancialRow[]>(),
+  ]);
 
-  if (error || !data) {
-    console.error("Portal order list failed", error?.code);
+  if (ordersResult.error || !ordersResult.data) {
+    console.error("Portal order list failed", ordersResult.error?.code);
     return [];
   }
 
-  return ((data ?? []) as PortalOrderRow[]).map(mapPortalOrder);
+  if (financialResult.error) {
+    console.error("Portal order financials failed", financialResult.error.code);
+  }
+
+  const financials = new Map(
+    ((financialResult.data ?? []) as PortalFinancialRow[]).map((row) => {
+      const financial = mapFinancial(row);
+      return [financial.orderId, financial] as const;
+    }),
+  );
+
+  return (ordersResult.data as PortalOrderRow[]).map((row) => (
+    mapPortalOrder(row, financials.get(row.id) ?? null)
+  ));
 }
 
 function mapPortalTask(row: PortalTaskRow): CustomerPortalNextTask | null {
@@ -272,7 +326,7 @@ export async function getCustomerPortalOrderDetail(
 
   if (orderError || !order) notFound();
 
-  const [itemsResult, historyResult, logisticsResult, photosResult] = await Promise.all([
+  const [itemsResult, historyResult, logisticsResult, photosResult, financialResult, paymentsResult] = await Promise.all([
     supabase
       .rpc("list_customer_portal_order_items", { target_order_id: orderId })
       .returns<PortalItemRow[]>(),
@@ -285,18 +339,31 @@ export async function getCustomerPortalOrderDetail(
     supabase
       .rpc("list_customer_portal_order_photos", { target_order_id: orderId })
       .returns<PortalPhotoRow[]>(),
+    supabase
+      .rpc("list_customer_portal_order_financials")
+      .returns<PortalFinancialRow[]>(),
+    supabase
+      .rpc("list_customer_portal_order_payments", { target_order_id: orderId })
+      .returns<PortalPaymentRow[]>(),
   ]);
 
   if (itemsResult.error) console.error("Portal order items failed", itemsResult.error.code);
   if (historyResult.error) console.error("Portal order history failed", historyResult.error.code);
   if (logisticsResult.error) console.error("Portal logistics failed", logisticsResult.error.code);
   if (photosResult.error) console.error("Portal photos failed", photosResult.error.code);
+  if (financialResult.error) console.error("Portal order financials failed", financialResult.error.code);
+  if (paymentsResult.error) console.error("Portal order payments failed", paymentsResult.error.code);
   const logisticsRows = (logisticsResult.data ?? []) as PortalLogisticsRow[];
   const pickup = logisticsRows.find((record) => record.kind === "pickup") ?? null;
   const delivery = logisticsRows.find((record) => record.kind === "delivery") ?? null;
 
   return {
-    ...mapPortalOrder(order),
+    ...mapPortalOrder(
+      order,
+      ((financialResult.data ?? []) as PortalFinancialRow[])
+        .filter((row) => row.order_id === orderId)
+        .map(mapFinancial)[0] ?? null,
+    ),
     history: ((historyResult.data ?? []) as PortalHistoryRow[]).map(mapHistory),
     items: ((itemsResult.data ?? []) as PortalItemRow[]).map(mapItem),
     logistics: {
@@ -304,6 +371,15 @@ export async function getCustomerPortalOrderDetail(
       pickup: mapLogistics(pickup),
     },
     photos: await Promise.all(((photosResult.data ?? []) as PortalPhotoRow[]).map(signedPortalPhoto)),
+    payments: ((paymentsResult.data ?? []) as PortalPaymentRow[]).map((payment) => ({
+      amount: Number(payment.amount),
+      currency: payment.currency,
+      id: payment.id,
+      method: payment.method,
+      orderId: payment.order_id,
+      paidAt: payment.paid_at,
+      status: payment.status,
+    })),
   };
 }
 

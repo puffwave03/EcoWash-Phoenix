@@ -10,17 +10,43 @@ import type {
   CustomerPortalNextTask,
   CustomerPortalOrder,
   CustomerPortalOrderDetail,
+  CustomerPortalOrderService,
 } from "@/features/portal/types";
 import type { ProductionStatus } from "@/features/orders/types";
-import { formatQuantity } from "@/lib/number-format";
+import type {
+  DerivedPaymentStatus,
+  PaymentMethod,
+  PaymentRecordStatus,
+} from "@/features/payments/types";
+import { formatCurrency, formatQuantity } from "@/lib/number-format";
 
 type StatusText = Record<ProductionStatus, string>;
 type FulfillmentText = Record<FulfillmentStatus, string>;
 
+export type PortalFinanceText = {
+  balanceDue: string;
+  discount: string;
+  methods: Record<PaymentMethod, string>;
+  ordersCount: string;
+  paymentDate: string;
+  paymentStatus: string;
+  payments: string;
+  paymentsEmpty: string;
+  recordStatuses: Record<PaymentRecordStatus, string>;
+  statuses: Record<DerivedPaymentStatus, string>;
+  subtotal: string;
+  title: string;
+  total: string;
+  totalPaid: string;
+  totalValue: string;
+};
+
 type PortalCommonText = {
+  assistance: string;
   completed: string;
   delivery: string;
   emptyOrders: string;
+  finance: PortalFinanceText;
   history: string;
   nextTask: string;
   orderDate: string;
@@ -35,13 +61,31 @@ type PortalCommonText = {
 
 type PortalOverviewProps = {
   activeOrders: CustomerPortalOrder[];
+  customerName: string;
   locale: string;
   nextTask: CustomerPortalNextTask | null;
+  orders: CustomerPortalOrder[];
+  services: CustomerPortalOrderService[];
   statusLabels: StatusText;
   text: PortalCommonText & {
     activeOrders: string;
+    assistance: string;
+    currentOrder: string;
+    fromPrice: string;
     greeting: string;
     historyLink: string;
+    inDelivery: string;
+    newRequest: string;
+    noActiveOrdersDescription: string;
+    noActiveOrdersTitle: string;
+    quickActions: string;
+    recentOrders: string;
+    servicesDescription: string;
+    servicesDiscovery: string;
+    servicesEmpty: string;
+    servicePerPiece: string;
+    servicePerWeight: string;
+    viewOrder: string;
   };
 };
 
@@ -72,6 +116,28 @@ function formatDate(value: string | null, locale: string) {
   });
 }
 
+function PaymentStatusBadge({
+  status,
+  text,
+}: {
+  status: DerivedPaymentStatus;
+  text: PortalFinanceText;
+}) {
+  const classes = status === "paid"
+    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+    : status === "partially_paid"
+      ? "border-amber-200 bg-amber-50 text-amber-800"
+      : status === "refunded"
+        ? "border-blue-200 bg-blue-50 text-blue-800"
+        : "border-border bg-[#f7f9f7] text-muted";
+
+  return (
+    <span className={`inline-flex min-h-7 items-center rounded-full border px-3 py-1 text-xs font-semibold ${classes}`}>
+      {text.statuses[status]}
+    </span>
+  );
+}
+
 function OrderCard({
   locale,
   order,
@@ -85,7 +151,7 @@ function OrderCard({
 }) {
   return (
     <Link
-      className="block rounded-card border border-border bg-white p-4 shadow-card transition-standard hover:border-primary"
+      className="group block rounded-card border border-border bg-white p-4 transition-standard hover:border-primary/35 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       href={`/portal/orders/${order.id}`}
       locale={locale}
     >
@@ -94,25 +160,84 @@ function OrderCard({
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-secondary">
             {order.orderNumber}
           </p>
-          <h3 className="mt-2 text-lg font-semibold text-primary">
+          <h3 className="mt-2 text-lg font-semibold text-foreground">
             {statusLabels[order.productionStatus]}
           </h3>
+          {order.financial ? (
+            <div className="mt-2">
+              <PaymentStatusBadge status={order.financial.paymentStatus} text={text.finance} />
+            </div>
+          ) : null}
         </div>
-        <span className="rounded-control bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-          {text.status}
+        <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary transition-transform group-hover:translate-x-0.5">
+          →
         </span>
       </div>
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted">{text.orderDate}</dt>
-          <dd className="font-semibold text-primary">{formatDate(order.createdAt, locale)}</dd>
+          <dd className="mt-1 font-semibold text-foreground">{formatDate(order.createdAt, locale)}</dd>
         </div>
         <div>
           <dt className="text-muted">{text.property}</dt>
-          <dd className="font-semibold text-primary">{order.propertyName ?? "-"}</dd>
+          <dd className="mt-1 font-semibold text-foreground">{order.propertyName ?? "-"}</dd>
         </div>
       </dl>
+      {order.financial ? (
+        <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4 text-sm">
+          <div>
+            <dt className="text-muted">{text.finance.total}</dt>
+            <dd className="mt-1 font-semibold text-foreground">
+              {formatCurrency(order.financial.totalDue, order.financial.currency, locale)}
+            </dd>
+          </div>
+          <div className="text-right">
+            <dt className="text-muted">{text.finance.balanceDue}</dt>
+            <dd className={`mt-1 font-semibold ${order.financial.balanceDue > 0 ? "text-amber-800" : "text-emerald-700"}`}>
+              {formatCurrency(order.financial.balanceDue, order.financial.currency, locale)}
+            </dd>
+          </div>
+        </dl>
+      ) : null}
     </Link>
+  );
+}
+
+function ServiceCard({
+  locale,
+  service,
+  text,
+}: {
+  locale: string;
+  service: CustomerPortalOrderService;
+  text: PortalOverviewProps["text"];
+}) {
+  return (
+    <article className="overflow-hidden rounded-card border border-border bg-white">
+      <div className="flex aspect-[16/7] items-center justify-center border-b border-border bg-[linear-gradient(135deg,var(--color-primary-soft),#f8fbf9)] text-primary" data-portal-media-slot>
+        <svg aria-hidden="true" className="h-9 w-9" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>
+      </div>
+      <div className="space-y-3 p-4">
+        <div>
+          <h3 className="font-semibold text-foreground">{service.name}</h3>
+          {service.description ? <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{service.description}</p> : null}
+        </div>
+        <div className="flex items-end justify-between gap-3">
+          <p className="text-sm text-muted">
+            {text.fromPrice} <strong className="text-base text-primary">{formatCurrency(service.amount, service.currency, locale)}</strong>{" "}
+            <span>{service.unitType === "weight" ? text.servicePerWeight : text.servicePerPiece}</span>
+          </p>
+          <Link
+            aria-label={`${text.newRequest}: ${service.name}`}
+            className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold !text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            href="/portal/requests/new"
+            locale={locale}
+          >
+            →
+          </Link>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -195,25 +320,147 @@ function PhotoGrid({
 
 export function CustomerPortalOverview({
   activeOrders,
+  customerName,
   locale,
   nextTask,
+  orders,
+  services,
   statusLabels,
   text,
 }: PortalOverviewProps) {
+  const currentOrder = activeOrders[0] ?? null;
+  const currentTask = currentOrder && nextTask?.orderId === currentOrder.id ? nextTask : null;
+  const recentOrders = orders.filter((order) => order.id !== currentOrder?.id).slice(0, 4);
+  const currentStatus = currentOrder
+    ? currentTask?.kind === "delivery" && currentTask.status === "in_progress"
+      ? text.inDelivery
+      : statusLabels[currentOrder.productionStatus]
+    : null;
+  const financials = orders.flatMap((order) => order.financial ? [order.financial] : []);
+  const summaryCurrencies = new Set(financials.map((financial) => financial.currency));
+  const summaryCurrency = summaryCurrencies.size === 1 ? financials[0]?.currency ?? null : null;
+  const accountSummary = summaryCurrency ? {
+    balanceDue: financials.reduce((total, financial) => total + financial.balanceDue, 0),
+    totalPaid: financials.reduce((total, financial) => total + financial.totalPaid, 0),
+    totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
+  } : null;
+
   return (
-    <div className="space-y-6">
-      <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
-          {text.greeting}
-        </p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">{text.activeOrders}</h2>
-        <p className="mt-3 text-sm text-white/72">{activeOrders.length} {text.orders}</p>
+    <div className="space-y-9 sm:space-y-10">
+      <section className="overflow-hidden rounded-card border border-primary/15 bg-white shadow-card">
+        <div className="grid lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.55fr)]">
+          <div className="p-5 sm:p-7 lg:p-9">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
+              {text.greeting}, {customerName}
+            </p>
+            {currentOrder ? (
+              <>
+                <h1 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  {currentStatus}
+                </h1>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                    {text.currentOrder}
+                  </span>
+                  <span className="text-sm font-semibold text-secondary">{currentOrder.orderNumber}</span>
+                </div>
+
+                <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
+                  {currentTask ? (
+                    <div className="rounded-control border border-blue-200 bg-blue-50/65 p-4 sm:col-span-2">
+                      <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-blue-800">{text.nextTask}</dt>
+                      <dd className="mt-1.5 text-base font-semibold text-foreground">
+                        {currentTask.kind === "pickup" ? text.pickup : text.delivery} · {formatDate(currentTask.scheduledAt, locale)}
+                      </dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt className="text-muted">{text.orderDate}</dt>
+                    <dd className="mt-1 font-semibold text-foreground">{formatDate(currentOrder.createdAt, locale)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">{text.property}</dt>
+                    <dd className="mt-1 font-semibold text-foreground">{currentOrder.propertyName ?? "-"}</dd>
+                  </div>
+                </dl>
+
+                {currentOrder.financial ? (
+                  <div className="mt-6 rounded-card border border-primary/10 bg-primary-soft/55 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary">{text.finance.paymentStatus}</p>
+                      <PaymentStatusBadge status={currentOrder.financial.paymentStatus} text={text.finance} />
+                    </div>
+                    <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <dt className="text-muted">{text.finance.total}</dt>
+                        <dd className="mt-1 font-semibold text-foreground">{formatCurrency(currentOrder.financial.totalDue, currentOrder.financial.currency, locale)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">{text.finance.totalPaid}</dt>
+                        <dd className="mt-1 font-semibold text-foreground">{formatCurrency(currentOrder.financial.totalPaid, currentOrder.financial.currency, locale)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">{text.finance.balanceDue}</dt>
+                        <dd className="mt-1 font-semibold text-foreground">{formatCurrency(currentOrder.financial.balanceDue, currentOrder.financial.currency, locale)}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ) : null}
+
+                <Link
+                  className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary bg-primary px-5 text-sm font-semibold !text-white shadow-sm transition-standard hover:bg-primary-strong hover:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-auto"
+                  href={`/portal/orders/${currentOrder.id}`}
+                  locale={locale}
+                >
+                  {text.viewOrder}
+                </Link>
+              </>
+            ) : (
+              <>
+                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.noActiveOrdersTitle}</h1>
+                <p className="mt-3 max-w-xl text-base leading-7 text-muted">{text.noActiveOrdersDescription}</p>
+                <Link
+                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary bg-primary px-5 text-sm font-semibold !text-white shadow-sm transition-standard hover:bg-primary-strong hover:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-auto"
+                  href="/portal/requests/new"
+                  locale={locale}
+                >
+                  {text.newRequest}
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="hidden min-h-80 items-center justify-center border-l border-primary/10 bg-[radial-gradient(circle_at_top_right,#dcebe4,transparent_58%),linear-gradient(145deg,var(--color-primary-soft),#fbfcfb)] text-primary lg:flex" data-portal-media-slot>
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border border-primary/15 bg-white/70 shadow-card">
+              <svg aria-hidden="true" className="h-14 w-14" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {nextTask ? (
-        <Card className="space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-secondary">{text.nextTask}</p>
-          <Link className="text-lg font-semibold text-primary hover:underline" href={`/portal/orders/${nextTask.orderId}`} locale={locale}>
+      {accountSummary && summaryCurrency ? (
+        <section className="space-y-4" aria-labelledby="portal-account-summary">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl" id="portal-account-summary">{text.finance.title}</h2>
+          <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {[
+              [text.finance.ordersCount, String(orders.length)],
+              [text.finance.totalValue, formatCurrency(accountSummary.totalValue, summaryCurrency, locale)],
+              [text.finance.totalPaid, formatCurrency(accountSummary.totalPaid, summaryCurrency, locale)],
+              [text.finance.balanceDue, formatCurrency(accountSummary.balanceDue, summaryCurrency, locale)],
+            ].map(([label, value]) => (
+              <div className="rounded-card border border-border bg-white p-4" key={label}>
+                <dt className="text-sm text-muted">{label}</dt>
+                <dd className="mt-2 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
+
+      {nextTask && !currentTask ? (
+        <Card className="space-y-2 border-blue-200 bg-blue-50/55">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-800">{text.nextTask}</p>
+          <Link className="inline-flex min-h-11 items-center text-lg font-semibold !text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" href={`/portal/orders/${nextTask.orderId}`} locale={locale}>
             {nextTask.orderNumber}
           </Link>
           <p className="text-sm text-muted">
@@ -223,22 +470,60 @@ export function CustomerPortalOverview({
       ) : null}
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="text-xl font-semibold text-primary">{text.activeOrders}</h3>
-          <Link className="text-sm font-semibold text-primary hover:underline" href="/portal/orders" locale={locale}>
-            {text.historyLink}
-          </Link>
+        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{text.quickActions}</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            { href: "/portal/requests/new", label: text.newRequest, primary: true },
+            { href: "/portal/orders", label: text.orders, primary: false },
+            { href: "/contact", label: text.assistance, primary: false },
+          ].map((action) => (
+            <Link
+              className={`inline-flex min-h-14 items-center justify-between gap-3 rounded-control border px-4 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                action.primary
+                  ? "border-primary bg-primary !text-white shadow-sm hover:bg-primary-strong hover:!text-white"
+                  : "border-border bg-white !text-primary hover:border-primary/30 hover:bg-primary-soft"
+              }`}
+              href={action.href}
+              key={action.href}
+              locale={locale}
+            >
+              {action.label}<span aria-hidden="true">→</span>
+            </Link>
+          ))}
         </div>
-        {activeOrders.length === 0 ? (
-          <p className="rounded-card border border-border bg-white p-4 text-sm text-muted">{text.emptyOrders}</p>
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{text.servicesDiscovery}</h2>
+          <p className="mt-1.5 text-sm leading-6 text-muted">{text.servicesDescription}</p>
+        </div>
+        {services.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {services.slice(0, 6).map((service) => (
+              <ServiceCard key={service.id} locale={locale} service={service} text={text} />
+            ))}
+          </div>
         ) : (
+          <p className="rounded-card border border-dashed border-border bg-white p-5 text-sm leading-6 text-muted">{text.servicesEmpty}</p>
+        )}
+      </section>
+
+      {recentOrders.length > 0 ? (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{text.recentOrders}</h2>
+            <Link className="inline-flex min-h-11 items-center text-sm font-semibold !text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" href="/portal/orders" locale={locale}>
+              {text.historyLink}
+            </Link>
+          </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            {activeOrders.slice(0, 4).map((order) => (
+            {recentOrders.map((order) => (
               <OrderCard key={order.id} locale={locale} order={order} statusLabels={statusLabels} text={text} />
             ))}
           </div>
-        )}
-      </section>
+        </section>
+      ) : null}
     </div>
   );
 }
@@ -251,7 +536,7 @@ export function CustomerPortalOrderList({
 }: PortalOrderListProps) {
   return (
     <div className="space-y-5">
-      <h2 className="text-2xl font-semibold text-primary">{text.orders}</h2>
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.orders}</h1>
       {orders.length === 0 ? (
         <p className="rounded-card border border-border bg-white p-4 text-sm text-muted">{text.emptyOrders}</p>
       ) : (
@@ -274,21 +559,21 @@ export function CustomerPortalOrderDetail({
 }: PortalOrderDetailProps) {
   return (
     <div className="space-y-6">
-      <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
+      <section className="rounded-card border border-primary/15 bg-white p-5 shadow-card lg:p-6">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
           {order.orderNumber}
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
           {statusLabels[order.productionStatus]}
-        </h2>
+        </h1>
         <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-card border border-white/16 bg-white/10 p-4">
-            <dt className="text-xs font-semibold uppercase text-white/68">{text.orderDate}</dt>
-            <dd className="mt-2 font-semibold text-white">{formatDate(order.createdAt, locale)}</dd>
+          <div className="rounded-card border border-border bg-[#fafbfa] p-4">
+            <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">{text.orderDate}</dt>
+            <dd className="mt-2 font-semibold text-foreground">{formatDate(order.createdAt, locale)}</dd>
           </div>
-          <div className="rounded-card border border-white/16 bg-white/10 p-4">
-            <dt className="text-xs font-semibold uppercase text-white/68">{text.property}</dt>
-            <dd className="mt-2 font-semibold text-white">{order.propertyName ?? "-"}</dd>
+          <div className="rounded-card border border-border bg-[#fafbfa] p-4">
+            <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">{text.property}</dt>
+            <dd className="mt-2 font-semibold text-foreground">{order.propertyName ?? "-"}</dd>
           </div>
         </dl>
       </section>
@@ -303,6 +588,67 @@ export function CustomerPortalOrderDetail({
             </div>
           ))}
         </Card>
+      </section>
+
+      {order.financial ? (
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-foreground">{text.finance.title}</h2>
+            <PaymentStatusBadge status={order.financial.paymentStatus} text={text.finance} />
+          </div>
+          <Card className="!p-4 sm:!p-5">
+            <dl className="grid grid-cols-2 gap-x-5 gap-y-4 text-sm sm:grid-cols-4">
+              <div>
+                <dt className="text-muted">{text.finance.subtotal}</dt>
+                <dd className="mt-1 font-semibold text-foreground">{formatCurrency(order.financial.subtotal, order.financial.currency, locale)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">{text.finance.discount}</dt>
+                <dd className="mt-1 font-semibold text-foreground">{formatCurrency(order.financial.discountAmount, order.financial.currency, locale)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">{text.finance.totalPaid}</dt>
+                <dd className="mt-1 font-semibold text-emerald-700">{formatCurrency(order.financial.totalPaid, order.financial.currency, locale)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">{text.finance.balanceDue}</dt>
+                <dd className={`mt-1 font-semibold ${order.financial.balanceDue > 0 ? "text-amber-800" : "text-emerald-700"}`}>
+                  {formatCurrency(order.financial.balanceDue, order.financial.currency, locale)}
+                </dd>
+              </div>
+              <div className="col-span-2 border-t border-border pt-4 sm:col-span-4">
+                <dt className="text-muted">{text.finance.total}</dt>
+                <dd className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{formatCurrency(order.financial.totalDue, order.financial.currency, locale)}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+      ) : null}
+
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-foreground">{text.finance.payments}</h2>
+        {order.payments.length === 0 ? (
+          <p className="rounded-card border border-dashed border-border bg-white p-5 text-sm leading-6 text-muted">{text.finance.paymentsEmpty}</p>
+        ) : (
+          <div className="divide-y divide-border overflow-hidden rounded-card border border-border bg-white">
+            {order.payments.map((payment) => (
+              <article className="grid gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-5" key={payment.id}>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-foreground">{text.finance.methods[payment.method]}</p>
+                    <span className="rounded-full border border-border bg-[#f7f9f7] px-2.5 py-1 text-xs font-semibold text-muted">
+                      {text.finance.recordStatuses[payment.status]}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-muted">{text.finance.paymentDate}: {formatDate(payment.paidAt, locale)}</p>
+                </div>
+                <p className={`text-lg font-semibold ${payment.status === "refunded" ? "text-blue-800" : "text-foreground"}`}>
+                  {formatCurrency(payment.amount, payment.currency, locale)}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="space-y-4">
@@ -329,6 +675,20 @@ export function CustomerPortalOrderDetail({
             ))}
           </Card>
         )}
+      </section>
+
+      <section className="rounded-card border border-border bg-primary-soft/45 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">{text.assistance}</h2>
+          <p className="mt-1 text-sm text-muted">{order.orderNumber}</p>
+        </div>
+        <Link
+          className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-control border border-primary/20 bg-white px-4 text-sm font-semibold !text-primary hover:border-primary/35 hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:mt-0 sm:w-auto"
+          href="/contact"
+          locale={locale}
+        >
+          {text.assistance}
+        </Link>
       </section>
     </div>
   );

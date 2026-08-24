@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { SiteFrame } from "@/layouts/SiteFrame";
 
 type SiteLayoutProps = {
   children: ReactNode;
@@ -8,10 +9,8 @@ type SiteLayoutProps = {
 
 export function SiteLayout({ children }: SiteLayoutProps) {
   return (
-    <>
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </>
+    <SiteFrame footer={<Footer />} header={<Header />}>
+      {children}
+    </SiteFrame>
   );
 }

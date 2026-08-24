@@ -30,7 +30,7 @@ type OrderFormProps = {
 const initialState: OrderActionState = { fieldErrors: {}, formError: null };
 
 function fieldClass(hasError: boolean) {
-  return `min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+  return `min-h-12 w-full rounded-control border bg-white px-3.5 text-base text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
     hasError ? "border-red-300" : "border-border"
   }`;
 }
@@ -77,13 +77,17 @@ export function OrderForm({ action, customers, order, properties, text }: OrderF
       <input name="locationId" type="hidden" value="" />
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.customerNotes}</span>
-        <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3 py-3 text-sm" defaultValue={order?.customerNotes ?? ""} name="customerNotes" />
+        <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3.5 py-3 text-base outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20" defaultValue={order?.customerNotes ?? ""} name="customerNotes" />
       </label>
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.internalNotes}</span>
-        <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3 py-3 text-sm" defaultValue={order?.internalNotes ?? ""} name="internalNotes" />
+        <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3.5 py-3 text-base outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20" defaultValue={order?.internalNotes ?? ""} name="internalNotes" />
       </label>
-      <Button disabled={isPending} type="submit">{isPending ? text.saving : text.save}</Button>
+      <div className="flex justify-end border-t border-border pt-5">
+        <Button className="w-full sm:w-auto" disabled={isPending} type="submit">
+          {isPending ? text.saving : text.save}
+        </Button>
+      </div>
     </form>
   );
 }
