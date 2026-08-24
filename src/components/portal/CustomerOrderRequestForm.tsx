@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-
 import {
   useActionState,
   useMemo,
@@ -11,6 +9,12 @@ import {
 } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { PortalMedia } from "@/components/portal/PortalMedia";
+import {
+  DEFAULT_PORTAL_MEDIA,
+  portalCategoryMedia,
+  type PortalMediaRegistry,
+} from "@/features/portal/media";
 import type {
   CustomerPortalOrderProperty,
   CustomerPortalOrderRequestState,
@@ -70,6 +74,7 @@ type CustomerOrderRequestFormProps = {
   ) => Promise<CustomerPortalOrderRequestState>;
   currency: string;
   locale: string;
+  media?: PortalMediaRegistry;
   minimumPickupAt: string;
   properties: CustomerPortalOrderProperty[];
   requestId: string;
@@ -109,6 +114,7 @@ export function CustomerOrderRequestForm({
   action,
   currency,
   locale,
+  media = DEFAULT_PORTAL_MEDIA,
   minimumPickupAt,
   properties,
   requestId,
@@ -381,7 +387,8 @@ export function CustomerOrderRequestForm({
               const searchActive = Boolean(serviceSearch.trim());
               const isOpen = searchActive || openCategories.has(category);
               const lowestPrice = items.reduce((lowest, service) => service.amount < lowest.amount ? service : lowest);
-              const imagePath = items.find((service) => service.portalImagePath)?.portalImagePath ?? null;
+              const categoryMedia = portalCategoryMedia(category, media);
+              const fallbackImagePath = items.find((service) => service.portalImagePath)?.portalImagePath ?? null;
               const selectedInCategory = items.filter((service) => service.id in quantities).length;
 
               return (
@@ -392,9 +399,14 @@ export function CustomerOrderRequestForm({
                     onClick={() => toggleCategory(category)}
                     type="button"
                   >
-                    <span className="flex h-14 w-16 shrink-0 items-center justify-center overflow-hidden rounded-control bg-primary-soft text-primary sm:h-16 sm:w-24">
-                      {imagePath ? <img alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" src={imagePath} /> : <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>}
-                    </span>
+                    <PortalMedia
+                      alt=""
+                      className="h-14 w-16 shrink-0 rounded-control sm:h-16 sm:w-24"
+                      imageClassName="transition-transform duration-300 group-hover:scale-105"
+                      objectPosition={categoryMedia?.objectPosition}
+                      sizes="(max-width: 639px) 64px, 96px"
+                      src={categoryMedia?.path ?? fallbackImagePath}
+                    />
                     <span className="min-w-0 flex-1">
                       <span className="block text-base font-semibold text-foreground sm:text-lg">{catalogCategoryLabel(category, text.categoryLabels)}</span>
                       <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted sm:text-sm">

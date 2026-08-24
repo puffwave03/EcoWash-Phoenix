@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Link } from "@/i18n/navigation";
 import { Card } from "@/components/Card";
+import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { OrderPhoto } from "@/features/order-photos/types";
 import type {
@@ -20,6 +21,11 @@ import type {
   PaymentMethod,
   PaymentRecordStatus,
 } from "@/features/payments/types";
+import {
+  DEFAULT_PORTAL_MEDIA,
+  portalCategoryMedia,
+  type PortalMediaRegistry,
+} from "@/features/portal/media";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
 
 type StatusText = Record<ProductionStatus, string>;
@@ -67,6 +73,7 @@ type PortalOverviewProps = {
   activeOrders: CustomerPortalOrder[];
   customerName: string;
   locale: string;
+  media?: PortalMediaRegistry;
   nextTask: CustomerPortalNextTask | null;
   orders: CustomerPortalOrder[];
   services: CustomerPortalOrderService[];
@@ -76,6 +83,7 @@ type PortalOverviewProps = {
     assistance: string;
     currentOrder: string;
     categoryDescription: string;
+    categoryDescriptions: Record<string, string>;
     categoryLabels: Record<string, string>;
     fromPrice: string;
     greeting: string;
@@ -214,28 +222,39 @@ function OrderCard({
 function CategoryCard({
   category,
   locale,
+  media,
   services,
   text,
 }: {
   category: string;
   locale: string;
+  media: PortalMediaRegistry;
   services: CustomerPortalOrderService[];
   text: PortalOverviewProps["text"];
 }) {
   const lowestPrice = services.reduce((lowest, service) => service.amount < lowest.amount ? service : lowest);
-  const imagePath = services.find((service) => service.portalImagePath)?.portalImagePath ?? null;
   const label = catalogCategoryLabel(category, text.categoryLabels);
+  const categoryMedia = portalCategoryMedia(category, media);
+  const fallbackImagePath = services.find((service) => service.portalImagePath)?.portalImagePath ?? null;
 
   return (
     <article className="group overflow-hidden rounded-card border border-border bg-white shadow-[0_8px_28px_rgb(15_59_46_/_0.045)] transition-standard hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-card">
-      <div className="relative flex aspect-[16/8] items-center justify-center overflow-hidden border-b border-border bg-[linear-gradient(135deg,var(--color-primary-soft),#f8fbf9)] text-primary" data-portal-media-slot>
-        {imagePath ? <img alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={imagePath} /> : <svg aria-hidden="true" className="h-9 w-9" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>}
+      <PortalMedia
+        alt=""
+        className="aspect-[16/9] border-b border-border"
+        imageClassName="transition-transform duration-500 group-hover:scale-105"
+        objectPosition={categoryMedia?.objectPosition}
+        sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 33vw"
+        src={categoryMedia?.path ?? fallbackImagePath}
+      >
         <span className="absolute bottom-3 left-3 rounded-full border border-white/40 bg-white/90 px-3 py-1 text-xs font-semibold text-primary shadow-sm backdrop-blur">{services.length} {text.servicesCount}</span>
-      </div>
-      <div className="space-y-3 p-4">
+      </PortalMedia>
+      <div className="space-y-4 p-5">
         <div>
-          <h3 className="font-semibold text-foreground">{label}</h3>
-          <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{text.categoryDescription}</p>
+          <h3 className="text-lg font-semibold text-foreground">{label}</h3>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted">
+            {text.categoryDescriptions[category] ?? text.categoryDescription}
+          </p>
           <ul className="mt-3 space-y-1 text-xs text-muted">
             {services.slice(0, 2).map((service) => <li className="truncate" key={service.id}>• {service.name}</li>)}
           </ul>
@@ -340,6 +359,7 @@ export function CustomerPortalOverview({
   activeOrders,
   customerName,
   locale,
+  media = DEFAULT_PORTAL_MEDIA,
   nextTask,
   orders,
   services,
@@ -363,12 +383,28 @@ export function CustomerPortalOverview({
     totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
   } : null;
   const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured));
-  const heroImage = featuredCategories.flatMap((group) => group.items).find((service) => service.portalImagePath)?.portalImagePath ?? null;
+  const heroMedia = currentTask ? media.logistics : media.hero;
 
   return (
     <div className="space-y-9 sm:space-y-10">
       <section className="overflow-hidden rounded-[1.5rem] border border-primary/15 bg-white shadow-luxury">
         <div className="grid lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.55fr)]">
+          <PortalMedia
+            alt=""
+            className="aspect-[16/9] border-b border-primary/10 lg:order-2 lg:aspect-auto lg:min-h-[34rem] lg:border-b-0 lg:border-l"
+            imageClassName="transition-transform duration-700 hover:scale-[1.02]"
+            objectPosition={heroMedia.objectPosition}
+            overlayClassName="bg-gradient-to-t from-primary/25 via-transparent to-transparent"
+            priority
+            sizes="(max-width: 1023px) 100vw, 38vw"
+            src={heroMedia.path}
+          >
+            <div className="absolute bottom-4 left-4 right-4 flex justify-end">
+              <span className="rounded-full border border-white/50 bg-white/88 px-3 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur">
+                {currentTask ? (currentTask.kind === "pickup" ? text.pickup : text.delivery) : text.servicesDiscovery}
+              </span>
+            </div>
+          </PortalMedia>
           <div className="p-5 sm:p-7 lg:p-9">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
               {text.greeting}, {customerName}
@@ -450,13 +486,6 @@ export function CustomerPortalOverview({
             )}
           </div>
 
-          <div className="relative hidden min-h-80 items-center justify-center overflow-hidden border-l border-primary/10 bg-[radial-gradient(circle_at_top_right,#dcebe4,transparent_58%),linear-gradient(145deg,var(--color-primary-soft),#fbfcfb)] text-primary lg:flex" data-portal-media-slot>
-            {heroImage ? <img alt="" className="absolute inset-0 h-full w-full object-cover" src={heroImage} /> : null}
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/45 via-primary/5 to-transparent" />
-            <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-white/45 bg-white/80 shadow-card backdrop-blur">
-              <svg aria-hidden="true" className="h-14 w-14" fill="none" viewBox="0 0 24 24"><path d="M7 5h10l2 5-2 9H7l-2-9 2-5Zm-2 5h14M9 5V3m6 2V3m-6 11c2 1 4 1 6 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -524,7 +553,7 @@ export function CustomerPortalOverview({
         {featuredCategories.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {featuredCategories.slice(0, 6).map(({ category, items }) => (
-              <CategoryCard category={category} key={category} locale={locale} services={items} text={text} />
+              <CategoryCard category={category} key={category} locale={locale} media={media} services={items} text={text} />
             ))}
           </div>
         ) : (

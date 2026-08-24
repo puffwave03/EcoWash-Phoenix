@@ -1106,6 +1106,19 @@
     "fromPrice": "À partir de",
     "servicesCount": "services",
     "categoryDescription": "Découvrez les services disponibles et choisissez ce dont vous avez besoin.",
+    "categoryDescriptions": {
+      "laundry_by_weight": "Votre linge quotidien, lavé, séché et préparé avec soin.",
+      "ironing": "Une finition nette et professionnelle pour vêtements et linge de maison.",
+      "bed_linen": "Du linge de lit frais et soigné selon les standards de l’hospitalité.",
+      "home_textiles": "Un soin spécialisé pour couettes, serviettes, coussins et textiles de maison.",
+      "dry_cleaning": "Un nettoyage expert pour les vêtements exigeant précision et délicatesse.",
+      "leather": "Des traitements spécialisés pour les vêtements et accessoires en cuir.",
+      "rugs_bulky": "Un nettoyage professionnel pour tapis, couvertures et textiles volumineux.",
+      "self_service": "Des lave-linge et sèche-linge modernes pour un service autonome pratique.",
+      "professional_services": "Un soin textile et une logistique fiables pour les besoins professionnels.",
+      "special_services": "Des traitements dédiés aux tissus délicats et aux besoins particuliers.",
+      "traditional_ceremonial": "Un soin spécialisé et respectueux des tenues traditionnelles et de cérémonie."
+    },
     "unitTypes": { "piece": "article", "weight": "kg", "area": "m²", "cycle": "cycle", "service": "service", "day": "jour" },
     "categories": {
       "laundry_by_weight": "Lavage au kilo",

@@ -66,6 +66,7 @@ export default async function CustomerPortalPage({
           history: t("history"),
           historyLink: t("historyLink"),
           categoryDescription: catalogT("categoryDescription"),
+          categoryDescriptions: catalogT.raw("categoryDescriptions") as Record<string, string>,
           categoryLabels: catalogT.raw("categories") as Record<string, string>,
           fromPrice: catalogT("fromPrice"),
           inDelivery: t("inDelivery"),

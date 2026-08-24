@@ -1106,6 +1106,19 @@
     "fromPrice": "Ab",
     "servicesCount": "Leistungen",
     "categoryDescription": "Entdecken Sie die verfügbaren Leistungen und wählen Sie Ihren Bedarf.",
+    "categoryDescriptions": {
+      "laundry_by_weight": "Ihre Alltagswäsche, sorgfältig gewaschen, getrocknet und vorbereitet.",
+      "ironing": "Ein gepflegtes, professionelles Finish für Kleidung und Heimtextilien.",
+      "bed_linen": "Frische, glatte Bettwäsche mit Sorgfalt auf Hospitality-Niveau.",
+      "home_textiles": "Fachgerechte Pflege für Bettdecken, Handtücher, Kissen und Heimtextilien.",
+      "dry_cleaning": "Professionelle Reinigung für Kleidung, die präzise und schonende Pflege benötigt.",
+      "leather": "Spezialbehandlungen für Lederbekleidung und Accessoires.",
+      "rugs_bulky": "Professionelle Reinigung für Teppiche, Decken und voluminöse Textilien.",
+      "self_service": "Moderne Waschmaschinen und Trockner für einen bequemen Selbstbedienungsbesuch.",
+      "professional_services": "Zuverlässige Textilpflege und Logistik für professionelle Anforderungen.",
+      "special_services": "Spezielle Behandlungen für empfindliche Stoffe und besondere Anforderungen.",
+      "traditional_ceremonial": "Respektvolle Spezialpflege für traditionelle Kleidung und Festbekleidung."
+    },
     "unitTypes": { "piece": "Stück", "weight": "kg", "area": "m²", "cycle": "Waschgang", "service": "Leistung", "day": "Tag" },
     "categories": {
       "laundry_by_weight": "Wäsche nach Gewicht",

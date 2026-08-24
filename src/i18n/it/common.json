@@ -1106,6 +1106,19 @@
     "fromPrice": "Da",
     "servicesCount": "servizi",
     "categoryDescription": "Scopri i servizi disponibili e scegli ciò di cui hai bisogno.",
+    "categoryDescriptions": {
+      "laundry_by_weight": "Il bucato quotidiano, lavato, asciugato e preparato con cura.",
+      "ironing": "Una finitura impeccabile e professionale per capi e biancheria.",
+      "bed_linen": "Biancheria da letto fresca e ordinata con cura da hospitality.",
+      "home_textiles": "Cura specialistica per piumoni, asciugamani, cuscini e tessili casa.",
+      "dry_cleaning": "Pulizia esperta per i capi che richiedono un trattamento preciso e delicato.",
+      "leather": "Trattamenti specialistici per capi e accessori in pelle.",
+      "rugs_bulky": "Pulizia professionale per tappeti, coperte e tessili voluminosi.",
+      "self_service": "Lavatrici e asciugatrici moderne per un servizio comodo e autonomo.",
+      "professional_services": "Cura tessile e logistica affidabili per esigenze professionali.",
+      "special_services": "Trattamenti dedicati per tessuti delicati ed esigenze particolari.",
+      "traditional_ceremonial": "Cura specialistica e rispettosa per abiti tradizionali e da cerimonia."
+    },
     "unitTypes": { "piece": "capo", "weight": "kg", "area": "m²", "cycle": "ciclo", "service": "servizio", "day": "giorno" },
     "categories": {
       "laundry_by_weight": "Lavaggio al kg",

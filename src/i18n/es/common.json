@@ -1106,6 +1106,19 @@
     "fromPrice": "Desde",
     "servicesCount": "servicios",
     "categoryDescription": "Descubre los servicios disponibles y elige lo que necesitas.",
+    "categoryDescriptions": {
+      "laundry_by_weight": "Tu colada diaria, lavada, secada y preparada con cuidado.",
+      "ironing": "Un acabado impecable y profesional para prendas y ropa de hogar.",
+      "bed_linen": "Ropa de cama fresca y cuidada con calidad de hospitality.",
+      "home_textiles": "Cuidado especializado para edredones, toallas, cojines y textiles del hogar.",
+      "dry_cleaning": "Limpieza experta para prendas que requieren un tratamiento preciso y delicado.",
+      "leather": "Tratamientos especializados para prendas y accesorios de piel.",
+      "rugs_bulky": "Limpieza profesional para alfombras, mantas y textiles voluminosos.",
+      "self_service": "Lavadoras y secadoras modernas para un servicio cómodo y autónomo.",
+      "professional_services": "Cuidado textil y logística fiables para necesidades profesionales.",
+      "special_services": "Tratamientos dedicados para tejidos delicados y necesidades especiales.",
+      "traditional_ceremonial": "Cuidado especializado y respetuoso para prendas tradicionales y de ceremonia."
+    },
     "unitTypes": { "piece": "prenda", "weight": "kg", "area": "m²", "cycle": "ciclo", "service": "servicio", "day": "día" },
     "categories": {
       "laundry_by_weight": "Lavado por kilo",

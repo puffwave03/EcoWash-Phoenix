@@ -1,8 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
+import Image from "next/image";
+import type { CSSProperties, ReactNode } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import {
+  DEFAULT_PORTAL_BRAND,
+  type PortalBrandPresentation,
+} from "@/features/portal/media";
 import { Link, usePathname } from "@/i18n/navigation";
 
 type CustomerPortalShellText = {
@@ -17,6 +22,7 @@ type CustomerPortalShellText = {
 };
 
 type CustomerPortalShellProps = {
+  brand?: PortalBrandPresentation;
   children: ReactNode;
   customerName?: string;
   locale: string;
@@ -49,12 +55,18 @@ function PortalIcon({ icon }: { icon: PortalNavigationItem["icon"] }) {
 }
 
 export function CustomerPortalShell({
+  brand = DEFAULT_PORTAL_BRAND,
   children,
   customerName,
   locale,
   text,
 }: CustomerPortalShellProps) {
   const pathname = usePathname();
+  const brandStyle = {
+    ...(brand.primaryColor ? { "--color-primary": brand.primaryColor } : {}),
+    ...(brand.primarySoftColor ? { "--color-primary-soft": brand.primarySoftColor } : {}),
+    ...(brand.primaryStrongColor ? { "--color-primary-strong": brand.primaryStrongColor } : {}),
+  } as CSSProperties;
   const navigationItems: PortalNavigationItem[] = [
     { href: "/portal", icon: "overview", label: text.overview, match: "/portal" },
     { href: "/portal/orders", icon: "orders", label: text.orders, match: "/portal/orders" },
@@ -68,7 +80,7 @@ export function CustomerPortalShell({
   );
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,var(--color-primary-soft),transparent_28rem),#f4f7f4] text-foreground" data-customer-portal-shell>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,var(--color-primary-soft),transparent_28rem),#f4f7f4] text-foreground" data-customer-portal-shell style={brandStyle}>
       <header className="sticky top-0 z-40 border-b border-primary/10 bg-white/92 shadow-[0_4px_18px_rgb(15_59_46_/_0.035)] backdrop-blur-xl">
         <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:min-h-20 sm:px-6 lg:px-8">
           <Link
@@ -77,10 +89,21 @@ export function CustomerPortalShell({
             href="/portal"
             locale={locale}
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-logo bg-primary-soft text-primary ring-1 ring-inset ring-primary/10">
-              <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M19 4C11 5 6 9 5 17c4-3 8-4 13-4M5 17c2 0 4 1 5 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg>
+            <span className={`flex h-10 shrink-0 items-center justify-center rounded-logo bg-primary-soft text-primary ring-1 ring-inset ring-primary/10 ${brand.logoPath ? "w-20 px-2" : "w-10"}`}>
+              {brand.logoPath ? (
+                <Image
+                  alt={brand.logoAlt ?? ""}
+                  className="h-8 w-full object-contain"
+                  height={40}
+                  sizes="80px"
+                  src={brand.logoPath}
+                  width={96}
+                />
+              ) : (
+                <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M19 4C11 5 6 9 5 17c4-3 8-4 13-4M5 17c2 0 4 1 5 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg>
+              )}
             </span>
-            <span className="truncate text-base font-semibold tracking-tight text-foreground sm:text-lg">{text.title}</span>
+            <span className="truncate text-base font-semibold tracking-tight text-foreground sm:text-lg">{brand.name ?? text.title}</span>
           </Link>
 
           <nav aria-label={text.navigationLabel} className="hidden items-center gap-1 lg:flex">

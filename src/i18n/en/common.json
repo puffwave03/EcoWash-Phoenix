@@ -1106,6 +1106,19 @@
     "fromPrice": "From",
     "servicesCount": "services",
     "categoryDescription": "Explore the available services and choose what you need.",
+    "categoryDescriptions": {
+      "laundry_by_weight": "Everyday laundry, carefully washed, dried and prepared for you.",
+      "ironing": "A crisp, professional finish for garments and household linen.",
+      "bed_linen": "Fresh, smooth bed linen prepared with hospitality-level care.",
+      "home_textiles": "Specialist care for duvets, towels, cushions and home fabrics.",
+      "dry_cleaning": "Expert cleaning for garments that need precise, delicate handling.",
+      "leather": "Specialist treatment designed for leather garments and accessories.",
+      "rugs_bulky": "Professional cleaning for rugs, blankets and bulky textiles.",
+      "self_service": "Modern washers and dryers for a convenient self-service visit.",
+      "professional_services": "Reliable textile care and logistics for professional needs.",
+      "special_services": "Dedicated treatments for delicate fabrics and exceptional needs.",
+      "traditional_ceremonial": "Respectful specialist care for traditional and ceremonial garments."
+    },
     "unitTypes": { "piece": "item", "weight": "kg", "area": "m²", "cycle": "cycle", "service": "service", "day": "day" },
     "categories": {
       "laundry_by_weight": "Laundry by weight",
