@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-26
 
-Approximate closeout time: after CATALOG-SEGMENTS-001 authenticated staging validation
+Approximate closeout time: after CUSTOMER-ACCOUNT-001 authenticated staging validation
 
-Session checkpoint: organization-scoped customer segment quick catalogs completed and validated
+Session checkpoint: Owner/Manager Customer Account completed and validated with exact financial reconciliation
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `a3ae0c9 CATALOG-ADMIN-001 feat: add customer catalog administration`
+Approved baseline before this mission: `4cacad2 DOCS-SAAS-002 docs: record customer segments completion`
 
-Origin/main status: local `main` and `origin/main` include `6c6dd18 CATALOG-SEGMENTS-001 feat: add customer segment quick catalogs`.
+Origin/main status: local `main` and `origin/main` include `d407a36 CUSTOMER-ACCOUNT-001 feat: add customer financial account experience`.
 
-Working tree status before CATALOG-SEGMENTS-001: interrupted work recovered from `wip/catalog-segments-001`.
+Working tree status before CUSTOMER-ACCOUNT-001 closeout: interrupted implementation resumed in place without discarding approved changes.
 
-Closeout commit: `6c6dd18 CATALOG-SEGMENTS-001 feat: add customer segment quick catalogs`; working tree expected clean after documentation push.
+Application closeout commit: `d407a36 CUSTOMER-ACCOUNT-001 feat: add customer financial account experience`; working tree expected clean after documentation push.
 
 ---
 
@@ -65,6 +65,7 @@ Closeout commit: `6c6dd18 CATALOG-SEGMENTS-001 feat: add customer segment quick 
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
 - PORTAL-002.1 — Customer Order Request + Pickup
 - CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs
+- CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -116,6 +117,7 @@ Completed on EcoWash Staging:
 - Portal Auth/access hardening is complete: direct linked-user validation replaces the fragile global Auth user list and email/Auth failures remain controlled application errors.
 - Automatic deploy from `main` to the Vercel staging project is working.
 - CATALOG-SEGMENTS-001 migration `20260824000600` is applied and aligned; authenticated Owner/Manager/Staff/Portal and tenant-isolation checks passed with temporary fixtures fully removed.
+- CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; authenticated Owner/Manager access, Staff denial, tenant isolation and exact order/payment/balance reconciliation passed with temporary fixtures fully removed.
 
 Applied baseline migrations:
 
@@ -150,7 +152,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260824000600`; CATALOG-SEGMENTS-001 is applied to staging.
+Supabase migration history is aligned through `20260826000100`; CUSTOMER-ACCOUNT-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -204,14 +206,22 @@ Available now:
 - Owner/Manager segment management and customer assignment; Staff is denied
 - personalized Portal and New Order quick catalogs that reference existing services/categories while the complete organization catalog remains available
 - no segment-specific prices; current organization service prices and global visibility/orderability rules remain authoritative
+- premium Owner/Manager Customer Account at `/[locale]/app/customers/[customerId]`
+- server-side, per-currency lifetime order value, confirmed payments, refunds, net paid and outstanding balances using existing order/payment semantics
+- bounded recent/current-year/all order and payment histories, properties, primary segment, Portal access and billing-readiness context
+- Staff is denied the broad financial Customer Account; its existing operational customer context is unchanged
 
-Next approved macro task: `CUSTOMER-ACCOUNT-001` — extend the existing customer detail/account foundation without duplicating customer, property, segment or financial data.
+Next approved macro task: `CUSTOMER-LIFECYCLE-001`, followed by `BILLING-001`.
+
+Lifecycle recommendation recorded by CUSTOMER-ACCOUNT-001: `ACTIVE → INACTIVE → ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe`. Future lifecycle work must preserve or explicitly govern references from properties, Portal access, segment assignment, orders, order items/status history, payments/refunds, pickups, deliveries, photos/files, audit history and future invoices. No anonymization or permanent deletion was implemented.
+
+Billing foundation recorded by CUSTOMER-ACCOUNT-001: no invoice/document model exists yet. BILLING-001 should associate organization → customer → one or more orders → invoice/document → payments without treating an order or payment as an invoice.
 
 Role summary:
 
 - `owner`: full Control Center, Orders, operational workspaces, Staff & Access, Alerts, Daily Close and capability management; all operational capabilities are available.
-- `manager`: Control Center, Orders, My Day, Alerts and operational supervision; no Staff Access Management, and direct `/[locale]/app/staff` access is denied or redirected.
-- `staff`: capability-based navigation and assignment-scoped work; `/[locale]/app` redirects server-side to `/[locale]/app/work` before owner data loads; no Control Center or Staff Access Management.
+- `manager`: Control Center, Orders, My Day, Alerts, operational supervision and full Customer Account access; no Branding or Staff Access Management, and direct privileged access is denied or redirected.
+- `staff`: capability-based navigation and assignment-scoped work; `/[locale]/app` redirects server-side to `/[locale]/app/work` before owner data loads; no Control Center, Staff Access Management or broad financial Customer Account.
 - `customer`: separate portal user linked to `customers`, never an `organization_memberships` role.
 
 Test data notes:

@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-26
 
-Current Mission: CATALOG-SEGMENTS-001 completed and validated
+Current Mission: CUSTOMER-ACCOUNT-001 completed and validated
 
-Next Action: CUSTOMER-ACCOUNT-001
+Next Action: CUSTOMER-LIFECYCLE-001, then BILLING-001
 
 ---
 
@@ -239,6 +239,7 @@ Scope:
 - OPS-001.3 — Work Assignment MVP, completed
 - OPS-001.4 — Staff Management MVP, completed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
+- CUSTOMER-ACCOUNT-001 — Owner/Manager customer identity, properties, segment, Portal state, lifetime order value, payment history and outstanding balances, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -247,6 +248,8 @@ Scope:
 - UI-MOBILE-001, UI-BUG-004 and UI-FORMAT-005 — mobile, navigation and numeric-format refinement, completed
 - BUG-PROD-006 — terminal operational transition redirects, completed
 - AUTH-INFRA-001 — Resend Custom SMTP enabled and operational for Supabase Auth
+- CUSTOMER-LIFECYCLE-001 — next; safe deactivate/anonymize/retention strategy across customer dependencies
+- BILLING-001 — follows lifecycle; real invoice/document model linked to organization, customer, orders and payments
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -256,6 +259,7 @@ Current staging validation checkpoint:
 - Supabase Custom SMTP through Resend is operational; a real Auth email was sent and received. The configured limit is 30 emails/hour, while endpoint-specific throttling remains independent.
 - `QA-001` is the next existing M1/P0 gate. After it is prepared, the Product Owner selects full-app visual/product refinement or the next approved business module.
 - Old test orders remain intentionally untouched; do not create more fixtures unless a verified gap requires one.
+- CUSTOMER-ACCOUNT-001 is applied through migration `20260826000100`; Owner/Manager access, Staff denial, tenant isolation and exact financial reconciliation passed, with all temporary fixtures removed.
 
 PILOT-001 planning scope:
 
