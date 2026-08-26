@@ -120,8 +120,9 @@ test("customer account integrates properties, segments, Portal and truthful bill
   assert.match(view, /CustomerSegmentAssignmentPanel/);
   assert.match(view, /CustomerPortalAccessPanel/);
   assert.match(view, /segmentAssignment\.segments\.find/);
-  assert.match(view, /billing\.notConfigured/);
-  assert.doesNotMatch(view, /Create invoice|Crea fattura|invoiceAction/);
+  assert.match(view, /CustomerBillingSection/);
+  assert.match(view, /billing\.manage/);
+  assert.doesNotMatch(view, /billing\.notConfigured/);
 });
 
 test("customer quick order action safely preselects an active known customer", async () => {

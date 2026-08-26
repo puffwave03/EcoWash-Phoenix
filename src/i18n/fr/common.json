@@ -139,6 +139,7 @@
       "overview": "Vue d'ensemble",
       "work": "Ma journée",
       "customers": "Clients",
+      "billing": "Facturation",
       "orders": "Commandes",
       "production": "Production",
       "quality": "Qualité",
@@ -1159,6 +1160,26 @@
       "error": "Le client n'a pas pu être enregistré."
     }
   },
+  "billing": {
+    "eyebrow": "Documents commerciaux", "title": "Facturation", "description": "Créez, émettez et consultez des factures propres au tenant sans modifier l’historique des commandes ou paiements.", "saved": "Modifications de facturation enregistrées.", "draftNumber": "Brouillon · numéro attribué à l’émission", "empty": "Aucune facture ne correspond à cette vue.",
+    "actions": {"create": "Créer une facture", "printView": "Vue imprimable", "print": "Imprimer / Enregistrer en PDF", "saveDraft": "Enregistrer le brouillon", "issue": "Émettre la facture", "deleteDraft": "Supprimer le brouillon", "cancel": "Annuler la facture"},
+    "summary": {"invoices": "Factures", "drafts": "Brouillons", "issued": "Montant émis", "outstanding": "À encaisser"},
+    "settings": {"eyebrow": "Configuration de l’émetteur", "title": "Identité légale de facturation", "description": "Identité neutre du tenant et valeurs par défaut figées à l’émission.", "ready": "Prête à émettre", "missing": "Configuration requise", "managerMissing": "La configuration de l’émetteur est incomplète. Un Owner doit la terminer avant l’émission.", "legalName": "Raison sociale", "taxId": "Identifiant fiscal", "addressLine1": "Adresse 1", "addressLine2": "Adresse 2", "city": "Ville", "region": "Région", "postalCode": "Code postal", "countryCode": "Code pays", "email": "E-mail de facturation", "phone": "Téléphone de facturation", "defaultSeries": "Série par défaut", "defaultTaxRate": "Taux de taxe par défaut %", "save": "Enregistrer l’émetteur"},
+    "filters": {"search": "Rechercher", "placeholder": "Facture, client ou commande", "all": "Tous les statuts", "apply": "Appliquer"},
+    "statuses": {"draft": "Brouillon", "unpaid": "Impayée", "partially_paid": "Partiellement payée", "paid": "Payée", "cancelled": "Annulée"},
+    "errors": {"generic": "Impossible de terminer cette action de facturation.", "issuer": "Complétez l’identité légale de l’émetteur avant l’émission.", "customer": "Complétez les données de facturation du client avant l’émission.", "duplicate": "Une commande appartient déjà à une facture active.", "unauthorized": "Ce compte ne peut pas administrer la facturation.", "orders": "Sélectionnez des commandes valides, non annulées, du même client et dans la même devise."},
+    "create": {"title": "Créer un brouillon de facture", "description": "Sélectionnez une ou plusieurs commandes éligibles du même client et dans la même devise. Les valeurs sont figées dans le brouillon.", "settingsWarning": "Vous pouvez préparer le brouillon, mais complétez l’émetteur avant l’émission.", "form": {"empty": "Aucune commande éligible n’est disponible pour la facturation.", "inactiveNote": "La facturation historique est autorisée sans réactiver ce client.", "available": "{count} commandes éligibles", "series": "Série", "taxRate": "Taux de taxe %", "notes": "Notes", "create": "Créer le brouillon"}},
+    "detail": {"back": "Retour à la facturation"},
+    "document": {"invoice": "Facture", "issuerPending": "Identité de l’émetteur en attente", "addressPending": "Adresse en attente", "billTo": "Facturer à", "linkedOrders": "Commandes liées", "noNotes": "Aucune note de document."},
+    "fields": {"issueDate": "Date d’émission", "dueDate": "Échéance", "series": "Série", "status": "Statut", "taxId": "Identifiant fiscal", "notes": "Notes", "taxRate": "Taux de taxe %"},
+    "items": {"description": "Description", "quantity": "Quantité", "unitPrice": "Prix unitaire", "discount": "Remise", "tax": "Taxe", "total": "Total"}, "units": {"piece": "pce", "weight": "kg"},
+    "totals": {"subtotal": "Sous-total", "discount": "Remise", "taxable": "Base taxable", "tax": "Taxe", "total": "Total facture", "paid": "Payé confirmé", "outstanding": "À encaisser"},
+    "draftEdit": {"title": "Réviser le brouillon", "description": "Seuls les métadonnées sûres et le taux de taxe neutre sont modifiables avant émission."},
+    "issue": {"title": "Émettre le document", "description": "L’émission valide le client et l’émetteur, attribue le numéro définitif et verrouille l’instantané financier."},
+    "cancel": {"title": "Annuler la facture émise", "description": "L’annulation conserve le numéro et l’historique. Les avoirs formels ne font pas partie de cette version.", "reason": "Motif d’annulation"},
+    "payments": {"title": "Paiements des commandes liées"},
+    "paymentMethods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement", "other": "Autre"}, "paymentRecords": {"pending": "En attente", "confirmed": "Confirmé", "void": "Annulé", "refunded": "Remboursé"}
+  },
   "customerAccount": {
     "notAvailable": "Non disponible", "customerCode": "Code client", "segment": "Segment", "noSegment": "Aucun segment", "lastActivity": "Dernière activité",
     "actions": {"createOrder": "Créer une commande", "addProperty": "Ajouter une propriété", "accountAdmin": "Paramètres du compte"},
@@ -1168,7 +1189,8 @@
     "payments": {"title": "Historique des paiements", "description": "Paiements réels, remboursements et écritures annulées inclus.", "empty": "Aucun paiement sur cette période.", "method": "Mode", "order": "Commande"},
     "properties": {"title": "Propriétés", "description": "{count} propriétés liées à ce client."},
     "admin": {"eyebrow": "Compte et administration", "title": "Paramètres de la relation", "description": "Gérez le segment, l’accès au Portail et les actions sûres du cycle de vie.", "relationship": "Segment et Portail client"},
-    "billing": {"eyebrow": "Base de facturation", "title": "Données de facturation", "noAddress": "Aucune adresse de facturation enregistrée.", "notConfigured": "La facturation n’est pas encore configurée"},
+    "billing": {"eyebrow": "Base de facturation", "title": "Données de facturation", "noAddress": "Aucune adresse de facturation enregistrée.", "notConfigured": "La facturation n’est pas encore configurée", "manage": "Gérer les factures"},
+    "billingSection": {"eyebrow": "Documents commerciaux", "title": "Factures", "description": "Documents émis, paiements confirmés et montants à encaisser liés au client.", "create": "Créer une facture", "count": "Factures", "issued": "Émis", "paid": "Payé", "outstanding": "À encaisser", "empty": "Aucune facture pour ce client.", "noEligible": "Aucune commande valide et non annulée n’est disponible pour une nouvelle facture.", "draft": "Brouillon", "status_draft": "Brouillon", "status_unpaid": "Impayée", "status_partially_paid": "Partiellement payée", "status_paid": "Payée", "status_cancelled": "Annulée"},
     "lifecycle": {
       "eyebrow": "Cycle de vie", "title": "État du compte", "description": "Contrôles sûrs du cycle de vie et éligibilité selon les dépendances.",
       "activeDescription": "Le client peut être sélectionné pour de nouvelles commandes et utiliser un accès Portail explicitement activé.",

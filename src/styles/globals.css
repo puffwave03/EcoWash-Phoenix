@@ -34,6 +34,24 @@
   --transition-standard: 180ms ease;
 }
 
+@media print {
+  body:has(.invoice-print-document) * {
+    visibility: hidden;
+  }
+
+  body:has(.invoice-print-document) .invoice-print-document,
+  body:has(.invoice-print-document) .invoice-print-document * {
+    visibility: visible;
+  }
+
+  .invoice-print-document {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+  }
+}
+
 @theme inline {
   --color-primary: var(--color-primary);
   --color-forest-deep: var(--color-forest-deep);

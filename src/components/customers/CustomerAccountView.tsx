@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { CustomerBillingSection } from "@/components/billing/CustomerBillingSection";
 import { CustomerPortalAccessPanel } from "@/components/customers/CustomerPortalAccessPanel";
 import { CustomerLifecycleControl } from "@/components/customers/CustomerLifecycleControl";
 import { CustomerSegmentAssignmentPanel } from "@/components/customers/CustomerSegmentAssignmentPanel";
@@ -16,6 +17,7 @@ import type {
   CustomerAccountFinancials,
   CustomerAccountPeriod,
 } from "@/features/customer-account/types";
+import type { CustomerBillingOverview } from "@/features/billing/types";
 import type {
   CustomerLifecycleBlockingReason,
   CustomerLifecycleEligibility,
@@ -78,6 +80,7 @@ function address(customer: Customer) {
 }
 
 export async function CustomerAccountView({
+  billingOverview,
   customer,
   eligibility,
   financials,
@@ -88,6 +91,7 @@ export async function CustomerAccountView({
   properties,
   segmentAssignment,
 }: {
+  billingOverview: CustomerBillingOverview;
   customer: Customer;
   eligibility: CustomerLifecycleEligibility | null;
   financials: CustomerAccountFinancials;
@@ -111,6 +115,7 @@ export async function CustomerAccountView({
   const lastActivity = latestDate([
     customer.updatedAt,
     portalAccess?.updatedAt ?? null,
+    ...billingOverview.recentInvoices.map((invoice) => invoice.issuedAt ?? invoice.createdAt),
     ...financials.summaries.flatMap((summary) => [summary.lastOrderAt, summary.lastPaymentAt]),
   ]);
   const billingAddress = address(customer);
@@ -206,6 +211,13 @@ export async function CustomerAccountView({
           </div>
         ))}
       </section>
+
+      <CustomerBillingSection
+        customerId={customer.id}
+        locale={locale}
+        overview={billingOverview}
+        text={t.raw("billingSection") as Record<string, string>}
+      />
 
       <nav className="flex flex-wrap gap-2" aria-label={t("history.filterLabel")}>
         {(["recent", "year", "all"] as const).map((value) => (
@@ -335,7 +347,7 @@ export async function CustomerAccountView({
             <div><p className="text-xs font-semibold uppercase tracking-[0.1em] text-secondary">{t("billing.eyebrow")}</p><h3 className="mt-1 text-lg font-semibold text-primary">{t("billing.title")}</h3></div>
             <p className="text-sm leading-6 text-muted">{billingAddress || t("billing.noAddress")}</p>
             {customer.taxId ? <p className="text-sm text-muted">{customerText("taxId")}: <span className="font-semibold text-primary">{customer.taxId}</span></p> : null}
-            <p className="rounded-control border border-dashed border-border bg-[#fafbfa] px-4 py-3 text-sm font-semibold text-muted">{t("billing.notConfigured")}</p>
+            <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline" href={`/app/billing/new?customerId=${customer.id}`} locale={locale}>{t("billing.manage")} →</Link>
           </Card>
           <CustomerLifecycleControl
             deactivateAction={deactivateCustomerAction.bind(null, locale, customer.id)}

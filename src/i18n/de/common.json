@@ -139,6 +139,7 @@
       "overview": "Übersicht",
       "work": "Mein Tag",
       "customers": "Kunden",
+      "billing": "Abrechnung",
       "orders": "Aufträge",
       "production": "Produktion",
       "quality": "Qualität",
@@ -1159,6 +1160,26 @@
       "error": "Der Kunde konnte nicht gespeichert werden."
     }
   },
+  "billing": {
+    "eyebrow": "Geschäftsdokumente", "title": "Abrechnung", "description": "Mandantenbezogene Rechnungen erstellen, ausstellen und prüfen, ohne Auftrags- oder Zahlungshistorie zu verändern.", "saved": "Abrechnungsänderungen gespeichert.", "draftNumber": "Entwurf · Nummer bei Ausstellung", "empty": "Keine Rechnungen für diese Ansicht.",
+    "actions": {"create": "Rechnung erstellen", "printView": "Druckansicht", "print": "Drucken / Als PDF speichern", "saveDraft": "Entwurf speichern", "issue": "Rechnung ausstellen", "deleteDraft": "Entwurf löschen", "cancel": "Rechnung stornieren"},
+    "summary": {"invoices": "Rechnungen", "drafts": "Entwürfe", "issued": "Ausgestellter Betrag", "outstanding": "Offen"},
+    "settings": {"eyebrow": "Ausstellerkonfiguration", "title": "Rechtliche Rechnungsidentität", "description": "Neutrale Mandantenidentität und Standardwerte, die bei Ausstellung festgeschrieben werden.", "ready": "Bereit zur Ausstellung", "missing": "Konfiguration erforderlich", "managerMissing": "Die Ausstellerkonfiguration ist unvollständig. Ein Owner muss sie vor der Ausstellung ergänzen.", "legalName": "Rechtlicher Name", "taxId": "Steuer-ID", "addressLine1": "Adresszeile 1", "addressLine2": "Adresszeile 2", "city": "Stadt", "region": "Region", "postalCode": "Postleitzahl", "countryCode": "Ländercode", "email": "Rechnungs-E-Mail", "phone": "Rechnungstelefon", "defaultSeries": "Standardserie", "defaultTaxRate": "Standardsteuersatz %", "save": "Aussteller speichern"},
+    "filters": {"search": "Suchen", "placeholder": "Rechnung, Kunde oder Auftrag", "all": "Alle Status", "apply": "Anwenden"},
+    "statuses": {"draft": "Entwurf", "unpaid": "Unbezahlt", "partially_paid": "Teilweise bezahlt", "paid": "Bezahlt", "cancelled": "Storniert"},
+    "errors": {"generic": "Die Abrechnungsaktion konnte nicht abgeschlossen werden.", "issuer": "Vervollständigen Sie vor der Ausstellung die rechtliche Ausstelleridentität.", "customer": "Vervollständigen Sie vor der Ausstellung die Rechnungsdaten des Kunden.", "duplicate": "Einer der Aufträge gehört bereits zu einer aktiven Rechnung.", "unauthorized": "Dieses Konto darf die Abrechnung nicht verwalten.", "orders": "Wählen Sie gültige, nicht stornierte Aufträge desselben Kunden und derselben Währung."},
+    "create": {"title": "Rechnungsentwurf erstellen", "description": "Wählen Sie einen oder mehrere geeignete Aufträge desselben Kunden und derselben Währung. Die Werte werden im Entwurf festgeschrieben.", "settingsWarning": "Der Entwurf kann vorbereitet werden; vor der Ausstellung müssen die Ausstellerdaten vollständig sein.", "form": {"empty": "Keine geeigneten Aufträge zur Rechnungsstellung verfügbar.", "inactiveNote": "Historische Abrechnung ist ohne Reaktivierung dieses Kunden zulässig.", "available": "{count} geeignete Aufträge", "series": "Serie", "taxRate": "Steuersatz %", "notes": "Notizen", "create": "Entwurf erstellen"}},
+    "detail": {"back": "Zurück zur Abrechnung"},
+    "document": {"invoice": "Rechnung", "issuerPending": "Ausstelleridentität ausstehend", "addressPending": "Adresse ausstehend", "billTo": "Rechnung an", "linkedOrders": "Verknüpfte Aufträge", "noNotes": "Keine Dokumentnotizen."},
+    "fields": {"issueDate": "Ausstellungsdatum", "dueDate": "Fälligkeitsdatum", "series": "Serie", "status": "Status", "taxId": "Steuer-ID", "notes": "Notizen", "taxRate": "Steuersatz %"},
+    "items": {"description": "Beschreibung", "quantity": "Menge", "unitPrice": "Einzelpreis", "discount": "Rabatt", "tax": "Steuer", "total": "Gesamt"}, "units": {"piece": "Stk.", "weight": "kg"},
+    "totals": {"subtotal": "Zwischensumme", "discount": "Rabatt", "taxable": "Steuerbasis", "tax": "Steuer", "total": "Rechnungssumme", "paid": "Bestätigt bezahlt", "outstanding": "Offen"},
+    "draftEdit": {"title": "Entwurf prüfen", "description": "Vor der Ausstellung können nur sichere Metadaten und der neutrale Steuersatz geändert werden."},
+    "issue": {"title": "Dokument ausstellen", "description": "Die Ausstellung validiert Kunde und Aussteller, vergibt die endgültige Nummer und sperrt den Finanz-Snapshot."},
+    "cancel": {"title": "Ausgestellte Rechnung stornieren", "description": "Die Stornierung bewahrt Nummer und Historie. Formelle Gutschriften sind nicht Teil dieser Version.", "reason": "Stornierungsgrund"},
+    "payments": {"title": "Zahlungen der verknüpften Aufträge"},
+    "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Überweisung", "other": "Andere"}, "paymentRecords": {"pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Ungültig", "refunded": "Erstattet"}
+  },
   "customerAccount": {
     "notAvailable": "Nicht verfügbar", "customerCode": "Kundencode", "segment": "Segment", "noSegment": "Kein Segment", "lastActivity": "Letzte Aktivität",
     "actions": {"createOrder": "Auftrag erstellen", "addProperty": "Objekt hinzufügen", "accountAdmin": "Kontoeinstellungen"},
@@ -1168,7 +1189,8 @@
     "payments": {"title": "Zahlungshistorie", "description": "Tatsächliche Zahlungen einschließlich Erstattungen und stornierter Einträge.", "empty": "Keine Zahlungen in diesem Zeitraum.", "method": "Methode", "order": "Auftrag"},
     "properties": {"title": "Objekte", "description": "{count} Objekte sind mit diesem Kunden verknüpft."},
     "admin": {"eyebrow": "Konto und Verwaltung", "title": "Beziehungseinstellungen", "description": "Segment, Portalzugang und sichere Lebenszyklusaktionen verwalten.", "relationship": "Segment und Kundenportal"},
-    "billing": {"eyebrow": "Abrechnungsgrundlage", "title": "Abrechnungsdaten", "noAddress": "Keine Rechnungsadresse gespeichert.", "notConfigured": "Abrechnung ist noch nicht konfiguriert"},
+    "billing": {"eyebrow": "Abrechnungsgrundlage", "title": "Abrechnungsdaten", "noAddress": "Keine Rechnungsadresse gespeichert.", "notConfigured": "Abrechnung ist noch nicht konfiguriert", "manage": "Rechnungen verwalten"},
+    "billingSection": {"eyebrow": "Geschäftsdokumente", "title": "Rechnungen", "description": "Ausgestellte Dokumente, bestätigte Zahlungen und offene Beträge dieses Kunden.", "create": "Rechnung erstellen", "count": "Rechnungen", "issued": "Ausgestellt", "paid": "Bezahlt", "outstanding": "Offen", "empty": "Noch keine Rechnungen für diesen Kunden.", "noEligible": "Keine gültigen, nicht stornierten Aufträge für eine neue Rechnung verfügbar.", "draft": "Entwurf", "status_draft": "Entwurf", "status_unpaid": "Unbezahlt", "status_partially_paid": "Teilweise bezahlt", "status_paid": "Bezahlt", "status_cancelled": "Storniert"},
     "lifecycle": {
       "eyebrow": "Lebenszyklus", "title": "Kontostatus", "description": "Sichere Lebenszyklussteuerung und Abhängigkeitsprüfung.",
       "activeDescription": "Der Kunde kann für neue Aufträge ausgewählt werden und einen ausdrücklich aktivierten Portalzugang nutzen.",

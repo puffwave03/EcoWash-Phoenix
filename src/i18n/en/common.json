@@ -139,6 +139,7 @@
       "overview": "Overview",
       "work": "My Day",
       "customers": "Customers",
+      "billing": "Billing",
       "orders": "Orders",
       "production": "Production",
       "quality": "Quality",
@@ -1159,6 +1160,39 @@
       "error": "The customer could not be saved."
     }
   },
+  "billing": {
+    "eyebrow": "Commercial documents",
+    "title": "Billing",
+    "description": "Create, issue and review tenant-scoped invoices without changing order or payment history.",
+    "saved": "Billing changes saved.",
+    "draftNumber": "Draft · number assigned on issue",
+    "empty": "No invoices match this view.",
+    "actions": {"create": "Create invoice", "printView": "Printable view", "print": "Print / Save PDF", "saveDraft": "Save draft", "issue": "Issue invoice", "deleteDraft": "Delete draft", "cancel": "Cancel invoice"},
+    "summary": {"invoices": "Invoices", "drafts": "Drafts", "issued": "Issued amount", "outstanding": "Outstanding"},
+    "settings": {
+      "eyebrow": "Issuer configuration", "title": "Legal billing identity", "description": "Neutral tenant-level identity and defaults used when an invoice is issued.", "ready": "Ready to issue", "missing": "Configuration required", "managerMissing": "Issuer configuration is incomplete. An owner must complete it before an invoice can be issued.",
+      "legalName": "Legal name", "taxId": "Tax / fiscal ID", "addressLine1": "Address line 1", "addressLine2": "Address line 2", "city": "City", "region": "Region", "postalCode": "Postal code", "countryCode": "Country code", "email": "Billing email", "phone": "Billing phone", "defaultSeries": "Default series", "defaultTaxRate": "Default tax rate %", "save": "Save issuer settings"
+    },
+    "filters": {"search": "Search", "placeholder": "Invoice, customer or order", "all": "All statuses", "apply": "Apply"},
+    "statuses": {"draft": "Draft", "unpaid": "Unpaid", "partially_paid": "Partially paid", "paid": "Paid", "cancelled": "Cancelled"},
+    "errors": {"generic": "Billing could not complete this action.", "issuer": "Complete the issuer legal identity before issue.", "customer": "Complete the customer billing identity before issue.", "duplicate": "One of these orders already belongs to an active invoice.", "unauthorized": "This account cannot administer Billing.", "orders": "Select valid, non-cancelled orders for the same customer and currency."},
+    "create": {
+      "title": "Create invoice draft", "description": "Select one or more eligible orders for the same customer and currency. Values are snapshotted into the draft.", "settingsWarning": "You can prepare a draft, but complete the issuer configuration before issue.",
+      "form": {"empty": "No eligible orders are available for invoicing.", "inactiveNote": "Historical billing is allowed without reactivating this customer.", "available": "{count} eligible orders", "series": "Series", "taxRate": "Tax rate %", "notes": "Notes", "create": "Create draft"}
+    },
+    "detail": {"back": "Back to Billing"},
+    "document": {"invoice": "Invoice", "issuerPending": "Issuer identity pending", "addressPending": "Address pending", "billTo": "Bill to", "linkedOrders": "Linked orders", "noNotes": "No document notes."},
+    "fields": {"issueDate": "Issue date", "dueDate": "Due date", "series": "Series", "status": "Status", "taxId": "Tax ID", "notes": "Notes", "taxRate": "Tax rate %"},
+    "items": {"description": "Description", "quantity": "Quantity", "unitPrice": "Unit price", "discount": "Discount", "tax": "Tax", "total": "Total"},
+    "units": {"piece": "pc", "weight": "kg"},
+    "totals": {"subtotal": "Subtotal", "discount": "Discount", "taxable": "Taxable base", "tax": "Tax", "total": "Invoice total", "paid": "Confirmed paid", "outstanding": "Outstanding"},
+    "draftEdit": {"title": "Review draft", "description": "Only safe draft metadata and the neutral tax rate can be changed before issue."},
+    "issue": {"title": "Issue document", "description": "Issue validates customer and issuer identity, assigns the definitive number and locks the financial snapshot."},
+    "cancel": {"title": "Cancel issued invoice", "description": "Cancellation preserves the number and history. Formal credit notes are not part of this release.", "reason": "Cancellation reason"},
+    "payments": {"title": "Payment records from linked orders"},
+    "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"},
+    "paymentRecords": {"pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"}
+  },
   "customerAccount": {
     "notAvailable": "Not available",
     "customerCode": "Customer code",
@@ -1177,7 +1211,8 @@
     "payments": {"title": "Payment history", "description": "Actual payment records, including refunds and void entries.", "empty": "No payments in this period.", "method": "Method", "order": "Order"},
     "properties": {"title": "Properties", "description": "{count} properties linked to this customer."},
     "admin": {"eyebrow": "Account and administration", "title": "Relationship settings", "description": "Manage the segment, Portal access and safe lifecycle actions.", "relationship": "Segment and customer Portal"},
-    "billing": {"eyebrow": "Billing foundation", "title": "Billing details", "noAddress": "No billing address saved.", "notConfigured": "Billing is not configured yet"},
+    "billing": {"eyebrow": "Billing foundation", "title": "Billing details", "noAddress": "No billing address saved.", "notConfigured": "Billing is not configured yet", "manage": "Manage invoices"},
+    "billingSection": {"eyebrow": "Commercial documents", "title": "Invoices", "description": "Issued documents, confirmed payments and outstanding values connected to this customer.", "create": "Create invoice", "count": "Invoices", "issued": "Issued", "paid": "Paid", "outstanding": "Outstanding", "empty": "No invoices for this customer yet.", "noEligible": "No eligible non-cancelled orders are currently available for a new invoice.", "draft": "Draft", "status_draft": "Draft", "status_unpaid": "Unpaid", "status_partially_paid": "Partially paid", "status_paid": "Paid", "status_cancelled": "Cancelled"},
     "lifecycle": {
       "eyebrow": "Lifecycle", "title": "Account state", "description": "Safe customer lifecycle controls and dependency eligibility.",
       "activeDescription": "This customer can be selected for new orders and can use an explicitly enabled Portal access.",

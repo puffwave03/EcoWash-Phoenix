@@ -31,6 +31,7 @@ export default async function DashboardLayout({
       locale={locale}
       text={{
         alerts: t("alerts"),
+        billing: t("billing"),
         branding: t("branding"),
         catalogAdmin: t("catalogAdmin"),
         controlCenter: t("controlCenter"),

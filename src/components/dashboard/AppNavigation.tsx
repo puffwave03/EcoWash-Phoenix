@@ -8,6 +8,7 @@ import type { AppRole } from "@/lib/auth/types";
 
 type AppNavigationText = {
   alerts: string;
+  billing: string;
   branding: string;
   catalogAdmin: string;
   controlCenter: string;
@@ -145,6 +146,7 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
+            { href: "/app/billing", label: text.billing, match: "/app/billing" },
             { href: "/app/services", label: text.services, match: "/app/services" },
             { href: "/app/settings/catalog", label: text.catalogAdmin, match: "/app/settings/catalog" },
             ...(role === "owner"
