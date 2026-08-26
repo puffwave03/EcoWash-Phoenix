@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-26
 
-Current Mission: CUSTOMER-ACCOUNT-001 customer financial account completed and validated
+Current Mission: CUSTOMER-LIFECYCLE-001 safe customer lifecycle completed and validated
 
-Next Action: CUSTOMER-LIFECYCLE-001, then BILLING-001
+Next Action: BILLING-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | CUSTOMER-ACCOUNT-001 authenticated staging validation and cleanup passed |
-| Last completed implementation mission | CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience |
-| Approved baseline before current closeout | d407a36 |
+| Current mission | CUSTOMER-LIFECYCLE-001 authenticated staging validation and cleanup passed |
+| Last completed implementation mission | CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management |
+| Approved baseline before current closeout | ec52ebf |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -71,6 +71,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PORTAL-002.1 status | Completed; Product Owner E2E passed |
 | CATALOG-SEGMENTS-001 status | Completed, applied to staging, authenticated E2E passed and pushed |
 | CUSTOMER-ACCOUNT-001 status | Completed, applied through 20260826000100, exact financial E2E passed and pushed |
+| CUSTOMER-LIFECYCLE-001 status | Completed, applied through 20260826000200, authenticated lifecycle E2E passed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -86,8 +87,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned through 20260826000100; Customer Account aggregates the existing tenant-scoped order/payment truth per currency |
-| Commercial readiness | Owner/Manager can evaluate customer value, paid amount, balance, orders, payments, properties, segment and Portal state; CUSTOMER-LIFECYCLE-001 is next, followed by BILLING-001 |
+| Backend/SaaS implementation | Supabase Staging connected and aligned through 20260826000200; customer lifecycle transitions preserve history and enforce Portal/order eligibility server-side |
+| Commercial readiness | Owner/Manager can manage safe active/inactive customer lifecycle; anonymization and hard delete remain unavailable; BILLING-001 is next |
 
 ## Operational Access Testing Checkpoint
 
@@ -922,13 +923,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da CUSTOMER-ACCOUNT-001 validato e avviamo CUSTOMER-LIFECYCLE-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da CUSTOMER-LIFECYCLE-001 validato e avviamo BILLING-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- CUSTOMER-ACCOUNT-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
+- CUSTOMER-LIFECYCLE-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -939,7 +940,8 @@ Exact starting state:
 - Customer-created `EW-000005` validates the customer → operational order → pickup path
 - PORTAL-002.1 migrations `20260823000100` and `20260823000200` are applied to staging and aligned
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied to staging and aligned; Owner/Manager/Staff and tenant-isolation E2E passed with exact financial reconciliation and zero remaining temporary fixtures
-- No invoice/document model or permanent customer deletion exists; next sequence is CUSTOMER-LIFECYCLE-001 then BILLING-001
+- CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied to staging and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal revocation and inactive-order rejection passed with zero remaining temporary fixtures
+- Anonymization and permanent customer deletion remain unavailable by policy; no invoice/document model exists; next task is BILLING-001
 - Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
@@ -964,7 +966,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `CUSTOMER-LIFECYCLE-001` without deleting historical operational or financial records.
-4. Preserve `BILLING-001` as the next commercial module after lifecycle readiness.
+3. Start `BILLING-001` with a real invoice/document model linked to organization, customer, orders and payments.
+4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

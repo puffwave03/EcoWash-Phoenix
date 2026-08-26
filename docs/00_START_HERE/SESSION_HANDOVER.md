@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-26
 
-Approximate closeout time: after CUSTOMER-ACCOUNT-001 authenticated staging validation
+Approximate closeout time: after CUSTOMER-LIFECYCLE-001 authenticated staging validation
 
-Session checkpoint: Owner/Manager Customer Account completed and validated with exact financial reconciliation
+Session checkpoint: safe customer active/inactive lifecycle completed and validated across internal, Portal and tenant boundaries
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,11 @@ Branch: `main`
 
 Approved baseline before this mission: `4cacad2 DOCS-SAAS-002 docs: record customer segments completion`
 
-Origin/main status: local `main` and `origin/main` include `d407a36 CUSTOMER-ACCOUNT-001 feat: add customer financial account experience`.
+Origin/main status: local `main` and `origin/main` include `ec52ebf CUSTOMER-LIFECYCLE-001 feat: add safe customer lifecycle management`.
 
-Working tree status before CUSTOMER-ACCOUNT-001 closeout: interrupted implementation resumed in place without discarding approved changes.
+Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `d407a36 CUSTOMER-ACCOUNT-001 feat: add customer financial account experience`; working tree expected clean after documentation push.
+Application closeout commit: `ec52ebf CUSTOMER-LIFECYCLE-001 feat: add safe customer lifecycle management`; working tree expected clean after documentation push.
 
 ---
 
@@ -66,6 +66,7 @@ Application closeout commit: `d407a36 CUSTOMER-ACCOUNT-001 feat: add customer fi
 - PORTAL-002.1 — Customer Order Request + Pickup
 - CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs
 - CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience
+- CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -118,6 +119,7 @@ Completed on EcoWash Staging:
 - Automatic deploy from `main` to the Vercel staging project is working.
 - CATALOG-SEGMENTS-001 migration `20260824000600` is applied and aligned; authenticated Owner/Manager/Staff/Portal and tenant-isolation checks passed with temporary fixtures fully removed.
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; authenticated Owner/Manager access, Staff denial, tenant isolation and exact order/payment/balance reconciliation passed with temporary fixtures fully removed.
+- CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; authenticated Owner/Manager transitions, Staff denial, Portal revocation, inactive-order blocking and tenant isolation passed with temporary fixtures fully removed.
 
 Applied baseline migrations:
 
@@ -152,7 +154,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260826000100`; CUSTOMER-ACCOUNT-001 is applied to staging.
+Supabase migration history is aligned through `20260826000200`; CUSTOMER-LIFECYCLE-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -210,10 +212,13 @@ Available now:
 - server-side, per-currency lifetime order value, confirmed payments, refunds, net paid and outstanding balances using existing order/payment semantics
 - bounded recent/current-year/all order and payment histories, properties, primary segment, Portal access and billing-readiness context
 - Staff is denied the broad financial Customer Account; its existing operational customer context is unchanged
+- Owner/Manager can safely deactivate and reactivate customers; deactivation preserves linked history, removes customers from active order selectors and atomically disables Portal access
+- inactive customers cannot create internal or Portal orders; reactivation never silently re-enables Portal access
+- lifecycle eligibility reports tenant-scoped dependencies server-side; anonymization and hard delete remain unavailable until a separately approved, legally and technically safe policy exists
 
-Next approved macro task: `CUSTOMER-LIFECYCLE-001`, followed by `BILLING-001`.
+Next approved macro task: `BILLING-001`.
 
-Lifecycle recommendation recorded by CUSTOMER-ACCOUNT-001: `ACTIVE → INACTIVE → ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe`. Future lifecycle work must preserve or explicitly govern references from properties, Portal access, segment assignment, orders, order items/status history, payments/refunds, pickups, deliveries, photos/files, audit history and future invoices. No anonymization or permanent deletion was implemented.
+Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
 Billing foundation recorded by CUSTOMER-ACCOUNT-001: no invoice/document model exists yet. BILLING-001 should associate organization → customer → one or more orders → invoice/document → payments without treating an order or payment as an invoice.
 
