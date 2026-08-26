@@ -1159,6 +1159,21 @@
       "error": "Le client n'a pas pu être enregistré."
     }
   },
+  "customerAccount": {
+    "notAvailable": "Non disponible", "customerCode": "Code client", "segment": "Segment", "noSegment": "Aucun segment", "lastActivity": "Dernière activité",
+    "actions": {"createOrder": "Créer une commande", "addProperty": "Ajouter une propriété", "accountAdmin": "Paramètres du compte"},
+    "financial": {"eyebrow": "Relation commerciale", "title": "Résumé financier", "description": "Données réelles des commandes et paiements issues des registres opérationnels actuels.", "empty": "Aucune commande éligible pour le moment.", "currencyGroup": "Montants en {currency}", "outstanding": "Solde dû", "outstandingOrders": "{count} commandes avec solde", "grossValue": "Valeur des commandes", "netPaid": "Net payé", "orders": "Commandes", "averageOrder": "Commande moyenne", "refunds": "Remboursements", "confirmedPayments": "Paiements confirmés", "outstandingValue": "Valeur des commandes avec solde"},
+    "history": {"filterLabel": "Période de l’historique", "periods": {"recent": "Récent", "year": "Année en cours", "all": "Tout"}, "boundedNote": "Les listes sont limitées pour préserver les performances ; utilisez le filtre de période pour élargir le contexte."},
+    "orders": {"title": "Historique des commandes", "description": "Statuts opérationnel et de paiement réunis, depuis la même source de vérité.", "empty": "Aucune commande sur cette période.", "noProperty": "Aucune propriété", "total": "Total", "paid": "Payé", "outstanding": "Solde dû", "open": "Ouvrir la commande"},
+    "payments": {"title": "Historique des paiements", "description": "Paiements réels, remboursements et écritures annulées inclus.", "empty": "Aucun paiement sur cette période.", "method": "Mode", "order": "Commande"},
+    "properties": {"title": "Propriétés", "description": "{count} propriétés liées à ce client."},
+    "admin": {"eyebrow": "Compte et administration", "title": "Paramètres de la relation", "description": "Gérez le segment, l’accès au Portail et les actions sûres du cycle de vie.", "relationship": "Segment et Portail client"},
+    "billing": {"eyebrow": "Base de facturation", "title": "Données de facturation", "noAddress": "Aucune adresse de facturation enregistrée.", "notConfigured": "La facturation n’est pas encore configurée"},
+    "lifecycle": {"eyebrow": "Cycle de vie", "title": "État du compte", "description": "La désactivation conserve l’historique opérationnel et financier. L’anonymisation et la suppression définitive ne sont pas encore disponibles."},
+    "productionStatuses": {"draft": "Brouillon", "received": "Reçu", "washing": "Lavage", "drying": "Séchage", "ironing": "Repassage", "quality_check": "Contrôle qualité", "packing": "Emballage", "ready": "Prêt", "completed": "Terminé", "on_hold": "En attente", "cancelled": "Annulé"},
+    "paymentStatuses": {"unpaid": "Impayé", "partially_paid": "Partiellement payé", "paid": "Payé", "pending": "En attente", "confirmed": "Confirmé", "void": "Annulé", "refunded": "Remboursé"},
+    "paymentMethods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement bancaire", "other": "Autre"}
+  },
   "catalogAdmin": {
     "eyebrow": "Expérience client",
     "title": "Catalogue client",

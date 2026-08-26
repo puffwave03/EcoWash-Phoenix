@@ -1159,6 +1159,30 @@
       "error": "Impossibile salvare il cliente."
     }
   },
+  "customerAccount": {
+    "notAvailable": "Non disponibile",
+    "customerCode": "Codice cliente",
+    "segment": "Segmento",
+    "noSegment": "Nessun segmento",
+    "lastActivity": "Ultima attività",
+    "actions": {"createOrder": "Crea ordine", "addProperty": "Aggiungi proprietà", "accountAdmin": "Impostazioni account"},
+    "financial": {
+      "eyebrow": "Relazione commerciale", "title": "Riepilogo finanziario", "description": "Valori reali di ordini e pagamenti dai registri operativi correnti.",
+      "empty": "Nessun ordine valido presente.", "currencyGroup": "Importi in {currency}", "outstanding": "Da incassare", "outstandingOrders": "{count} ordini con saldo",
+      "grossValue": "Valore ordini", "netPaid": "Pagato netto", "orders": "Ordini", "averageOrder": "Ordine medio", "refunds": "Rimborsi",
+      "confirmedPayments": "Pagamenti confermati", "outstandingValue": "Valore ordini con saldo"
+    },
+    "history": {"filterLabel": "Periodo storico", "periods": {"recent": "Recenti", "year": "Anno corrente", "all": "Tutti"}, "boundedNote": "Le liste sono limitate per mantenere l’account veloce; usa il filtro periodo per ampliare il contesto."},
+    "orders": {"title": "Storico ordini", "description": "Stato operativo e dei pagamenti insieme, dalla stessa fonte dati.", "empty": "Nessun ordine nel periodo.", "noProperty": "Nessuna proprietà", "total": "Totale", "paid": "Pagato", "outstanding": "Da incassare", "open": "Apri ordine"},
+    "payments": {"title": "Storico pagamenti", "description": "Pagamenti reali, inclusi rimborsi e registrazioni annullate.", "empty": "Nessun pagamento nel periodo.", "method": "Metodo", "order": "Ordine"},
+    "properties": {"title": "Proprietà", "description": "{count} proprietà collegate a questo cliente."},
+    "admin": {"eyebrow": "Account e amministrazione", "title": "Impostazioni relazione", "description": "Gestisci segmento, accesso al Portale e azioni sicure sul ciclo di vita.", "relationship": "Segmento e Portale cliente"},
+    "billing": {"eyebrow": "Base fatturazione", "title": "Dati di fatturazione", "noAddress": "Nessun indirizzo di fatturazione salvato.", "notConfigured": "Fatturazione non ancora configurata"},
+    "lifecycle": {"eyebrow": "Ciclo di vita", "title": "Stato account", "description": "La disattivazione conserva lo storico operativo e finanziario. Anonimizzazione ed eliminazione permanente non sono ancora disponibili."},
+    "productionStatuses": {"draft": "Bozza", "received": "Ricevuto", "washing": "Lavaggio", "drying": "Asciugatura", "ironing": "Stiratura", "quality_check": "Controllo qualità", "packing": "Imballaggio", "ready": "Pronto", "completed": "Completato", "on_hold": "In attesa", "cancelled": "Annullato"},
+    "paymentStatuses": {"unpaid": "Non pagato", "partially_paid": "Parzialmente pagato", "paid": "Pagato", "pending": "In attesa", "confirmed": "Confermato", "void": "Stornato", "refunded": "Rimborsato"},
+    "paymentMethods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"}
+  },
   "catalogAdmin": {
     "eyebrow": "Esperienza cliente",
     "title": "Catalogo cliente",

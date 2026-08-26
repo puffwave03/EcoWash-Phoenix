@@ -1159,6 +1159,21 @@
       "error": "No se pudo guardar el cliente."
     }
   },
+  "customerAccount": {
+    "notAvailable": "No disponible", "customerCode": "Código de cliente", "segment": "Segmento", "noSegment": "Sin segmento", "lastActivity": "Última actividad",
+    "actions": {"createOrder": "Crear pedido", "addProperty": "Añadir propiedad", "accountAdmin": "Configuración de cuenta"},
+    "financial": {"eyebrow": "Relación comercial", "title": "Resumen financiero", "description": "Datos reales de pedidos y pagos de los registros operativos actuales.", "empty": "Todavía no hay pedidos válidos.", "currencyGroup": "Importes en {currency}", "outstanding": "Pendiente", "outstandingOrders": "{count} pedidos con saldo", "grossValue": "Valor de pedidos", "netPaid": "Pagado neto", "orders": "Pedidos", "averageOrder": "Pedido medio", "refunds": "Reembolsos", "confirmedPayments": "Pagos confirmados", "outstandingValue": "Valor de pedidos con saldo"},
+    "history": {"filterLabel": "Periodo del historial", "periods": {"recent": "Recientes", "year": "Año actual", "all": "Todos"}, "boundedNote": "Las listas están limitadas para mantener la cuenta rápida; usa el filtro de periodo para ampliar el contexto."},
+    "orders": {"title": "Historial de pedidos", "description": "Estado operativo y de pago juntos, desde la misma fuente de datos.", "empty": "No hay pedidos en este periodo.", "noProperty": "Sin propiedad", "total": "Total", "paid": "Pagado", "outstanding": "Pendiente", "open": "Abrir pedido"},
+    "payments": {"title": "Historial de pagos", "description": "Pagos reales, incluidos reembolsos y registros anulados.", "empty": "No hay pagos en este periodo.", "method": "Método", "order": "Pedido"},
+    "properties": {"title": "Propiedades", "description": "{count} propiedades vinculadas a este cliente."},
+    "admin": {"eyebrow": "Cuenta y administración", "title": "Configuración de la relación", "description": "Gestiona el segmento, el acceso al Portal y acciones seguras del ciclo de vida.", "relationship": "Segmento y Portal del cliente"},
+    "billing": {"eyebrow": "Base de facturación", "title": "Datos de facturación", "noAddress": "No hay dirección de facturación guardada.", "notConfigured": "La facturación aún no está configurada"},
+    "lifecycle": {"eyebrow": "Ciclo de vida", "title": "Estado de la cuenta", "description": "La desactivación conserva el historial operativo y financiero. La anonimización y eliminación permanente aún no están disponibles."},
+    "productionStatuses": {"draft": "Borrador", "received": "Recibido", "washing": "Lavado", "drying": "Secado", "ironing": "Planchado", "quality_check": "Control de calidad", "packing": "Embalaje", "ready": "Listo", "completed": "Completado", "on_hold": "En espera", "cancelled": "Cancelado"},
+    "paymentStatuses": {"unpaid": "No pagado", "partially_paid": "Pago parcial", "paid": "Pagado", "pending": "Pendiente", "confirmed": "Confirmado", "void": "Anulado", "refunded": "Reembolsado"},
+    "paymentMethods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia bancaria", "other": "Otro"}
+  },
   "catalogAdmin": {
     "eyebrow": "Experiencia del cliente",
     "title": "Catálogo cliente",

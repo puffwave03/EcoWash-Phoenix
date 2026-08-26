@@ -10,10 +10,11 @@ import {
 
 type NewOrderPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ customerId?: string }>;
 };
 
-export default async function NewOrderPage({ params }: NewOrderPageProps) {
-  const { locale } = await params;
+export default async function NewOrderPage({ params, searchParams }: NewOrderPageProps) {
+  const [{ locale }, rawSearchParams] = await Promise.all([params, searchParams]);
   const [customers, properties, t] = await Promise.all([
     listCustomersForOrder(locale),
     listPropertiesForCustomer(locale),
@@ -57,6 +58,7 @@ export default async function NewOrderPage({ params }: NewOrderPageProps) {
           <OrderForm
             action={createOrderAction.bind(null, locale)}
             customers={customers}
+            initialCustomerId={customers.some((customer) => customer.id === rawSearchParams.customerId) ? rawSearchParams.customerId : undefined}
             properties={properties}
             text={{
               customer: t("form.customer"),

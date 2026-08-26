@@ -22,6 +22,7 @@ type OrderFormText = {
 type OrderFormProps = {
   action: (state: OrderActionState, formData: FormData) => Promise<OrderActionState>;
   customers: OrderSelectOption[];
+  initialCustomerId?: string;
   order?: Order;
   properties: PropertySelectOption[];
   text: OrderFormText;
@@ -35,7 +36,7 @@ function fieldClass(hasError: boolean) {
   }`;
 }
 
-export function OrderForm({ action, customers, order, properties, text }: OrderFormProps) {
+export function OrderForm({ action, customers, initialCustomerId, order, properties, text }: OrderFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -44,7 +45,7 @@ export function OrderForm({ action, customers, order, properties, text }: OrderF
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.customer}</span>
-          <select className={fieldClass(Boolean(state.fieldErrors.customerId))} defaultValue={order?.customerId ?? ""} disabled={Boolean(order)} name="customerId">
+          <select className={fieldClass(Boolean(state.fieldErrors.customerId))} defaultValue={order?.customerId ?? initialCustomerId ?? ""} disabled={Boolean(order)} name="customerId">
             <option value="" />
             {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.label}</option>)}
           </select>

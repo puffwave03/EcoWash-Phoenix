@@ -1159,6 +1159,21 @@
       "error": "Der Kunde konnte nicht gespeichert werden."
     }
   },
+  "customerAccount": {
+    "notAvailable": "Nicht verfügbar", "customerCode": "Kundencode", "segment": "Segment", "noSegment": "Kein Segment", "lastActivity": "Letzte Aktivität",
+    "actions": {"createOrder": "Auftrag erstellen", "addProperty": "Objekt hinzufügen", "accountAdmin": "Kontoeinstellungen"},
+    "financial": {"eyebrow": "Geschäftsbeziehung", "title": "Finanzübersicht", "description": "Reale Auftrags- und Zahlungsdaten aus den aktuellen Betriebsunterlagen.", "empty": "Noch keine geeigneten Aufträge.", "currencyGroup": "Beträge in {currency}", "outstanding": "Offen", "outstandingOrders": "{count} Aufträge mit Saldo", "grossValue": "Auftragswert", "netPaid": "Netto bezahlt", "orders": "Aufträge", "averageOrder": "Durchschnittsauftrag", "refunds": "Erstattungen", "confirmedPayments": "Bestätigte Zahlungen", "outstandingValue": "Wert der Aufträge mit Saldo"},
+    "history": {"filterLabel": "Zeitraum", "periods": {"recent": "Aktuell", "year": "Laufendes Jahr", "all": "Alle"}, "boundedNote": "Die Listen sind für eine schnelle Kontoansicht begrenzt; erweitern Sie den Kontext über den Zeitraumfilter."},
+    "orders": {"title": "Auftragshistorie", "description": "Betriebs- und Zahlungsstatus gemeinsam aus derselben Datenquelle.", "empty": "Keine Aufträge in diesem Zeitraum.", "noProperty": "Kein Objekt", "total": "Gesamt", "paid": "Bezahlt", "outstanding": "Offen", "open": "Auftrag öffnen"},
+    "payments": {"title": "Zahlungshistorie", "description": "Tatsächliche Zahlungen einschließlich Erstattungen und stornierter Einträge.", "empty": "Keine Zahlungen in diesem Zeitraum.", "method": "Methode", "order": "Auftrag"},
+    "properties": {"title": "Objekte", "description": "{count} Objekte sind mit diesem Kunden verknüpft."},
+    "admin": {"eyebrow": "Konto und Verwaltung", "title": "Beziehungseinstellungen", "description": "Segment, Portalzugang und sichere Lebenszyklusaktionen verwalten.", "relationship": "Segment und Kundenportal"},
+    "billing": {"eyebrow": "Abrechnungsgrundlage", "title": "Abrechnungsdaten", "noAddress": "Keine Rechnungsadresse gespeichert.", "notConfigured": "Abrechnung ist noch nicht konfiguriert"},
+    "lifecycle": {"eyebrow": "Lebenszyklus", "title": "Kontostatus", "description": "Die Deaktivierung erhält Betriebs- und Finanzhistorie. Anonymisierung und dauerhafte Löschung sind noch nicht verfügbar."},
+    "productionStatuses": {"draft": "Entwurf", "received": "Eingegangen", "washing": "Waschen", "drying": "Trocknen", "ironing": "Bügeln", "quality_check": "Qualitätsprüfung", "packing": "Verpacken", "ready": "Bereit", "completed": "Abgeschlossen", "on_hold": "Zurückgestellt", "cancelled": "Storniert"},
+    "paymentStatuses": {"unpaid": "Unbezahlt", "partially_paid": "Teilweise bezahlt", "paid": "Bezahlt", "pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Storniert", "refunded": "Erstattet"},
+    "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Banküberweisung", "other": "Andere"}
+  },
   "catalogAdmin": {
     "eyebrow": "Kundenerlebnis",
     "title": "Kundenkatalog",

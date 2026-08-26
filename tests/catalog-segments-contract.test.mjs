@@ -89,13 +89,15 @@ test("segment selection has one shared order quantity state and the full catalog
   assert.match(orderForm, /text\.completeCatalog/);
 });
 
-test("customer detail exposes assignment only inside the Owner/Manager branch", async () => {
-  const detail = await source("src/app/[locale]/app/(dashboard)/customers/[customerId]/page.tsx");
-  const guard = detail.indexOf("canManageCustomerPortal ?");
-  const panel = detail.indexOf("<CustomerSegmentAssignmentPanel", guard);
+test("customer account protects segment assignment behind the Owner/Manager route", async () => {
+  const [detail, account] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/customers/[customerId]/page.tsx"),
+    source("src/components/customers/CustomerAccountView.tsx"),
+  ]);
 
-  assert.ok(guard >= 0 && panel > guard);
-  assert.match(detail, /assignCustomerSegmentAction/);
+  assert.match(detail, /requireOwnerOrManager\(locale\)/);
+  assert.match(account, /<CustomerSegmentAssignmentPanel/);
+  assert.match(account, /assignCustomerSegmentAction/);
 });
 
 test("optional starters only select existing tenant rows and never seed global segment data", async () => {

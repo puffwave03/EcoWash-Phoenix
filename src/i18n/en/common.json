@@ -1159,6 +1159,30 @@
       "error": "The customer could not be saved."
     }
   },
+  "customerAccount": {
+    "notAvailable": "Not available",
+    "customerCode": "Customer code",
+    "segment": "Segment",
+    "noSegment": "No segment",
+    "lastActivity": "Last activity",
+    "actions": {"createOrder": "Create order", "addProperty": "Add property", "accountAdmin": "Account settings"},
+    "financial": {
+      "eyebrow": "Commercial relationship", "title": "Financial summary", "description": "Order and payment truth from the current operational records.",
+      "empty": "No eligible orders yet.", "currencyGroup": "Amounts in {currency}", "outstanding": "Outstanding", "outstandingOrders": "{count} orders with balance",
+      "grossValue": "Order value", "netPaid": "Net paid", "orders": "Orders", "averageOrder": "Average order", "refunds": "Refunds",
+      "confirmedPayments": "Confirmed payments", "outstandingValue": "Value of orders with balance"
+    },
+    "history": {"filterLabel": "History period", "periods": {"recent": "Recent", "year": "Current year", "all": "All"}, "boundedNote": "Lists are bounded to keep the account fast; use the period filter to widen the context."},
+    "orders": {"title": "Order history", "description": "Operational and payment status together, from the same source of truth.", "empty": "No orders in this period.", "noProperty": "No property", "total": "Total", "paid": "Paid", "outstanding": "Outstanding", "open": "Open order"},
+    "payments": {"title": "Payment history", "description": "Actual payment records, including refunds and void entries.", "empty": "No payments in this period.", "method": "Method", "order": "Order"},
+    "properties": {"title": "Properties", "description": "{count} properties linked to this customer."},
+    "admin": {"eyebrow": "Account and administration", "title": "Relationship settings", "description": "Manage the segment, Portal access and safe lifecycle actions.", "relationship": "Segment and customer Portal"},
+    "billing": {"eyebrow": "Billing foundation", "title": "Billing details", "noAddress": "No billing address saved.", "notConfigured": "Billing is not configured yet"},
+    "lifecycle": {"eyebrow": "Lifecycle", "title": "Account state", "description": "Deactivation preserves operational and financial history. Anonymization and permanent deletion are not available yet."},
+    "productionStatuses": {"draft": "Draft", "received": "Received", "washing": "Washing", "drying": "Drying", "ironing": "Ironing", "quality_check": "Quality check", "packing": "Packing", "ready": "Ready", "completed": "Completed", "on_hold": "On hold", "cancelled": "Cancelled"},
+    "paymentStatuses": {"unpaid": "Unpaid", "partially_paid": "Partially paid", "paid": "Paid", "pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
+    "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"}
+  },
   "catalogAdmin": {
     "eyebrow": "Customer experience",
     "title": "Customer catalog",
