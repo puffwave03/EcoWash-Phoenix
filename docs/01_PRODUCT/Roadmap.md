@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-08-26
 
-Current Mission: Operational role/workspace phase validated
+Current Mission: CATALOG-SEGMENTS-001 completed and validated
 
-Next Action: Prepare QA-001 and select the next approved product phase
+Next Action: CUSTOMER-ACCOUNT-001
 
 ---
 
@@ -144,6 +144,7 @@ Implemented and smoke-validated:
 - validated owner, manager and staff route/access boundaries
 - Resend Custom SMTP for operational Supabase Auth email delivery
 - secure customer portal with customer-scoped order visibility and access management
+- organization-scoped customer segment quick catalogs, one primary segment assignment per customer and personalized Portal/New Order discovery
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
@@ -151,7 +152,7 @@ Implemented and smoke-validated:
 
 Partially implemented:
 
-- catalog/pricing: service and standard price management exists, but no customer/property price override UI
+- catalog/pricing: service and standard price management plus segment presentation shortcuts exist, but no segment/customer/property price override UI
 - audit: status/payment/logistics histories exist for specific flows, but no canonical user-facing audit log module exists
 - reporting: dashboard, Daily Close and Operational Alerts have operational summaries, but no open balance report or export workflow
 

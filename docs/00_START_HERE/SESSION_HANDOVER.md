@@ -2,23 +2,23 @@
 
 Status: Active
 
-Date: 2026-08-23
+Date: 2026-08-26
 
-Approximate closeout time: after PORTAL-002.1 Product Owner E2E approval
+Approximate closeout time: after CATALOG-SEGMENTS-001 authenticated staging validation
 
-Session checkpoint: customer order and pickup requests validated end to end against the existing operational engine
+Session checkpoint: organization-scoped customer segment quick catalogs completed and validated
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `27b208f STAFF-POLISH-001 feat: add secure logout and user switching`
+Approved baseline before this mission: `a3ae0c9 CATALOG-ADMIN-001 feat: add customer catalog administration`
 
-Origin/main status: local `main` and `origin/main` pointed to `27b208f` before PORTAL-002.1 closeout.
+Origin/main status: local `main` and `origin/main` include `6c6dd18 CATALOG-SEGMENTS-001 feat: add customer segment quick catalogs`.
 
-Working tree status before PORTAL-002.1: clean
+Working tree status before CATALOG-SEGMENTS-001: interrupted work recovered from `wip/catalog-segments-001`.
 
-Closeout commit: `PORTAL-002.1 feat: add customer order and pickup requests`; working tree expected clean after push.
+Closeout commit: `6c6dd18 CATALOG-SEGMENTS-001 feat: add customer segment quick catalogs`; working tree expected clean after documentation push.
 
 ---
 
@@ -64,6 +64,7 @@ Closeout commit: `PORTAL-002.1 feat: add customer order and pickup requests`; wo
 - OPS-001.4 — Staff Management MVP
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP
 - PORTAL-002.1 — Customer Order Request + Pickup
+- CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -114,6 +115,7 @@ Completed on EcoWash Staging:
 - PORTAL-002.1 passed Product Owner E2E: customer-created `EW-000005` is visible in both the customer Portal and hosted staff application and enters the existing Pickup engine.
 - Portal Auth/access hardening is complete: direct linked-user validation replaces the fragile global Auth user list and email/Auth failures remain controlled application errors.
 - Automatic deploy from `main` to the Vercel staging project is working.
+- CATALOG-SEGMENTS-001 migration `20260824000600` is applied and aligned; authenticated Owner/Manager/Staff/Portal and tenant-isolation checks passed with temporary fixtures fully removed.
 
 Applied baseline migrations:
 
@@ -148,7 +150,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260823000200`; both PORTAL-002.1 migrations are applied to staging.
+Supabase migration history is aligned through `20260824000600`; CATALOG-SEGMENTS-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -198,6 +200,12 @@ Available now:
 - Operational Alerts dashboard at `/[locale]/app/alerts`
 - owner/manager alert triage for late orders, paused orders, unassigned open orders, imminent or overdue pickups/deliveries, missing or partial payments and logistics assignment anomalies
 - alert severity counts, navigation badge, deduplication, direct order links and organization-scoped data filtering
+- tenant-defined customer segments such as Case Vacanze, Hotel, Ristorazione or Privati, with one optional primary segment per customer
+- Owner/Manager segment management and customer assignment; Staff is denied
+- personalized Portal and New Order quick catalogs that reference existing services/categories while the complete organization catalog remains available
+- no segment-specific prices; current organization service prices and global visibility/orderability rules remain authoritative
+
+Next approved macro task: `CUSTOMER-ACCOUNT-001` — extend the existing customer detail/account foundation without duplicating customer, property, segment or financial data.
 
 Role summary:
 

@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-23
+Last Updated: 2026-08-26
 
-Current Mission: PORTAL-002.1 customer ordering and pickup requests completed and validated
+Current Mission: CATALOG-SEGMENTS-001 customer segment quick catalogs completed and validated
 
-Next Action: preserve PORTAL-002.1 and approve the next Portal increment before implementation
+Next Action: CUSTOMER-ACCOUNT-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PORTAL-002.1 Product Owner approved after customer-to-operational-engine E2E |
-| Last completed implementation mission | PORTAL-002.1 — Customer Order Request + Pickup |
-| Approved baseline before current closeout | 27b208f |
+| Current mission | CATALOG-SEGMENTS-001 authenticated staging validation and cleanup passed |
+| Last completed implementation mission | CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs |
+| Approved baseline before current closeout | a3ae0c9 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -69,6 +69,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | OPS-001.4 status | Completed and pushed |
 | PORTAL-001 / PORTAL-001.1 status | Completed and pushed |
 | PORTAL-002.1 status | Completed; Product Owner E2E passed |
+| CATALOG-SEGMENTS-001 status | Completed, applied to staging, authenticated E2E passed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -84,8 +85,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned; capability-aware operations plus customer-created order and pickup requests are implemented |
-| Commercial readiness | Operational workspaces and the customer → operational engine path are validated end to end; later Portal increments remain separately scoped |
+| Backend/SaaS implementation | Supabase Staging connected and aligned through 20260824000600; customer segments personalize existing catalog discovery without duplicating services or prices |
+| Commercial readiness | Customer segment examples are tenant-defined (for example Case Vacanze, Hotel, Ristorazione and Privati); next approved macro task is CUSTOMER-ACCOUNT-001 |
 
 ## Operational Access Testing Checkpoint
 

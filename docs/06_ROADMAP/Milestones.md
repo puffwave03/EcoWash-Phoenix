@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-23
+Last Updated: 2026-08-26
 
-Current Mission: PORTAL-002.1 customer ordering and pickup requests validated
+Current Mission: CATALOG-SEGMENTS-001 customer segment quick catalogs validated
 
-Next Action: preserve the approved baseline and scope the next Portal increment separately
+Next Action: CUSTOMER-ACCOUNT-001
 
 ---
 
@@ -127,6 +127,7 @@ Approved and current areas:
 - OPS-001.4 — Staff Management MVP: Completed and pushed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP: Completed and pushed
 - PORTAL-002.1 — Customer Order Request + Pickup: Completed; Product Owner E2E passed
+- CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs: Completed, staging migration aligned and authenticated E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -238,6 +239,7 @@ Official sequence after SEC-001:
 - OPS-001.4 — Staff Management MVP, completed
 - PORTAL-001 / PORTAL-001.1 — Secure Customer Portal MVP, completed
 - PORTAL-002.1 — Customer Order Request + Pickup, completed and E2E validated
+- CATALOG-SEGMENTS-001 — tenant-defined segments (for example Case Vacanze, Hotel, Ristorazione and Privati), one primary customer assignment and Portal/New Order quick catalogs, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -260,6 +262,8 @@ Current staging validation checkpoint:
 - Portal Auth/access hardening is complete and keeps Service Role server-only
 - old test orders remain intentionally untouched because safe hard cleanup would require an unnecessarily invasive administrative procedure
 - QA-001 remains a planned M1 gate; no QA-001 implementation was started by PORTAL-002.1
+- Segment pricing is not implemented; organization service prices remain authoritative and future pricing work stays separate.
+- Next approved macro task: CUSTOMER-ACCOUNT-001, reusing the existing customer, property, financial and segment foundations.
 
 PILOT-001 planning scope:
 
