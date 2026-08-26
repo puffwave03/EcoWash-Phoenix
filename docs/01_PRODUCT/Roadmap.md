@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-26
 
-Current Mission: CUSTOMER-LIFECYCLE-001 completed and validated
+Current Mission: BILLING-001 completed and validated
 
-Next Action: BILLING-001
+Next Action: separately approved small UI/FIX task
 
 ---
 
@@ -145,6 +145,7 @@ Implemented and smoke-validated:
 - Resend Custom SMTP for operational Supabase Auth email delivery
 - secure customer portal with customer-scoped order visibility and access management
 - organization-scoped customer segment quick catalogs, one primary segment assignment per customer and personalized Portal/New Order discovery
+- Owner/Manager invoicing foundation with drafts, definitive issue numbering, legal/line snapshots, configurable percentage-point taxes, printable V1 invoices and Customer Account/payment integration
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
@@ -164,7 +165,7 @@ Missing for commercial readiness:
 - global search
 - structured notes and issues
 - management reports and CSV exports
-- online payments, invoices/PDFs and notifications
+- online payments, formal e-invoicing/advanced fiscal PDFs and notifications
 
 ### Priority Classes
 
@@ -249,7 +250,7 @@ Scope:
 - UI-MOBILE-001, UI-BUG-004 and UI-FORMAT-005 — mobile, navigation and numeric-format refinement, completed
 - BUG-PROD-006 — terminal operational transition redirects, completed
 - AUTH-INFRA-001 — Resend Custom SMTP enabled and operational for Supabase Auth
-- BILLING-001 — next; real invoice/document model linked to organization, customer, orders and payments
+- BILLING-001 — invoice/document model, draft/issue lifecycle, concurrency-safe numbering, snapshots, taxes, printable view and Customer Account/payment integration, completed and E2E validated
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -261,6 +262,7 @@ Current staging validation checkpoint:
 - Old test orders remain intentionally untouched; do not create more fixtures unless a verified gap requires one.
 - CUSTOMER-ACCOUNT-001 is applied through migration `20260826000100`; Owner/Manager access, Staff denial, tenant isolation and exact financial reconciliation passed, with all temporary fixtures removed.
 - CUSTOMER-LIFECYCLE-001 is applied through migration `20260826000200`; Owner/Manager transitions, Staff restriction, tenant isolation, Portal revocation, inactive-order rejection and fixture cleanup passed. Anonymization and hard delete remain intentionally unavailable.
+- BILLING-001 is applied through migration `20260826000300`; Owner/Manager operations, Staff denial, tenant isolation, exact order/invoice/payment/outstanding reconciliation and fixture cleanup passed. It is premium-ready for future entitlements, but formal e-invoicing and full accounting are not implemented.
 
 PILOT-001 planning scope:
 
@@ -342,4 +344,4 @@ Exit criteria:
 
 ### Deferred Until After M3
 
-Customer portal is now part of M1 pilot scoping. Do not start online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
+Customer portal is now part of M1 pilot scoping. Do not start online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.

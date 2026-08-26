@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-26
 
-Current Mission: CUSTOMER-LIFECYCLE-001 safe customer lifecycle completed and validated
+Current Mission: BILLING-001 invoicing foundation completed and validated
 
-Next Action: BILLING-001
+Next Action: separately approved small UI/FIX task
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | CUSTOMER-LIFECYCLE-001 authenticated staging validation and cleanup passed |
-| Last completed implementation mission | CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management |
-| Approved baseline before current closeout | ec52ebf |
+| Current mission | BILLING-001 authenticated staging validation and cleanup passed |
+| Last completed implementation mission | BILLING-001 — Invoicing Foundation and Customer Billing |
+| Approved baseline before current closeout | 45a7047 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -72,6 +72,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | CATALOG-SEGMENTS-001 status | Completed, applied to staging, authenticated E2E passed and pushed |
 | CUSTOMER-ACCOUNT-001 status | Completed, applied through 20260826000100, exact financial E2E passed and pushed |
 | CUSTOMER-LIFECYCLE-001 status | Completed, applied through 20260826000200, authenticated lifecycle E2E passed and pushed |
+| BILLING-001 status | Completed, applied through 20260826000300, exact financial/role/tenant E2E passed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -87,8 +88,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging connected and aligned through 20260826000200; customer lifecycle transitions preserve history and enforce Portal/order eligibility server-side |
-| Commercial readiness | Owner/Manager can manage safe active/inactive customer lifecycle; anonymization and hard delete remain unavailable; BILLING-001 is next |
+| Backend/SaaS implementation | Supabase Staging connected and aligned through 20260826000300; Billing preserves issued snapshots and derives payment truth without mutating historical orders/payments |
+| Commercial readiness | Owner/Manager invoicing foundation is available and premium-ready; Staff is denied; formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -400,7 +401,7 @@ Missing commercial-readiness features:
 - structured notes and issues
 - daily payment close and open balance reports
 - CSV export for accounting or operational handoff
-- online payments, invoices/PDFs, notifications and mobile app
+- online payments, formal e-invoicing/advanced fiscal PDFs, notifications and mobile app
 
 Priority classification:
 
@@ -498,7 +499,7 @@ M3 — Operational Scale And Management Control:
 
 Commercial scope guard:
 
-- customer portal is now explicitly reprioritized into M1 pilot scope, but online payments, invoices/PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime and Edge Functions remain deferred unless separately approved
+- customer portal is now explicitly reprioritized into M1 pilot scope, but online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime and Edge Functions remain deferred unless separately approved
 - do not combine currencies in financial reporting
 - do not expose service-role credentials or privileged membership controls to browser code
 - keep production, fulfillment, payment and issues as independent dimensions
@@ -923,13 +924,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da CUSTOMER-LIFECYCLE-001 validato e avviamo BILLING-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da BILLING-001 validato e definiamo il prossimo mini-task UI/FIX.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- CUSTOMER-LIFECYCLE-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
+- BILLING-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -941,7 +942,8 @@ Exact starting state:
 - PORTAL-002.1 migrations `20260823000100` and `20260823000200` are applied to staging and aligned
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied to staging and aligned; Owner/Manager/Staff and tenant-isolation E2E passed with exact financial reconciliation and zero remaining temporary fixtures
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied to staging and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal revocation and inactive-order rejection passed with zero remaining temporary fixtures
-- Anonymization and permanent customer deletion remain unavailable by policy; no invoice/document model exists; next task is BILLING-001
+- BILLING-001 migration `20260826000300` is applied to staging and aligned; invoice numbering, exact totals/payment/outstanding, Owner/Manager access, Staff denial and tenant isolation passed with zero remaining temporary fixtures
+- Anonymization and permanent customer deletion remain unavailable by policy; formal e-invoicing and full accounting are not implemented
 - Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
 - Do not use Docker unless a new decision explicitly approves it
@@ -966,7 +968,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `BILLING-001` with a real invoice/document model linked to organization, customer, orders and payments.
+3. Start only the separately approved small UI/FIX task; do not extend Billing into accounting, subscriptions or formal e-invoicing.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

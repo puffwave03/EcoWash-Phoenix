@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-26
 
-Current Mission: CUSTOMER-LIFECYCLE-001 safe customer lifecycle validated
+Current Mission: BILLING-001 invoicing foundation validated
 
-Next Action: BILLING-001
+Next Action: separately approved small UI/FIX task
 
 ---
 
@@ -130,6 +130,7 @@ Approved and current areas:
 - CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs: Completed, staging migration aligned and authenticated E2E passed
 - CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience: Completed, staging migration aligned, exact financial reconciliation and authenticated E2E passed
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management: Completed, staging migration aligned and authenticated lifecycle E2E passed
+- BILLING-001 — Invoicing Foundation and Customer Billing: Completed, staging migration aligned and authenticated financial/role/tenant E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -244,6 +245,7 @@ Official sequence after SEC-001:
 - CATALOG-SEGMENTS-001 — tenant-defined segments (for example Case Vacanze, Hotel, Ristorazione and Privati), one primary customer assignment and Portal/New Order quick catalogs, completed and E2E validated
 - CUSTOMER-ACCOUNT-001 — Owner/Manager customer identity, properties, segment, Portal state, per-currency lifetime order/payment summary and bounded financial histories, completed and E2E validated
 - CUSTOMER-LIFECYCLE-001 — Owner/Manager active/inactive transitions, retained history, Portal revocation, inactive-order blocking and dependency eligibility, completed and E2E validated
+- BILLING-001 — Owner/Manager draft/issue lifecycle, concurrency-safe numbering, issuer/customer/line snapshots, taxes, printable invoice and Customer Account/payment integration, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -269,7 +271,8 @@ Current staging validation checkpoint:
 - Segment pricing is not implemented; organization service prices remain authoritative and future pricing work stays separate.
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; Staff denial, tenant isolation, exact total/paid/outstanding values and fixture cleanup passed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal/order enforcement and fixture cleanup passed. Anonymization and hard delete remain unavailable.
-- Next approved macro task: BILLING-001 with a real invoice/document model rather than re-labelling orders or payments.
+- BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
+- Next action is the separately approved small UI/FIX task; BILLING-001 did not start it.
 
 PILOT-001 planning scope:
 

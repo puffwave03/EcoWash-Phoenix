@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-26
 
-Approximate closeout time: after CUSTOMER-LIFECYCLE-001 authenticated staging validation
+Approximate closeout time: after BILLING-001 authenticated staging validation
 
-Session checkpoint: safe customer active/inactive lifecycle completed and validated across internal, Portal and tenant boundaries
+Session checkpoint: invoicing foundation completed and validated across Billing, Customer Account, role and tenant boundaries
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `4cacad2 DOCS-SAAS-002 docs: record customer segments completion`
+Approved baseline before this mission: `39bc376 DOCS-CUSTOMER-002 docs: record customer lifecycle management`
 
-Origin/main status: local `main` and `origin/main` include `ec52ebf CUSTOMER-LIFECYCLE-001 feat: add safe customer lifecycle management`.
+Origin/main status: local `main` and `origin/main` include `45a7047 BILLING-001 feat: add invoicing foundation and customer billing`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `ec52ebf CUSTOMER-LIFECYCLE-001 feat: add safe customer lifecycle management`; working tree expected clean after documentation push.
+Application closeout commit: `45a7047 BILLING-001 feat: add invoicing foundation and customer billing`; working tree expected clean after documentation push.
 
 ---
 
@@ -67,6 +67,7 @@ Application closeout commit: `ec52ebf CUSTOMER-LIFECYCLE-001 feat: add safe cust
 - CATALOG-SEGMENTS-001 — Customer Segment Quick Catalogs
 - CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management
+- BILLING-001 — Invoicing Foundation and Customer Billing
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -120,6 +121,7 @@ Completed on EcoWash Staging:
 - CATALOG-SEGMENTS-001 migration `20260824000600` is applied and aligned; authenticated Owner/Manager/Staff/Portal and tenant-isolation checks passed with temporary fixtures fully removed.
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; authenticated Owner/Manager access, Staff denial, tenant isolation and exact order/payment/balance reconciliation passed with temporary fixtures fully removed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; authenticated Owner/Manager transitions, Staff denial, Portal revocation, inactive-order blocking and tenant isolation passed with temporary fixtures fully removed.
+- BILLING-001 migration `20260826000300` is applied and aligned; authenticated Owner/Manager Billing, Staff denial, tenant isolation, definitive numbering and exact invoice/payment/outstanding reconciliation passed with temporary fixtures fully removed.
 
 Applied baseline migrations:
 
@@ -154,7 +156,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260826000200`; CUSTOMER-LIFECYCLE-001 is applied to staging.
+Supabase migration history is aligned through `20260826000300`; BILLING-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -215,12 +217,16 @@ Available now:
 - Owner/Manager can safely deactivate and reactivate customers; deactivation preserves linked history, removes customers from active order selectors and atomically disables Portal access
 - inactive customers cannot create internal or Portal orders; reactivation never silently re-enables Portal access
 - lifecycle eligibility reports tenant-scoped dependencies server-side; anonymization and hard delete remain unavailable until a separately approved, legally and technically safe policy exists
+- Owner/Manager Billing at `/[locale]/app/billing` with draft creation from one or more eligible orders, concurrency-safe definitive numbering on issue and preserved issuer/customer/line snapshots
+- percentage-point tax configuration, Customer Account invoice integration, printable V1 invoice and payment/outstanding values derived from existing order-linked payment truth
+- Staff Billing denial and tenant-scoped invoice/order/customer links; no formal e-invoicing compliance or full accounting is claimed
+- the Billing foundation is premium-ready for future entitlement controls without introducing subscription logic in BILLING-001
 
-Next approved macro task: `BILLING-001`.
+Next action: the separately approved small UI/FIX task; it was not started by BILLING-001.
 
 Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
-Billing foundation recorded by CUSTOMER-ACCOUNT-001: no invoice/document model exists yet. BILLING-001 should associate organization → customer → one or more orders → invoice/document → payments without treating an order or payment as an invoice.
+Billing foundation delivered by BILLING-001: organization → customer → one or more orders → invoice/document is explicit, while existing order-linked payments remain the financial source of truth. Formal e-invoicing, credit notes and full accounting remain future approved work.
 
 Role summary:
 
