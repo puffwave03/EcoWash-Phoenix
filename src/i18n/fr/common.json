@@ -1169,7 +1169,19 @@
     "properties": {"title": "Propriétés", "description": "{count} propriétés liées à ce client."},
     "admin": {"eyebrow": "Compte et administration", "title": "Paramètres de la relation", "description": "Gérez le segment, l’accès au Portail et les actions sûres du cycle de vie.", "relationship": "Segment et Portail client"},
     "billing": {"eyebrow": "Base de facturation", "title": "Données de facturation", "noAddress": "Aucune adresse de facturation enregistrée.", "notConfigured": "La facturation n’est pas encore configurée"},
-    "lifecycle": {"eyebrow": "Cycle de vie", "title": "État du compte", "description": "La désactivation conserve l’historique opérationnel et financier. L’anonymisation et la suppression définitive ne sont pas encore disponibles."},
+    "lifecycle": {
+      "eyebrow": "Cycle de vie", "title": "État du compte", "description": "Contrôles sûrs du cycle de vie et éligibilité selon les dépendances.",
+      "activeDescription": "Le client peut être sélectionné pour de nouvelles commandes et utiliser un accès Portail explicitement activé.",
+      "inactiveDescription": "Le client reste dans l’historique mais ne peut plus recevoir de commandes ni utiliser le Portail.",
+      "retainedHistory": "Les commandes, paiements, propriétés et l’historique opérationnel sont conservés lors de la désactivation.",
+      "confirmDeactivate": "Désactiver ce client et son accès Portail ? L’historique existant sera conservé.",
+      "reactivate": "Réactiver le client", "reactivating": "Réactivation...", "portalReenable": "L’accès Portail reste désactivé jusqu’à sa réactivation explicite par un propriétaire ou responsable.",
+      "portalInactive": "Le client est inactif. Les invitations, la réactivation de l’accès et les e-mails du Portail sont indisponibles.",
+      "protectedActions": "Actions protégées", "anonymizationUnavailable": "L’anonymisation reste indisponible jusqu’à l’approbation des règles légales et comptables de conservation.",
+      "hardDeleteBlocked": "La suppression définitive est bloquée par des dépendances protégées.", "hardDeleteEligible": "Aucune dépendance structurelle n’a été trouvée, mais la suppression définitive n’est pas disponible dans cette version.",
+      "emptyEligibility": "L’éligibilité est temporairement indisponible ; aucune action destructive n’est autorisée.",
+      "blockers": {"active_customer": "Client actif", "properties": "Propriétés", "portal_access": "Accès Portail", "orders": "Commandes", "order_history": "Historique des commandes", "payments": "Paiements", "operational_history": "Historique opérationnel", "media": "Photos/fichiers", "segment_assignment": "Affectation de segment"}
+    },
     "productionStatuses": {"draft": "Brouillon", "received": "Reçu", "washing": "Lavage", "drying": "Séchage", "ironing": "Repassage", "quality_check": "Contrôle qualité", "packing": "Emballage", "ready": "Prêt", "completed": "Terminé", "on_hold": "En attente", "cancelled": "Annulé"},
     "paymentStatuses": {"unpaid": "Impayé", "partially_paid": "Partiellement payé", "paid": "Payé", "pending": "En attente", "confirmed": "Confirmé", "void": "Annulé", "refunded": "Remboursé"},
     "paymentMethods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement bancaire", "other": "Autre"}

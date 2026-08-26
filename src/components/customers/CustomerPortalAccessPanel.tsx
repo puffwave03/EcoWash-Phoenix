@@ -22,6 +22,7 @@ type CustomerPortalAccessPanelText = {
   invite: string;
   invitedAt: string;
   inviteError: string;
+  inactiveCustomer: string;
   lastSignIn: string;
   membershipError: string;
   noLastSignIn: string;
@@ -40,6 +41,7 @@ type CustomerPortalAccessPanelText = {
 
 type CustomerPortalAccessPanelProps = {
   access: CustomerPortalAccessSummary | null;
+  customerIsActive: boolean;
   defaultEmail: string | null;
   inviteAction: (
     state: CustomerPortalActionState,
@@ -105,6 +107,7 @@ function formatDate(value: string | null, locale: string) {
 
 export function CustomerPortalAccessPanel({
   access,
+  customerIsActive,
   defaultEmail,
   inviteAction,
   locale,
@@ -160,6 +163,12 @@ export function CustomerPortalAccessPanel({
         </dl>
       ) : null}
 
+      {!customerIsActive ? (
+        <p className="mt-4 rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+          {text.inactiveCustomer}
+        </p>
+      ) : null}
+
       {!access ? (
         <form action={formAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           <label className="space-y-2 text-sm font-semibold text-primary">
@@ -173,7 +182,7 @@ export function CustomerPortalAccessPanel({
               type="email"
             />
           </label>
-          <Button disabled={isPending} type="submit">
+          <Button disabled={isPending || !customerIsActive} type="submit">
             {text.invite}
           </Button>
           {state.fieldErrors.email ? (
@@ -194,10 +203,10 @@ export function CustomerPortalAccessPanel({
 
       {access ? (
         <form action={manageFormAction} className="mt-5 flex flex-wrap gap-3">
-          <Button disabled={isManagePending || !access.isActive} name="intent" type="submit" value="resend" variant="secondary">
+          <Button disabled={isManagePending || !access.isActive || !customerIsActive} name="intent" type="submit" value="resend" variant="secondary">
             {text.resend}
           </Button>
-          <Button disabled={isManagePending || !access.isActive} name="intent" type="submit" value="resetPassword" variant="secondary">
+          <Button disabled={isManagePending || !access.isActive || !customerIsActive} name="intent" type="submit" value="resetPassword" variant="secondary">
             {text.resetPassword}
           </Button>
           {access.isActive ? (
@@ -205,7 +214,7 @@ export function CustomerPortalAccessPanel({
               {text.disable}
             </Button>
           ) : (
-            <Button disabled={isManagePending} name="intent" type="submit" value="enable" variant="secondary">
+            <Button disabled={isManagePending || !customerIsActive} name="intent" type="submit" value="enable" variant="secondary">
               {text.enable}
             </Button>
           )}

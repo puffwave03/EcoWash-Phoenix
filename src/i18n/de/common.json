@@ -1169,7 +1169,19 @@
     "properties": {"title": "Objekte", "description": "{count} Objekte sind mit diesem Kunden verknüpft."},
     "admin": {"eyebrow": "Konto und Verwaltung", "title": "Beziehungseinstellungen", "description": "Segment, Portalzugang und sichere Lebenszyklusaktionen verwalten.", "relationship": "Segment und Kundenportal"},
     "billing": {"eyebrow": "Abrechnungsgrundlage", "title": "Abrechnungsdaten", "noAddress": "Keine Rechnungsadresse gespeichert.", "notConfigured": "Abrechnung ist noch nicht konfiguriert"},
-    "lifecycle": {"eyebrow": "Lebenszyklus", "title": "Kontostatus", "description": "Die Deaktivierung erhält Betriebs- und Finanzhistorie. Anonymisierung und dauerhafte Löschung sind noch nicht verfügbar."},
+    "lifecycle": {
+      "eyebrow": "Lebenszyklus", "title": "Kontostatus", "description": "Sichere Lebenszyklussteuerung und Abhängigkeitsprüfung.",
+      "activeDescription": "Der Kunde kann für neue Aufträge ausgewählt werden und einen ausdrücklich aktivierten Portalzugang nutzen.",
+      "inactiveDescription": "Der Kunde bleibt in der Historie erhalten, kann aber keine neuen Aufträge erhalten oder das Portal nutzen.",
+      "retainedHistory": "Aufträge, Zahlungen, Objekte und Betriebshistorie bleiben bei der Deaktivierung erhalten.",
+      "confirmDeactivate": "Diesen Kunden und seinen Portalzugang deaktivieren? Die bestehende Historie bleibt erhalten.",
+      "reactivate": "Kunden reaktivieren", "reactivating": "Reaktivierung...", "portalReenable": "Der Portalzugang bleibt deaktiviert, bis ein Inhaber oder Manager ihn ausdrücklich wieder aktiviert.",
+      "portalInactive": "Der Kunde ist inaktiv. Einladungen, Zugangsaktivierung und Portal-E-Mails sind nicht verfügbar.",
+      "protectedActions": "Geschützte Aktionen", "anonymizationUnavailable": "Anonymisierung bleibt bis zur Freigabe der gesetzlichen und buchhalterischen Aufbewahrungsregeln nicht verfügbar.",
+      "hardDeleteBlocked": "Die dauerhafte Löschung ist durch geschützte Abhängigkeiten blockiert.", "hardDeleteEligible": "Es wurden keine strukturellen Abhängigkeiten gefunden, die dauerhafte Löschung ist in dieser Version jedoch nicht implementiert.",
+      "emptyEligibility": "Die Berechtigungsprüfung ist vorübergehend nicht verfügbar; destruktive Aktionen sind nicht erlaubt.",
+      "blockers": {"active_customer": "Kunde ist aktiv", "properties": "Objekte", "portal_access": "Portalzugang", "orders": "Aufträge", "order_history": "Auftragshistorie", "payments": "Zahlungen", "operational_history": "Betriebshistorie", "media": "Fotos/Dateien", "segment_assignment": "Segmentzuweisung"}
+    },
     "productionStatuses": {"draft": "Entwurf", "received": "Eingegangen", "washing": "Waschen", "drying": "Trocknen", "ironing": "Bügeln", "quality_check": "Qualitätsprüfung", "packing": "Verpacken", "ready": "Bereit", "completed": "Abgeschlossen", "on_hold": "Zurückgestellt", "cancelled": "Storniert"},
     "paymentStatuses": {"unpaid": "Unbezahlt", "partially_paid": "Teilweise bezahlt", "paid": "Bezahlt", "pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Storniert", "refunded": "Erstattet"},
     "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Banküberweisung", "other": "Andere"}

@@ -1169,7 +1169,19 @@
     "properties": {"title": "Propiedades", "description": "{count} propiedades vinculadas a este cliente."},
     "admin": {"eyebrow": "Cuenta y administración", "title": "Configuración de la relación", "description": "Gestiona el segmento, el acceso al Portal y acciones seguras del ciclo de vida.", "relationship": "Segmento y Portal del cliente"},
     "billing": {"eyebrow": "Base de facturación", "title": "Datos de facturación", "noAddress": "No hay dirección de facturación guardada.", "notConfigured": "La facturación aún no está configurada"},
-    "lifecycle": {"eyebrow": "Ciclo de vida", "title": "Estado de la cuenta", "description": "La desactivación conserva el historial operativo y financiero. La anonimización y eliminación permanente aún no están disponibles."},
+    "lifecycle": {
+      "eyebrow": "Ciclo de vida", "title": "Estado de la cuenta", "description": "Controles seguros del ciclo de vida y elegibilidad por dependencias.",
+      "activeDescription": "El cliente puede seleccionarse para nuevos pedidos y usar un acceso al Portal habilitado explícitamente.",
+      "inactiveDescription": "El cliente se conserva en el historial, pero no puede recibir nuevos pedidos ni usar el Portal.",
+      "retainedHistory": "Los pedidos, pagos, propiedades y el historial operativo se conservan al desactivar la cuenta.",
+      "confirmDeactivate": "¿Desactivar este cliente y su acceso al Portal? El historial existente se conservará.",
+      "reactivate": "Reactivar cliente", "reactivating": "Reactivando...", "portalReenable": "El acceso al Portal permanece desactivado hasta que un propietario o responsable lo reactive expresamente.",
+      "portalInactive": "El cliente está inactivo. No están disponibles las invitaciones, la reactivación del acceso ni los correos del Portal.",
+      "protectedActions": "Acciones protegidas", "anonymizationUnavailable": "La anonimización no está disponible hasta aprobar las reglas legales y contables de conservación.",
+      "hardDeleteBlocked": "La eliminación permanente está bloqueada por dependencias protegidas.", "hardDeleteEligible": "No se encontraron dependencias estructurales, pero la eliminación permanente no está implementada en esta versión.",
+      "emptyEligibility": "La elegibilidad no está disponible temporalmente; no se permite ninguna acción destructiva.",
+      "blockers": {"active_customer": "Cliente activo", "properties": "Propiedades", "portal_access": "Acceso al Portal", "orders": "Pedidos", "order_history": "Historial de pedidos", "payments": "Pagos", "operational_history": "Historial operativo", "media": "Fotos/archivos", "segment_assignment": "Asignación de segmento"}
+    },
     "productionStatuses": {"draft": "Borrador", "received": "Recibido", "washing": "Lavado", "drying": "Secado", "ironing": "Planchado", "quality_check": "Control de calidad", "packing": "Embalaje", "ready": "Listo", "completed": "Completado", "on_hold": "En espera", "cancelled": "Cancelado"},
     "paymentStatuses": {"unpaid": "No pagado", "partially_paid": "Pago parcial", "paid": "Pagado", "pending": "Pendiente", "confirmed": "Confirmado", "void": "Anulado", "refunded": "Reembolsado"},
     "paymentMethods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia bancaria", "other": "Otro"}

@@ -2,8 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { CustomerPortalAccessPanel } from "@/components/customers/CustomerPortalAccessPanel";
+import { CustomerLifecycleControl } from "@/components/customers/CustomerLifecycleControl";
 import { CustomerSegmentAssignmentPanel } from "@/components/customers/CustomerSegmentAssignmentPanel";
-import { DeactivateButton } from "@/components/customers/DeactivateButton";
 import {
   EmptyState,
   StatusBadge,
@@ -16,8 +16,15 @@ import type {
   CustomerAccountFinancials,
   CustomerAccountPeriod,
 } from "@/features/customer-account/types";
+import type {
+  CustomerLifecycleBlockingReason,
+  CustomerLifecycleEligibility,
+} from "@/features/customer-lifecycle/types";
 import type { Customer, Property } from "@/features/customers/types";
-import { deactivateCustomerAction } from "@/features/customers/server/actions";
+import {
+  deactivateCustomerAction,
+  reactivateCustomerAction,
+} from "@/features/customers/server/actions";
 import type { ProductionStatus } from "@/features/orders/types";
 import type {
   DerivedPaymentStatus,
@@ -72,6 +79,7 @@ function address(customer: Customer) {
 
 export async function CustomerAccountView({
   customer,
+  eligibility,
   financials,
   locale,
   period,
@@ -81,6 +89,7 @@ export async function CustomerAccountView({
   segmentAssignment,
 }: {
   customer: Customer;
+  eligibility: CustomerLifecycleEligibility | null;
   financials: CustomerAccountFinancials;
   locale: string;
   period: CustomerAccountPeriod;
@@ -138,9 +147,11 @@ export async function CustomerAccountView({
               </div>
             </div>
             <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto lg:grid-cols-1 xl:grid-cols-2">
-              <Link href={`/app/orders/new?customerId=${customer.id}`} locale={locale}>
-                <Button className="w-full">{t("actions.createOrder")}</Button>
-              </Link>
+              {customer.isActive ? (
+                <Link href={`/app/orders/new?customerId=${customer.id}`} locale={locale}>
+                  <Button className="w-full">{t("actions.createOrder")}</Button>
+                </Link>
+              ) : null}
               <Link href={`/app/customers/${customer.id}/properties/new`} locale={locale}>
                 <Button className="w-full" variant="secondary">{t("actions.addProperty")}</Button>
               </Link>
@@ -305,6 +316,7 @@ export async function CustomerAccountView({
             />
             <CustomerPortalAccessPanel
               access={portalAccess}
+              customerIsActive={customer.isActive}
               defaultEmail={customer.email}
               inviteAction={inviteCustomerPortalAction.bind(null, locale, customer.id)}
               locale={locale}
@@ -312,6 +324,7 @@ export async function CustomerAccountView({
               previewUrl={previewUrl}
               text={{
                 active: customerText("portal.active"), accessDisabled: customerText("portal.accessDisabled"), authUnavailable: customerText("portal.authUnavailable"), configurationError: customerText("portal.configurationError"), disable: customerText("portal.disable"), disabled: customerText("portal.disabled"), email: customerText("portal.email"), emailDelivery: customerText("portal.emailDelivery"), emailInvalid: customerText("portal.emailInvalid"), enable: customerText("portal.enable"), error: customerText("portal.error"), invite: customerText("portal.invite"), invitedAt: customerText("portal.invitedAt"), lastSignIn: customerText("portal.lastSignIn"), inviteError: customerText("portal.inviteError"), membershipError: customerText("portal.membershipError"), noLastSignIn: customerText("portal.noLastSignIn"), pending: customerText("portal.pending"), preview: customerText("portal.preview"), rateLimit: customerText("portal.rateLimit"), resend: customerText("portal.resend"), resetPassword: customerText("portal.resetPassword"), resetPasswordError: customerText("portal.resetPasswordError"), resetPasswordSuccess: customerText("portal.resetPasswordSuccess"), resendSuccess: customerText("portal.resendSuccess"), success: customerText("portal.success"), title: customerText("portal.title"), unauthorized: customerText("portal.unauthorized"),
+                inactiveCustomer: t("lifecycle.portalInactive"),
               }}
             />
           </div>
@@ -324,13 +337,33 @@ export async function CustomerAccountView({
             {customer.taxId ? <p className="text-sm text-muted">{customerText("taxId")}: <span className="font-semibold text-primary">{customer.taxId}</span></p> : null}
             <p className="rounded-control border border-dashed border-border bg-[#fafbfa] px-4 py-3 text-sm font-semibold text-muted">{t("billing.notConfigured")}</p>
           </Card>
-          <Card className="space-y-4 bg-white">
-            <div><p className="text-xs font-semibold uppercase tracking-[0.1em] text-secondary">{t("lifecycle.eyebrow")}</p><h3 className="mt-1 text-lg font-semibold text-primary">{t("lifecycle.title")}</h3></div>
-            <p className="text-sm leading-6 text-muted">{t("lifecycle.description")}</p>
-            {customer.isActive ? (
-              <DeactivateButton action={deactivateCustomerAction.bind(null, locale, customer.id)} confirmLabel={customerText("confirmDeactivate")} label={customerText("deactivate")} pendingLabel={customerText("deactivating")} />
-            ) : <StatusBadge tone="neutral">{customerText("inactive")}</StatusBadge>}
-          </Card>
+          <CustomerLifecycleControl
+            deactivateAction={deactivateCustomerAction.bind(null, locale, customer.id)}
+            eligibility={eligibility}
+            isActive={customer.isActive}
+            reactivateAction={reactivateCustomerAction.bind(null, locale, customer.id)}
+            text={{
+              active: customerText("active"),
+              activeDescription: t("lifecycle.activeDescription"),
+              anonymizationUnavailable: t("lifecycle.anonymizationUnavailable"),
+              blockers: t.raw("lifecycle.blockers") as Record<CustomerLifecycleBlockingReason, string>,
+              confirmDeactivate: t("lifecycle.confirmDeactivate"),
+              deactivate: customerText("deactivate"),
+              deactivating: customerText("deactivating"),
+              description: t("lifecycle.description"),
+              emptyEligibility: t("lifecycle.emptyEligibility"),
+              hardDeleteBlocked: t("lifecycle.hardDeleteBlocked"),
+              hardDeleteEligible: t("lifecycle.hardDeleteEligible"),
+              inactive: customerText("inactive"),
+              inactiveDescription: t("lifecycle.inactiveDescription"),
+              portalReenable: t("lifecycle.portalReenable"),
+              protectedActions: t("lifecycle.protectedActions"),
+              reactivate: t("lifecycle.reactivate"),
+              reactivating: t("lifecycle.reactivating"),
+              retainedHistory: t("lifecycle.retainedHistory"),
+              title: t("lifecycle.title"),
+            }}
+          />
         </div>
       </section>
     </div>

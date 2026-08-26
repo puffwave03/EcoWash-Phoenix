@@ -1178,7 +1178,19 @@
     "properties": {"title": "Properties", "description": "{count} properties linked to this customer."},
     "admin": {"eyebrow": "Account and administration", "title": "Relationship settings", "description": "Manage the segment, Portal access and safe lifecycle actions.", "relationship": "Segment and customer Portal"},
     "billing": {"eyebrow": "Billing foundation", "title": "Billing details", "noAddress": "No billing address saved.", "notConfigured": "Billing is not configured yet"},
-    "lifecycle": {"eyebrow": "Lifecycle", "title": "Account state", "description": "Deactivation preserves operational and financial history. Anonymization and permanent deletion are not available yet."},
+    "lifecycle": {
+      "eyebrow": "Lifecycle", "title": "Account state", "description": "Safe customer lifecycle controls and dependency eligibility.",
+      "activeDescription": "This customer can be selected for new orders and can use an explicitly enabled Portal access.",
+      "inactiveDescription": "This customer is retained for history but cannot receive new orders or use the customer Portal.",
+      "retainedHistory": "Orders, payments, properties and operational history are preserved when the account is deactivated.",
+      "confirmDeactivate": "Deactivate this customer and disable their Portal access? Existing history will be preserved.",
+      "reactivate": "Reactivate customer", "reactivating": "Reactivating...", "portalReenable": "Portal access stays disabled until an owner or manager explicitly re-enables it.",
+      "portalInactive": "This customer is inactive. Portal invitations, access re-enabling and access emails are unavailable.",
+      "protectedActions": "Protected actions", "anonymizationUnavailable": "Anonymization is not available until legal and accounting retention rules are approved.",
+      "hardDeleteBlocked": "Permanent deletion is blocked by protected customer dependencies.", "hardDeleteEligible": "No structural dependencies were found, but permanent deletion is not implemented in this release.",
+      "emptyEligibility": "Lifecycle eligibility is temporarily unavailable; no destructive action is allowed.",
+      "blockers": {"active_customer": "Customer is active", "properties": "Properties", "portal_access": "Portal access", "orders": "Orders", "order_history": "Order history", "payments": "Payments", "operational_history": "Operational history", "media": "Photos/files", "segment_assignment": "Segment assignment"}
+    },
     "productionStatuses": {"draft": "Draft", "received": "Received", "washing": "Washing", "drying": "Drying", "ironing": "Ironing", "quality_check": "Quality check", "packing": "Packing", "ready": "Ready", "completed": "Completed", "on_hold": "On hold", "cancelled": "Cancelled"},
     "paymentStatuses": {"unpaid": "Unpaid", "partially_paid": "Partially paid", "paid": "Paid", "pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
     "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"}

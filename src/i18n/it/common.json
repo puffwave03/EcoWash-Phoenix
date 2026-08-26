@@ -1178,7 +1178,19 @@
     "properties": {"title": "Proprietà", "description": "{count} proprietà collegate a questo cliente."},
     "admin": {"eyebrow": "Account e amministrazione", "title": "Impostazioni relazione", "description": "Gestisci segmento, accesso al Portale e azioni sicure sul ciclo di vita.", "relationship": "Segmento e Portale cliente"},
     "billing": {"eyebrow": "Base fatturazione", "title": "Dati di fatturazione", "noAddress": "Nessun indirizzo di fatturazione salvato.", "notConfigured": "Fatturazione non ancora configurata"},
-    "lifecycle": {"eyebrow": "Ciclo di vita", "title": "Stato account", "description": "La disattivazione conserva lo storico operativo e finanziario. Anonimizzazione ed eliminazione permanente non sono ancora disponibili."},
+    "lifecycle": {
+      "eyebrow": "Ciclo di vita", "title": "Stato account", "description": "Controlli sicuri del ciclo di vita e verifica delle dipendenze.",
+      "activeDescription": "Il cliente può essere selezionato per nuovi ordini e usare un accesso Portale esplicitamente abilitato.",
+      "inactiveDescription": "Il cliente resta disponibile nello storico ma non può ricevere nuovi ordini né usare il Portale cliente.",
+      "retainedHistory": "Ordini, pagamenti, proprietà e storico operativo vengono conservati quando l’account è disattivato.",
+      "confirmDeactivate": "Disattivare il cliente e il suo accesso Portale? Lo storico esistente verrà conservato.",
+      "reactivate": "Riattiva cliente", "reactivating": "Riattivazione...", "portalReenable": "L’accesso Portale resta disabilitato finché un titolare o responsabile non lo riabilita esplicitamente.",
+      "portalInactive": "Il cliente è inattivo. Inviti, riabilitazione dell’accesso ed email del Portale non sono disponibili.",
+      "protectedActions": "Azioni protette", "anonymizationUnavailable": "L’anonimizzazione non è disponibile finché non saranno approvate le regole legali e contabili di conservazione.",
+      "hardDeleteBlocked": "L’eliminazione permanente è bloccata dalle dipendenze protette del cliente.", "hardDeleteEligible": "Non risultano dipendenze strutturali, ma l’eliminazione permanente non è implementata in questa versione.",
+      "emptyEligibility": "La verifica di eleggibilità non è temporaneamente disponibile; nessuna azione distruttiva è consentita.",
+      "blockers": {"active_customer": "Cliente attivo", "properties": "Proprietà", "portal_access": "Accesso Portale", "orders": "Ordini", "order_history": "Storico ordini", "payments": "Pagamenti", "operational_history": "Storico operativo", "media": "Foto/file", "segment_assignment": "Assegnazione segmento"}
+    },
     "productionStatuses": {"draft": "Bozza", "received": "Ricevuto", "washing": "Lavaggio", "drying": "Asciugatura", "ironing": "Stiratura", "quality_check": "Controllo qualità", "packing": "Imballaggio", "ready": "Pronto", "completed": "Completato", "on_hold": "In attesa", "cancelled": "Annullato"},
     "paymentStatuses": {"unpaid": "Non pagato", "partially_paid": "Parzialmente pagato", "paid": "Pagato", "pending": "In attesa", "confirmed": "Confermato", "void": "Stornato", "refunded": "Rimborsato"},
     "paymentMethods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"}

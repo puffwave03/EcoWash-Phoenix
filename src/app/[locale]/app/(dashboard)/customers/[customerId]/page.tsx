@@ -2,6 +2,7 @@ import { CustomerAccountView } from "@/components/customers/CustomerAccountView"
 import { getCustomerSegmentAssignment } from "@/features/catalog-segments/server/queries";
 import { getCustomerAccountFinancials } from "@/features/customer-account/server/queries";
 import { parseCustomerAccountPeriod } from "@/features/customer-account/validation";
+import { getCustomerLifecycleEligibility } from "@/features/customer-lifecycle/server/queries";
 import {
   getCustomerById,
   listPropertiesByCustomer,
@@ -22,8 +23,9 @@ export default async function CustomerDetailPage({
   const [{ customerId, locale }, rawSearchParams] = await Promise.all([params, searchParams]);
   const access = await requireOwnerOrManager(locale);
   const period = parseCustomerAccountPeriod(rawSearchParams.period);
-  const [customer, financials, portalAccess, properties, segmentAssignment] = await Promise.all([
+  const [customer, eligibility, financials, portalAccess, properties, segmentAssignment] = await Promise.all([
     getCustomerById(locale, customerId),
+    getCustomerLifecycleEligibility(locale, customerId),
     getCustomerAccountFinancials(locale, customerId, period),
     getCustomerPortalAccessSummary(locale, customerId),
     listPropertiesByCustomer(locale, customerId),
@@ -36,6 +38,7 @@ export default async function CustomerDetailPage({
   return (
     <CustomerAccountView
       customer={customer}
+      eligibility={eligibility}
       financials={financials}
       locale={locale}
       period={period}

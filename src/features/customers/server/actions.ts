@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/features/customers/types";
 import {
@@ -122,18 +123,27 @@ export async function updateCustomerAction(
   redirect(`/${locale}/app/customers/${customerId}`);
 }
 
-export async function deactivateCustomerAction(locale: string, customerId: string) {
-  const { membership, user } = await requireMembership(locale);
+async function setCustomerLifecycleActive(locale: string, customerId: string, isActive: boolean) {
+  await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
-    .from("customers")
-    .update({ is_active: false, updated_by: user.id })
-    .eq("organization_id", membership.organization.id)
-    .eq("id", customerId);
+  const { error } = await supabase.rpc("set_customer_lifecycle_active", {
+    target_customer_id: customerId,
+    target_is_active: isActive,
+  });
 
-  if (error) console.error("Customer deactivate failed", error.code);
+  if (error) console.error("Customer lifecycle update failed", error.code);
 
   revalidateCustomers(locale);
+  revalidatePath(`/${locale}/app/customers/${customerId}`);
+  revalidatePath(`/${locale}/app/orders/new`);
+}
+
+export async function deactivateCustomerAction(locale: string, customerId: string) {
+  return setCustomerLifecycleActive(locale, customerId, false);
+}
+
+export async function reactivateCustomerAction(locale: string, customerId: string) {
+  return setCustomerLifecycleActive(locale, customerId, true);
 }
 
 export async function createPropertyAction(
