@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-27
 
-Current Mission: PRICING-SEGMENTS-001 completed, applied and validated
+Current Mission: ENTITLEMENTS-001 completed, applied and validated
 
-Next Action: ENTITLEMENTS-001, then PLATFORM-ADMIN-001
+Next Action: PLATFORM-ADMIN-001
 
 ---
 
@@ -133,6 +133,7 @@ Approved and current areas:
 - BILLING-001 — Invoicing Foundation and Customer Billing: Completed, staging migration aligned and authenticated financial/role/tenant E2E passed
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification: Completed and authenticated route E2E passed
 - PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback: Completed, staging migration aligned and exact role/tenant/snapshot E2E passed
+- ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access: Completed, staging migration aligned and feature/role/tenant/preservation E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -250,6 +251,7 @@ Official sequence after SEC-001:
 - BILLING-001 — Owner/Manager draft/issue lifecycle, concurrency-safe numbering, issuer/customer/line snapshots, taxes, printable invoice and Customer Account/payment integration, completed and E2E validated
 - UI-FIX-001 — authenticated marketing chrome removal plus segment selector role, tenant and Portal-visibility verification, completed and E2E validated
 - PRICING-SEGMENTS-001 — centralized segment override → organization/location base resolution across admin, internal orders and Portal, completed and E2E validated
+- ENTITLEMENTS-001 — centralized tenant feature catalog and entitlement resolver with Billing, pricing-management and advanced-branding enforcement, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -276,22 +278,22 @@ Current staging validation checkpoint:
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; Staff denial, tenant isolation, exact total/paid/outstanding values and fixture cleanup passed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal/order enforcement and fixture cleanup passed. Anonymization and hard delete remain unavailable.
 - BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
-- PRICING-SEGMENTS-001 preserved historical order/invoice values, passed rollback-only fixture cleanup and is premium-ready for `ENTITLEMENTS-001`.
+- PRICING-SEGMENTS-001 preserved historical order/invoice values and passed rollback-only fixture cleanup; ENTITLEMENTS-001 now controls its management boundary.
+- ENTITLEMENTS-001 preserves invoice history, segment overrides and stored branding when access is disabled; EcoWash is bootstrapped only for live modules and future tenants receive no implicit premium access.
 
 Approved product sequence after this milestone checkpoint:
 
-1. `ENTITLEMENTS-001`
-2. `PLATFORM-ADMIN-001`
-3. `POS-001`
-4. `PRINT-001`
-5. `BARCODE-001`
-6. `ACCOUNTING-001`
-7. `E-INVOICE-001`
-8. `ACCOUNTING-PRO-001` — optional
-9. `ONBOARDING-001`
-10. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `PLATFORM-ADMIN-001`
+2. `POS-001`
+3. `PRINT-001`
+4. `BARCODE-001`
+5. `ACCOUNTING-001`
+6. `E-INVOICE-001`
+7. `ACCOUNTING-PRO-001` — optional
+8. `ONBOARDING-001`
+9. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
 
-Premium UI, Calm Operations, mobile-first usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from tenant Owner, future modules may be entitlement gated, and no full accounting or e-invoice compliance is claimed yet.
+Premium UI, Calm Operations, mobile-first usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. No full accounting or e-invoice compliance is claimed yet.
 
 PILOT-001 planning scope:
 

@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-27
 
-Current Mission: PRICING-SEGMENTS-001 completed, applied and validated
+Current Mission: ENTITLEMENTS-001 completed, applied and validated
 
-Next Action: ENTITLEMENTS-001, then PLATFORM-ADMIN-001
+Next Action: PLATFORM-ADMIN-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PRICING-SEGMENTS-001 pricing, role, tenant, snapshot and cleanup validation passed |
-| Last completed implementation mission | PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback |
-| Approved baseline before current closeout | c847c96 |
+| Current mission | ENTITLEMENTS-001 feature, role, tenant, preservation and cleanup validation passed |
+| Last completed implementation mission | ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access |
+| Approved baseline before current closeout | a39f88e |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -75,6 +75,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | BILLING-001 status | Completed, applied through 20260826000300, exact financial/role/tenant E2E passed and pushed |
 | UI-FIX-001 status | Completed; authenticated public chrome removed, segment selector verified and pushed |
 | PRICING-SEGMENTS-001 status | Completed; applied through 20260827000100, exact internal/Portal/Billing E2E passed and pushed |
+| ENTITLEMENTS-001 status | Completed; applied through 20260827000200, feature/role/tenant/preservation E2E passed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -90,8 +91,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260827000100; segment pricing resolves centrally while historical orders/invoices remain immutable snapshots |
-| Commercial readiness | Segment pricing is premium-ready and validated; next is ENTITLEMENTS-001 then PLATFORM-ADMIN-001; formal e-invoicing and full accounting remain future work |
+| Backend/SaaS implementation | Supabase Staging aligned through 20260827000200; tenant entitlements gate premium management while historical invoices, pricing and branding remain preserved |
+| Commercial readiness | Entitlement foundation is validated; next is PLATFORM-ADMIN-001; subscription collection, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -926,13 +927,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PRICING-SEGMENTS-001 validato e avviamo ENTITLEMENTS-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da ENTITLEMENTS-001 validato e avviamo PLATFORM-ADMIN-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- PRICING-SEGMENTS-001 is completed in `c847c96`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
+- ENTITLEMENTS-001 is completed in `a39f88e`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -947,6 +948,7 @@ Exact starting state:
 - BILLING-001 migration `20260826000300` is applied to staging and aligned; invoice numbering, exact totals/payment/outstanding, Owner/Manager access, Staff denial and tenant isolation passed with zero remaining temporary fixtures
 - UI-FIX-001 removed public marketing chrome from authenticated shells and verified Owner/Manager assignment of active Portal-hidden tenant segments; EcoWash currently has no persisted segment records
 - PRICING-SEGMENTS-001 migration `20260827000100` is aligned; precedence is segment override → organization/location base, Portal and internal orders share server resolution, historical order/invoice snapshots are preserved, and E2E fixtures rolled back completely
+- ENTITLEMENTS-001 migration `20260827000200` is aligned; stable feature access is separate from tenant roles, tenant Owner cannot self-upgrade, EcoWash retains live modules, and Billing/pricing/branding data remains non-destructive when disabled
 - Anonymization and permanent customer deletion remain unavailable by policy; formal e-invoicing and full accounting are not implemented
 - Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
@@ -972,7 +974,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `ENTITLEMENTS-001`; keep `PLATFORM-ADMIN-001` next and do not combine POS, accounting or e-invoicing into the same task.
+3. Start `PLATFORM-ADMIN-001`; do not combine POS, accounting, e-invoicing or subscription collection into the same task.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

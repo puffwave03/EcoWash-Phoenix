@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-27
 
-Approximate closeout time: after PRICING-SEGMENTS-001 staging E2E validation
+Approximate closeout time: after ENTITLEMENTS-001 staging E2E validation
 
-Session checkpoint: segment pricing completed, applied and validated across internal orders, Customer Portal and Billing snapshots
+Session checkpoint: tenant entitlement foundation completed, applied and validated across Billing, segment-pricing management and advanced branding
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,11 @@ Branch: `main`
 
 Approved baseline before this mission: `3ec653b DOCS-SESSION-001 docs: close billing session and record SaaS roadmap`
 
-Origin/main status: local `main` and `origin/main` include `c847c96 PRICING-SEGMENTS-001 feat: add customer segment price overrides`.
+Origin/main status: local `main` and `origin/main` include `a39f88e ENTITLEMENTS-001 feat: add tenant feature access controls`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `c847c96 PRICING-SEGMENTS-001 feat: add customer segment price overrides`; working tree expected clean after documentation push.
+Application closeout commit: `a39f88e ENTITLEMENTS-001 feat: add tenant feature access controls`; working tree expected clean after documentation push.
 
 ---
 
@@ -70,6 +70,7 @@ Application closeout commit: `c847c96 PRICING-SEGMENTS-001 feat: add customer se
 - BILLING-001 — Invoicing Foundation and Customer Billing
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification
 - PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback
+- ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -125,6 +126,7 @@ Completed on EcoWash Staging:
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; authenticated Owner/Manager transitions, Staff denial, Portal revocation, inactive-order blocking and tenant isolation passed with temporary fixtures fully removed.
 - BILLING-001 migration `20260826000300` is applied and aligned; authenticated Owner/Manager Billing, Staff denial, tenant isolation, definitive numbering and exact invoice/payment/outstanding reconciliation passed with temporary fixtures fully removed.
 - PRICING-SEGMENTS-001 migration `20260827000100` is applied and aligned; segment override → organization/location base precedence, internal/Portal consistency, Owner/Manager access, Staff denial, tenant isolation and historical order/invoice preservation passed in rollback-only E2E.
+- ENTITLEMENTS-001 migration `20260827000200` is applied and aligned; Billing, segment-pricing management and full white-label gates, Owner/Manager read-only access, Staff restriction, self-upgrade prevention, expiry, tenant isolation, EcoWash bootstrap and rollback-only fixture cleanup passed.
 
 Applied baseline migrations:
 
@@ -159,7 +161,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260827000100`; PRICING-SEGMENTS-001 is applied to staging.
+Supabase migration history is aligned through `20260827000200`; ENTITLEMENTS-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -225,11 +227,16 @@ Available now:
 - Owner/Manager Billing at `/[locale]/app/billing` with draft creation from one or more eligible orders, concurrency-safe definitive numbering on issue and preserved issuer/customer/line snapshots
 - percentage-point tax configuration, Customer Account invoice integration, printable V1 invoice and payment/outstanding values derived from existing order-linked payment truth
 - Staff Billing denial and tenant-scoped invoice/order/customer links; no formal e-invoicing compliance or full accounting is claimed
-- the Billing foundation is premium-ready for future entitlement controls without introducing subscription logic in BILLING-001
+- the Billing foundation is entitlement-gated without introducing subscription logic or payment collection
+- centralized stable feature keys and tenant-scoped entitlements now separate platform access from tenant roles; application logic checks features, never plan names
+- Billing, segment-pricing management and advanced branding are gated in navigation, server code and database enforcement; disabling access preserves invoices, overrides and stored identity
+- existing EcoWash tenants were explicitly bootstrapped for already-live modules, while tenants created after the migration receive no implicit premium access
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `ENTITLEMENTS-001`, followed by `PLATFORM-ADMIN-001`.
+Next action: `PLATFORM-ADMIN-001`.
+
+Commercial direction may use Base, Premium, Pro and add-ons, but packaging is intentionally not hardcoded: plan templates must resolve to stable entitlements. Tenant Owner is not Platform Admin and cannot grant paid features.
 
 Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
@@ -243,19 +250,19 @@ Final completed sequence for this session:
 4. `BILLING-001`
 5. `UI-FIX-001`
 6. `PRICING-SEGMENTS-001`
+7. `ENTITLEMENTS-001`
 
 Approved next product roadmap:
 
-1. `ENTITLEMENTS-001` — SaaS plans, modules and feature access
-2. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
-3. `POS-001`
-4. `PRINT-001`
-5. `BARCODE-001`
-6. `ACCOUNTING-001`
-7. `E-INVOICE-001`
-8. `ACCOUNTING-PRO-001` — optional
-9. `ONBOARDING-001`
-10. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
+2. `POS-001`
+3. `PRINT-001`
+4. `BARCODE-001`
+5. `ACCOUNTING-001`
+6. `E-INVOICE-001`
+7. `ACCOUNTING-PRO-001` — optional
+8. `ONBOARDING-001`
+9. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
 
 Permanent product requirements:
 
@@ -263,7 +270,7 @@ Permanent product requirements:
 - Customer Portal must continue toward consumer-grade premium UX, including stronger hero/media, richer category/service visuals, a premium order timeline and refined financial/Billing presentation
 - white-label architecture remains required; EcoWash is the first tenant/reference, not hardcoded product identity
 - Owner, Manager, Staff and Customer remain tenant roles; future Platform Admin is separate from tenant Owner
-- Billing, accounting, POS, white-label and branding autonomy may later be gated by entitlements or subscription tier
+- future accounting, POS and other optional modules may be gated by the same entitlement foundation
 - no full accounting or e-invoice compliance is claimed yet
 - known future visual stream: `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH`, including continued authenticated-app refinement
 
