@@ -52,6 +52,11 @@ export async function loginAction(
   }
 
   if (data.user) {
+    const { data: platformAdmin } = await supabase.rpc("is_platform_admin");
+    if (platformAdmin === true) {
+      redirect(`/${locale}/platform`);
+    }
+
     const { data: portalAccess } = await supabase
       .from("customer_portal_access")
       .select("id")

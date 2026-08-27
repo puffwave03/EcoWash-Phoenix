@@ -19,6 +19,10 @@ export async function getCurrentProfile(
     .eq("id", userId)
     .maybeSingle<ProfileRow>();
 
+  if (error?.message.includes("organization_suspended")) {
+    throw new Error("organization_suspended");
+  }
+
   if (error || !data) {
     return null;
   }

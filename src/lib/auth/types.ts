@@ -38,4 +38,5 @@ export type MembershipAccessIssue =
   | "no_membership"
   | "multiple_memberships"
   | "inactive_organization"
+  | "suspended_organization"
   | "invalid_role";

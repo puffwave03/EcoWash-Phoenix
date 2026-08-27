@@ -962,6 +962,9 @@
     "unauthorized": "Access not authorized",
     "unauthorizedTitle": "This account is not linked to a customer portal.",
     "unauthorizedDescription": "Contact the laundry team to confirm that customer portal access is active for your account.",
+    "suspended": "Service suspended",
+    "suspendedTitle": "This organization's service is currently suspended.",
+    "suspendedDescription": "Data remains protected. Contact the organization or platform operator for service information.",
     "request": {
       "nav": "New order",
       "eyebrow": "Order and pickup",
@@ -1335,6 +1338,27 @@
     "segment": "Customer segment", "basePrice": "Base price", "effective": "Effective", "fallback": "Base fallback", "noBasePrice": "Unavailable", "amount": "Segment price", "location": "Location", "allLocations": "All locations", "search": "Search services", "searchPlaceholder": "Name, code or category",
     "validFrom": "Valid from", "validTo": "Valid to (optional)", "active": "Active", "inactive": "Inactive", "add": "Add price period", "save": "Save price", "saving": "Saving...", "saved": "Segment price saved.",
     "overlap": "This price period overlaps another active override.", "error": "The segment price could not be saved.", "empty": "No relevant active services are available for this segment.", "noSegments": "Create a customer segment before adding price overrides."
+  },
+  "organizationSuspended": {
+    "eyebrow": "Account service",
+    "title": "This organization is currently suspended.",
+    "description": "Operational data remains protected and unchanged. Contact the platform operator for service information or reactivation.",
+    "logout": "Sign out"
+  },
+  "platform": {
+    "shell": {"product": "SaaS Control Center", "role": "Platform administrator", "operator": "Platform operator", "overview": "Overview", "organizations": "Organizations", "navigationLabel": "Platform navigation", "logout": "Sign out"},
+    "overview": {"eyebrow": "Phoenix Platform", "title": "SaaS Control Center", "description": "A concise view of tenant service status and commercial feature access.", "openOrganizations": "Manage organizations", "metrics": {"total": "Total organizations", "active": "Active tenants", "suspended": "Suspended tenants", "billing": "Tenants with Billing", "segmentPricing": "Tenants with segment pricing", "advancedBranding": "Tenants with advanced branding"}},
+    "organizations": {"eyebrow": "Tenant directory", "title": "Organizations", "search": "Search organization name", "filter": "Service status", "all": "All statuses", "apply": "Apply filters", "empty": "No organizations match these filters.", "members": "members", "locations": "locations", "noPlan": "No label", "limitNote": "Showing up to 50 organizations. Use search and status filters to narrow the list.", "columns": {"organization": "Organization", "status": "Status", "plan": "Commercial label", "features": "Features", "created": "Created"}},
+    "status": {"active": "Active", "inactive": "Inactive", "suspended": "Suspended"},
+    "detail": {"back": "Organizations", "eyebrow": "Organization control", "identity": "Identity and commercial metadata", "created": "Created", "tenantState": "Tenant record state", "commercialLabel": "Commercial plan label", "commercialPlaceholder": "Base, Premium, Pro, Custom…", "commercialHelp": "Informational only. Changing this label never changes entitlements.", "saveLabel": "Save label", "serviceControl": "Service status", "notSet": "Not set"},
+    "result": {"saved": "The platform change was saved and audited.", "error": "The platform change could not be saved. Review the values and confirmation."},
+    "statusControl": {"active": "Tenant users and Portal can use the service according to roles and entitlements.", "suspended": "Tenant and Portal access is blocked while data remains preserved. Platform management stays available.", "confirm": "I confirm suspension. Tenant app and Portal access will stop; no tenant data will be deleted.", "suspend": "Suspend organization", "reactivate": "Reactivate organization"},
+    "usage": {"members": "Active members", "customers": "Customers", "orders": "Orders", "locations": "Locations"},
+    "branding": {"title": "Branding summary", "commercialName": "Commercial name", "logo": "Logo configured", "advanced": "Advanced branding access"},
+    "common": {"yes": "Yes", "no": "No"},
+    "entitlements": {"title": "Feature access", "description": "Entitlements are independent from the commercial label. Changes apply only after explicit save.", "included": "Included", "notIncluded": "Not included", "enable": "Enabled", "disable": "Disabled", "limit": "Numeric limit (optional)", "validFrom": "Valid from (optional)", "validUntil": "Valid until (optional)", "source": "Source / reason", "save": "Save feature access", "confirmDisable": "I confirm this feature will become unavailable for management or use. Existing invoices, configured prices and stored branding are preserved."},
+    "features": {"groups": {"core": "Core", "catalog": "Catalog", "pricing": "Pricing", "billing": "Billing", "branding": "Branding", "future": "Future operations", "accounting": "Accounting and fiscal"}, "labels": {"coreOrders": "Order management", "coreCustomers": "Customer management", "coreOperations": "Operations", "corePortal": "Customer Portal", "catalogManagement": "Catalog management", "catalogSegments": "Customer segments", "segmentPriceOverrides": "Segment-specific pricing", "billingInvoicing": "Invoicing", "basicBranding": "Basic branding", "customBrandColors": "Custom brand colors", "fullWhiteLabel": "Full white label", "advancedReports": "Advanced reports", "pos": "Point of sale", "printing": "Operational printing", "barcode": "Barcode workflows", "accounting": "Accounting foundation", "eInvoice": "Electronic invoicing", "multiLocation": "Multiple locations"}},
+    "audit": {"title": "Recent platform changes", "empty": "No platform changes have been recorded for this organization.", "actions": {"entitlement_enabled": "Feature enabled", "entitlement_disabled": "Feature disabled", "entitlement_updated": "Feature configuration updated", "organization_suspended": "Organization suspended", "organization_reactivated": "Organization reactivated", "commercial_label_updated": "Commercial label updated"}}
   },
   "entitlements": {
     "unavailable": {

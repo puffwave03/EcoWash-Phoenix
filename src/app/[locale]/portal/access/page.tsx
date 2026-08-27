@@ -5,12 +5,14 @@ import { requireAuth } from "@/lib/auth/require-auth";
 
 type CustomerPortalAccessPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ suspended?: string }>;
 };
 
 export default async function CustomerPortalAccessPage({
   params,
+  searchParams,
 }: CustomerPortalAccessPageProps) {
-  const { locale } = await params;
+  const [{ locale }, query] = await Promise.all([params, searchParams]);
   await requireAuth(locale);
   const t = await getTranslations({ locale, namespace: "common.portal" });
 
@@ -29,10 +31,10 @@ export default async function CustomerPortalAccessPage({
     >
       <Card className="space-y-3">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-secondary">
-          {t("unauthorized")}
+          {query.suspended === "1" ? t("suspended") : t("unauthorized")}
         </p>
-        <h2 className="text-2xl font-semibold text-primary">{t("unauthorizedTitle")}</h2>
-        <p className="text-sm leading-6 text-muted">{t("unauthorizedDescription")}</p>
+        <h2 className="text-2xl font-semibold text-primary">{query.suspended === "1" ? t("suspendedTitle") : t("unauthorizedTitle")}</h2>
+        <p className="text-sm leading-6 text-muted">{query.suspended === "1" ? t("suspendedDescription") : t("unauthorizedDescription")}</p>
       </Card>
     </CustomerPortalShell>
   );

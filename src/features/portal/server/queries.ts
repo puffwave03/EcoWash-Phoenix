@@ -259,6 +259,10 @@ export async function requireCustomerPortalAccess(locale: string): Promise<Custo
     .rpc("customer_portal_current_access")
     .maybeSingle<PortalAccessRow>();
 
+  if (error?.message.includes("organization_suspended")) {
+    redirect(`/${locale}/portal/access?suspended=1`);
+  }
+
   if (error || !access) redirect(`/${locale}/portal/access`);
 
   return {

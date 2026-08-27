@@ -56,6 +56,10 @@ export async function getCurrentMembership(
     .eq("is_active", true)
     .returns<RawMembership[]>();
 
+  if (error?.message.includes("organization_suspended")) {
+    return { issue: "suspended_organization", membership: null };
+  }
+
   if (error || !data || data.length === 0) {
     return { issue: "no_membership", membership: null };
   }

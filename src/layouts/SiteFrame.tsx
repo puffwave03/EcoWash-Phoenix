@@ -16,7 +16,9 @@ export function SiteFrame({
   const usesAuthenticatedShell = pathname === "/app"
     || pathname.startsWith("/app/")
     || pathname === "/portal"
-    || pathname.startsWith("/portal/");
+    || pathname.startsWith("/portal/")
+    || pathname === "/platform"
+    || pathname.startsWith("/platform/");
 
   if (usesAuthenticatedShell) return children;
 
