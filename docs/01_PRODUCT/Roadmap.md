@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-27
 
-Current Mission: ENTITLEMENTS-001 completed, applied and validated
+Current Mission: PLATFORM-ADMIN-001 completed, applied and validated
 
-Next Action: PLATFORM-ADMIN-001
+Next Action: POS-001
 
 ---
 
@@ -148,6 +148,7 @@ Implemented and smoke-validated:
 - Owner/Manager invoicing foundation with drafts, definitive issue numbering, legal/line snapshots, configurable percentage-point taxes, printable V1 invoices and Customer Account/payment integration
 - centralized tenant entitlement foundation with stable feature keys, optional limits/validity windows and tenant-safe read-only resolution
 - Billing, segment-pricing management and advanced branding gated without destroying existing commercial or customer-facing data
+- isolated Phoenix Platform administration for bounded tenant listing/detail, entitlement control, commercial labels, suspension/reactivation and audited platform changes
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
@@ -256,6 +257,7 @@ Scope:
 - UI-FIX-001 — authenticated public-chrome removal, compact app shell preservation and Customer Segment selector role/tenant/Portal-visibility verification, completed and E2E validated
 - PRICING-SEGMENTS-001 — dated segment price overrides with centralized `segment → organization/location base` precedence, internal/Portal consistency, server-enforced snapshots and historical Billing preservation, completed and E2E validated
 - ENTITLEMENTS-001 — platform entitlement access separated from tenant roles, with Billing, segment-pricing management and advanced branding gates, completed and E2E validated
+- PLATFORM-ADMIN-001 — SaaS operator control plane separated from Tenant Owner, with cross-tenant commercial controls and no impersonation or deletion, completed and E2E validated
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -270,6 +272,7 @@ Current staging validation checkpoint:
 - BILLING-001 is applied through migration `20260826000300`; Owner/Manager operations, Staff denial, tenant isolation, exact order/invoice/payment/outstanding reconciliation and fixture cleanup passed. It is premium-ready for future entitlements, but formal e-invoicing and full accounting are not implemented.
 - PRICING-SEGMENTS-001 is applied through migration `20260827000100`; Owner/Manager administration, Staff denial, tenant isolation, exact base/override/fallback totals and rollback-only fixture cleanup passed. Future precedence is reserved as `customer-specific → segment → organization`, without implementing customer-specific pricing.
 - ENTITLEMENTS-001 is applied through migration `20260827000200`; EcoWash retained all already-live modules, future tenants receive no implicit premium access, and disabled modules preserve invoice history, configured overrides and stored branding.
+- PLATFORM-ADMIN-001 is applied through migration `20260827000300`; suspension enforcement, tenant/Portal denial, entitlement preservation, audit and reactivation passed with transaction-only fixtures and no permanent staging admin assignment.
 
 PILOT-001 planning scope:
 
@@ -353,17 +356,17 @@ Exit criteria:
 
 Customer portal is now part of M1 pilot scoping. Do not start online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
 
-### Approved Product Sequence After ENTITLEMENTS-001
+### Approved Product Sequence After PLATFORM-ADMIN-001
 
-1. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center, separate from tenant Owner
-2. `POS-001`
-3. `PRINT-001`
-4. `BARCODE-001`
-5. `ACCOUNTING-001`
-6. `E-INVOICE-001`
-7. `ACCOUNTING-PRO-001` — optional
-8. `ONBOARDING-001`
-9. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `POS-001`
+2. `PRINT-001`
+3. `BARCODE-001`
+4. `ACCOUNTING-001`
+5. `E-INVOICE-001`
+6. `ACCOUNTING-PRO-001` — optional
+7. `ONBOARDING-001`
+8. future subscription/commercial billing
+9. `PLATFORM-SUPPORT-001` — optional
 
 Product invariants across this sequence:
 
@@ -372,6 +375,7 @@ Product invariants across this sequence:
 - white-label architecture keeps EcoWash as first tenant/reference, never hardcoded product identity
 - Owner, Manager, Staff and Customer remain tenant roles; Platform Admin is a separate SaaS role
 - potential Base, Premium, Pro and add-on packaging resolves to entitlements; feature logic never branches directly on plan names
+- Platform Admin is separate from tenant roles; no impersonation, hard tenant deletion, subscription collection or automatic plan templates exist yet
 - future accounting, POS and other optional modules may reuse the entitlement boundary; Billing, segment pricing management and advanced branding already do
 - `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH` remains known visual work: stronger media, richer service visuals, premium timeline, refined financial presentation and continued authenticated-app polish
 - no full accounting or e-invoice compliance is claimed before their dedicated missions

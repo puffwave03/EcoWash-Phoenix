@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-27
 
-Current Mission: ENTITLEMENTS-001 completed, applied and validated
+Current Mission: PLATFORM-ADMIN-001 completed, applied and validated
 
-Next Action: PLATFORM-ADMIN-001
+Next Action: POS-001
 
 ---
 
@@ -134,6 +134,7 @@ Approved and current areas:
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification: Completed and authenticated route E2E passed
 - PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback: Completed, staging migration aligned and exact role/tenant/snapshot E2E passed
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access: Completed, staging migration aligned and feature/role/tenant/preservation E2E passed
+- PLATFORM-ADMIN-001 — Phoenix SaaS Control Center: Completed, staging migration aligned and identity/control/suspension/audit E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -252,6 +253,7 @@ Official sequence after SEC-001:
 - UI-FIX-001 — authenticated marketing chrome removal plus segment selector role, tenant and Portal-visibility verification, completed and E2E validated
 - PRICING-SEGMENTS-001 — centralized segment override → organization/location base resolution across admin, internal orders and Portal, completed and E2E validated
 - ENTITLEMENTS-001 — centralized tenant feature catalog and entitlement resolver with Billing, pricing-management and advanced-branding enforcement, completed and E2E validated
+- PLATFORM-ADMIN-001 — isolated platform identity, tenant list/detail, entitlement administration, commercial metadata, suspension/reactivation and audit, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -280,20 +282,21 @@ Current staging validation checkpoint:
 - BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
 - PRICING-SEGMENTS-001 preserved historical order/invoice values and passed rollback-only fixture cleanup; ENTITLEMENTS-001 now controls its management boundary.
 - ENTITLEMENTS-001 preserves invoice history, segment overrides and stored branding when access is disabled; EcoWash is bootstrapped only for live modules and future tenants receive no implicit premium access.
+- PLATFORM-ADMIN-001 preserves tenant data through feature changes and suspension; EcoWash remains active/entitled and the controlled staging administrator was rolled back.
 
 Approved product sequence after this milestone checkpoint:
 
-1. `PLATFORM-ADMIN-001`
-2. `POS-001`
-3. `PRINT-001`
-4. `BARCODE-001`
-5. `ACCOUNTING-001`
-6. `E-INVOICE-001`
-7. `ACCOUNTING-PRO-001` — optional
-8. `ONBOARDING-001`
-9. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `POS-001`
+2. `PRINT-001`
+3. `BARCODE-001`
+4. `ACCOUNTING-001`
+5. `E-INVOICE-001`
+6. `ACCOUNTING-PRO-001` — optional
+7. `ONBOARDING-001`
+8. future subscription/commercial billing
+9. `PLATFORM-SUPPORT-001` — optional
 
-Premium UI, Calm Operations, mobile-first usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. No full accounting or e-invoice compliance is claimed yet.
+Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Subscription payments, Stripe, impersonation, tenant deletion and automated plan templates are not implemented.
 
 PILOT-001 planning scope:
 

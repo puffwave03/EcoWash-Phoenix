@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-27
 
-Approximate closeout time: after ENTITLEMENTS-001 staging E2E validation
+Approximate closeout time: after PLATFORM-ADMIN-001 staging E2E validation
 
-Session checkpoint: tenant entitlement foundation completed, applied and validated across Billing, segment-pricing management and advanced branding
+Session checkpoint: isolated Phoenix SaaS Control Center completed, applied and validated across tenant administration, entitlements, suspension and audit
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,11 @@ Branch: `main`
 
 Approved baseline before this mission: `3ec653b DOCS-SESSION-001 docs: close billing session and record SaaS roadmap`
 
-Origin/main status: local `main` and `origin/main` include `a39f88e ENTITLEMENTS-001 feat: add tenant feature access controls`.
+Origin/main status: local `main` and `origin/main` include `a111ea8 PLATFORM-ADMIN-001 feat: add SaaS control center`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `a39f88e ENTITLEMENTS-001 feat: add tenant feature access controls`; working tree expected clean after documentation push.
+Application closeout commit: `a111ea8 PLATFORM-ADMIN-001 feat: add SaaS control center`; working tree expected clean after documentation push.
 
 ---
 
@@ -71,6 +71,7 @@ Application closeout commit: `a39f88e ENTITLEMENTS-001 feat: add tenant feature 
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification
 - PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access
+- PLATFORM-ADMIN-001 — Phoenix SaaS Control Center
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -127,6 +128,7 @@ Completed on EcoWash Staging:
 - BILLING-001 migration `20260826000300` is applied and aligned; authenticated Owner/Manager Billing, Staff denial, tenant isolation, definitive numbering and exact invoice/payment/outstanding reconciliation passed with temporary fixtures fully removed.
 - PRICING-SEGMENTS-001 migration `20260827000100` is applied and aligned; segment override → organization/location base precedence, internal/Portal consistency, Owner/Manager access, Staff denial, tenant isolation and historical order/invoice preservation passed in rollback-only E2E.
 - ENTITLEMENTS-001 migration `20260827000200` is applied and aligned; Billing, segment-pricing management and full white-label gates, Owner/Manager read-only access, Staff restriction, self-upgrade prevention, expiry, tenant isolation, EcoWash bootstrap and rollback-only fixture cleanup passed.
+- PLATFORM-ADMIN-001 migration `20260827000300` is applied and aligned; isolated Platform Admin identity, cross-tenant summaries, entitlement administration, commercial labels, suspension/reactivation, audit, tenant/Portal denial and rollback-only cleanup passed.
 
 Applied baseline migrations:
 
@@ -161,7 +163,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260827000200`; ENTITLEMENTS-001 is applied to staging.
+Supabase migration history is aligned through `20260827000300`; PLATFORM-ADMIN-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -231,10 +233,21 @@ Available now:
 - centralized stable feature keys and tenant-scoped entitlements now separate platform access from tenant roles; application logic checks features, never plan names
 - Billing, segment-pricing management and advanced branding are gated in navigation, server code and database enforcement; disabling access preserves invoices, overrides and stored identity
 - existing EcoWash tenants were explicitly bootstrapped for already-live modules, while tenants created after the migration receive no implicit premium access
+- dedicated localized `/[locale]/platform` console with overview, bounded organization directory and organization commercial/detail controls
+- Platform Admin identity is stored outside tenant memberships; Owner, Manager, Staff and Customer cannot access platform routes, RPCs or audit data
+- suspension blocks tenant app, Server Actions, database API and Customer Portal while preserving data; reactivation restores normal role/entitlement access
+- platform entitlement, status and commercial-label mutations are audited; impersonation, tenant deletion, subscription collection and automated plan templates are not implemented
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `PLATFORM-ADMIN-001`.
+Next action: `POS-001`, followed by `PRINT-001` and `BARCODE-001`.
+
+Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. Staging E2E used a transaction-only administrator and left no permanent assignment.
+
+```sql
+insert into public.platform_admins (user_id, created_by)
+values ('<verified-auth-user-uuid>'::uuid, null);
+```
 
 Commercial direction may use Base, Premium, Pro and add-ons, but packaging is intentionally not hardcoded: plan templates must resolve to stable entitlements. Tenant Owner is not Platform Admin and cannot grant paid features.
 
@@ -251,18 +264,19 @@ Final completed sequence for this session:
 5. `UI-FIX-001`
 6. `PRICING-SEGMENTS-001`
 7. `ENTITLEMENTS-001`
+8. `PLATFORM-ADMIN-001`
 
 Approved next product roadmap:
 
-1. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
-2. `POS-001`
-3. `PRINT-001`
-4. `BARCODE-001`
-5. `ACCOUNTING-001`
-6. `E-INVOICE-001`
-7. `ACCOUNTING-PRO-001` — optional
-8. `ONBOARDING-001`
-9. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `POS-001`
+2. `PRINT-001`
+3. `BARCODE-001`
+4. `ACCOUNTING-001`
+5. `E-INVOICE-001`
+6. `ACCOUNTING-PRO-001` — optional
+7. `ONBOARDING-001`
+8. future subscription/commercial billing
+9. `PLATFORM-SUPPORT-001` — optional, without impersonation until separately designed
 
 Permanent product requirements:
 
