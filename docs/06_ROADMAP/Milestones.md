@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-27
 
-Current Mission: UI-FIX-001 authenticated shell and segment selector validated
+Current Mission: PRICING-SEGMENTS-001 completed, applied and validated
 
-Next Action: PRICING-SEGMENTS-001
+Next Action: ENTITLEMENTS-001, then PLATFORM-ADMIN-001
 
 ---
 
@@ -132,6 +132,7 @@ Approved and current areas:
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management: Completed, staging migration aligned and authenticated lifecycle E2E passed
 - BILLING-001 — Invoicing Foundation and Customer Billing: Completed, staging migration aligned and authenticated financial/role/tenant E2E passed
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification: Completed and authenticated route E2E passed
+- PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback: Completed, staging migration aligned and exact role/tenant/snapshot E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -248,6 +249,7 @@ Official sequence after SEC-001:
 - CUSTOMER-LIFECYCLE-001 — Owner/Manager active/inactive transitions, retained history, Portal revocation, inactive-order blocking and dependency eligibility, completed and E2E validated
 - BILLING-001 — Owner/Manager draft/issue lifecycle, concurrency-safe numbering, issuer/customer/line snapshots, taxes, printable invoice and Customer Account/payment integration, completed and E2E validated
 - UI-FIX-001 — authenticated marketing chrome removal plus segment selector role, tenant and Portal-visibility verification, completed and E2E validated
+- PRICING-SEGMENTS-001 — centralized segment override → organization/location base resolution across admin, internal orders and Portal, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -270,25 +272,24 @@ Current staging validation checkpoint:
 - Portal Auth/access hardening is complete and keeps Service Role server-only
 - old test orders remain intentionally untouched because safe hard cleanup would require an unnecessarily invasive administrative procedure
 - QA-001 remains a planned M1 gate; no QA-001 implementation was started by PORTAL-002.1
-- Segment pricing is not implemented; organization service prices remain authoritative and future pricing work stays separate.
+- Segment pricing is implemented through `20260827000100`; base fallback and global visibility/orderability remain authoritative, server-created order snapshots ignore tampered client prices, and future customer-specific precedence is reserved but not implemented.
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; Staff denial, tenant isolation, exact total/paid/outstanding values and fixture cleanup passed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal/order enforcement and fixture cleanup passed. Anonymization and hard delete remain unavailable.
 - BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
-- UI-FIX-001 completed the small shell/selector task without changing migrations; next action is `PRICING-SEGMENTS-001`.
+- PRICING-SEGMENTS-001 preserved historical order/invoice values, passed rollback-only fixture cleanup and is premium-ready for `ENTITLEMENTS-001`.
 
 Approved product sequence after this milestone checkpoint:
 
-1. `PRICING-SEGMENTS-001`
-2. `ENTITLEMENTS-001`
-3. `PLATFORM-ADMIN-001`
-4. `POS-001`
-5. `PRINT-001`
-6. `BARCODE-001`
-7. `ACCOUNTING-001`
-8. `E-INVOICE-001`
-9. `ACCOUNTING-PRO-001` — optional
-10. `ONBOARDING-001`
-11. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `ENTITLEMENTS-001`
+2. `PLATFORM-ADMIN-001`
+3. `POS-001`
+4. `PRINT-001`
+5. `BARCODE-001`
+6. `ACCOUNTING-001`
+7. `E-INVOICE-001`
+8. `ACCOUNTING-PRO-001` — optional
+9. `ONBOARDING-001`
+10. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
 
 Premium UI, Calm Operations, mobile-first usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from tenant Owner, future modules may be entitlement gated, and no full accounting or e-invoice compliance is claimed yet.
 

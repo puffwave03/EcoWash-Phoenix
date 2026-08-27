@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-27
 
-Approximate closeout time: after UI-FIX-001 authenticated route validation
+Approximate closeout time: after PRICING-SEGMENTS-001 staging E2E validation
 
-Session checkpoint: catalog segments, Customer Account, lifecycle, Billing and authenticated-shell cleanup completed and validated
+Session checkpoint: segment pricing completed, applied and validated across internal orders, Customer Portal and Billing snapshots
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `63b458b DOCS-BILLING-001 docs: record invoicing foundation`
+Approved baseline before this mission: `3ec653b DOCS-SESSION-001 docs: close billing session and record SaaS roadmap`
 
-Origin/main status: local `main` and `origin/main` include `51875a8 UI-FIX-001 fix: refine authenticated shell and customer segment selector`.
+Origin/main status: local `main` and `origin/main` include `c847c96 PRICING-SEGMENTS-001 feat: add customer segment price overrides`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `51875a8 UI-FIX-001 fix: refine authenticated shell and customer segment selector`; working tree expected clean after documentation push.
+Application closeout commit: `c847c96 PRICING-SEGMENTS-001 feat: add customer segment price overrides`; working tree expected clean after documentation push.
 
 ---
 
@@ -69,6 +69,7 @@ Application closeout commit: `51875a8 UI-FIX-001 fix: refine authenticated shell
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management
 - BILLING-001 — Invoicing Foundation and Customer Billing
 - UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification
+- PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -123,6 +124,7 @@ Completed on EcoWash Staging:
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; authenticated Owner/Manager access, Staff denial, tenant isolation and exact order/payment/balance reconciliation passed with temporary fixtures fully removed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; authenticated Owner/Manager transitions, Staff denial, Portal revocation, inactive-order blocking and tenant isolation passed with temporary fixtures fully removed.
 - BILLING-001 migration `20260826000300` is applied and aligned; authenticated Owner/Manager Billing, Staff denial, tenant isolation, definitive numbering and exact invoice/payment/outstanding reconciliation passed with temporary fixtures fully removed.
+- PRICING-SEGMENTS-001 migration `20260827000100` is applied and aligned; segment override → organization/location base precedence, internal/Portal consistency, Owner/Manager access, Staff denial, tenant isolation and historical order/invoice preservation passed in rollback-only E2E.
 
 Applied baseline migrations:
 
@@ -157,7 +159,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260826000300`; BILLING-001 is applied to staging.
+Supabase migration history is aligned through `20260827000100`; PRICING-SEGMENTS-001 is applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -210,7 +212,9 @@ Available now:
 - tenant-defined customer segments such as Case Vacanze, Hotel, Ristorazione or Privati, with one optional primary segment per customer
 - Owner/Manager segment management and customer assignment; Staff is denied
 - personalized Portal and New Order quick catalogs that reference existing services/categories while the complete organization catalog remains available
-- no segment-specific prices; current organization service prices and global visibility/orderability rules remain authoritative
+- dated segment-specific price overrides with centralized precedence `segment override → organization/location base`; hidden/non-orderable services remain unavailable and missing overrides fall back safely
+- internal order selection, Customer Portal estimates and final server-side order snapshots use the same resolver; client price tampering is overwritten by server truth
+- existing order lines and Billing invoice items remain historical snapshots when segment pricing changes
 - premium Owner/Manager Customer Account at `/[locale]/app/customers/[customerId]`
 - server-side, per-currency lifetime order value, confirmed payments, refunds, net paid and outstanding balances using existing order/payment semantics
 - bounded recent/current-year/all order and payment histories, properties, primary segment, Portal access and billing-readiness context
@@ -225,7 +229,7 @@ Available now:
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `PRICING-SEGMENTS-001`.
+Next action: `ENTITLEMENTS-001`, followed by `PLATFORM-ADMIN-001`.
 
 Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
@@ -238,20 +242,20 @@ Final completed sequence for this session:
 3. `CUSTOMER-LIFECYCLE-001`
 4. `BILLING-001`
 5. `UI-FIX-001`
+6. `PRICING-SEGMENTS-001`
 
 Approved next product roadmap:
 
-1. `PRICING-SEGMENTS-001`
-2. `ENTITLEMENTS-001` — SaaS plans, modules and feature access
-3. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
-4. `POS-001`
-5. `PRINT-001`
-6. `BARCODE-001`
-7. `ACCOUNTING-001`
-8. `E-INVOICE-001`
-9. `ACCOUNTING-PRO-001` — optional
-10. `ONBOARDING-001`
-11. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+1. `ENTITLEMENTS-001` — SaaS plans, modules and feature access
+2. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
+3. `POS-001`
+4. `PRINT-001`
+5. `BARCODE-001`
+6. `ACCOUNTING-001`
+7. `E-INVOICE-001`
+8. `ACCOUNTING-PRO-001` — optional
+9. `ONBOARDING-001`
+10. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
 
 Permanent product requirements:
 
