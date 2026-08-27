@@ -4,6 +4,7 @@ import { AppNavigation } from "@/components/dashboard/AppNavigation";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import type { PortalBrandPresentation } from "@/features/portal/media";
 import type { DashboardAccess } from "@/lib/auth/types";
+import type { EntitlementAccess } from "@/features/entitlements/feature-catalog";
 
 type DashboardShellText = {
   alerts: string;
@@ -40,6 +41,7 @@ type DashboardShellProps = {
   alertCount?: number;
   brand?: PortalBrandPresentation;
   children: ReactNode;
+  entitlements?: EntitlementAccess;
   locale: string;
   text: DashboardShellText;
 };
@@ -49,6 +51,7 @@ export function DashboardShell({
   alertCount = 0,
   brand = {},
   children,
+  entitlements = {},
   locale,
   text,
 }: DashboardShellProps) {
@@ -101,6 +104,7 @@ export function DashboardShell({
 
             <AppNavigation
               capabilities={access.membership.capabilities}
+              entitlements={entitlements}
               locale={locale}
               mode="desktop"
               navigationLabel={text.navigationLabel}
@@ -158,6 +162,7 @@ export function DashboardShell({
         <div className="min-w-0">
           <AppNavigation
             capabilities={access.membership.capabilities}
+            entitlements={entitlements}
             currentUserName={currentUserName}
             locale={locale}
             logoutErrorLabel={text.logoutError}
@@ -202,6 +207,7 @@ export function DashboardShell({
 
       <AppNavigation
         capabilities={access.membership.capabilities}
+        entitlements={entitlements}
         locale={locale}
         mode="mobile"
         navigationLabel={text.navigationLabel}

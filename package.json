@@ -8,6 +8,7 @@
     "test:catalog": "node --test tests/catalog-admin-contract.test.mjs",
     "test:segments": "node --test tests/catalog-segments-contract.test.mjs",
     "test:pricing-segments": "node --test tests/pricing-segments-contract.test.mjs",
+    "test:entitlements": "node --test tests/entitlements-contract.test.mjs",
     "test:customer-account": "node --test tests/customer-account-contract.test.mjs",
     "test:customer-lifecycle": "node --test tests/customer-lifecycle-contract.test.mjs",
     "test:billing": "node --test tests/billing-contract.test.mjs",

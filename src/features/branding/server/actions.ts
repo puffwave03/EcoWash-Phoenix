@@ -9,6 +9,8 @@ import {
 } from "@/features/branding/validation";
 import { requireOwner } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 type StoredBrandingPaths = {
   logo_path: string | null;
@@ -64,6 +66,7 @@ export async function saveOrganizationBrandingAction(
 ): Promise<BrandingActionState> {
   void _state;
   const { membership } = await requireOwner(locale);
+  await requireEntitlement(locale, FEATURES.fullWhiteLabel);
   const parsed = parseBrandingForm(formData);
   if (!parsed.valid) return fail(parsed.fieldErrors);
 

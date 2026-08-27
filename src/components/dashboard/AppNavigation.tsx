@@ -5,6 +5,11 @@ import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import type { OperationalCapability } from "@/lib/auth/capabilities";
 import type { AppRole } from "@/lib/auth/types";
+import {
+  entitlementEnabled,
+  FEATURES,
+  type EntitlementAccess,
+} from "@/features/entitlements/feature-catalog";
 
 type AppNavigationText = {
   alerts: string;
@@ -38,6 +43,7 @@ type AppNavigationProps = {
   organizationLabel?: string;
   organizationName?: string;
   currentUserName?: string;
+  entitlements?: EntitlementAccess;
   logoutErrorLabel?: string;
   logoutLabel?: string;
   role?: AppRole;
@@ -108,6 +114,7 @@ export function AppNavigation({
   alertCount = 0,
   capabilities = [],
   currentUserName,
+  entitlements = {},
   locale,
   logoutErrorLabel,
   logoutLabel,
@@ -146,13 +153,17 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
-            { href: "/app/billing", label: text.billing, match: "/app/billing" },
+            ...(entitlementEnabled(entitlements, FEATURES.billingInvoicing)
+              ? [{ href: "/app/billing", label: text.billing, match: "/app/billing" }]
+              : []),
             { href: "/app/services", label: text.services, match: "/app/services" },
             { href: "/app/settings/catalog", label: text.catalogAdmin, match: "/app/settings/catalog" },
             ...(role === "owner"
               ? [
                   { href: "/app/staff", label: text.staff, match: "/app/staff" },
-                  { href: "/app/settings/branding", label: text.branding, match: "/app/settings/branding" },
+                  ...(entitlementEnabled(entitlements, FEATURES.fullWhiteLabel)
+                    ? [{ href: "/app/settings/branding", label: text.branding, match: "/app/settings/branding" }]
+                    : []),
                 ]
               : []),
           ],
@@ -245,7 +256,7 @@ export function AppNavigation({
                       </div>
                     ) : null}
                   </dl>
-                  {role === "owner" ? (
+                  {role === "owner" && entitlementEnabled(entitlements, FEATURES.fullWhiteLabel) ? (
                     <div className="mt-4 border-t border-border pt-4">
                       <Link
                         className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

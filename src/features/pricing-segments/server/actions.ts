@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import type { SegmentPriceActionState } from "@/features/pricing-segments/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 const initialState: SegmentPriceActionState = { fieldErrors: {}, formError: null, success: false };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -41,6 +43,7 @@ export async function saveSegmentPriceAction(
   if (Object.keys(fieldErrors).length) return { ...initialState, fieldErrors };
 
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.segmentPriceOverrides);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("save_catalog_segment_price", {
     target_amount: amount,

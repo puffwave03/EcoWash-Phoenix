@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTaxRate } from "@/features/billing/tax-rate";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 function value(formData: FormData, name: string, max = 1000) {
   return String(formData.get(name) ?? "").trim().slice(0, max);
@@ -31,6 +33,7 @@ function revalidateBilling(locale: string, customerId?: string, invoiceId?: stri
 
 export async function saveBillingSettingsAction(locale: string, formData: FormData) {
   await requireOwner(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const taxRate = parseTaxRate(value(formData, "defaultTaxRate", 16));
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("upsert_organization_billing_settings", {
@@ -54,6 +57,7 @@ export async function saveBillingSettingsAction(locale: string, formData: FormDa
 
 export async function createBillingDraftAction(locale: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const orderIds = formData.getAll("orderId").map(String);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
@@ -72,6 +76,7 @@ export async function createBillingDraftAction(locale: string, customerId: strin
 
 export async function updateBillingDraftAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("update_billing_draft", {
@@ -89,6 +94,7 @@ export async function updateBillingDraftAction(locale: string, invoiceId: string
 
 export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string) {
   await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("issue_billing_invoice", { target_invoice_id: invoiceId });
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
@@ -98,6 +104,7 @@ export async function issueBillingInvoiceAction(locale: string, invoiceId: strin
 
 export async function cancelBillingInvoiceAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("cancel_billing_invoice", {
     target_invoice_id: invoiceId,
@@ -110,6 +117,7 @@ export async function cancelBillingInvoiceAction(locale: string, invoiceId: stri
 
 export async function deleteBillingDraftAction(locale: string, invoiceId: string, customerId: string) {
   await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("delete_billing_draft", { target_invoice_id: invoiceId });
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);

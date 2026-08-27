@@ -1304,6 +1304,14 @@
     "validFrom": "Valido dal", "validTo": "Valido fino al (facoltativo)", "active": "Attivo", "inactive": "Inattivo", "add": "Aggiungi periodo prezzo", "save": "Salva prezzo", "saving": "Salvataggio...", "saved": "Prezzo segmento salvato.",
     "overlap": "Questo periodo si sovrappone a un altro prezzo attivo.", "error": "Impossibile salvare il prezzo del segmento.", "empty": "Nessun servizio attivo rilevante per questo segmento.", "noSegments": "Crea un segmento cliente prima di aggiungere prezzi dedicati."
   },
+  "entitlements": {
+    "unavailable": {
+      "eyebrow": "Accesso del piano",
+      "title": "Funzione non inclusa",
+      "description": "Questa funzione non è inclusa nell'accesso attuale dell'organizzazione. Contatta il gestore della piattaforma per richiederne l'abilitazione.",
+      "back": "Torna alla panoramica"
+    }
+  },
   "catalog": {
     "search": "Cerca servizi",
     "searchPlaceholder": "Nome, codice o categoria",

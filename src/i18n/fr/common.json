@@ -1295,6 +1295,14 @@
     "validFrom": "Valide à partir du", "validTo": "Valide jusqu'au (facultatif)", "active": "Actif", "inactive": "Inactif", "add": "Ajouter une période tarifaire", "save": "Enregistrer le tarif", "saving": "Enregistrement...", "saved": "Tarif du segment enregistré.",
     "overlap": "Cette période chevauche un autre tarif actif.", "error": "Impossible d'enregistrer le tarif du segment.", "empty": "Aucun service actif pertinent pour ce segment.", "noSegments": "Créez un segment avant d'ajouter des tarifs dédiés."
   },
+  "entitlements": {
+    "unavailable": {
+      "eyebrow": "Accès au forfait",
+      "title": "Fonction non incluse",
+      "description": "Cette fonction n'est pas incluse dans l'accès actuel de l'organisation. Contactez le gestionnaire de la plateforme pour demander son activation.",
+      "back": "Retour à la vue d'ensemble"
+    }
+  },
   "catalog": {
     "search": "Rechercher des services",
     "searchPlaceholder": "Nom, code ou catégorie",

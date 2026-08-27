@@ -1,4 +1,6 @@
 import "server-only";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 import { requireOwner } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -181,6 +183,7 @@ export async function getTenantBranding(organizationId: string): Promise<TenantB
 
 export async function getOwnerBrandingSettings(locale: string): Promise<OrganizationBrandingSettings> {
   const { membership } = await requireOwner(locale);
+  await requireEntitlement(locale, FEATURES.fullWhiteLabel);
   const result = await brandingRows(membership.organization.id);
   const row = result.row;
 

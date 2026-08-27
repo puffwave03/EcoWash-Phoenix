@@ -1336,6 +1336,14 @@
     "validFrom": "Valid from", "validTo": "Valid to (optional)", "active": "Active", "inactive": "Inactive", "add": "Add price period", "save": "Save price", "saving": "Saving...", "saved": "Segment price saved.",
     "overlap": "This price period overlaps another active override.", "error": "The segment price could not be saved.", "empty": "No relevant active services are available for this segment.", "noSegments": "Create a customer segment before adding price overrides."
   },
+  "entitlements": {
+    "unavailable": {
+      "eyebrow": "Plan access",
+      "title": "Feature not included",
+      "description": "This feature is not included in the organization's current access. Contact the platform manager if it should be enabled.",
+      "back": "Return to overview"
+    }
+  },
   "catalog": {
     "search": "Search services",
     "searchPlaceholder": "Name, code or category",

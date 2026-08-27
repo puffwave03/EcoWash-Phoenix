@@ -1,4 +1,6 @@
 import "server-only";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 import { notFound } from "next/navigation";
 import type {
@@ -225,6 +227,7 @@ async function hydrateInvoices(
 
 export async function getBillingSettings(locale: string): Promise<BillingSettings> {
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("organization_billing_settings")
@@ -259,6 +262,7 @@ export async function getBillingSettings(locale: string): Promise<BillingSetting
 
 export async function listBillingInvoices(locale: string): Promise<BillingInvoice[]> {
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("invoices")
@@ -281,6 +285,7 @@ export async function listBillingInvoices(locale: string): Promise<BillingInvoic
 
 export async function getBillingInvoice(locale: string, invoiceId: string): Promise<BillingInvoiceDetail> {
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const [invoiceResult, itemsResult] = await Promise.all([
     supabase.from("invoices").select(INVOICE_SELECT).eq("organization_id", membership.organization.id).eq("id", invoiceId).maybeSingle<InvoiceRow>(),
@@ -324,6 +329,7 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
 
 export async function listEligibleBillingOrders(locale: string, customerId?: string): Promise<EligibleBillingOrder[]> {
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const linksResult = await supabase.from("invoice_orders").select("order_id").eq("organization_id", membership.organization.id).eq("is_active", true).returns<{ order_id: string }[]>();
   const linked = new Set((linksResult.data ?? []).map((row) => row.order_id));

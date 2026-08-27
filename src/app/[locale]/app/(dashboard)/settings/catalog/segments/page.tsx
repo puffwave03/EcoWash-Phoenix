@@ -1,8 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { CatalogSegmentManagement } from "@/components/catalog-segments/CatalogSegmentManagement";
+import { FeatureUnavailablePanel } from "@/components/entitlements/FeatureUnavailablePanel";
 import { SegmentPricingManagement } from "@/components/pricing-segments/SegmentPricingManagement";
 import { saveCatalogSegmentAction } from "@/features/catalog-segments/server/actions";
+import { getCatalogSegmentAdminSettings } from "@/features/catalog-segments/server/queries";
 import type { CatalogSegmentStarter } from "@/features/catalog-segments/types";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { hasEntitlement } from "@/features/entitlements/server/resolver";
 import { saveSegmentPriceAction } from "@/features/pricing-segments/server/actions";
 import { getSegmentPricingSettings } from "@/features/pricing-segments/server/queries";
 import { Link } from "@/i18n/navigation";
@@ -11,12 +15,14 @@ type CatalogSegmentsPageProps = { params: Promise<{ locale: string }> };
 
 export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPageProps) {
   const { locale } = await params;
-  const [pricing, t, pricingT] = await Promise.all([
-    getSegmentPricingSettings(locale),
+  const pricingEnabled = await hasEntitlement(locale, FEATURES.segmentPriceOverrides);
+  const [settings, pricing, t, pricingT, unavailableT] = await Promise.all([
+    getCatalogSegmentAdminSettings(locale),
+    pricingEnabled ? getSegmentPricingSettings(locale) : null,
     getTranslations({ locale, namespace: "common.catalogSegments" }),
     getTranslations({ locale, namespace: "common.pricingSegments" }),
+    getTranslations({ locale, namespace: "common.entitlements.unavailable" }),
   ]);
-  const settings = pricing;
 
   return (
     <div className="space-y-6">
@@ -38,7 +44,7 @@ export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPag
           }}
         />
       ) : <p className="rounded-card border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">{t("migrationRequired")}</p>}
-      {pricing.available ? (
+      {pricing?.available ? (
         <SegmentPricingManagement
           action={saveSegmentPriceAction.bind(null, locale)}
           currency={pricing.currency}
@@ -52,7 +58,16 @@ export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPag
           }}
           today={pricing.today}
         />
-      ) : null}
+      ) : pricingEnabled ? null : (
+        <FeatureUnavailablePanel
+          backLabel={unavailableT("back")}
+          description={unavailableT("description")}
+          embedded
+          eyebrow={unavailableT("eyebrow")}
+          locale={locale}
+          title={unavailableT("title")}
+        />
+      )}
     </div>
   );
 }

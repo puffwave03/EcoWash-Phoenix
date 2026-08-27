@@ -91,7 +91,7 @@ export async function CustomerAccountView({
   properties,
   segmentAssignment,
 }: {
-  billingOverview: CustomerBillingOverview;
+  billingOverview: CustomerBillingOverview | null;
   customer: Customer;
   eligibility: CustomerLifecycleEligibility | null;
   financials: CustomerAccountFinancials;
@@ -115,7 +115,7 @@ export async function CustomerAccountView({
   const lastActivity = latestDate([
     customer.updatedAt,
     portalAccess?.updatedAt ?? null,
-    ...billingOverview.recentInvoices.map((invoice) => invoice.issuedAt ?? invoice.createdAt),
+    ...(billingOverview?.recentInvoices ?? []).map((invoice) => invoice.issuedAt ?? invoice.createdAt),
     ...financials.summaries.flatMap((summary) => [summary.lastOrderAt, summary.lastPaymentAt]),
   ]);
   const billingAddress = address(customer);
@@ -212,12 +212,14 @@ export async function CustomerAccountView({
         ))}
       </section>
 
-      <CustomerBillingSection
-        customerId={customer.id}
-        locale={locale}
-        overview={billingOverview}
-        text={t.raw("billingSection") as Record<string, string>}
-      />
+      {billingOverview ? (
+        <CustomerBillingSection
+          customerId={customer.id}
+          locale={locale}
+          overview={billingOverview}
+          text={t.raw("billingSection") as Record<string, string>}
+        />
+      ) : null}
 
       <nav className="flex flex-wrap gap-2" aria-label={t("history.filterLabel")}>
         {(["recent", "year", "all"] as const).map((value) => (

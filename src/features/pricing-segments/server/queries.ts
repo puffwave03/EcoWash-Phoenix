@@ -4,6 +4,8 @@ import { getCatalogSegmentAdminSettings } from "@/features/catalog-segments/serv
 import type { SegmentPrice, SegmentPricingSettings } from "@/features/pricing-segments/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 type PriceRow = {
   amount: number;
@@ -19,6 +21,7 @@ type PriceRow = {
 
 export async function getSegmentPricingSettings(locale: string): Promise<SegmentPricingSettings> {
   const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.segmentPriceOverrides);
   const supabase = await createSupabaseServerClient();
   const [catalog, pricesResult, locationsResult, organizationResult] = await Promise.all([
     getCatalogSegmentAdminSettings(locale),

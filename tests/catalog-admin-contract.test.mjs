@@ -25,11 +25,15 @@ test("catalog administration uses the existing Owner/Manager guard while brandin
 test("Staff navigation does not include management catalog routes", async () => {
   const navigation = await source("src/components/dashboard/AppNavigation.tsx");
   const controlBranch = navigation.indexOf("const navigationGroups = isControlRole");
-  const staffBranch = navigation.indexOf("    : [", controlBranch);
-  const catalogRoute = navigation.indexOf("/app/settings/catalog", controlBranch);
+  const staffBranch = navigation.indexOf("\n    : [\n        {", controlBranch);
+  const navigationEnd = navigation.indexOf("\n      ];", staffBranch);
+  const controlNavigation = navigation.slice(controlBranch, staffBranch);
+  const staffNavigation = navigation.slice(staffBranch, navigationEnd);
 
-  assert.ok(controlBranch >= 0 && staffBranch > controlBranch);
-  assert.ok(catalogRoute > controlBranch && catalogRoute < staffBranch);
+  assert.ok(controlBranch >= 0 && staffBranch > controlBranch && navigationEnd > staffBranch);
+  assert.match(controlNavigation, /\/app\/settings\/catalog/);
+  assert.doesNotMatch(staffNavigation, /\/app\/settings\/(?:catalog|branding)/);
+  assert.doesNotMatch(staffNavigation, /\/app\/(?:billing|services|customers|staff)/);
 });
 
 test("Portal discovery enforces active service, visibility, visible category and current price", async () => {

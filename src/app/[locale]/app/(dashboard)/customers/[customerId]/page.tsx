@@ -11,6 +11,8 @@ import {
 import { createStagingCustomerPreviewPath } from "@/features/portal/server/preview";
 import { getCustomerPortalAccessSummary } from "@/features/portal/server/queries";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { hasEntitlement } from "@/features/entitlements/server/resolver";
 
 type CustomerDetailPageProps = {
   params: Promise<{ customerId: string; locale: string }>;
@@ -23,10 +25,11 @@ export default async function CustomerDetailPage({
 }: CustomerDetailPageProps) {
   const [{ customerId, locale }, rawSearchParams] = await Promise.all([params, searchParams]);
   const access = await requireOwnerOrManager(locale);
+  const billingEnabled = await hasEntitlement(locale, FEATURES.billingInvoicing);
   const period = parseCustomerAccountPeriod(rawSearchParams.period);
   const [customer, billingOverview, eligibility, financials, portalAccess, properties, segmentAssignment] = await Promise.all([
     getCustomerById(locale, customerId),
-    getCustomerBillingOverview(locale, customerId),
+    billingEnabled ? getCustomerBillingOverview(locale, customerId) : null,
     getCustomerLifecycleEligibility(locale, customerId),
     getCustomerAccountFinancials(locale, customerId, period),
     getCustomerPortalAccessSummary(locale, customerId),
