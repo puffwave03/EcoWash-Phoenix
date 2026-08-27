@@ -13,9 +13,12 @@ export function SiteFrame({
   header: ReactNode;
 }) {
   const pathname = usePathname();
-  const usesCustomerPortalShell = pathname === "/portal" || pathname.startsWith("/portal/");
+  const usesAuthenticatedShell = pathname === "/app"
+    || pathname.startsWith("/app/")
+    || pathname === "/portal"
+    || pathname.startsWith("/portal/");
 
-  if (usesCustomerPortalShell) return children;
+  if (usesAuthenticatedShell) return children;
 
   return (
     <>
