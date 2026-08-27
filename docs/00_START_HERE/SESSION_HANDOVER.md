@@ -2,23 +2,23 @@
 
 Status: Active
 
-Date: 2026-08-26
+Date: 2026-08-27
 
-Approximate closeout time: after BILLING-001 authenticated staging validation
+Approximate closeout time: after UI-FIX-001 authenticated route validation
 
-Session checkpoint: invoicing foundation completed and validated across Billing, Customer Account, role and tenant boundaries
+Session checkpoint: catalog segments, Customer Account, lifecycle, Billing and authenticated-shell cleanup completed and validated
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `39bc376 DOCS-CUSTOMER-002 docs: record customer lifecycle management`
+Approved baseline before this mission: `63b458b DOCS-BILLING-001 docs: record invoicing foundation`
 
-Origin/main status: local `main` and `origin/main` include `45a7047 BILLING-001 feat: add invoicing foundation and customer billing`.
+Origin/main status: local `main` and `origin/main` include `51875a8 UI-FIX-001 fix: refine authenticated shell and customer segment selector`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `45a7047 BILLING-001 feat: add invoicing foundation and customer billing`; working tree expected clean after documentation push.
+Application closeout commit: `51875a8 UI-FIX-001 fix: refine authenticated shell and customer segment selector`; working tree expected clean after documentation push.
 
 ---
 
@@ -68,6 +68,7 @@ Application closeout commit: `45a7047 BILLING-001 feat: add invoicing foundation
 - CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management
 - BILLING-001 — Invoicing Foundation and Customer Billing
+- UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -221,12 +222,46 @@ Available now:
 - percentage-point tax configuration, Customer Account invoice integration, printable V1 invoice and payment/outstanding values derived from existing order-linked payment truth
 - Staff Billing denial and tenant-scoped invoice/order/customer links; no formal e-invoicing compliance or full accounting is claimed
 - the Billing foundation is premium-ready for future entitlement controls without introducing subscription logic in BILLING-001
+- authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
+- the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: the separately approved small UI/FIX task; it was not started by BILLING-001.
+Next action: `PRICING-SEGMENTS-001`.
 
 Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
 Billing foundation delivered by BILLING-001: organization → customer → one or more orders → invoice/document is explicit, while existing order-linked payments remain the financial source of truth. Formal e-invoicing, credit notes and full accounting remain future approved work.
+
+Final completed sequence for this session:
+
+1. `CATALOG-SEGMENTS-001`
+2. `CUSTOMER-ACCOUNT-001`
+3. `CUSTOMER-LIFECYCLE-001`
+4. `BILLING-001`
+5. `UI-FIX-001`
+
+Approved next product roadmap:
+
+1. `PRICING-SEGMENTS-001`
+2. `ENTITLEMENTS-001` — SaaS plans, modules and feature access
+3. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center
+4. `POS-001`
+5. `PRINT-001`
+6. `BARCODE-001`
+7. `ACCOUNTING-001`
+8. `E-INVOICE-001`
+9. `ACCOUNTING-PRO-001` — optional
+10. `ONBOARDING-001`
+11. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+
+Permanent product requirements:
+
+- premium UI is mandatory, not optional polish; Calm Operations and mobile-first usability remain the product language
+- Customer Portal must continue toward consumer-grade premium UX, including stronger hero/media, richer category/service visuals, a premium order timeline and refined financial/Billing presentation
+- white-label architecture remains required; EcoWash is the first tenant/reference, not hardcoded product identity
+- Owner, Manager, Staff and Customer remain tenant roles; future Platform Admin is separate from tenant Owner
+- Billing, accounting, POS, white-label and branding autonomy may later be gated by entitlements or subscription tier
+- no full accounting or e-invoice compliance is claimed yet
+- known future visual stream: `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH`, including continued authenticated-app refinement
 
 Role summary:
 

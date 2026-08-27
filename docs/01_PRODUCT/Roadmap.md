@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-26
+Last Updated: 2026-08-27
 
-Current Mission: BILLING-001 completed and validated
+Current Mission: UI-FIX-001 completed and validated
 
-Next Action: separately approved small UI/FIX task
+Next Action: PRICING-SEGMENTS-001
 
 ---
 
@@ -251,6 +251,7 @@ Scope:
 - BUG-PROD-006 — terminal operational transition redirects, completed
 - AUTH-INFRA-001 — Resend Custom SMTP enabled and operational for Supabase Auth
 - BILLING-001 — invoice/document model, draft/issue lifecycle, concurrency-safe numbering, snapshots, taxes, printable view and Customer Account/payment integration, completed and E2E validated
+- UI-FIX-001 — authenticated public-chrome removal, compact app shell preservation and Customer Segment selector role/tenant/Portal-visibility verification, completed and E2E validated
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -345,3 +346,27 @@ Exit criteria:
 ### Deferred Until After M3
 
 Customer portal is now part of M1 pilot scoping. Do not start online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
+
+### Approved Product Sequence After UI-FIX-001
+
+1. `PRICING-SEGMENTS-001`
+2. `ENTITLEMENTS-001` — SaaS plans, modules and feature access
+3. `PLATFORM-ADMIN-001` — Phoenix SaaS Control Center, separate from tenant Owner
+4. `POS-001`
+5. `PRINT-001`
+6. `BARCODE-001`
+7. `ACCOUNTING-001`
+8. `E-INVOICE-001`
+9. `ACCOUNTING-PRO-001` — optional
+10. `ONBOARDING-001`
+11. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+
+Product invariants across this sequence:
+
+- premium UI, Calm Operations and mobile-first usability are mandatory
+- Customer Portal continues toward consumer-grade premium UX
+- white-label architecture keeps EcoWash as first tenant/reference, never hardcoded product identity
+- Owner, Manager, Staff and Customer remain tenant roles; Platform Admin is a separate SaaS role
+- Billing, accounting, POS, white-label and branding autonomy may later be entitlement/tier gated
+- `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH` remains known visual work: stronger media, richer service visuals, premium timeline, refined financial presentation and continued authenticated-app polish
+- no full accounting or e-invoice compliance is claimed before their dedicated missions

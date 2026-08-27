@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-26
+Last Updated: 2026-08-27
 
-Current Mission: BILLING-001 invoicing foundation validated
+Current Mission: UI-FIX-001 authenticated shell and segment selector validated
 
-Next Action: separately approved small UI/FIX task
+Next Action: PRICING-SEGMENTS-001
 
 ---
 
@@ -131,6 +131,7 @@ Approved and current areas:
 - CUSTOMER-ACCOUNT-001 — Customer Financial Account Experience: Completed, staging migration aligned, exact financial reconciliation and authenticated E2E passed
 - CUSTOMER-LIFECYCLE-001 — Safe Customer Lifecycle Management: Completed, staging migration aligned and authenticated lifecycle E2E passed
 - BILLING-001 — Invoicing Foundation and Customer Billing: Completed, staging migration aligned and authenticated financial/role/tenant E2E passed
+- UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification: Completed and authenticated route E2E passed
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -246,6 +247,7 @@ Official sequence after SEC-001:
 - CUSTOMER-ACCOUNT-001 — Owner/Manager customer identity, properties, segment, Portal state, per-currency lifetime order/payment summary and bounded financial histories, completed and E2E validated
 - CUSTOMER-LIFECYCLE-001 — Owner/Manager active/inactive transitions, retained history, Portal revocation, inactive-order blocking and dependency eligibility, completed and E2E validated
 - BILLING-001 — Owner/Manager draft/issue lifecycle, concurrency-safe numbering, issuer/customer/line snapshots, taxes, printable invoice and Customer Account/payment integration, completed and E2E validated
+- UI-FIX-001 — authenticated marketing chrome removal plus segment selector role, tenant and Portal-visibility verification, completed and E2E validated
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -272,7 +274,23 @@ Current staging validation checkpoint:
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; Staff denial, tenant isolation, exact total/paid/outstanding values and fixture cleanup passed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal/order enforcement and fixture cleanup passed. Anonymization and hard delete remain unavailable.
 - BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
-- Next action is the separately approved small UI/FIX task; BILLING-001 did not start it.
+- UI-FIX-001 completed the small shell/selector task without changing migrations; next action is `PRICING-SEGMENTS-001`.
+
+Approved product sequence after this milestone checkpoint:
+
+1. `PRICING-SEGMENTS-001`
+2. `ENTITLEMENTS-001`
+3. `PLATFORM-ADMIN-001`
+4. `POS-001`
+5. `PRINT-001`
+6. `BARCODE-001`
+7. `ACCOUNTING-001`
+8. `E-INVOICE-001`
+9. `ACCOUNTING-PRO-001` — optional
+10. `ONBOARDING-001`
+11. `SAAS-ADMIN-001` / broader SaaS configuration as appropriate
+
+Premium UI, Calm Operations, mobile-first usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from tenant Owner, future modules may be entitlement gated, and no full accounting or e-invoice compliance is claimed yet.
 
 PILOT-001 planning scope:
 

@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-26
+Last Updated: 2026-08-27
 
-Current Mission: BILLING-001 invoicing foundation completed and validated
+Current Mission: UI-FIX-001 authenticated shell and segment selector completed and validated
 
-Next Action: separately approved small UI/FIX task
+Next Action: PRICING-SEGMENTS-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | BILLING-001 authenticated staging validation and cleanup passed |
-| Last completed implementation mission | BILLING-001 — Invoicing Foundation and Customer Billing |
-| Approved baseline before current closeout | 45a7047 |
+| Current mission | UI-FIX-001 authenticated route, role, tenant and cleanup validation passed |
+| Last completed implementation mission | UI-FIX-001 — Authenticated Shell Cleanup and Customer Segment Selector Verification |
+| Approved baseline before current closeout | 51875a8 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -73,6 +73,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | CUSTOMER-ACCOUNT-001 status | Completed, applied through 20260826000100, exact financial E2E passed and pushed |
 | CUSTOMER-LIFECYCLE-001 status | Completed, applied through 20260826000200, authenticated lifecycle E2E passed and pushed |
 | BILLING-001 status | Completed, applied through 20260826000300, exact financial/role/tenant E2E passed and pushed |
+| UI-FIX-001 status | Completed; authenticated public chrome removed, segment selector verified and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -89,7 +90,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging connected and aligned through 20260826000300; Billing preserves issued snapshots and derives payment truth without mutating historical orders/payments |
-| Commercial readiness | Owner/Manager invoicing foundation is available and premium-ready; Staff is denied; formal e-invoicing and full accounting remain future work |
+| Commercial readiness | Billing and the authenticated shell are validated; next is PRICING-SEGMENTS-001; formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -924,13 +925,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da BILLING-001 validato e definiamo il prossimo mini-task UI/FIX.”
+“Buongiorno, riprendiamo EcoWash Phoenix da UI-FIX-001 validato e avviamo PRICING-SEGMENTS-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- BILLING-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
+- UI-FIX-001 is completed, committed and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -943,6 +944,7 @@ Exact starting state:
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied to staging and aligned; Owner/Manager/Staff and tenant-isolation E2E passed with exact financial reconciliation and zero remaining temporary fixtures
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied to staging and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal revocation and inactive-order rejection passed with zero remaining temporary fixtures
 - BILLING-001 migration `20260826000300` is applied to staging and aligned; invoice numbering, exact totals/payment/outstanding, Owner/Manager access, Staff denial and tenant isolation passed with zero remaining temporary fixtures
+- UI-FIX-001 removed public marketing chrome from authenticated shells and verified Owner/Manager assignment of active Portal-hidden tenant segments; EcoWash currently has no persisted segment records
 - Anonymization and permanent customer deletion remain unavailable by policy; formal e-invoicing and full accounting are not implemented
 - Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
@@ -968,7 +970,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start only the separately approved small UI/FIX task; do not extend Billing into accounting, subscriptions or formal e-invoicing.
+3. Start `PRICING-SEGMENTS-001`; do not start entitlements, platform administration, POS, accounting or e-invoicing in the same task.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.
