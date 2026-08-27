@@ -1289,6 +1289,12 @@
     "noCustomers": "Aucun client disponible.",
     "noSegments": "Aucun segment client n'a encore été créé."
   },
+  "pricingSegments": {
+    "title": "Tarifs par segment", "description": "Définissez des tarifs datés pour un segment client. Le tarif actuel du catalogue reste le repli sécurisé.", "overridePrice": "Règles tarifaires",
+    "segment": "Segment client", "basePrice": "Tarif de base", "effective": "Effectif", "fallback": "Tarif de base", "noBasePrice": "Indisponible", "amount": "Tarif du segment", "location": "Site", "allLocations": "Tous les sites", "search": "Rechercher des services", "searchPlaceholder": "Nom, code ou catégorie",
+    "validFrom": "Valide à partir du", "validTo": "Valide jusqu'au (facultatif)", "active": "Actif", "inactive": "Inactif", "add": "Ajouter une période tarifaire", "save": "Enregistrer le tarif", "saving": "Enregistrement...", "saved": "Tarif du segment enregistré.",
+    "overlap": "Cette période chevauche un autre tarif actif.", "error": "Impossible d'enregistrer le tarif du segment.", "empty": "Aucun service actif pertinent pour ce segment.", "noSegments": "Créez un segment avant d'ajouter des tarifs dédiés."
+  },
   "catalog": {
     "search": "Rechercher des services",
     "searchPlaceholder": "Nom, code ou catégorie",
@@ -1449,6 +1455,7 @@
       "unitType": "Type d'unité",
       "quantity": "Quantité",
       "unitPrice": "Prix unitaire",
+      "segmentPrice": "Tarif du segment appliqué",
       "lineTotal": "Total ligne",
       "notes": "Notes",
       "remove": "Retirer",

@@ -1330,6 +1330,12 @@
     "noCustomers": "No customers are available.",
     "noSegments": "No customer segments have been created yet."
   },
+  "pricingSegments": {
+    "title": "Segment pricing", "description": "Set dated price overrides for a customer segment. The current catalogue price remains the safe fallback.", "overridePrice": "Pricing rules",
+    "segment": "Customer segment", "basePrice": "Base price", "effective": "Effective", "fallback": "Base fallback", "noBasePrice": "Unavailable", "amount": "Segment price", "location": "Location", "allLocations": "All locations", "search": "Search services", "searchPlaceholder": "Name, code or category",
+    "validFrom": "Valid from", "validTo": "Valid to (optional)", "active": "Active", "inactive": "Inactive", "add": "Add price period", "save": "Save price", "saving": "Saving...", "saved": "Segment price saved.",
+    "overlap": "This price period overlaps another active override.", "error": "The segment price could not be saved.", "empty": "No relevant active services are available for this segment.", "noSegments": "Create a customer segment before adding price overrides."
+  },
   "catalog": {
     "search": "Search services",
     "searchPlaceholder": "Name, code or category",
@@ -1490,6 +1496,7 @@
       "unitType": "Unit type",
       "quantity": "Quantity",
       "unitPrice": "Unit price",
+      "segmentPrice": "Segment price applied",
       "lineTotal": "Line total",
       "notes": "Notes",
       "remove": "Remove",

@@ -137,6 +137,7 @@ type PortalOrderServiceRow = {
   portal_featured: boolean;
   portal_image_path: string | null;
   price_is_from: boolean;
+  pricing_source: "base" | "segment";
   segment_description: string | null;
   segment_featured: boolean;
   segment_id: string | null;
@@ -462,6 +463,7 @@ export async function getCustomerPortalOrderRequestOptions(
           ? supabase.storage.from("brand-media").getPublicUrl(service.portal_image_path).data.publicUrl
           : null,
       priceIsFrom: service.price_is_from,
+      pricingSource: service.pricing_source,
       segmentFeatured: service.segment_featured,
       segmentMatch: service.segment_match,
       segmentSortOrder: service.segment_sort_order,

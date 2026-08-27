@@ -23,6 +23,7 @@ type OrderItemFormText = {
   searchPlaceholder: string;
   service: string;
   unitPrice: string;
+  segmentPrice: string;
   unitType: string;
   unitTypes: Record<Service["unitType"], string>;
 };
@@ -150,7 +151,8 @@ export function OrderItemForm({ action, item, locale, onCancel, onSuccess, servi
       </label>
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.unitPrice}</span>
-        <input className={fieldClass(Boolean(state.fieldErrors.unitPrice))} defaultValue={formatNumberInput(item?.unitPrice ?? selectedService?.amount ?? 0, 2)} disabled={isLocked} key={`price-${selectedServiceId}`} min="0" name="unitPrice" step="0.01" type="number" />
+        <input className={fieldClass(Boolean(state.fieldErrors.unitPrice))} defaultValue={formatNumberInput(item?.unitPrice ?? selectedService?.amount ?? 0, 2)} disabled={isLocked} key={`price-${selectedServiceId}`} min="0" name="unitPrice" readOnly={Boolean(selectedService)} step="0.01" type="number" />
+        {selectedService?.pricingSource === "segment" ? <span className="block text-xs font-medium text-secondary">{text.segmentPrice}{selectedService.pricingSegmentName ? ` · ${selectedService.pricingSegmentName}` : ""}</span> : null}
       </label>
       <input name="notes" type="hidden" value={item?.notes ?? ""} />
       <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-1">

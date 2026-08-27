@@ -1289,6 +1289,12 @@
     "noCustomers": "No hay clientes disponibles.",
     "noSegments": "Todavía no se ha creado ningún segmento."
   },
+  "pricingSegments": {
+    "title": "Precios por segmento", "description": "Define precios con vigencia para un segmento. El precio actual del catálogo sigue siendo la alternativa segura.", "overridePrice": "Reglas de precios",
+    "segment": "Segmento de clientes", "basePrice": "Precio base", "effective": "Efectivo", "fallback": "Precio base", "noBasePrice": "No disponible", "amount": "Precio del segmento", "location": "Ubicación", "allLocations": "Todas las ubicaciones", "search": "Buscar servicios", "searchPlaceholder": "Nombre, código o categoría",
+    "validFrom": "Válido desde", "validTo": "Válido hasta (opcional)", "active": "Activo", "inactive": "Inactivo", "add": "Añadir período de precio", "save": "Guardar precio", "saving": "Guardando...", "saved": "Precio del segmento guardado.",
+    "overlap": "Este período se solapa con otro precio activo.", "error": "No se pudo guardar el precio del segmento.", "empty": "No hay servicios activos relevantes para este segmento.", "noSegments": "Crea un segmento antes de añadir precios específicos."
+  },
   "catalog": {
     "search": "Buscar servicios",
     "searchPlaceholder": "Nombre, código o categoría",
@@ -1449,6 +1455,7 @@
       "unitType": "Tipo de unidad",
       "quantity": "Cantidad",
       "unitPrice": "Precio unitario",
+      "segmentPrice": "Precio del segmento aplicado",
       "lineTotal": "Total línea",
       "notes": "Notas",
       "remove": "Quitar",

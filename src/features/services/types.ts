@@ -14,6 +14,8 @@ export type Service = {
   isActive: boolean;
   name: string;
   priceIsFrom: boolean;
+  pricingSegmentName?: string | null;
+  pricingSource?: "base" | "segment";
   unitType: ServiceUnitType;
   validFrom: string | null;
   validTo: string | null;

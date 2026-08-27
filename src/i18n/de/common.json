@@ -1289,6 +1289,12 @@
     "noCustomers": "Keine Kunden verfügbar.",
     "noSegments": "Es wurden noch keine Kundensegmente erstellt."
   },
+  "pricingSegments": {
+    "title": "Segmentpreise", "description": "Legen Sie datierte Preisüberschreibungen für ein Kundensegment fest. Der aktuelle Katalogpreis bleibt der sichere Rückfall.", "overridePrice": "Preisregeln",
+    "segment": "Kundensegment", "basePrice": "Basispreis", "effective": "Wirksam", "fallback": "Basispreis", "noBasePrice": "Nicht verfügbar", "amount": "Segmentpreis", "location": "Standort", "allLocations": "Alle Standorte", "search": "Leistungen suchen", "searchPlaceholder": "Name, Code oder Kategorie",
+    "validFrom": "Gültig ab", "validTo": "Gültig bis (optional)", "active": "Aktiv", "inactive": "Inaktiv", "add": "Preiszeitraum hinzufügen", "save": "Preis speichern", "saving": "Speichern...", "saved": "Segmentpreis gespeichert.",
+    "overlap": "Dieser Zeitraum überschneidet sich mit einem anderen aktiven Preis.", "error": "Der Segmentpreis konnte nicht gespeichert werden.", "empty": "Für dieses Segment sind keine relevanten aktiven Dienste verfügbar.", "noSegments": "Erstellen Sie zuerst ein Kundensegment."
+  },
   "catalog": {
     "search": "Leistungen suchen",
     "searchPlaceholder": "Name, Code oder Kategorie",
@@ -1449,6 +1455,7 @@
       "unitType": "Einheitstyp",
       "quantity": "Menge",
       "unitPrice": "Stückpreis",
+      "segmentPrice": "Segmentpreis angewendet",
       "lineTotal": "Positionssumme",
       "notes": "Notizen",
       "remove": "Entfernen",

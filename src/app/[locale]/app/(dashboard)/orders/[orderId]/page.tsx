@@ -46,7 +46,7 @@ import {
   getOrderPaymentSummary,
   getOrderPayments,
 } from "@/features/payments/server/queries";
-import { listActiveServicesForOrder } from "@/features/services/server/queries";
+import { listEffectiveServicesForOrder } from "@/features/pricing-segments/server/order-services";
 import type { ProductionStatus } from "@/features/orders/types";
 import { canEditCatalog } from "@/features/orders/workflow";
 import { requireMembership } from "@/lib/auth/require-membership";
@@ -82,7 +82,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
     getOrderHistory(locale, orderId),
-    listActiveServicesForOrder(locale),
+    listEffectiveServicesForOrder(locale, orderId),
     getOrderLogistics(locale, orderId),
     listAssignableStaff(locale),
     getOrderPayments(locale, orderId),
@@ -223,6 +223,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   searchPlaceholder: catalogT("searchPlaceholder"),
                   service: t("items.service"),
                   unitPrice: t("items.unitPrice"),
+                  segmentPrice: t("items.segmentPrice"),
                   unitType: t("items.unitType"),
                   unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
                 }}
@@ -249,6 +250,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 search: catalogT("search"),
                 searchPlaceholder: catalogT("searchPlaceholder"),
                 service: t("items.service"),
+                segmentPrice: t("items.segmentPrice"),
                 subtotal: t("subtotal"),
                 total: t("total"),
                 unitPrice: t("items.unitPrice"),

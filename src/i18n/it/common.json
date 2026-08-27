@@ -1298,6 +1298,12 @@
     "noCustomers": "Nessun cliente disponibile.",
     "noSegments": "Non è stato ancora creato alcun segmento cliente."
   },
+  "pricingSegments": {
+    "title": "Prezzi per segmento", "description": "Imposta prezzi con validità temporale per un segmento cliente. Il prezzo attuale del catalogo resta il fallback sicuro.", "overridePrice": "Regole di prezzo",
+    "segment": "Segmento cliente", "basePrice": "Prezzo base", "effective": "Effettivo", "fallback": "Fallback base", "noBasePrice": "Non disponibile", "amount": "Prezzo segmento", "location": "Sede", "allLocations": "Tutte le sedi", "search": "Cerca servizi", "searchPlaceholder": "Nome, codice o categoria",
+    "validFrom": "Valido dal", "validTo": "Valido fino al (facoltativo)", "active": "Attivo", "inactive": "Inattivo", "add": "Aggiungi periodo prezzo", "save": "Salva prezzo", "saving": "Salvataggio...", "saved": "Prezzo segmento salvato.",
+    "overlap": "Questo periodo si sovrappone a un altro prezzo attivo.", "error": "Impossibile salvare il prezzo del segmento.", "empty": "Nessun servizio attivo rilevante per questo segmento.", "noSegments": "Crea un segmento cliente prima di aggiungere prezzi dedicati."
+  },
   "catalog": {
     "search": "Cerca servizi",
     "searchPlaceholder": "Nome, codice o categoria",
@@ -1458,6 +1464,7 @@
       "unitType": "Tipo unità",
       "quantity": "Quantità",
       "unitPrice": "Prezzo unitario",
+      "segmentPrice": "Prezzo segmento applicato",
       "lineTotal": "Totale riga",
       "notes": "Note",
       "remove": "Rimuovi",

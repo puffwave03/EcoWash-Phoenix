@@ -130,6 +130,7 @@ export type CustomerPortalOrderService = {
   portalFeatured: boolean;
   portalImagePath: string | null;
   priceIsFrom: boolean;
+  pricingSource: "base" | "segment";
   segmentFeatured: boolean;
   segmentMatch: boolean;
   segmentSortOrder: number;

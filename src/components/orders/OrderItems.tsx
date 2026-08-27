@@ -22,6 +22,7 @@ type OrderItemsText = {
   search: string;
   searchPlaceholder: string;
   service: string;
+  segmentPrice: string;
   subtotal: string;
   total: string;
   unitPrice: string;
@@ -110,6 +111,7 @@ export function OrderItems({
                       search: text.search,
                       searchPlaceholder: text.searchPlaceholder,
                       service: text.service,
+                      segmentPrice: text.segmentPrice,
                       unitPrice: text.unitPrice,
                       unitType: text.unitType,
                       unitTypes: text.unitTypes,

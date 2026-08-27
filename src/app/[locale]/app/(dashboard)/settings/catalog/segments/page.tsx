@@ -1,18 +1,22 @@
 import { getTranslations } from "next-intl/server";
 import { CatalogSegmentManagement } from "@/components/catalog-segments/CatalogSegmentManagement";
+import { SegmentPricingManagement } from "@/components/pricing-segments/SegmentPricingManagement";
 import { saveCatalogSegmentAction } from "@/features/catalog-segments/server/actions";
-import { getCatalogSegmentAdminSettings } from "@/features/catalog-segments/server/queries";
 import type { CatalogSegmentStarter } from "@/features/catalog-segments/types";
+import { saveSegmentPriceAction } from "@/features/pricing-segments/server/actions";
+import { getSegmentPricingSettings } from "@/features/pricing-segments/server/queries";
 import { Link } from "@/i18n/navigation";
 
 type CatalogSegmentsPageProps = { params: Promise<{ locale: string }> };
 
 export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPageProps) {
   const { locale } = await params;
-  const [settings, t] = await Promise.all([
-    getCatalogSegmentAdminSettings(locale),
+  const [pricing, t, pricingT] = await Promise.all([
+    getSegmentPricingSettings(locale),
     getTranslations({ locale, namespace: "common.catalogSegments" }),
+    getTranslations({ locale, namespace: "common.pricingSegments" }),
   ]);
+  const settings = pricing;
 
   return (
     <div className="space-y-6">
@@ -34,6 +38,21 @@ export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPag
           }}
         />
       ) : <p className="rounded-card border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">{t("migrationRequired")}</p>}
+      {pricing.available ? (
+        <SegmentPricingManagement
+          action={saveSegmentPriceAction.bind(null, locale)}
+          currency={pricing.currency}
+          locale={locale}
+          locations={pricing.locations}
+          prices={pricing.prices}
+          segments={pricing.segments}
+          services={pricing.services}
+          text={{
+            active: pricingT("active"), add: pricingT("add"), allLocations: pricingT("allLocations"), amount: pricingT("amount"), basePrice: pricingT("basePrice"), description: pricingT("description"), effective: pricingT("effective"), empty: pricingT("empty"), error: pricingT("error"), fallback: pricingT("fallback"), inactive: pricingT("inactive"), location: pricingT("location"), noBasePrice: pricingT("noBasePrice"), noSegments: pricingT("noSegments"), overridePrice: pricingT("overridePrice"), overlap: pricingT("overlap"), save: pricingT("save"), saved: pricingT("saved"), saving: pricingT("saving"), search: pricingT("search"), searchPlaceholder: pricingT("searchPlaceholder"), segment: pricingT("segment"), title: pricingT("title"), validFrom: pricingT("validFrom"), validTo: pricingT("validTo"),
+          }}
+          today={pricing.today}
+        />
+      ) : null}
     </div>
   );
 }
