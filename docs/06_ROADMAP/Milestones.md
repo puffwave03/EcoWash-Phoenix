@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-28
 
-Current Mission: POS-001 completed, applied and validated
+Current Mission: QA-PRODUCT-001 accepted with non-blocking visual follow-up
 
-Next Action: QA-PRODUCT-001 — Full Product Acceptance Test
+Next Action: PRINT-001
 
 ---
 
@@ -136,6 +136,7 @@ Approved and current areas:
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access: Completed, staging migration aligned and feature/role/tenant/preservation E2E passed
 - PLATFORM-ADMIN-001 — Phoenix SaaS Control Center: Completed, staging migration aligned and identity/control/suspension/audit E2E passed
 - POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations: Completed, staging migrations aligned and financial/role/tenant E2E passed
+- QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES; functional/security acceptance passed and authenticated visual review remains a Product Owner follow-up
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed
 - UI-001 — Operational Dashboard Visual Refinement: Completed and pushed
@@ -256,6 +257,7 @@ Official sequence after SEC-001:
 - ENTITLEMENTS-001 — centralized tenant feature catalog and entitlement resolver with Billing, pricing-management and advanced-branding enforcement, completed and E2E validated
 - PLATFORM-ADMIN-001 — isolated platform identity, tenant list/detail, entitlement administration, commercial metadata, suspension/reactivation and audit, completed and E2E validated
 - POS-001 — entitlement-gated till sessions, canonical cash/manual-card payments, partial/mixed tender, linked refunds, receipt-ready data and immutable close reconciliation, completed and E2E validated
+- QA-PRODUCT-001 — 143/143 focused tests plus rollback-only Platform/Tenant/Portal master acceptance, completed
 - OPS-001.5 — Daily Close MVP, completed
 - OPS-001.6 — Operational Alerts MVP, completed
 - UI-001 — Operational Dashboard Visual Refinement, completed
@@ -286,18 +288,18 @@ Current staging validation checkpoint:
 - ENTITLEMENTS-001 preserves invoice history, segment overrides and stored branding when access is disabled; EcoWash is bootstrapped only for live modules and future tenants receive no implicit premium access.
 - PLATFORM-ADMIN-001 preserves tenant data through feature changes and suspension; EcoWash remains active/entitled and the controlled staging administrator was rolled back.
 - POS-001 migrations `20260827000400` and `20260828000100` are aligned; exact EUR 50.00 order, EUR 20.00 cash, EUR 30.00 card, EUR 5.00 refund and EUR -1.00 close difference passed across six identities, entitlement changes and tenant isolation with rollback-only cleanup.
+- QA-PRODUCT-001 reconciled a controlled EUR 15.00 order across POS, Customer Account, Billing and Portal; nine identities/roles, Tenant A/B isolation, entitlement preservation and suspension/reactivation passed with complete rollback cleanup. Visual desktop/mobile acceptance remains non-blocking and separate.
 
 Approved product sequence after this milestone checkpoint:
 
-1. `QA-PRODUCT-001` — Full Product Acceptance Test
-2. `PRINT-001`
-3. `BARCODE-001`
-4. `ACCOUNTING-001`
-5. `E-INVOICE-001`
-6. `ACCOUNTING-PRO-001` — optional
-7. `ONBOARDING-001`
-8. future subscription/commercial billing
-9. `PLATFORM-SUPPORT-001` — optional
+1. `PRINT-001`
+2. `BARCODE-001`
+3. `ACCOUNTING-001`
+4. `E-INVOICE-001`
+5. `ACCOUNTING-PRO-001` — optional
+6. `ONBOARDING-001`
+7. future subscription/commercial billing
+8. `PLATFORM-SUPPORT-001` — optional
 
 Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Real TPV/terminal integrations, printing, barcode, full accounting, e-invoicing, subscription payments, Stripe, impersonation, tenant deletion and automated plan templates are not implemented.
 

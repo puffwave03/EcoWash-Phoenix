@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-28
 
-Approximate closeout time: after POS-001 staging E2E validation
+Approximate closeout time: after QA-PRODUCT-001 full product acceptance
 
-Session checkpoint: vendor-neutral POS foundation completed, applied and validated across till sessions, canonical payments, refunds, reconciliation, roles, entitlements and tenant isolation
+Session checkpoint: QA-PRODUCT-001 completed with functional, financial, role, entitlement, suspension and Tenant A/B acceptance passing; authenticated visual review remains a non-blocking Product Owner follow-up
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -73,6 +73,7 @@ Application closeout commit: `28b5e26 POS-001 feat: add vendor-neutral cash regi
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access
 - PLATFORM-ADMIN-001 — Phoenix SaaS Control Center
 - POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations
+- QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -131,6 +132,7 @@ Completed on EcoWash Staging:
 - ENTITLEMENTS-001 migration `20260827000200` is applied and aligned; Billing, segment-pricing management and full white-label gates, Owner/Manager read-only access, Staff restriction, self-upgrade prevention, expiry, tenant isolation, EcoWash bootstrap and rollback-only fixture cleanup passed.
 - PLATFORM-ADMIN-001 migration `20260827000300` is applied and aligned; isolated Platform Admin identity, cross-tenant summaries, entitlement administration, commercial labels, suspension/reactivation, audit, tenant/Portal denial and rollback-only cleanup passed.
 - POS-001 migrations `20260827000400` and corrective `20260828000100` are applied and aligned; six-identity rollback-only E2E passed for till lifecycle, cash/manual-card partial and mixed payments, refunds, reconciliation, idempotency, role/capability enforcement, entitlement disable/reenable and cross-tenant denial.
+- QA-PRODUCT-001 master staging acceptance passed across nine identities/roles with temporary Tenant B, exact EUR 15.00 financial reconciliation, entitlement and suspension cycles, Tenant A/B isolation and complete rollback cleanup. Interactive authenticated visual QA was unavailable and remains a non-blocking Product Owner check.
 
 Applied baseline migrations:
 
@@ -246,7 +248,7 @@ Available now:
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `QA-PRODUCT-001 — Full Product Acceptance Test`, followed by `PRINT-001` and `BARCODE-001`.
+Next action: `PRINT-001`, followed by `BARCODE-001`.
 
 Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. Staging E2E used a transaction-only administrator and left no permanent assignment.
 
@@ -272,18 +274,18 @@ Final completed sequence for this session:
 7. `ENTITLEMENTS-001`
 8. `PLATFORM-ADMIN-001`
 9. `POS-001`
+10. `QA-PRODUCT-001`
 
 Approved next product roadmap:
 
-1. `QA-PRODUCT-001` — Full Product Acceptance Test
-2. `PRINT-001`
-3. `BARCODE-001`
-4. `ACCOUNTING-001`
-5. `E-INVOICE-001`
-6. `ACCOUNTING-PRO-001` — optional
-7. `ONBOARDING-001`
-8. future subscription/commercial billing
-9. `PLATFORM-SUPPORT-001` — optional, without impersonation until separately designed
+1. `PRINT-001`
+2. `BARCODE-001`
+3. `ACCOUNTING-001`
+4. `E-INVOICE-001`
+5. `ACCOUNTING-PRO-001` — optional
+6. `ONBOARDING-001`
+7. future subscription/commercial billing
+8. `PLATFORM-SUPPORT-001` — optional, without impersonation until separately designed
 
 Permanent product requirements:
 
@@ -565,14 +567,15 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-POS-001 is completed, applied and validated without replacing the canonical payments ledger. Resume with `QA-PRODUCT-001` and do not reopen the POS foundation unless acceptance testing finds a reproducible defect:
+QA-PRODUCT-001 completed as PASS WITH NON-BLOCKING ISSUES. Resume with `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
 
-1. Run full product acceptance across tenant roles, Customer Portal and Platform Admin before starting a new business module.
-2. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
-3. Scope customer address flexibility and delivery preferences as separate future Portal increments.
-4. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
-5. Do not start PORTAL-002.2 until explicitly approved.
-6. Record only real functional or visual defects and keep one task per logical commit.
+1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
+2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.
+3. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
+4. Scope customer address flexibility and delivery preferences as separate future Portal increments.
+5. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
+6. Do not start PORTAL-002.2 until explicitly approved.
+7. Record only real functional or visual defects and keep one task per logical commit.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

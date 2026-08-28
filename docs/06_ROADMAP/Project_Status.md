@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-28
 
-Current Mission: POS-001 completed, applied and validated
+Current Mission: QA-PRODUCT-001 accepted with non-blocking visual follow-up
 
-Next Action: QA-PRODUCT-001 — Full Product Acceptance Test
+Next Action: PRINT-001
 
 ---
 
@@ -27,7 +27,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | POS-001 till, payment, refund, reconciliation, role, entitlement and tenant validation passed |
+| Current mission | QA-PRODUCT-001 full product acceptance passed with non-blocking visual follow-up |
 | Last completed implementation mission | POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations |
 | Approved baseline before current closeout | 28b5e26 |
 | Remote status | main synchronized with origin/main after approved closeout |
@@ -78,6 +78,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | ENTITLEMENTS-001 status | Completed; applied through 20260827000200, feature/role/tenant/preservation E2E passed and pushed |
 | PLATFORM-ADMIN-001 status | Completed; applied through 20260827000300, cross-tenant control/suspension/audit E2E passed and pushed |
 | POS-001 status | Completed; applied through 20260828000100, exact financial/role/entitlement/tenant E2E passed and pushed |
+| QA-PRODUCT-001 status | PASS WITH NON-BLOCKING ISSUES; 143/143 tests and rollback-only master staging acceptance passed; authenticated visual review unavailable |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -94,7 +95,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging aligned through 20260828000100; POS reuses canonical payments with tenant-safe till sessions, refunds, idempotency and immutable reconciliation |
-| Commercial readiness | POS foundation is validated; next is full product acceptance testing; real terminal integrations, printing, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
+| Commercial readiness | Full functional/security acceptance passed; next is PRINT-001. Authenticated visual review remains a non-blocking Product Owner check; real terminals, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -929,13 +930,15 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da POS-001 validato e avviamo QA-PRODUCT-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da QA-PRODUCT-001 accettato e avviamo PRINT-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
 - POS-001 is completed in `28b5e26`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
+- QA-PRODUCT-001 passed 143/143 focused tests plus the rollback-only master staging scenario; no application fix or migration was required
+- Interactive authenticated visual QA was unavailable; the reported external-PC loading issue was not reproduced, while current staging root and protected routes returned healthy 200/307 responses
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -978,7 +981,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `QA-PRODUCT-001`; keep PRINT-001 and BARCODE-001 after the acceptance gate, and do not combine accounting, e-invoicing, onboarding or subscription collection into the same task.
+3. Start `PRINT-001`; keep BARCODE-001 next, and do not combine accounting, e-invoicing, onboarding or subscription collection into the same task.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.
