@@ -224,7 +224,8 @@ export async function CustomerAccountView({
       <nav className="flex flex-wrap gap-2" aria-label={t("history.filterLabel")}>
         {(["recent", "year", "all"] as const).map((value) => (
           <Link
-            className={`inline-flex min-h-11 items-center rounded-control border px-4 text-sm font-semibold transition-standard ${period === value ? "border-primary bg-primary text-white" : "border-border bg-white text-primary hover:bg-primary-soft"}`}
+            aria-current={period === value ? "page" : undefined}
+            className={`inline-flex min-h-11 items-center rounded-control border px-4 text-sm font-semibold transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${period === value ? "border-primary bg-primary !text-white hover:bg-primary-strong" : "border-border bg-white !text-primary hover:bg-primary-soft"}`}
             href={`/app/customers/${customer.id}?period=${value}`}
             key={value}
             locale={locale}

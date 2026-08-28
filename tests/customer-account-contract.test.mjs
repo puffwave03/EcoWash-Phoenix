@@ -125,6 +125,15 @@ test("customer account integrates properties, segments, Portal and truthful bill
   assert.doesNotMatch(view, /billing\.notConfigured/);
 });
 
+test("active history filter keeps accessible contrast against the global link color", async () => {
+  const view = await source("src/components/customers/CustomerAccountView.tsx");
+
+  assert.match(view, /aria-current=\{period === value \? "page" : undefined\}/);
+  assert.match(view, /border-primary bg-primary !text-white/);
+  assert.match(view, /border-border bg-white !text-primary/);
+  assert.match(view, /focus-visible:ring-2 focus-visible:ring-primary/);
+});
+
 test("customer quick order action safely preselects an active known customer", async () => {
   const [view, page, form] = await Promise.all([
     source("src/components/customers/CustomerAccountView.tsx"),
