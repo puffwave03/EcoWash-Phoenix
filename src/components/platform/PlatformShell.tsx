@@ -4,10 +4,11 @@ import type { ReactNode } from "react";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { Link, usePathname } from "@/i18n/navigation";
 
-export function PlatformShell({ children, locale, operatorName, text }: {
+export function PlatformShell({ children, locale, operatorName, tenantName, text }: {
   children: ReactNode;
   locale: string;
   operatorName: string;
+  tenantName?: string;
   text: {
     logout: string;
     navigationLabel: string;
@@ -15,6 +16,7 @@ export function PlatformShell({ children, locale, operatorName, text }: {
     overview: string;
     product: string;
     role: string;
+    switchToTenant: string;
   };
 }) {
   const pathname = usePathname();
@@ -54,6 +56,15 @@ export function PlatformShell({ children, locale, operatorName, text }: {
           })}
         </nav>
         <div className="mt-5 lg:absolute lg:bottom-7 lg:left-6 lg:right-6">
+          {tenantName ? (
+            <Link
+              className="mb-3 flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              href="/app"
+              locale={locale}
+            >
+              {text.switchToTenant}<span aria-hidden="true">→</span>
+            </Link>
+          ) : null}
           <LogoutButton label={text.logout} locale={locale} />
         </div>
       </aside>

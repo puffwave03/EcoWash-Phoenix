@@ -87,6 +87,18 @@
         "configuration": "Authentication is not available right now."
       }
     },
+    "context": {
+      "eyebrow": "Choose context",
+      "title": "Where do you want to enter?",
+      "description": "Your account has both platform and organization access. Choose the workspace you need now.",
+      "selectorLabel": "Available access contexts",
+      "platformEyebrow": "Platform administration",
+      "platformDescription": "Manage Phoenix organizations, entitlements and service status.",
+      "platformAction": "Enter Phoenix Platform",
+      "tenantEyebrow": "Organization operations",
+      "tenantDescription": "Work with customers, orders, operations and billing using your tenant role.",
+      "tenantAction": "Enter {organization}"
+    },
     "forgotPassword": {
       "eyebrow": "Password recovery",
       "title": "Reset your password",
@@ -147,6 +159,7 @@
       "delivery": "Pickups & deliveries",
       "services": "Services",
       "staff": "Staff & access",
+      "switchToPlatform": "Go to Phoenix Platform",
       "branding": "Brand & Portal",
       "catalogAdmin": "Customer catalog",
       "dailyClose": "Daily close",
@@ -1361,7 +1374,7 @@
     "logout": "Sign out"
   },
   "platform": {
-    "shell": {"product": "SaaS Control Center", "role": "Platform administrator", "operator": "Platform operator", "overview": "Overview", "organizations": "Organizations", "navigationLabel": "Platform navigation", "logout": "Sign out"},
+    "shell": {"product": "SaaS Control Center", "role": "Platform administrator", "operator": "Platform operator", "overview": "Overview", "organizations": "Organizations", "navigationLabel": "Platform navigation", "switchToTenant": "Go to {organization}", "logout": "Sign out"},
     "overview": {"eyebrow": "Phoenix Platform", "title": "SaaS Control Center", "description": "A concise view of tenant service status and commercial feature access.", "openOrganizations": "Manage organizations", "metrics": {"total": "Total organizations", "active": "Active tenants", "suspended": "Suspended tenants", "billing": "Tenants with Billing", "segmentPricing": "Tenants with segment pricing", "advancedBranding": "Tenants with advanced branding"}},
     "organizations": {"eyebrow": "Tenant directory", "title": "Organizations", "search": "Search organization name", "filter": "Service status", "all": "All statuses", "apply": "Apply filters", "empty": "No organizations match these filters.", "members": "members", "locations": "locations", "noPlan": "No label", "limitNote": "Showing up to 50 organizations. Use search and status filters to narrow the list.", "columns": {"organization": "Organization", "status": "Status", "plan": "Commercial label", "features": "Features", "created": "Created"}},
     "status": {"active": "Active", "inactive": "Inactive", "suspended": "Suspended"},

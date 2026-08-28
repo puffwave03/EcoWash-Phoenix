@@ -5,6 +5,7 @@ import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import type { PortalBrandPresentation } from "@/features/portal/media";
 import type { DashboardAccess } from "@/lib/auth/types";
 import type { EntitlementAccess } from "@/features/entitlements/feature-catalog";
+import { Link } from "@/i18n/navigation";
 
 type DashboardShellText = {
   alerts: string;
@@ -30,6 +31,7 @@ type DashboardShellText = {
   roleLabel: string;
   services: string;
   staff: string;
+  switchToPlatform: string;
   toolsGroup: string;
   userLabel: string;
   work: string;
@@ -44,6 +46,7 @@ type DashboardShellProps = {
   children: ReactNode;
   entitlements?: EntitlementAccess;
   locale: string;
+  platformAccess?: boolean;
   text: DashboardShellText;
 };
 
@@ -54,6 +57,7 @@ export function DashboardShell({
   children,
   entitlements = {},
   locale,
+  platformAccess = false,
   text,
 }: DashboardShellProps) {
   const currentUserName = access.profile.displayName || access.user.email || text.userLabel;
@@ -152,6 +156,15 @@ export function DashboardShell({
                 </dd>
               </div>
             </dl>
+            {platformAccess ? (
+              <Link
+                className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                href="/platform"
+                locale={locale}
+              >
+                {text.switchToPlatform}<span aria-hidden="true">→</span>
+              </Link>
+            ) : null}
             <LogoutButton
               className="w-full"
               errorLabel={text.logoutError}
@@ -175,6 +188,8 @@ export function DashboardShell({
             organizationName={organizationName}
             role={access.membership.role}
             roleLabel={text.roleLabel}
+            platformAccess={platformAccess}
+            switchToPlatformLabel={text.switchToPlatform}
             alertCount={alertCount}
             text={{
               alerts: text.alerts,

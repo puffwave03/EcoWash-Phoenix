@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { resolveAuthLanding } from "@/lib/auth/context-routing";
+import { getAuthContexts } from "@/lib/auth/get-auth-contexts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type LoginActionState = {
@@ -52,19 +54,22 @@ export async function loginAction(
   }
 
   if (data.user) {
-    const { data: platformAdmin } = await supabase.rpc("is_platform_admin");
-    if (platformAdmin === true) {
+    const contexts = await getAuthContexts(data.user.id);
+    const landing = resolveAuthLanding(contexts);
+
+    if (landing === "context") {
+      redirect(`/${locale}/auth/context`);
+    }
+
+    if (landing === "platform") {
       redirect(`/${locale}/platform`);
     }
 
-    const { data: portalAccess } = await supabase
-      .from("customer_portal_access")
-      .select("id")
-      .eq("user_id", data.user.id)
-      .eq("is_active", true)
-      .limit(1);
+    if (landing === "tenant") {
+      redirect(`/${locale}/app`);
+    }
 
-    if (portalAccess && portalAccess.length > 0) {
+    if (landing === "portal") {
       redirect(`/${locale}/portal`);
     }
   }

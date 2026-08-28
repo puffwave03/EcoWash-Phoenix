@@ -87,6 +87,18 @@
         "configuration": "Authentifizierung ist derzeit nicht verfügbar."
       }
     },
+    "context": {
+      "eyebrow": "Kontext wählen",
+      "title": "Wo möchten Sie einsteigen?",
+      "description": "Ihr Konto hat Zugriff auf die Plattform und die Organisation. Wählen Sie den jetzt benötigten Arbeitsbereich.",
+      "selectorLabel": "Verfügbare Zugriffskontexte",
+      "platformEyebrow": "Plattformverwaltung",
+      "platformDescription": "Verwalten Sie Phoenix-Organisationen, Berechtigungen und den Dienststatus.",
+      "platformAction": "Phoenix Platform öffnen",
+      "tenantEyebrow": "Organisationsbetrieb",
+      "tenantDescription": "Arbeiten Sie mit Kunden, Aufträgen, Betrieb und Abrechnung in Ihrer Tenant-Rolle.",
+      "tenantAction": "{organization} öffnen"
+    },
     "forgotPassword": {
       "eyebrow": "Passwort-Wiederherstellung",
       "title": "Passwort zurücksetzen",
@@ -147,6 +159,7 @@
       "delivery": "Abholung und Lieferung",
       "services": "Services",
       "staff": "Personal und Zugänge",
+      "switchToPlatform": "Zur Phoenix Platform",
       "branding": "Marke und Portal",
       "catalogAdmin": "Kundenkatalog",
       "dailyClose": "Tagesabschluss",
@@ -1313,7 +1326,7 @@
   },
   "organizationSuspended": {"eyebrow": "Kontodienst", "title": "Diese Organisation ist derzeit ausgesetzt.", "description": "Betriebsdaten bleiben geschützt und unverändert. Wenden Sie sich für Informationen oder Reaktivierung an den Plattformbetreiber.", "logout": "Abmelden"},
   "platform": {
-    "shell": {"product": "SaaS-Kontrollzentrum", "role": "Plattformadministrator", "operator": "Plattformbetreiber", "overview": "Übersicht", "organizations": "Organisationen", "navigationLabel": "Plattformnavigation", "logout": "Abmelden"},
+    "shell": {"product": "SaaS-Kontrollzentrum", "role": "Plattformadministrator", "operator": "Plattformbetreiber", "overview": "Übersicht", "organizations": "Organisationen", "navigationLabel": "Plattformnavigation", "switchToTenant": "Zu {organization}", "logout": "Abmelden"},
     "overview": {"eyebrow": "Phoenix Platform", "title": "SaaS-Kontrollzentrum", "description": "Eine kompakte Übersicht über Mandantenstatus und kommerziellen Funktionszugriff.", "openOrganizations": "Organisationen verwalten", "metrics": {"total": "Organisationen gesamt", "active": "Aktive Mandanten", "suspended": "Ausgesetzte Mandanten", "billing": "Mandanten mit Abrechnung", "segmentPricing": "Mandanten mit Segmentpreisen", "advancedBranding": "Mandanten mit erweitertem Branding"}},
     "organizations": {"eyebrow": "Mandantenverzeichnis", "title": "Organisationen", "search": "Organisationsname suchen", "filter": "Dienststatus", "all": "Alle Status", "apply": "Filter anwenden", "empty": "Keine passenden Organisationen.", "members": "Mitglieder", "locations": "Standorte", "noPlan": "Keine Bezeichnung", "limitNote": "Bis zu 50 Organisationen werden angezeigt. Grenzen Sie die Liste mit Filtern ein.", "columns": {"organization": "Organisation", "status": "Status", "plan": "Kommerzielle Bezeichnung", "features": "Funktionen", "created": "Erstellt"}},
     "status": {"active": "Aktiv", "inactive": "Inaktiv", "suspended": "Ausgesetzt"},

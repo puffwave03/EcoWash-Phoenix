@@ -87,6 +87,18 @@
         "configuration": "La autenticación no está disponible ahora mismo."
       }
     },
+    "context": {
+      "eyebrow": "Elige el contexto",
+      "title": "¿Dónde quieres entrar?",
+      "description": "Tu cuenta tiene acceso tanto a la plataforma como a la organización. Elige el espacio de trabajo que necesitas ahora.",
+      "selectorLabel": "Contextos de acceso disponibles",
+      "platformEyebrow": "Administración de plataforma",
+      "platformDescription": "Gestiona organizaciones Phoenix, derechos y estado del servicio.",
+      "platformAction": "Entrar en Phoenix Platform",
+      "tenantEyebrow": "Operaciones de organización",
+      "tenantDescription": "Trabaja con clientes, pedidos, operaciones y facturación usando tu rol de tenant.",
+      "tenantAction": "Entrar en {organization}"
+    },
     "forgotPassword": {
       "eyebrow": "Recuperación de contraseña",
       "title": "Restablece tu contraseña",
@@ -147,6 +159,7 @@
       "delivery": "Recogidas y entregas",
       "services": "Servicios",
       "staff": "Personal y accesos",
+      "switchToPlatform": "Ir a Phoenix Platform",
       "branding": "Marca y Portal",
       "catalogAdmin": "Catálogo cliente",
       "dailyClose": "Cierre diario",
@@ -1313,7 +1326,7 @@
   },
   "organizationSuspended": {"eyebrow": "Servicio de cuenta", "title": "Esta organización está suspendida.", "description": "Los datos operativos siguen protegidos y sin cambios. Contacta con el operador de la plataforma para información o reactivación.", "logout": "Cerrar sesión"},
   "platform": {
-    "shell": {"product": "Centro de control SaaS", "role": "Administrador de plataforma", "operator": "Operador de plataforma", "overview": "Resumen", "organizations": "Organizaciones", "navigationLabel": "Navegación de plataforma", "logout": "Cerrar sesión"},
+    "shell": {"product": "Centro de control SaaS", "role": "Administrador de plataforma", "operator": "Operador de plataforma", "overview": "Resumen", "organizations": "Organizaciones", "navigationLabel": "Navegación de plataforma", "switchToTenant": "Ir a {organization}", "logout": "Cerrar sesión"},
     "overview": {"eyebrow": "Phoenix Platform", "title": "Centro de control SaaS", "description": "Vista concisa del estado de los tenants y del acceso a funciones comerciales.", "openOrganizations": "Gestionar organizaciones", "metrics": {"total": "Organizaciones totales", "active": "Tenants activos", "suspended": "Tenants suspendidos", "billing": "Tenants con Facturación", "segmentPricing": "Tenants con precios por segmento", "advancedBranding": "Tenants con branding avanzado"}},
     "organizations": {"eyebrow": "Directorio de tenants", "title": "Organizaciones", "search": "Buscar nombre", "filter": "Estado del servicio", "all": "Todos los estados", "apply": "Aplicar filtros", "empty": "No hay organizaciones para estos filtros.", "members": "miembros", "locations": "sedes", "noPlan": "Sin etiqueta", "limitNote": "Se muestran hasta 50 organizaciones. Usa los filtros para acotar la lista.", "columns": {"organization": "Organización", "status": "Estado", "plan": "Etiqueta comercial", "features": "Funciones", "created": "Creada"}},
     "status": {"active": "Activa", "inactive": "Inactiva", "suspended": "Suspendida"},

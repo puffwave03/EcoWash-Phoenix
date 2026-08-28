@@ -43,12 +43,14 @@ type AppNavigationProps = {
   navigationLabel: string;
   organizationLabel?: string;
   organizationName?: string;
+  platformAccess?: boolean;
   currentUserName?: string;
   entitlements?: EntitlementAccess;
   logoutErrorLabel?: string;
   logoutLabel?: string;
   role?: AppRole;
   roleLabel?: string;
+  switchToPlatformLabel?: string;
   text: AppNavigationText;
   userLabel?: string;
 };
@@ -131,8 +133,10 @@ export function AppNavigation({
   navigationLabel,
   organizationLabel,
   organizationName,
+  platformAccess = false,
   role,
   roleLabel,
+  switchToPlatformLabel,
   text,
   userLabel,
 }: AppNavigationProps) {
@@ -290,6 +294,17 @@ export function AppNavigation({
                         locale={locale}
                       >
                         {text.catalogAdmin}<span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                  ) : null}
+                  {platformAccess && switchToPlatformLabel ? (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <Link
+                        className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        href="/platform"
+                        locale={locale}
+                      >
+                        {switchToPlatformLabel}<span aria-hidden="true">→</span>
                       </Link>
                     </div>
                   ) : null}

@@ -15,6 +15,7 @@ export function SiteFrame({
   const pathname = usePathname();
   const usesAuthenticatedShell = pathname === "/app"
     || pathname.startsWith("/app/")
+    || pathname === "/auth/context"
     || pathname === "/portal"
     || pathname.startsWith("/portal/")
     || pathname === "/platform"

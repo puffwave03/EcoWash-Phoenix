@@ -4,6 +4,7 @@ import { getOperationalAlertCount } from "@/features/alerts/server/queries";
 import { getTenantBranding } from "@/features/branding/server/queries";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
+import { getAuthContexts } from "@/lib/auth/get-auth-contexts";
 import { requireMembership } from "@/lib/auth/require-membership";
 
 type DashboardLayoutProps = {
@@ -20,10 +21,11 @@ export default async function DashboardLayout({
     requireMembership(locale),
     getTranslations({ locale, namespace: "common.auth.dashboard" }),
   ]);
-  const [alertCount, branding, entitlements] = await Promise.all([
+  const [alertCount, branding, entitlements, contexts] = await Promise.all([
     access.membership.role === "staff" ? 0 : getOperationalAlertCount(locale),
     getTenantBranding(access.membership.organization.id),
     getCurrentEntitlements(locale, [FEATURES.billingInvoicing, FEATURES.fullWhiteLabel, FEATURES.pos]),
+    getAuthContexts(access.user.id),
   ]);
 
   return (
@@ -33,6 +35,7 @@ export default async function DashboardLayout({
       brand={branding.brand}
       entitlements={entitlements}
       locale={locale}
+      platformAccess={contexts.isPlatformAdmin}
       text={{
         alerts: t("alerts"),
         billing: t("billing"),
@@ -57,6 +60,7 @@ export default async function DashboardLayout({
         roleLabel: t("roleLabel"),
         services: t("services"),
         staff: t("staff"),
+        switchToPlatform: t("switchToPlatform"),
         toolsGroup: t("toolsGroup"),
         userLabel: t("userLabel"),
         work: t("work"),
