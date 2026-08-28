@@ -919,6 +919,13 @@
     "supportDetails": "Contact et assistance",
     "visitWebsite": "Visiter le site",
     "whatsapp": "WhatsApp",
+    "support": {
+      "eyebrow": "Assistance client",
+      "title": "Comment pouvons-nous vous aider ?",
+      "description": "Utilisez les contacts configurés par la blanchisserie pour obtenir de l’aide concernant vos commandes et services.",
+      "address": "Où nous trouver",
+      "noContacts": "Les contacts d’assistance ne sont pas encore disponibles. Réessayez plus tard ou demandez à l’équipe de la blanchisserie lors de votre prochain service."
+    },
     "fromPrice": "À partir de",
     "informationOnly": "À titre informatif",
     "noActiveOrdersTitle": "Aucune commande active",

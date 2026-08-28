@@ -64,7 +64,7 @@ function mapSession(row: SessionRow): PosSession {
   };
 }
 
-const SESSION_SELECT = "id, location_id, opened_at, opening_cash, status, closed_at, expected_cash, counted_cash, difference, location:locations(name), opened_by_profile:profiles!pos_sessions_opened_by_fkey(display_name)";
+const SESSION_SELECT = "id, location_id, opened_at, opening_cash, status, closed_at, expected_cash, counted_cash, difference, location:locations!pos_sessions_location_same_org(name), opened_by_profile:profiles!pos_sessions_opened_by_fkey(display_name)";
 
 export async function getCurrentPosSession(locale: string): Promise<PosSession | null> {
   const { membership, profile } = await requirePosAccess(locale);
@@ -74,7 +74,10 @@ export async function getCurrentPosSession(locale: string): Promise<PosSession |
     .order("opened_at", { ascending: false }).limit(1);
   if (membership.role === "staff") query = query.eq("opened_by", profile.id);
   const { data, error } = await query.returns<SessionRow[]>();
-  if (error) console.error("POS current session query failed", error.code);
+  if (error) {
+    console.error("POS current session query failed", error.code);
+    throw new Error("POS current session is temporarily unavailable");
+  }
   return data?.[0] ? mapSession(data[0]) : null;
 }
 

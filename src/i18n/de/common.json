@@ -919,6 +919,13 @@
     "supportDetails": "Kontakt und Support",
     "visitWebsite": "Website besuchen",
     "whatsapp": "WhatsApp",
+    "support": {
+      "eyebrow": "Kundensupport",
+      "title": "Wie können wir helfen?",
+      "description": "Nutzen Sie die von der Wäscherei hinterlegten Kontakte, um Hilfe zu Ihren Aufträgen und Leistungen zu erhalten.",
+      "address": "So finden Sie uns",
+      "noContacts": "Supportkontakte sind noch nicht verfügbar. Versuchen Sie es später erneut oder fragen Sie das Wäscherei-Team bei Ihrem nächsten Service."
+    },
     "fromPrice": "Ab",
     "informationOnly": "Nur zur Information",
     "noActiveOrdersTitle": "Keine aktiven Aufträge",

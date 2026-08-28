@@ -145,24 +145,22 @@ export function AppNavigation({
   const canUse = (capability: OperationalCapability) => role
     ? hasOperationalCapability({ capabilities, role }, capability)
     : false;
+  const posNavigationItem = canUse("pos") && entitlementEnabled(entitlements, FEATURES.pos)
+    ? { href: "/app/pos", label: text.pos, match: "/app/pos" }
+    : null;
   const navigationGroups = isControlRole
     ? [
         {
           items: [
             { href: "/app/control", label: text.controlCenter, match: "/app/control" },
             { href: "/app/orders", label: text.orders, match: "/app/orders" },
-            ...(entitlementEnabled(entitlements, FEATURES.pos)
-              ? [{ href: "/app/pos", label: text.pos, match: "/app/pos" }]
-              : []),
+            ...(posNavigationItem ? [posNavigationItem] : []),
           ],
           label: text.controlGroup,
         },
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
-            ...(canUse("pos") && entitlementEnabled(entitlements, FEATURES.pos)
-              ? [{ href: "/app/pos", label: text.pos, match: "/app/pos" }]
-              : []),
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
             { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
@@ -200,6 +198,7 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
+            ...(posNavigationItem ? [posNavigationItem] : []),
             ...(canUse("production")
               ? [{ href: "/app/work/production", label: text.production, match: "/app/work/production" }]
               : []),
@@ -220,7 +219,9 @@ export function AppNavigation({
         ? pathname === item.match
         : pathname.startsWith(item.match),
     ) ?? navigationItems[0];
-  const activeExperience = activeItem.href === "/app/work" || activeItem.href.startsWith("/app/work/")
+  const activeExperience = !isControlRole
+    || activeItem.href === "/app/work"
+    || activeItem.href.startsWith("/app/work/")
     ? text.workExperience
     : text.controlCenter;
 

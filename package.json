@@ -15,6 +15,7 @@
     "test:customer-lifecycle": "node --test tests/customer-lifecycle-contract.test.mjs",
     "test:billing": "node --test tests/billing-contract.test.mjs",
     "test:auth-context": "node --test tests/auth-context-contract.test.mjs",
+    "test:manual-qa": "node --test tests/manual-qa-fix-contract.test.mjs",
     "test:shell": "node --test tests/authenticated-shell-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"

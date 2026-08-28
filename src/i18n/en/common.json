@@ -919,6 +919,13 @@
     "supportDetails": "Contact and support",
     "visitWebsite": "Visit website",
     "whatsapp": "WhatsApp",
+    "support": {
+      "eyebrow": "Customer support",
+      "title": "How can we help?",
+      "description": "Use the contacts configured by the laundry team for help with your orders and services.",
+      "address": "Where to find us",
+      "noContacts": "Support contacts are not available yet. Try again later or ask the laundry team during your next service."
+    },
     "fromPrice": "From",
     "informationOnly": "Information only",
     "noActiveOrdersTitle": "No active orders",

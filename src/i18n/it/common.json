@@ -919,6 +919,13 @@
     "supportDetails": "Contatti e assistenza",
     "visitWebsite": "Visita il sito",
     "whatsapp": "WhatsApp",
+    "support": {
+      "eyebrow": "Assistenza cliente",
+      "title": "Come possiamo aiutarti?",
+      "description": "Usa i contatti configurati dalla lavanderia per ricevere assistenza sui tuoi ordini e servizi.",
+      "address": "Dove trovarci",
+      "noContacts": "I contatti di assistenza non sono ancora disponibili. Riprova più tardi o chiedi al team della lavanderia durante il prossimo servizio."
+    },
     "fromPrice": "Da",
     "informationOnly": "Solo informativo",
     "noActiveOrdersTitle": "Nessun ordine attivo",

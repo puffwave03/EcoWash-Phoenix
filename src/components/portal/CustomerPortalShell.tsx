@@ -73,7 +73,7 @@ export function CustomerPortalShell({
     ...(text.newRequest
       ? [{ href: "/portal/requests/new", icon: "new" as const, label: text.newRequest, match: "/portal/requests" }]
       : []),
-    { href: "/contact", icon: "assistance", label: text.assistance, match: "/contact" },
+    { href: "/portal/support", icon: "assistance", label: text.assistance, match: "/portal/support" },
   ];
   const isActive = (item: PortalNavigationItem) => (
     item.match === "/portal" ? pathname === item.match : pathname.startsWith(item.match)
