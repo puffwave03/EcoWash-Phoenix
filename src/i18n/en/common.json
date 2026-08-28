@@ -964,6 +964,16 @@
         "other": "Other"
       }
     },
+    "onlinePayments": {
+      "amountDue": "Balance due",
+      "cancelled": "The payment was cancelled. You can try again whenever you are ready.",
+      "notCompleted": "The payment was not completed. You can try again.",
+      "payNow": "Pay now",
+      "received": "Payment received",
+      "reconciliation": "The payment was received and needs review by the laundry team.",
+      "secure": "You will continue in the payment provider's secure hosted experience.",
+      "verifying": "We are securely verifying the payment. Your balance will update after provider confirmation."
+    },
     "history": "History",
     "historyLink": "View history",
     "emptyOrders": "No orders are available in your customer area yet.",
@@ -1392,7 +1402,7 @@
     "branding": {"title": "Branding summary", "commercialName": "Commercial name", "logo": "Logo configured", "advanced": "Advanced branding access"},
     "common": {"yes": "Yes", "no": "No"},
     "entitlements": {"title": "Feature access", "description": "Entitlements are independent from the commercial label. Changes apply only after explicit save.", "included": "Included", "notIncluded": "Not included", "enable": "Enabled", "disable": "Disabled", "limit": "Numeric limit (optional)", "validFrom": "Valid from (optional)", "validUntil": "Valid until (optional)", "source": "Source / reason", "save": "Save feature access", "confirmDisable": "I confirm this feature will become unavailable for management or use. Existing invoices, configured prices and stored branding are preserved."},
-    "features": {"groups": {"core": "Core", "catalog": "Catalog", "pricing": "Pricing", "billing": "Billing", "branding": "Branding", "future": "Future operations", "accounting": "Accounting and fiscal"}, "labels": {"coreOrders": "Order management", "coreCustomers": "Customer management", "coreOperations": "Operations", "corePortal": "Customer Portal", "catalogManagement": "Catalog management", "catalogSegments": "Customer segments", "segmentPriceOverrides": "Segment-specific pricing", "billingInvoicing": "Invoicing", "basicBranding": "Basic branding", "customBrandColors": "Custom brand colors", "fullWhiteLabel": "Full white label", "advancedReports": "Advanced reports", "pos": "Point of sale", "printing": "Operational printing", "barcode": "Barcode workflows", "accounting": "Accounting foundation", "eInvoice": "Electronic invoicing", "multiLocation": "Multiple locations"}},
+    "features": {"groups": {"core": "Core", "catalog": "Catalog", "pricing": "Pricing", "billing": "Billing", "branding": "Branding", "future": "Future operations", "accounting": "Accounting and fiscal"}, "labels": {"coreOrders": "Order management", "coreCustomers": "Customer management", "coreOperations": "Operations", "corePortal": "Customer Portal", "catalogManagement": "Catalog management", "catalogSegments": "Customer segments", "segmentPriceOverrides": "Segment-specific pricing", "billingInvoicing": "Invoicing", "onlinePayments": "Online payments", "basicBranding": "Basic branding", "customBrandColors": "Custom brand colors", "fullWhiteLabel": "Full white label", "advancedReports": "Advanced reports", "pos": "Point of sale", "printing": "Operational printing", "barcode": "Barcode workflows", "accounting": "Accounting foundation", "eInvoice": "Electronic invoicing", "multiLocation": "Multiple locations"}},
     "audit": {"title": "Recent platform changes", "empty": "No platform changes have been recorded for this organization.", "actions": {"entitlement_enabled": "Feature enabled", "entitlement_disabled": "Feature disabled", "entitlement_updated": "Feature configuration updated", "organization_suspended": "Organization suspended", "organization_reactivated": "Organization reactivated", "commercial_label_updated": "Commercial label updated"}}
   },
   "entitlements": {

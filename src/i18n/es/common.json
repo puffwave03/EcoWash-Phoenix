@@ -964,6 +964,16 @@
         "other": "Otro"
       }
     },
+    "onlinePayments": {
+      "amountDue": "Pendiente",
+      "cancelled": "El pago se ha cancelado. Puedes volver a intentarlo cuando quieras.",
+      "notCompleted": "El pago no se ha completado. Puedes volver a intentarlo.",
+      "payNow": "Pagar ahora",
+      "received": "Pago recibido",
+      "reconciliation": "El pago se ha recibido y requiere una revisión de la lavandería.",
+      "secure": "Continuarás en la experiencia segura del proveedor de pagos.",
+      "verifying": "Estamos verificando el pago de forma segura. El saldo se actualizará tras la confirmación del proveedor."
+    },
     "history": "Historial",
     "historyLink": "Ver historial",
     "emptyOrders": "Aún no hay pedidos disponibles en tu área cliente.",
@@ -1342,7 +1352,7 @@
     "statusControl": {"active": "Los usuarios tenant y el Portal pueden usar el servicio según roles y entitlements.", "suspended": "El acceso tenant y Portal está bloqueado y los datos se conservan. La gestión de plataforma sigue disponible.", "confirm": "Confirmo la suspensión. La app tenant y el Portal se bloquearán; no se eliminarán datos.", "suspend": "Suspender organización", "reactivate": "Reactivar organización"},
     "usage": {"members": "Miembros activos", "customers": "Clientes", "orders": "Pedidos", "locations": "Sedes"}, "branding": {"title": "Resumen de branding", "commercialName": "Nombre comercial", "logo": "Logo configurado", "advanced": "Acceso a branding avanzado"}, "common": {"yes": "Sí", "no": "No"},
     "entitlements": {"title": "Acceso a funciones", "description": "Los entitlements son independientes de la etiqueta comercial. Los cambios requieren guardado explícito.", "included": "Incluida", "notIncluded": "No incluida", "enable": "Activada", "disable": "Desactivada", "limit": "Límite numérico (opcional)", "validFrom": "Válida desde (opcional)", "validUntil": "Válida hasta (opcional)", "source": "Origen / motivo", "save": "Guardar acceso", "confirmDisable": "Confirmo que la función dejará de estar disponible. Las facturas, precios configurados y branding almacenado se conservan."},
-    "features": {"groups": {"core": "Núcleo", "catalog": "Catálogo", "pricing": "Precios", "billing": "Facturación", "branding": "Branding", "future": "Operaciones futuras", "accounting": "Contabilidad y fiscal"}, "labels": {"coreOrders": "Gestión de pedidos", "coreCustomers": "Gestión de clientes", "coreOperations": "Operaciones", "corePortal": "Portal de Clientes", "catalogManagement": "Gestión de catálogo", "catalogSegments": "Segmentos de clientes", "segmentPriceOverrides": "Precios por segmento", "billingInvoicing": "Facturación", "basicBranding": "Branding básico", "customBrandColors": "Colores personalizados", "fullWhiteLabel": "White label completo", "advancedReports": "Informes avanzados", "pos": "Punto de venta", "printing": "Impresión operativa", "barcode": "Flujos de códigos de barras", "accounting": "Base contable", "eInvoice": "Factura electrónica", "multiLocation": "Múltiples sedes"}},
+    "features": {"groups": {"core": "Núcleo", "catalog": "Catálogo", "pricing": "Precios", "billing": "Facturación", "branding": "Branding", "future": "Operaciones futuras", "accounting": "Contabilidad y fiscal"}, "labels": {"coreOrders": "Gestión de pedidos", "coreCustomers": "Gestión de clientes", "coreOperations": "Operaciones", "corePortal": "Portal de Clientes", "catalogManagement": "Gestión de catálogo", "catalogSegments": "Segmentos de clientes", "segmentPriceOverrides": "Precios por segmento", "billingInvoicing": "Facturación", "onlinePayments": "Pagos en línea", "basicBranding": "Branding básico", "customBrandColors": "Colores personalizados", "fullWhiteLabel": "White label completo", "advancedReports": "Informes avanzados", "pos": "Punto de venta", "printing": "Impresión operativa", "barcode": "Flujos de códigos de barras", "accounting": "Base contable", "eInvoice": "Factura electrónica", "multiLocation": "Múltiples sedes"}},
     "audit": {"title": "Cambios recientes de plataforma", "empty": "No hay cambios de plataforma registrados.", "actions": {"entitlement_enabled": "Función activada", "entitlement_disabled": "Función desactivada", "entitlement_updated": "Configuración actualizada", "organization_suspended": "Organización suspendida", "organization_reactivated": "Organización reactivada", "commercial_label_updated": "Etiqueta comercial actualizada"}}
   },
   "entitlements": {

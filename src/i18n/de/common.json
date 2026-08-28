@@ -964,6 +964,16 @@
         "other": "Andere"
       }
     },
+    "onlinePayments": {
+      "amountDue": "Offener Betrag",
+      "cancelled": "Die Zahlung wurde abgebrochen. Sie können es jederzeit erneut versuchen.",
+      "notCompleted": "Die Zahlung wurde nicht abgeschlossen. Sie können es erneut versuchen.",
+      "payNow": "Jetzt bezahlen",
+      "received": "Zahlung erhalten",
+      "reconciliation": "Die Zahlung ist eingegangen und muss von der Wäscherei geprüft werden.",
+      "secure": "Sie werden zur sicheren Bezahloberfläche des Zahlungsanbieters weitergeleitet.",
+      "verifying": "Wir prüfen die Zahlung sicher. Der offene Betrag wird nach Bestätigung des Anbieters aktualisiert."
+    },
     "history": "Verlauf",
     "historyLink": "Verlauf anzeigen",
     "emptyOrders": "In Ihrem Kundenbereich sind noch keine Aufträge verfügbar.",
@@ -1342,7 +1352,7 @@
     "statusControl": {"active": "Mandantenbenutzer und Portal nutzen den Dienst gemäß Rollen und Berechtigungen.", "suspended": "Mandanten- und Portalzugriff sind blockiert, Daten bleiben erhalten. Plattformverwaltung bleibt verfügbar.", "confirm": "Ich bestätige die Aussetzung. Mandanten-App und Portal werden blockiert; keine Daten werden gelöscht.", "suspend": "Organisation aussetzen", "reactivate": "Organisation reaktivieren"},
     "usage": {"members": "Aktive Mitglieder", "customers": "Kunden", "orders": "Aufträge", "locations": "Standorte"}, "branding": {"title": "Branding-Zusammenfassung", "commercialName": "Geschäftsname", "logo": "Logo konfiguriert", "advanced": "Erweiterter Branding-Zugriff"}, "common": {"yes": "Ja", "no": "Nein"},
     "entitlements": {"title": "Funktionszugriff", "description": "Berechtigungen sind unabhängig von der kommerziellen Bezeichnung. Änderungen gelten erst nach explizitem Speichern.", "included": "Enthalten", "notIncluded": "Nicht enthalten", "enable": "Aktiviert", "disable": "Deaktiviert", "limit": "Numerisches Limit (optional)", "validFrom": "Gültig ab (optional)", "validUntil": "Gültig bis (optional)", "source": "Quelle / Grund", "save": "Funktionszugriff speichern", "confirmDisable": "Ich bestätige, dass die Funktion nicht mehr verfügbar ist. Rechnungen, konfigurierte Preise und gespeichertes Branding bleiben erhalten."},
-    "features": {"groups": {"core": "Kern", "catalog": "Katalog", "pricing": "Preise", "billing": "Abrechnung", "branding": "Branding", "future": "Zukünftige Abläufe", "accounting": "Buchhaltung und Fiskal"}, "labels": {"coreOrders": "Auftragsverwaltung", "coreCustomers": "Kundenverwaltung", "coreOperations": "Betrieb", "corePortal": "Kundenportal", "catalogManagement": "Katalogverwaltung", "catalogSegments": "Kundensegmente", "segmentPriceOverrides": "Segmentspezifische Preise", "billingInvoicing": "Rechnungsstellung", "basicBranding": "Basis-Branding", "customBrandColors": "Benutzerdefinierte Farben", "fullWhiteLabel": "Vollständiges White Label", "advancedReports": "Erweiterte Berichte", "pos": "Kassensystem", "printing": "Betrieblicher Druck", "barcode": "Barcode-Abläufe", "accounting": "Buchhaltungsbasis", "eInvoice": "Elektronische Rechnung", "multiLocation": "Mehrere Standorte"}},
+    "features": {"groups": {"core": "Kern", "catalog": "Katalog", "pricing": "Preise", "billing": "Abrechnung", "branding": "Branding", "future": "Zukünftige Abläufe", "accounting": "Buchhaltung und Fiskal"}, "labels": {"coreOrders": "Auftragsverwaltung", "coreCustomers": "Kundenverwaltung", "coreOperations": "Betrieb", "corePortal": "Kundenportal", "catalogManagement": "Katalogverwaltung", "catalogSegments": "Kundensegmente", "segmentPriceOverrides": "Segmentspezifische Preise", "billingInvoicing": "Rechnungsstellung", "onlinePayments": "Online-Zahlungen", "basicBranding": "Basis-Branding", "customBrandColors": "Benutzerdefinierte Farben", "fullWhiteLabel": "Vollständiges White Label", "advancedReports": "Erweiterte Berichte", "pos": "Kassensystem", "printing": "Betrieblicher Druck", "barcode": "Barcode-Abläufe", "accounting": "Buchhaltungsbasis", "eInvoice": "Elektronische Rechnung", "multiLocation": "Mehrere Standorte"}},
     "audit": {"title": "Letzte Plattformänderungen", "empty": "Keine Plattformänderungen für diese Organisation.", "actions": {"entitlement_enabled": "Funktion aktiviert", "entitlement_disabled": "Funktion deaktiviert", "entitlement_updated": "Konfiguration aktualisiert", "organization_suspended": "Organisation ausgesetzt", "organization_reactivated": "Organisation reaktiviert", "commercial_label_updated": "Kommerzielle Bezeichnung aktualisiert"}}
   },
   "entitlements": {

@@ -964,6 +964,16 @@
         "other": "Autre"
       }
     },
+    "onlinePayments": {
+      "amountDue": "Solde dû",
+      "cancelled": "Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.",
+      "notCompleted": "Le paiement n'a pas été effectué. Vous pouvez réessayer.",
+      "payNow": "Payer maintenant",
+      "received": "Paiement reçu",
+      "reconciliation": "Le paiement a été reçu et doit être vérifié par la blanchisserie.",
+      "secure": "Vous allez poursuivre dans l'expérience sécurisée du prestataire de paiement.",
+      "verifying": "Nous vérifions le paiement de manière sécurisée. Le solde sera actualisé après confirmation du prestataire."
+    },
     "history": "Historique",
     "historyLink": "Voir l'historique",
     "emptyOrders": "Aucune commande n'est encore disponible dans votre espace client.",
@@ -1342,7 +1352,7 @@
     "statusControl": {"active": "Les utilisateurs tenant et le Portail utilisent le service selon leurs rôles et droits.", "suspended": "L'accès tenant et Portail est bloqué, les données sont conservées. La gestion plateforme reste disponible.", "confirm": "Je confirme la suspension. L'application tenant et le Portail seront bloqués ; aucune donnée ne sera supprimée.", "suspend": "Suspendre l'organisation", "reactivate": "Réactiver l'organisation"},
     "usage": {"members": "Membres actifs", "customers": "Clients", "orders": "Commandes", "locations": "Sites"}, "branding": {"title": "Résumé du branding", "commercialName": "Nom commercial", "logo": "Logo configuré", "advanced": "Accès au branding avancé"}, "common": {"yes": "Oui", "no": "Non"},
     "entitlements": {"title": "Accès aux fonctions", "description": "Les droits sont indépendants du libellé commercial. Chaque changement exige un enregistrement explicite.", "included": "Incluse", "notIncluded": "Non incluse", "enable": "Activée", "disable": "Désactivée", "limit": "Limite numérique (facultatif)", "validFrom": "Valide à partir de (facultatif)", "validUntil": "Valide jusqu'au (facultatif)", "source": "Source / motif", "save": "Enregistrer l'accès", "confirmDisable": "Je confirme que la fonction ne sera plus disponible. Les factures, prix configurés et éléments de marque restent conservés."},
-    "features": {"groups": {"core": "Socle", "catalog": "Catalogue", "pricing": "Tarification", "billing": "Facturation", "branding": "Branding", "future": "Opérations futures", "accounting": "Comptabilité et fiscalité"}, "labels": {"coreOrders": "Gestion des commandes", "coreCustomers": "Gestion des clients", "coreOperations": "Opérations", "corePortal": "Portail Client", "catalogManagement": "Gestion du catalogue", "catalogSegments": "Segments clients", "segmentPriceOverrides": "Tarification par segment", "billingInvoicing": "Facturation", "basicBranding": "Branding de base", "customBrandColors": "Couleurs personnalisées", "fullWhiteLabel": "Marque blanche complète", "advancedReports": "Rapports avancés", "pos": "Point de vente", "printing": "Impression opérationnelle", "barcode": "Flux codes-barres", "accounting": "Socle comptable", "eInvoice": "Facturation électronique", "multiLocation": "Sites multiples"}},
+    "features": {"groups": {"core": "Socle", "catalog": "Catalogue", "pricing": "Tarification", "billing": "Facturation", "branding": "Branding", "future": "Opérations futures", "accounting": "Comptabilité et fiscalité"}, "labels": {"coreOrders": "Gestion des commandes", "coreCustomers": "Gestion des clients", "coreOperations": "Opérations", "corePortal": "Portail Client", "catalogManagement": "Gestion du catalogue", "catalogSegments": "Segments clients", "segmentPriceOverrides": "Tarification par segment", "billingInvoicing": "Facturation", "onlinePayments": "Paiements en ligne", "basicBranding": "Branding de base", "customBrandColors": "Couleurs personnalisées", "fullWhiteLabel": "Marque blanche complète", "advancedReports": "Rapports avancés", "pos": "Point de vente", "printing": "Impression opérationnelle", "barcode": "Flux codes-barres", "accounting": "Socle comptable", "eInvoice": "Facturation électronique", "multiLocation": "Sites multiples"}},
     "audit": {"title": "Modifications plateforme récentes", "empty": "Aucune modification plateforme enregistrée.", "actions": {"entitlement_enabled": "Fonction activée", "entitlement_disabled": "Fonction désactivée", "entitlement_updated": "Configuration mise à jour", "organization_suspended": "Organisation suspendue", "organization_reactivated": "Organisation réactivée", "commercial_label_updated": "Libellé commercial mis à jour"}}
   },
   "entitlements": {

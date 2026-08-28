@@ -16,6 +16,7 @@
     "test:billing": "node --test tests/billing-contract.test.mjs",
     "test:auth-context": "node --test tests/auth-context-contract.test.mjs",
     "test:manual-qa": "node --test tests/manual-qa-fix-contract.test.mjs",
+    "test:payments-online": "NODE_ENV=test node --test tests/payments-online-contract.test.mjs",
     "test:shell": "node --test tests/authenticated-shell-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"

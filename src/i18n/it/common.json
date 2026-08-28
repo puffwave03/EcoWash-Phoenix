@@ -964,6 +964,16 @@
         "other": "Altro"
       }
     },
+    "onlinePayments": {
+      "amountDue": "Da pagare",
+      "cancelled": "Il pagamento è stato annullato. Puoi riprovare quando vuoi.",
+      "notCompleted": "Il pagamento non è stato completato. Puoi riprovare.",
+      "payNow": "Paga ora",
+      "received": "Pagamento ricevuto",
+      "reconciliation": "Il pagamento è stato ricevuto e richiede una verifica della lavanderia.",
+      "secure": "Continuerai nell'esperienza sicura del provider di pagamento.",
+      "verifying": "Stiamo verificando la conferma sicura del pagamento. Il saldo si aggiornerà dopo la conferma del provider."
+    },
     "history": "Storico",
     "historyLink": "Vedi storico",
     "emptyOrders": "Nessun ordine è ancora disponibile nella tua area cliente.",
@@ -1355,7 +1365,7 @@
     "branding": {"title": "Riepilogo branding", "commercialName": "Nome commerciale", "logo": "Logo configurato", "advanced": "Accesso branding avanzato"},
     "common": {"yes": "Sì", "no": "No"},
     "entitlements": {"title": "Accesso alle funzioni", "description": "Gli entitlement sono indipendenti dall'etichetta commerciale. Le modifiche si applicano solo dopo il salvataggio esplicito.", "included": "Inclusa", "notIncluded": "Non inclusa", "enable": "Abilitata", "disable": "Disabilitata", "limit": "Limite numerico (opzionale)", "validFrom": "Valida da (opzionale)", "validUntil": "Valida fino a (opzionale)", "source": "Origine / motivo", "save": "Salva accesso", "confirmDisable": "Confermo che la funzione non sarà più disponibile per gestione o utilizzo. Fatture, prezzi configurati e branding memorizzato restano preservati."},
-    "features": {"groups": {"core": "Base", "catalog": "Catalogo", "pricing": "Prezzi", "billing": "Fatturazione", "branding": "Branding", "future": "Operazioni future", "accounting": "Contabilità e fiscale"}, "labels": {"coreOrders": "Gestione ordini", "coreCustomers": "Gestione clienti", "coreOperations": "Operazioni", "corePortal": "Portale Clienti", "catalogManagement": "Gestione catalogo", "catalogSegments": "Segmenti cliente", "segmentPriceOverrides": "Prezzi specifici per segmento", "billingInvoicing": "Fatturazione", "basicBranding": "Branding base", "customBrandColors": "Colori personalizzati", "fullWhiteLabel": "White label completo", "advancedReports": "Report avanzati", "pos": "Punto vendita", "printing": "Stampa operativa", "barcode": "Flussi barcode", "accounting": "Base contabile", "eInvoice": "Fatturazione elettronica", "multiLocation": "Sedi multiple"}},
+    "features": {"groups": {"core": "Base", "catalog": "Catalogo", "pricing": "Prezzi", "billing": "Fatturazione", "branding": "Branding", "future": "Operazioni future", "accounting": "Contabilità e fiscale"}, "labels": {"coreOrders": "Gestione ordini", "coreCustomers": "Gestione clienti", "coreOperations": "Operazioni", "corePortal": "Portale Clienti", "catalogManagement": "Gestione catalogo", "catalogSegments": "Segmenti cliente", "segmentPriceOverrides": "Prezzi specifici per segmento", "billingInvoicing": "Fatturazione", "onlinePayments": "Pagamenti online", "basicBranding": "Branding base", "customBrandColors": "Colori personalizzati", "fullWhiteLabel": "White label completo", "advancedReports": "Report avanzati", "pos": "Punto vendita", "printing": "Stampa operativa", "barcode": "Flussi barcode", "accounting": "Base contabile", "eInvoice": "Fatturazione elettronica", "multiLocation": "Sedi multiple"}},
     "audit": {"title": "Modifiche piattaforma recenti", "empty": "Nessuna modifica piattaforma registrata per questa organizzazione.", "actions": {"entitlement_enabled": "Funzione abilitata", "entitlement_disabled": "Funzione disabilitata", "entitlement_updated": "Configurazione funzione aggiornata", "organization_suspended": "Organizzazione sospesa", "organization_reactivated": "Organizzazione riattivata", "commercial_label_updated": "Etichetta commerciale aggiornata"}}
   },
   "entitlements": {

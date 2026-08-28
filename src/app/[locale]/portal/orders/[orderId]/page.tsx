@@ -3,6 +3,7 @@ import { CustomerPortalShell } from "@/components/portal/CustomerPortalShell";
 import {
   CustomerPortalOrderDetail,
   type PortalFinanceText,
+  type PortalOnlinePaymentText,
 } from "@/components/portal/CustomerPortalViews";
 import {
   getCustomerPortalOrderDetail,
@@ -11,19 +12,30 @@ import {
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import { getTenantBranding } from "@/features/branding/server/queries";
+import { randomUUID } from "node:crypto";
+import { createOnlineCheckoutAction } from "@/features/online-payments/server/actions";
+import {
+  getCustomerOnlinePaymentAvailability,
+  getLatestCustomerOnlinePaymentAttempt,
+} from "@/features/online-payments/server/queries";
 
 type CustomerPortalOrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
+  searchParams: Promise<{ payment?: string }>;
 };
 
 export default async function CustomerPortalOrderDetailPage({
   params,
+  searchParams,
 }: CustomerPortalOrderDetailPageProps) {
   const { locale, orderId } = await params;
+  const { payment } = await searchParams;
   const access = await requireCustomerPortalAccess(locale);
-  const [order, branding, t, catalogT] = await Promise.all([
+  const [order, branding, availability, attempt, t, catalogT] = await Promise.all([
     getCustomerPortalOrderDetail(locale, orderId),
     getTenantBranding(access.organizationId),
+    getCustomerOnlinePaymentAvailability(locale, orderId),
+    getLatestCustomerOnlinePaymentAttempt(locale, orderId),
     getTranslations({ locale, namespace: "common.portal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
@@ -47,8 +59,17 @@ export default async function CustomerPortalOrderDetailPage({
       }}
     >
       <CustomerPortalOrderDetail
+        checkoutAction={createOnlineCheckoutAction.bind(null, locale, orderId)}
+        checkoutIdempotencyKey={randomUUID()}
         fulfillmentLabels={fulfillmentLabels}
         locale={locale}
+        onlinePayment={{
+          attempt,
+          availability,
+          returnState: payment === "cancelled" || payment === "failed" || payment === "returned"
+            ? payment
+            : null,
+        }}
         order={order}
         statusLabels={statusLabels}
         text={{
@@ -61,6 +82,7 @@ export default async function CustomerPortalOrderDetailPage({
           items: t("items"),
           nextTask: t("nextTask"),
           noPhotos: t("noPhotos"),
+          onlinePayment: t.raw("onlinePayments") as PortalOnlinePaymentText,
           orderDate: t("orderDate"),
           orderReceived: t("orderReceived"),
           orders: t("orders"),

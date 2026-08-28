@@ -29,6 +29,10 @@ import {
   type PortalMediaRegistry,
 } from "@/features/portal/media";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
+import type {
+  OnlinePaymentAttemptSummary,
+  OnlinePaymentAvailability,
+} from "@/features/online-payments/types";
 
 type StatusText = Record<ProductionStatus, string>;
 type FulfillmentText = Record<FulfillmentStatus, string>;
@@ -49,6 +53,17 @@ export type PortalFinanceText = {
   total: string;
   totalPaid: string;
   totalValue: string;
+};
+
+export type PortalOnlinePaymentText = {
+  amountDue: string;
+  cancelled: string;
+  notCompleted: string;
+  payNow: string;
+  received: string;
+  reconciliation: string;
+  secure: string;
+  verifying: string;
 };
 
 type PortalCommonText = {
@@ -121,13 +136,21 @@ type PortalOrderListProps = {
 };
 
 type PortalOrderDetailProps = {
+  checkoutAction: (formData: FormData) => void | Promise<void>;
+  checkoutIdempotencyKey: string;
   fulfillmentLabels: FulfillmentText;
   locale: string;
+  onlinePayment: {
+    attempt: OnlinePaymentAttemptSummary | null;
+    availability: OnlinePaymentAvailability;
+    returnState: "cancelled" | "failed" | "returned" | null;
+  };
   order: CustomerPortalOrderDetail;
   statusLabels: StatusText;
   text: PortalCommonText & {
     items: string;
     noPhotos: string;
+    onlinePayment: PortalOnlinePaymentText;
   };
 };
 
@@ -690,8 +713,11 @@ export function CustomerPortalOrderList({
 }
 
 export function CustomerPortalOrderDetail({
+  checkoutAction,
+  checkoutIdempotencyKey,
   fulfillmentLabels,
   locale,
+  onlinePayment,
   order,
   statusLabels,
   text,
@@ -761,6 +787,41 @@ export function CustomerPortalOrderDetail({
               </div>
             </dl>
           </div>
+          {onlinePayment.attempt?.status === "confirmed" ? (
+            <div className="rounded-control border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800" role="status">
+              {text.onlinePayment.received}
+            </div>
+          ) : onlinePayment.attempt?.status === "reconciliation_required" ? (
+            <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+              {text.onlinePayment.reconciliation}
+            </div>
+          ) : onlinePayment.returnState === "returned" || onlinePayment.attempt?.status === "pending" ? (
+            <div className="rounded-control border border-blue-200 bg-blue-50 p-4 text-sm font-medium text-blue-900" role="status">
+              {text.onlinePayment.verifying}
+            </div>
+          ) : onlinePayment.returnState === "cancelled" || onlinePayment.attempt?.status === "cancelled" ? (
+            <div className="rounded-control border border-border bg-[#f7f9f7] p-4 text-sm text-muted" role="status">
+              {text.onlinePayment.cancelled}
+            </div>
+          ) : onlinePayment.returnState === "failed" || onlinePayment.attempt?.status === "failed" || onlinePayment.attempt?.status === "expired" ? (
+            <div className="rounded-control border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900" role="status">
+              {text.onlinePayment.notCompleted}
+            </div>
+          ) : null}
+          {onlinePayment.availability.eligible && onlinePayment.availability.amount > 0 ? (
+            <form action={checkoutAction} className="rounded-card border border-primary/15 bg-primary-soft/45 p-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
+              <input name="idempotencyKey" type="hidden" value={checkoutIdempotencyKey} />
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {text.onlinePayment.amountDue} {formatCurrency(onlinePayment.availability.amount, onlinePayment.availability.currency, locale)}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted">{text.onlinePayment.secure}</p>
+              </div>
+              <button className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-control border border-primary bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-standard hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:mt-0 sm:w-auto" type="submit">
+                {text.onlinePayment.payNow}
+              </button>
+            </form>
+          ) : null}
         </section>
       ) : null}
 
