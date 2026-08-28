@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-28
 
-Approximate closeout time: after QA-PRODUCT-001 full product acceptance
+Approximate closeout time: after POST-QA-PRODUCT-001 follow-up
 
-Session checkpoint: QA-PRODUCT-001 completed with functional, financial, role, entitlement, suspension and Tenant A/B acceptance passing; authenticated visual review remains a non-blocking Product Owner follow-up
+Session checkpoint: POST-QA-PRODUCT-001 completed; Customer Account history contrast was corrected, four real EcoWash quick catalogs were configured, and the verified Product Owner received permanent Platform Admin access
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `3ec653b DOCS-SESSION-001 docs: close billing session and record SaaS roadmap`
+Approved baseline before this mission: `fa52ddf QA-PRODUCT-001 docs: record full product acceptance`
 
-Origin/main status: local `main` and `origin/main` include `28b5e26 POS-001 feat: add vendor-neutral cash register and payments`.
+Origin/main status: local `main` and `origin/main` include `39b12e8 POST-QA-001 fix: polish UI and enable EcoWash segment workflows`.
 
-Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
+Working tree status before documentation closeout: application commit pushed; only the minimum handover, status and QA follow-up documents are being updated.
 
-Application closeout commit: `28b5e26 POS-001 feat: add vendor-neutral cash register and payments`; working tree expected clean after documentation push.
+Application closeout commit: `39b12e8 POST-QA-001 fix: polish UI and enable EcoWash segment workflows`; working tree expected clean after documentation push.
 
 ---
 
@@ -74,6 +74,7 @@ Application closeout commit: `28b5e26 POS-001 feat: add vendor-neutral cash regi
 - PLATFORM-ADMIN-001 — Phoenix SaaS Control Center
 - POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations
 - QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES
+- POST-QA-PRODUCT-001 — Customer Account contrast, real EcoWash segment setup and verified Product Owner Platform Admin bootstrap
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -133,6 +134,9 @@ Completed on EcoWash Staging:
 - PLATFORM-ADMIN-001 migration `20260827000300` is applied and aligned; isolated Platform Admin identity, cross-tenant summaries, entitlement administration, commercial labels, suspension/reactivation, audit, tenant/Portal denial and rollback-only cleanup passed.
 - POS-001 migrations `20260827000400` and corrective `20260828000100` are applied and aligned; six-identity rollback-only E2E passed for till lifecycle, cash/manual-card partial and mixed payments, refunds, reconciliation, idempotency, role/capability enforcement, entitlement disable/reenable and cross-tenant denial.
 - QA-PRODUCT-001 master staging acceptance passed across nine identities/roles with temporary Tenant B, exact EUR 15.00 financial reconciliation, entitlement and suspension cycles, Tenant A/B isolation and complete rollback cleanup. Interactive authenticated visual QA was unavailable and remains a non-blocking Product Owner check.
+- POST-QA-PRODUCT-001 configured four active, Portal-visible EcoWash segments using only existing categories/services and base-price fallback: Case Vacanze / Property Manager (35 explicit services, 4 categories), Hotel (9, 3), Ristorazione (3, 1) and Privati (18, 5). No segment price override was created.
+- The sole verified active EcoWash Owner (`f1237796-aa9d-4069-aca2-7a926e0b241e`) was bootstrapped as an active permanent Platform Admin through `platform_admins`; the tenant Owner membership remains active and no other tenant identity gained Platform access.
+- Rollback-only staging checks passed for Owner/Manager selector visibility, Manager assignment/removal, Staff and Customer restriction, tenant isolation, Platform cross-tenant reads and Portal personalization. The Portal returned 65 personalized shortcuts plus 138 remaining services, with 203 priced services total and no missing price.
 
 Applied baseline migrations:
 

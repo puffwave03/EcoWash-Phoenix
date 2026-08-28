@@ -126,3 +126,18 @@ The order, canonical payments ledger, POS, Customer Account, Portal financial RP
 Overall result: **PASS WITH NON-BLOCKING ISSUES**.
 
 Next task: `PRINT-001`.
+
+## Post-acceptance follow-up — POST-QA-PRODUCT-001
+
+Completed on 2026-08-28 after the acceptance baseline:
+
+- corrected the Customer Account history filter so its active link forces white text over the primary background, exposes `aria-current="page"` and has an explicit keyboard focus ring;
+- added a focused contrast/accessibility contract regression;
+- configured four real EcoWash staging segments through the existing Owner/Manager RPC, with active and Portal-visible state and no copied services or price overrides;
+- verified mappings: Case Vacanze / Property Manager (35 explicit services, 4 categories), Hotel (9, 3), Ristorazione (3, 1), Privati (18, 5);
+- verified base-price fallback and full-catalog continuity: 65 personalized Portal matches, 138 remaining services, 203 priced rows and zero missing prices;
+- bootstrapped the sole verified EcoWash Owner (`f1237796-aa9d-4069-aca2-7a926e0b241e`) as an active Platform Admin without changing the Owner membership;
+- passed rollback-only Owner/Manager assignment and removal, Staff/Customer denial, Platform access, tenant-isolation and Portal personalization checks;
+- passed 61 focused Customer Account, catalog-segment, entitlement and Platform Admin tests, lint, production build and `git diff --check`.
+
+Interactive browser control was not exposed in the session, so the specific contrast fix is verified by source contract and production compilation rather than an authenticated screenshot. No temporary customer or SQL fixture remains. `PRINT-001` is still next and was not started.
