@@ -10,6 +10,7 @@
     "test:pricing-segments": "node --test tests/pricing-segments-contract.test.mjs",
     "test:entitlements": "node --test tests/entitlements-contract.test.mjs",
     "test:platform-admin": "node --test tests/platform-admin-contract.test.mjs",
+    "test:pos": "node --test tests/pos-contract.test.mjs",
     "test:customer-account": "node --test tests/customer-account-contract.test.mjs",
     "test:customer-lifecycle": "node --test tests/customer-lifecycle-contract.test.mjs",
     "test:billing": "node --test tests/billing-contract.test.mjs",

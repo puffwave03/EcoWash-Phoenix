@@ -141,6 +141,7 @@
       "customers": "Clientes",
       "billing": "Facturación",
       "orders": "Pedidos",
+      "pos": "Punto de venta",
       "production": "Producción",
       "quality": "Calidad",
       "delivery": "Recogidas y entregas",
@@ -837,6 +838,7 @@
       "production": "Producción",
       "quality": "Calidad y empaquetado",
       "delivery": "Entregas",
+      "pos": "Punto de venta y caja",
       "supervision": "Supervisión"
     },
     "empty": "No hay colaboradores aquí.",
@@ -1295,6 +1297,19 @@
     "segment": "Segmento de clientes", "basePrice": "Precio base", "effective": "Efectivo", "fallback": "Precio base", "noBasePrice": "No disponible", "amount": "Precio del segmento", "location": "Ubicación", "allLocations": "Todas las ubicaciones", "search": "Buscar servicios", "searchPlaceholder": "Nombre, código o categoría",
     "validFrom": "Válido desde", "validTo": "Válido hasta (opcional)", "active": "Activo", "inactive": "Inactivo", "add": "Añadir período de precio", "save": "Guardar precio", "saving": "Guardando...", "saved": "Precio del segmento guardado.",
     "overlap": "Este período se solapa con otro precio activo.", "error": "No se pudo guardar el precio del segmento.", "empty": "No hay servicios activos relevantes para este segmento.", "noSegments": "Crea un segmento antes de añadir precios específicos."
+  },
+  "pos": {
+    "title": "Punto de venta", "subtitle": "Cobra pedidos y concilia la caja actual sin gestionar datos sensibles de tarjetas.", "success": "Operación completada.",
+    "actions": {"open": "Abrir caja", "pay": "Registrar pago", "refund": "Registrar reembolso", "close": "Cerrar caja", "search": "Buscar"},
+    "common": {"amount": "Importe", "reference": "Referencia", "date": "Fecha", "actor": "Operador", "location": "Sede", "noLocation": "Caja predeterminada"},
+    "session": {"title": "Caja actual", "open": "Abierta", "closed": "Cerrada", "selectLocation": "Sede", "openingAmount": "Efectivo inicial", "opening": "Apertura", "cashPayments": "Efectivo cobrado", "cashRefunds": "Reembolsos en efectivo", "expected": "Efectivo esperado", "transactions": "Transacciones"},
+    "orders": {"title": "Pedidos pendientes", "placeholder": "Pedido o cliente", "empty": "Ningún pedido coincidente tiene saldo pendiente.", "customer": "Cliente", "total": "Total", "paid": "Pagado", "outstanding": "Pendiente", "method": "Método", "notes": "Nota"},
+    "payments": {"title": "Actividad de la sesión", "empty": "Aún no hay transacciones en esta caja.", "reason": "Motivo del reembolso", "manualCard": "Resultado de tarjeta registrado manualmente en Phoenix; no implica reembolso del proveedor ni datos de tarjeta.", "phoenixRefund": "El reembolso se registra solo en Phoenix."},
+    "close": {"title": "Cerrar y conciliar", "description": "Cuenta el efectivo físico. Phoenix guarda el esperado, el contado y la diferencia.", "counted": "Efectivo contado", "difference": "Diferencia", "notes": "Nota de cierre"},
+    "history": {"title": "Historial de cajas", "empty": "Aún no hay sesiones de caja.", "expected": "Esperado", "counted": "Contado", "difference": "Diferencia"},
+    "methods": {"cash": "Efectivo", "card": "Tarjeta (manual)", "bank_transfer": "Transferencia", "other": "Otro"},
+    "statuses": {"pending": "Pendiente", "confirmed": "Confirmado", "void": "Anulado", "refunded": "Reembolsado"},
+    "errors": {"generic": "No se pudo completar la operación POS.", "validation": "Comprueba los valores introducidos.", "alreadyOpen": "Ya existe una caja abierta para esta sede.", "payment": "Pago rechazado. Comprueba el saldo y la caja actual.", "refund": "Reembolso rechazado. Comprueba el importe reembolsable y la caja actual.", "close": "No se pudo cerrar la caja."}
   },
   "organizationSuspended": {"eyebrow": "Servicio de cuenta", "title": "Esta organización está suspendida.", "description": "Los datos operativos siguen protegidos y sin cambios. Contacta con el operador de la plataforma para información o reactivación.", "logout": "Cerrar sesión"},
   "platform": {

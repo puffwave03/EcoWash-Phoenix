@@ -10,6 +10,7 @@ import type {
 } from "@/features/staff/types";
 import {
   OPERATIONAL_CAPABILITIES,
+  DEFAULT_STAFF_OPERATIONAL_CAPABILITIES,
   STAFF_OPERATIONAL_CAPABILITIES,
 } from "@/lib/auth/capabilities";
 import type { OperationalCapability } from "@/lib/auth/capabilities";
@@ -93,7 +94,7 @@ function errorText(error: string | null, text: StaffText) {
 }
 
 function CapabilityFields({
-  defaultCapabilities = STAFF_OPERATIONAL_CAPABILITIES,
+  defaultCapabilities = DEFAULT_STAFF_OPERATIONAL_CAPABILITIES,
   text,
 }: {
   defaultCapabilities?: readonly OperationalCapability[];

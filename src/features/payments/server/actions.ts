@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requirePosAccess } from "@/features/pos/server/access";
 import type { PaymentActionState } from "@/features/payments/types";
 import {
   optionalDbValue,
@@ -32,7 +32,7 @@ export async function recordPaymentAction(
   const { fieldErrors, input, valid } = parsePaymentForm(formData);
   if (!valid) return fail(fieldErrors, null);
 
-  await requireMembership(locale);
+  await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("record_payment", {
     target_amount: input.amount,
@@ -57,7 +57,7 @@ export async function voidPaymentAction(locale: string, orderId: string, payment
   const { fieldErrors, input, valid } = parseReasonForm(formData);
   if (!valid) return;
 
-  await requireMembership(locale);
+  await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("void_payment", {
     target_payment_id: paymentId,
@@ -72,7 +72,7 @@ export async function refundPaymentAction(locale: string, orderId: string, payme
   const { input, valid } = parseRefundForm(formData);
   if (!valid) return;
 
-  await requireMembership(locale);
+  await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("refund_payment", {
     target_amount: input.amount,

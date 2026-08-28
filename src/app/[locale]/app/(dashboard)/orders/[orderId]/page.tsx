@@ -47,8 +47,11 @@ import {
   getOrderPayments,
 } from "@/features/payments/server/queries";
 import { listEffectiveServicesForOrder } from "@/features/pricing-segments/server/order-services";
+import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
+import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
 import type { ProductionStatus } from "@/features/orders/types";
 import { canEditCatalog } from "@/features/orders/workflow";
+import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { formatCurrency, formatNumberInput } from "@/lib/number-format";
 
@@ -77,7 +80,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, t, catalogT] = await Promise.all([
+  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, entitlements, t, catalogT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -88,6 +91,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
+    getCurrentEntitlements(locale, [FEATURES.pos]),
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
@@ -95,7 +99,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
-  const canManagePaymentCorrections = access.membership.role === "owner" || access.membership.role === "manager";
+  const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
+    && hasOperationalCapability(access.membership, "pos");
   const sectionLinks = [
     { href: "#items", label: t("items.title") },
     { href: "#production", label: t("workflow.change") },
@@ -360,10 +365,12 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             refund: refundPaymentAction.bind(null, locale, order.id),
             void: voidPaymentAction.bind(null, locale, order.id),
           }}
-          canManageCorrections={canManagePaymentCorrections}
+          canManageCorrections={false}
+          canRecord={canUsePos}
           currency={order.currency}
           locale={locale}
           payments={payments}
+          posHref={`/app/pos?q=${encodeURIComponent(order.orderNumber)}`}
           summary={paymentSummary}
           text={{
             actor: t("payments.actor"),

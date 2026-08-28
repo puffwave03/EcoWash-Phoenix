@@ -23,6 +23,7 @@ type AppNavigationText = {
   delivery: string;
   managementGroup: string;
   orders: string;
+  pos: string;
   overview: string;
   production: string;
   quality: string;
@@ -67,6 +68,14 @@ function NavigationIcon({ href }: { href: string }) {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M8 5h10a2 2 0 0 1 2 2v12H8a3 3 0 0 1-3-3V5m0 11a3 3 0 0 1 3-3h12M5 5h3v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (href === "/app/pos") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M5 4h14v16H5V4Zm3 3h8v4H8V7Zm0 8h2m2 0h2m2 0h1" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
       </svg>
     );
   }
@@ -138,12 +147,18 @@ export function AppNavigation({
           items: [
             { href: "/app/control", label: text.controlCenter, match: "/app/control" },
             { href: "/app/orders", label: text.orders, match: "/app/orders" },
+            ...(entitlementEnabled(entitlements, FEATURES.pos)
+              ? [{ href: "/app/pos", label: text.pos, match: "/app/pos" }]
+              : []),
           ],
           label: text.controlGroup,
         },
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
+            ...(canUse("pos") && entitlementEnabled(entitlements, FEATURES.pos)
+              ? [{ href: "/app/pos", label: text.pos, match: "/app/pos" }]
+              : []),
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
             { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
@@ -300,9 +315,9 @@ export function AppNavigation({
       ? navigationItems.filter((item) => [
           "/app/control",
           "/app/orders",
+          "/app/pos",
           "/app/work",
           "/app/alerts",
-          ...(role === "owner" ? ["/app/staff"] : []),
         ].includes(item.href))
       : navigationItems;
 

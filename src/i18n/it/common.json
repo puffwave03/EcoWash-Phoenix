@@ -141,6 +141,7 @@
       "customers": "Clienti",
       "billing": "Fatturazione",
       "orders": "Ordini",
+      "pos": "Punto vendita",
       "production": "Produzione",
       "quality": "Qualità",
       "delivery": "Ritiri e consegne",
@@ -837,6 +838,7 @@
       "production": "Produzione",
       "quality": "Qualità e confezionamento",
       "delivery": "Consegne",
+      "pos": "Punto vendita e cassa",
       "supervision": "Supervisione"
     },
     "empty": "Nessun collaboratore qui.",
@@ -1306,6 +1308,19 @@
     "segment": "Segmento cliente", "basePrice": "Prezzo base", "effective": "Effettivo", "fallback": "Fallback base", "noBasePrice": "Non disponibile", "amount": "Prezzo segmento", "location": "Sede", "allLocations": "Tutte le sedi", "search": "Cerca servizi", "searchPlaceholder": "Nome, codice o categoria",
     "validFrom": "Valido dal", "validTo": "Valido fino al (facoltativo)", "active": "Attivo", "inactive": "Inattivo", "add": "Aggiungi periodo prezzo", "save": "Salva prezzo", "saving": "Salvataggio...", "saved": "Prezzo segmento salvato.",
     "overlap": "Questo periodo si sovrappone a un altro prezzo attivo.", "error": "Impossibile salvare il prezzo del segmento.", "empty": "Nessun servizio attivo rilevante per questo segmento.", "noSegments": "Crea un segmento cliente prima di aggiungere prezzi dedicati."
+  },
+  "pos": {
+    "title": "Punto vendita", "subtitle": "Incassa gli ordini e riconcilia la cassa corrente senza gestire dati sensibili delle carte.", "success": "Operazione completata.",
+    "actions": {"open": "Apri cassa", "pay": "Registra pagamento", "refund": "Registra rimborso", "close": "Chiudi cassa", "search": "Cerca"},
+    "common": {"amount": "Importo", "reference": "Riferimento", "date": "Data", "actor": "Operatore", "location": "Sede", "noLocation": "Cassa predefinita"},
+    "session": {"title": "Cassa corrente", "open": "Aperta", "closed": "Chiusa", "selectLocation": "Sede", "openingAmount": "Fondo cassa", "opening": "Apertura", "cashPayments": "Contanti incassati", "cashRefunds": "Rimborsi contanti", "expected": "Contanti attesi", "transactions": "Transazioni"},
+    "orders": {"title": "Ordini da incassare", "placeholder": "Ordine o cliente", "empty": "Nessun ordine corrispondente ha un saldo aperto.", "customer": "Cliente", "total": "Totale", "paid": "Pagato", "outstanding": "Da pagare", "method": "Metodo", "notes": "Nota"},
+    "payments": {"title": "Attività della sessione", "empty": "Nessuna transazione in questa cassa.", "reason": "Motivo del rimborso", "manualCard": "Esito carta registrato manualmente in Phoenix; non implica un rimborso provider né dati carta.", "phoenixRefund": "Il rimborso viene registrato solo in Phoenix."},
+    "close": {"title": "Chiudi e riconcilia", "description": "Conta il contante fisicamente presente. Phoenix salva atteso, contato e differenza.", "counted": "Contanti contati", "difference": "Differenza", "notes": "Nota di chiusura"},
+    "history": {"title": "Storico casse", "empty": "Nessuna sessione di cassa.", "expected": "Atteso", "counted": "Contata", "difference": "Differenza"},
+    "methods": {"cash": "Contanti", "card": "Carta (manuale)", "bank_transfer": "Bonifico", "other": "Altro"},
+    "statuses": {"pending": "In attesa", "confirmed": "Confermato", "void": "Annullato", "refunded": "Rimborsato"},
+    "errors": {"generic": "Impossibile completare l'operazione POS.", "validation": "Controlla i valori inseriti.", "alreadyOpen": "Esiste già una cassa aperta per questa sede.", "payment": "Pagamento rifiutato. Controlla saldo e cassa corrente.", "refund": "Rimborso rifiutato. Controlla importo rimborsabile e cassa corrente.", "close": "Impossibile chiudere la cassa."}
   },
   "organizationSuspended": {"eyebrow": "Servizio account", "title": "Questa organizzazione è attualmente sospesa.", "description": "I dati operativi restano protetti e invariati. Contatta il gestore della piattaforma per informazioni o per la riattivazione.", "logout": "Esci"},
   "platform": {

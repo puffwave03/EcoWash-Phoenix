@@ -141,6 +141,7 @@
       "customers": "Customers",
       "billing": "Billing",
       "orders": "Orders",
+      "pos": "Point of sale",
       "production": "Production",
       "quality": "Quality",
       "delivery": "Pickups & deliveries",
@@ -837,6 +838,7 @@
       "production": "Production",
       "quality": "Quality & Packing",
       "delivery": "Delivery",
+      "pos": "Point of sale and till",
       "supervision": "Supervision"
     },
     "empty": "No staff members here.",
@@ -1338,6 +1340,19 @@
     "segment": "Customer segment", "basePrice": "Base price", "effective": "Effective", "fallback": "Base fallback", "noBasePrice": "Unavailable", "amount": "Segment price", "location": "Location", "allLocations": "All locations", "search": "Search services", "searchPlaceholder": "Name, code or category",
     "validFrom": "Valid from", "validTo": "Valid to (optional)", "active": "Active", "inactive": "Inactive", "add": "Add price period", "save": "Save price", "saving": "Saving...", "saved": "Segment price saved.",
     "overlap": "This price period overlaps another active override.", "error": "The segment price could not be saved.", "empty": "No relevant active services are available for this segment.", "noSegments": "Create a customer segment before adding price overrides."
+  },
+  "pos": {
+    "title": "Point of sale", "subtitle": "Collect order payments and reconcile the current till without handling sensitive card data.", "success": "Operation completed.",
+    "actions": {"open": "Open till", "pay": "Record payment", "refund": "Record refund", "close": "Close till", "search": "Search"},
+    "common": {"amount": "Amount", "reference": "Reference", "date": "Date", "actor": "Operator", "location": "Location", "noLocation": "Default till"},
+    "session": {"title": "Current till", "open": "Open", "closed": "Closed", "selectLocation": "Location", "openingAmount": "Opening cash", "opening": "Opening", "cashPayments": "Cash received", "cashRefunds": "Cash refunds", "expected": "Expected cash", "transactions": "Transactions"},
+    "orders": {"title": "Orders due", "placeholder": "Order or customer", "empty": "No matching orders have an outstanding balance.", "customer": "Customer", "total": "Total", "paid": "Paid", "outstanding": "Outstanding", "method": "Method", "notes": "Note"},
+    "payments": {"title": "Session activity", "empty": "No transactions in this till yet.", "reason": "Refund reason", "manualCard": "Manual card result recorded in Phoenix; no provider refund or card data is implied.", "phoenixRefund": "This records the refund in Phoenix only."},
+    "close": {"title": "Close and reconcile", "description": "Count the cash physically present. Phoenix stores expected, counted and the difference.", "counted": "Counted cash", "difference": "Difference", "notes": "Closing note"},
+    "history": {"title": "Till history", "empty": "No till sessions yet.", "expected": "Expected", "counted": "Counted", "difference": "Difference"},
+    "methods": {"cash": "Cash", "card": "Card (manual)", "bank_transfer": "Bank transfer", "other": "Other"},
+    "statuses": {"pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
+    "errors": {"generic": "The POS operation could not be completed.", "validation": "Check the entered values.", "alreadyOpen": "A till is already open for this location.", "payment": "The payment was rejected. Check the balance and current till.", "refund": "The refund was rejected. Check the refundable amount and current till.", "close": "The till could not be closed."}
   },
   "organizationSuspended": {
     "eyebrow": "Account service",

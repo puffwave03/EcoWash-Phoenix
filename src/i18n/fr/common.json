@@ -141,6 +141,7 @@
       "customers": "Clients",
       "billing": "Facturation",
       "orders": "Commandes",
+      "pos": "Point de vente",
       "production": "Production",
       "quality": "Qualité",
       "delivery": "Collectes et livraisons",
@@ -837,6 +838,7 @@
       "production": "Production",
       "quality": "Qualité et emballage",
       "delivery": "Livraison",
+      "pos": "Point de vente et caisse",
       "supervision": "Supervision"
     },
     "empty": "Aucun collaborateur ici.",
@@ -1295,6 +1297,19 @@
     "segment": "Segment client", "basePrice": "Tarif de base", "effective": "Effectif", "fallback": "Tarif de base", "noBasePrice": "Indisponible", "amount": "Tarif du segment", "location": "Site", "allLocations": "Tous les sites", "search": "Rechercher des services", "searchPlaceholder": "Nom, code ou catégorie",
     "validFrom": "Valide à partir du", "validTo": "Valide jusqu'au (facultatif)", "active": "Actif", "inactive": "Inactif", "add": "Ajouter une période tarifaire", "save": "Enregistrer le tarif", "saving": "Enregistrement...", "saved": "Tarif du segment enregistré.",
     "overlap": "Cette période chevauche un autre tarif actif.", "error": "Impossible d'enregistrer le tarif du segment.", "empty": "Aucun service actif pertinent pour ce segment.", "noSegments": "Créez un segment avant d'ajouter des tarifs dédiés."
+  },
+  "pos": {
+    "title": "Point de vente", "subtitle": "Encaissez les commandes et rapprochez la caisse courante sans traiter de données de carte sensibles.", "success": "Opération terminée.",
+    "actions": {"open": "Ouvrir la caisse", "pay": "Enregistrer le paiement", "refund": "Enregistrer le remboursement", "close": "Fermer la caisse", "search": "Rechercher"},
+    "common": {"amount": "Montant", "reference": "Référence", "date": "Date", "actor": "Opérateur", "location": "Site", "noLocation": "Caisse par défaut"},
+    "session": {"title": "Caisse courante", "open": "Ouverte", "closed": "Fermée", "selectLocation": "Site", "openingAmount": "Fonds de caisse", "opening": "Ouverture", "cashPayments": "Espèces encaissées", "cashRefunds": "Remboursements en espèces", "expected": "Espèces attendues", "transactions": "Transactions"},
+    "orders": {"title": "Commandes à encaisser", "placeholder": "Commande ou client", "empty": "Aucune commande correspondante n'a de solde dû.", "customer": "Client", "total": "Total", "paid": "Payé", "outstanding": "À payer", "method": "Mode", "notes": "Note"},
+    "payments": {"title": "Activité de la session", "empty": "Aucune transaction dans cette caisse.", "reason": "Motif du remboursement", "manualCard": "Résultat carte enregistré manuellement dans Phoenix ; aucun remboursement fournisseur ni donnée de carte n'est impliqué.", "phoenixRefund": "Le remboursement est enregistré uniquement dans Phoenix."},
+    "close": {"title": "Fermer et rapprocher", "description": "Comptez les espèces présentes. Phoenix conserve le montant attendu, compté et l'écart.", "counted": "Espèces comptées", "difference": "Écart", "notes": "Note de clôture"},
+    "history": {"title": "Historique des caisses", "empty": "Aucune session de caisse.", "expected": "Attendu", "counted": "Compté", "difference": "Écart"},
+    "methods": {"cash": "Espèces", "card": "Carte (manuel)", "bank_transfer": "Virement", "other": "Autre"},
+    "statuses": {"pending": "En attente", "confirmed": "Confirmé", "void": "Annulé", "refunded": "Remboursé"},
+    "errors": {"generic": "L'opération POS n'a pas pu aboutir.", "validation": "Vérifiez les valeurs saisies.", "alreadyOpen": "Une caisse est déjà ouverte pour ce site.", "payment": "Paiement refusé. Vérifiez le solde et la caisse courante.", "refund": "Remboursement refusé. Vérifiez le montant remboursable et la caisse.", "close": "La caisse n'a pas pu être fermée."}
   },
   "organizationSuspended": {"eyebrow": "Service du compte", "title": "Cette organisation est suspendue.", "description": "Les données opérationnelles restent protégées et inchangées. Contactez l'opérateur de la plateforme pour toute information ou réactivation.", "logout": "Se déconnecter"},
   "platform": {

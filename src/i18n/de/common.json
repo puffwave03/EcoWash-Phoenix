@@ -141,6 +141,7 @@
       "customers": "Kunden",
       "billing": "Abrechnung",
       "orders": "Aufträge",
+      "pos": "Kassensystem",
       "production": "Produktion",
       "quality": "Qualität",
       "delivery": "Abholung und Lieferung",
@@ -837,6 +838,7 @@
       "production": "Produktion",
       "quality": "Qualität und Verpackung",
       "delivery": "Lieferung",
+      "pos": "Kassensystem und Kasse",
       "supervision": "Aufsicht"
     },
     "empty": "Keine Mitarbeiter hier.",
@@ -1295,6 +1297,19 @@
     "segment": "Kundensegment", "basePrice": "Basispreis", "effective": "Wirksam", "fallback": "Basispreis", "noBasePrice": "Nicht verfügbar", "amount": "Segmentpreis", "location": "Standort", "allLocations": "Alle Standorte", "search": "Leistungen suchen", "searchPlaceholder": "Name, Code oder Kategorie",
     "validFrom": "Gültig ab", "validTo": "Gültig bis (optional)", "active": "Aktiv", "inactive": "Inaktiv", "add": "Preiszeitraum hinzufügen", "save": "Preis speichern", "saving": "Speichern...", "saved": "Segmentpreis gespeichert.",
     "overlap": "Dieser Zeitraum überschneidet sich mit einem anderen aktiven Preis.", "error": "Der Segmentpreis konnte nicht gespeichert werden.", "empty": "Für dieses Segment sind keine relevanten aktiven Dienste verfügbar.", "noSegments": "Erstellen Sie zuerst ein Kundensegment."
+  },
+  "pos": {
+    "title": "Kassensystem", "subtitle": "Auftragszahlungen erfassen und die aktuelle Kasse abstimmen, ohne sensible Kartendaten zu verarbeiten.", "success": "Vorgang abgeschlossen.",
+    "actions": {"open": "Kasse öffnen", "pay": "Zahlung erfassen", "refund": "Erstattung erfassen", "close": "Kasse schließen", "search": "Suchen"},
+    "common": {"amount": "Betrag", "reference": "Referenz", "date": "Datum", "actor": "Bediener", "location": "Standort", "noLocation": "Standardkasse"},
+    "session": {"title": "Aktuelle Kasse", "open": "Offen", "closed": "Geschlossen", "selectLocation": "Standort", "openingAmount": "Anfangsbestand", "opening": "Eröffnung", "cashPayments": "Barzahlungen", "cashRefunds": "Barerstattungen", "expected": "Erwarteter Bestand", "transactions": "Transaktionen"},
+    "orders": {"title": "Offene Aufträge", "placeholder": "Auftrag oder Kunde", "empty": "Keine passenden Aufträge mit offenem Saldo.", "customer": "Kunde", "total": "Gesamt", "paid": "Bezahlt", "outstanding": "Offen", "method": "Methode", "notes": "Notiz"},
+    "payments": {"title": "Sitzungsaktivität", "empty": "Noch keine Transaktionen in dieser Kasse.", "reason": "Erstattungsgrund", "manualCard": "Manuelles Kartenergebnis in Phoenix; keine Anbietererstattung oder Kartendaten werden behauptet.", "phoenixRefund": "Die Erstattung wird nur in Phoenix erfasst."},
+    "close": {"title": "Schließen und abstimmen", "description": "Zählen Sie den Bargeldbestand. Phoenix speichert Soll, Ist und Differenz.", "counted": "Gezähltes Bargeld", "difference": "Differenz", "notes": "Abschlussnotiz"},
+    "history": {"title": "Kassenhistorie", "empty": "Noch keine Kassensitzungen.", "expected": "Erwartet", "counted": "Gezählt", "difference": "Differenz"},
+    "methods": {"cash": "Bar", "card": "Karte (manuell)", "bank_transfer": "Überweisung", "other": "Andere"},
+    "statuses": {"pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Ungültig", "refunded": "Erstattet"},
+    "errors": {"generic": "Der POS-Vorgang konnte nicht abgeschlossen werden.", "validation": "Prüfen Sie die eingegebenen Werte.", "alreadyOpen": "Für diesen Standort ist bereits eine Kasse offen.", "payment": "Zahlung abgelehnt. Prüfen Sie Saldo und aktuelle Kasse.", "refund": "Erstattung abgelehnt. Prüfen Sie erstattungsfähigen Betrag und Kasse.", "close": "Die Kasse konnte nicht geschlossen werden."}
   },
   "organizationSuspended": {"eyebrow": "Kontodienst", "title": "Diese Organisation ist derzeit ausgesetzt.", "description": "Betriebsdaten bleiben geschützt und unverändert. Wenden Sie sich für Informationen oder Reaktivierung an den Plattformbetreiber.", "logout": "Abmelden"},
   "platform": {

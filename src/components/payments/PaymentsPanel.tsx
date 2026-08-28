@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { Link } from "@/i18n/navigation";
 import type {
   Payment,
   PaymentActionState,
@@ -45,32 +45,26 @@ type PaymentsPanelProps = {
     void: (paymentId: string, formData: FormData) => Promise<void>;
   };
   canManageCorrections: boolean;
+  canRecord: boolean;
   currency: string;
   locale: string;
   payments: Payment[];
+  posHref: string;
   summary: PaymentSummary;
   text: PaymentsPanelText;
 };
 
-const initialState: PaymentActionState = { fieldErrors: {}, formError: null };
-
-function fieldClass(hasError = false) {
-  return `min-h-11 w-full rounded-control border bg-white px-3 text-sm text-foreground outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20 ${
-    hasError ? "border-red-300" : "border-border"
-  }`;
-}
-
 export function PaymentsPanel({
   actions,
   canManageCorrections,
+  canRecord,
   currency,
   locale,
   payments,
+  posHref,
   summary,
   text,
 }: PaymentsPanelProps) {
-  const [state, formAction, isPending] = useActionState(actions.record, initialState);
-
   return (
     <Card className="space-y-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -85,33 +79,11 @@ export function PaymentsPanel({
         </dl>
       </div>
 
-      <form action={formAction} className="grid gap-3 md:grid-cols-[8rem_1fr_1fr_1fr_auto] md:items-end">
-        {state.formError ? <p className="md:col-span-5 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.amount}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.amount))} max={summary.balanceDue || undefined} min="0.01" name="amount" step="0.01" type="number" />
-        </label>
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.method}</span>
-          <select className={fieldClass(Boolean(state.fieldErrors.method))} name="method">
-            <option value="cash">{text.methods.cash}</option>
-            <option value="card">{text.methods.card}</option>
-            <option value="bank_transfer">{text.methods.bank_transfer}</option>
-            <option value="other">{text.methods.other}</option>
-          </select>
-        </label>
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.paidAt}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.paidAt))} name="paidAt" type="datetime-local" />
-        </label>
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.reference}</span>
-          <input className={fieldClass()} name="reference" />
-        </label>
-        <input name="notes" type="hidden" />
-        <input name="proofPhotoId" type="hidden" />
-        <Button disabled={isPending || summary.balanceDue <= 0} type="submit">{isPending ? text.saving : text.record}</Button>
-      </form>
+      {canRecord && summary.balanceDue > 0 ? (
+        <Link className="inline-flex" href={posHref} locale={locale}>
+          <Button>{text.record}</Button>
+        </Link>
+      ) : null}
 
       <div className="divide-y divide-border overflow-hidden rounded-card border border-border">
         {payments.length === 0 ? (

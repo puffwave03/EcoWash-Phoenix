@@ -5,6 +5,7 @@ export const OPERATIONAL_CAPABILITIES = [
   "production",
   "quality",
   "delivery",
+  "pos",
   "supervision",
 ] as const;
 
@@ -12,6 +13,10 @@ export type OperationalCapability = (typeof OPERATIONAL_CAPABILITIES)[number];
 
 export const STAFF_OPERATIONAL_CAPABILITIES = OPERATIONAL_CAPABILITIES.filter(
   (capability) => capability !== "supervision",
+);
+
+export const DEFAULT_STAFF_OPERATIONAL_CAPABILITIES = STAFF_OPERATIONAL_CAPABILITIES.filter(
+  (capability) => capability !== "pos",
 );
 
 export function isOperationalCapability(value: string): value is OperationalCapability {
