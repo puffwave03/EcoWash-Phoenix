@@ -2,11 +2,11 @@
 
 Status: Active
 
-Date: 2026-08-27
+Date: 2026-08-28
 
-Approximate closeout time: after PLATFORM-ADMIN-001 staging E2E validation
+Approximate closeout time: after POS-001 staging E2E validation
 
-Session checkpoint: isolated Phoenix SaaS Control Center completed, applied and validated across tenant administration, entitlements, suspension and audit
+Session checkpoint: vendor-neutral POS foundation completed, applied and validated across till sessions, canonical payments, refunds, reconciliation, roles, entitlements and tenant isolation
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,11 @@ Branch: `main`
 
 Approved baseline before this mission: `3ec653b DOCS-SESSION-001 docs: close billing session and record SaaS roadmap`
 
-Origin/main status: local `main` and `origin/main` include `a111ea8 PLATFORM-ADMIN-001 feat: add SaaS control center`.
+Origin/main status: local `main` and `origin/main` include `28b5e26 POS-001 feat: add vendor-neutral cash register and payments`.
 
 Working tree status before documentation closeout: application commit pushed; only the four approved status documents are being updated.
 
-Application closeout commit: `a111ea8 PLATFORM-ADMIN-001 feat: add SaaS control center`; working tree expected clean after documentation push.
+Application closeout commit: `28b5e26 POS-001 feat: add vendor-neutral cash register and payments`; working tree expected clean after documentation push.
 
 ---
 
@@ -72,6 +72,7 @@ Application closeout commit: `a111ea8 PLATFORM-ADMIN-001 feat: add SaaS control 
 - PRICING-SEGMENTS-001 — Customer Segment Price Overrides with Safe Fallback
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access
 - PLATFORM-ADMIN-001 — Phoenix SaaS Control Center
+- POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -129,6 +130,7 @@ Completed on EcoWash Staging:
 - PRICING-SEGMENTS-001 migration `20260827000100` is applied and aligned; segment override → organization/location base precedence, internal/Portal consistency, Owner/Manager access, Staff denial, tenant isolation and historical order/invoice preservation passed in rollback-only E2E.
 - ENTITLEMENTS-001 migration `20260827000200` is applied and aligned; Billing, segment-pricing management and full white-label gates, Owner/Manager read-only access, Staff restriction, self-upgrade prevention, expiry, tenant isolation, EcoWash bootstrap and rollback-only fixture cleanup passed.
 - PLATFORM-ADMIN-001 migration `20260827000300` is applied and aligned; isolated Platform Admin identity, cross-tenant summaries, entitlement administration, commercial labels, suspension/reactivation, audit, tenant/Portal denial and rollback-only cleanup passed.
+- POS-001 migrations `20260827000400` and corrective `20260828000100` are applied and aligned; six-identity rollback-only E2E passed for till lifecycle, cash/manual-card partial and mixed payments, refunds, reconciliation, idempotency, role/capability enforcement, entitlement disable/reenable and cross-tenant denial.
 
 Applied baseline migrations:
 
@@ -163,7 +165,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260827000300`; PLATFORM-ADMIN-001 is applied to staging.
+Supabase migration history is aligned through `20260828000100`; POS-001 and its safe `app_current_organization_id()` UUID aggregate correction are applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -237,10 +239,14 @@ Available now:
 - Platform Admin identity is stored outside tenant memberships; Owner, Manager, Staff and Customer cannot access platform routes, RPCs or audit data
 - suspension blocks tenant app, Server Actions, database API and Customer Portal while preserving data; reactivation restores normal role/entitlement access
 - platform entitlement, status and commercial-label mutations are audited; impersonation, tenant deletion, subscription collection and automated plan templates are not implemented
+- localized POS workspace at `/[locale]/app/pos`, entitlement-gated for Owner/Manager and Staff with explicit `pos` capability, with one open till per tenant, optional location scope and immutable close reconciliation
+- cash and provider-neutral manual-card payments reuse the canonical payment ledger; partial and mixed tender are represented by separate real payment rows, refunds link to their source payment, and tenant-scoped idempotency plus database row locks protect retries and concurrent close/payment operations
+- Customer Account and Billing continue to derive exact confirmed-minus-refunded values from the same canonical order-linked payment truth; staging E2E reconciled a EUR 50.00 order, EUR 20.00 cash plus EUR 30.00 card, a EUR 5.00 cash refund, expected cash EUR 115.00, counted cash EUR 114.00 and difference EUR -1.00
+- receipt-ready data and a provider adapter boundary exist, but real payment-terminal integrations, Stripe Terminal, Redsys, SumUp, hardware printing, barcode workflows, full accounting and formal e-invoicing are not implemented
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `POS-001`, followed by `PRINT-001` and `BARCODE-001`.
+Next action: `QA-PRODUCT-001 — Full Product Acceptance Test`, followed by `PRINT-001` and `BARCODE-001`.
 
 Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. Staging E2E used a transaction-only administrator and left no permanent assignment.
 
@@ -265,10 +271,11 @@ Final completed sequence for this session:
 6. `PRICING-SEGMENTS-001`
 7. `ENTITLEMENTS-001`
 8. `PLATFORM-ADMIN-001`
+9. `POS-001`
 
 Approved next product roadmap:
 
-1. `POS-001`
+1. `QA-PRODUCT-001` — Full Product Acceptance Test
 2. `PRINT-001`
 3. `BARCODE-001`
 4. `ACCOUNTING-001`
@@ -558,13 +565,14 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-PORTAL-002.1 is completed and Product Owner approved. Customer-created `EW-000005` validated customer → operational order → pickup integration, including server-side pricing, property isolation, atomicity and idempotency. Resume without reopening this foundation:
+POS-001 is completed, applied and validated without replacing the canonical payments ledger. Resume with `QA-PRODUCT-001` and do not reopen the POS foundation unless acceptance testing finds a reproducible defect:
 
-1. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
-2. Scope customer address flexibility and delivery preferences as separate future Portal increments.
-3. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
-4. Do not start PORTAL-002.2 until explicitly approved.
-5. Record only real functional or visual defects and keep one task per logical commit.
+1. Run full product acceptance across tenant roles, Customer Portal and Platform Admin before starting a new business module.
+2. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
+3. Scope customer address flexibility and delivery preferences as separate future Portal increments.
+4. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
+5. Do not start PORTAL-002.2 until explicitly approved.
+6. Record only real functional or visual defects and keep one task per logical commit.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -594,6 +602,7 @@ http://localhost:3000/it/app
 http://localhost:3000/it/app/customers
 http://localhost:3000/it/app/services
 http://localhost:3000/it/app/orders
+http://localhost:3000/it/app/pos
 http://localhost:3000/it/app/control
 http://localhost:3000/it/app/work
 http://localhost:3000/it/app/work/pickups

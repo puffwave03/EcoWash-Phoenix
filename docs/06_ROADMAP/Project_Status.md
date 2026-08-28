@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-27
+Last Updated: 2026-08-28
 
-Current Mission: PLATFORM-ADMIN-001 completed, applied and validated
+Current Mission: POS-001 completed, applied and validated
 
-Next Action: POS-001
+Next Action: QA-PRODUCT-001 — Full Product Acceptance Test
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PLATFORM-ADMIN-001 identity, tenant control, audit, suspension and cleanup validation passed |
-| Last completed implementation mission | PLATFORM-ADMIN-001 — Phoenix SaaS Control Center |
-| Approved baseline before current closeout | a111ea8 |
+| Current mission | POS-001 till, payment, refund, reconciliation, role, entitlement and tenant validation passed |
+| Last completed implementation mission | POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations |
+| Approved baseline before current closeout | 28b5e26 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -77,6 +77,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PRICING-SEGMENTS-001 status | Completed; applied through 20260827000100, exact internal/Portal/Billing E2E passed and pushed |
 | ENTITLEMENTS-001 status | Completed; applied through 20260827000200, feature/role/tenant/preservation E2E passed and pushed |
 | PLATFORM-ADMIN-001 status | Completed; applied through 20260827000300, cross-tenant control/suspension/audit E2E passed and pushed |
+| POS-001 status | Completed; applied through 20260828000100, exact financial/role/entitlement/tenant E2E passed and pushed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -92,8 +93,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260827000300; isolated Platform Admin controls tenant service and entitlements with audit and non-destructive suspension |
-| Commercial readiness | SaaS control plane foundation is validated; next is POS-001; subscription collection, Stripe, onboarding, formal e-invoicing and full accounting remain future work |
+| Backend/SaaS implementation | Supabase Staging aligned through 20260828000100; POS reuses canonical payments with tenant-safe till sessions, refunds, idempotency and immutable reconciliation |
+| Commercial readiness | POS foundation is validated; next is full product acceptance testing; real terminal integrations, printing, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -928,13 +929,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PLATFORM-ADMIN-001 validato e avviamo POS-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da POS-001 validato e avviamo QA-PRODUCT-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- PLATFORM-ADMIN-001 is completed in `a111ea8`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
+- POS-001 is completed in `28b5e26`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
 - Current release state is staging online and validated; production deployment still deferred
 - Production domain selection and purchase are still pending
 - PRODUCT-001 is completed and pushed
@@ -951,6 +952,7 @@ Exact starting state:
 - PRICING-SEGMENTS-001 migration `20260827000100` is aligned; precedence is segment override → organization/location base, Portal and internal orders share server resolution, historical order/invoice snapshots are preserved, and E2E fixtures rolled back completely
 - ENTITLEMENTS-001 migration `20260827000200` is aligned; stable feature access is separate from tenant roles, tenant Owner cannot self-upgrade, EcoWash retains live modules, and Billing/pricing/branding data remains non-destructive when disabled
 - PLATFORM-ADMIN-001 migration `20260827000300` is aligned; Platform Admin is outside tenant roles, cross-tenant mutations are audited, suspension is non-destructive and staging E2E left no persistent test identities
+- POS-001 migrations `20260827000400` and `20260828000100` are aligned; till lifecycle, partial/mixed payments, refunds, exact reconciliation, idempotency, Staff capability, entitlement denial and cross-tenant isolation passed with rollback-only fixtures
 - Anonymization and permanent customer deletion remain unavailable by policy; formal e-invoicing and full accounting are not implemented
 - Customer address flexibility and delivery preferences are known future Portal work; owner/manager Customers navigation clarity is a separate UX backlog item
 - Do not modify approved migrations unless a specific implementation task authorizes it
@@ -976,7 +978,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Start `POS-001`; keep PRINT-001 and BARCODE-001 next, and do not combine accounting, e-invoicing, onboarding or subscription collection into the same task.
+3. Start `QA-PRODUCT-001`; keep PRINT-001 and BARCODE-001 after the acceptance gate, and do not combine accounting, e-invoicing, onboarding or subscription collection into the same task.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

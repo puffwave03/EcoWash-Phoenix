@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-27
+Last Updated: 2026-08-28
 
-Current Mission: PLATFORM-ADMIN-001 completed, applied and validated
+Current Mission: POS-001 completed, applied and validated
 
-Next Action: POS-001
+Next Action: QA-PRODUCT-001 — Full Product Acceptance Test
 
 ---
 
@@ -258,6 +258,7 @@ Scope:
 - PRICING-SEGMENTS-001 — dated segment price overrides with centralized `segment → organization/location base` precedence, internal/Portal consistency, server-enforced snapshots and historical Billing preservation, completed and E2E validated
 - ENTITLEMENTS-001 — platform entitlement access separated from tenant roles, with Billing, segment-pricing management and advanced branding gates, completed and E2E validated
 - PLATFORM-ADMIN-001 — SaaS operator control plane separated from Tenant Owner, with cross-tenant commercial controls and no impersonation or deletion, completed and E2E validated
+- POS-001 — entitlement-gated till sessions, canonical cash/manual-card partial and mixed payments, linked refunds, receipt-ready data and immutable reconciliation, completed and E2E validated
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -273,6 +274,7 @@ Current staging validation checkpoint:
 - PRICING-SEGMENTS-001 is applied through migration `20260827000100`; Owner/Manager administration, Staff denial, tenant isolation, exact base/override/fallback totals and rollback-only fixture cleanup passed. Future precedence is reserved as `customer-specific → segment → organization`, without implementing customer-specific pricing.
 - ENTITLEMENTS-001 is applied through migration `20260827000200`; EcoWash retained all already-live modules, future tenants receive no implicit premium access, and disabled modules preserve invoice history, configured overrides and stored branding.
 - PLATFORM-ADMIN-001 is applied through migration `20260827000300`; suspension enforcement, tenant/Portal denial, entitlement preservation, audit and reactivation passed with transaction-only fixtures and no permanent staging admin assignment.
+- POS-001 is applied through migrations `20260827000400` and `20260828000100`; six identities validated Owner/Manager/Staff capability boundaries, entitlement disable/reenable, tenant isolation, idempotency, concurrent close/payment locking and exact EUR 50.00 order/payment/refund/reconciliation values with complete rollback cleanup.
 
 PILOT-001 planning scope:
 
@@ -356,9 +358,9 @@ Exit criteria:
 
 Customer portal is now part of M1 pilot scoping. Do not start online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
 
-### Approved Product Sequence After PLATFORM-ADMIN-001
+### Approved Product Sequence After POS-001
 
-1. `POS-001`
+1. `QA-PRODUCT-001` — Full Product Acceptance Test
 2. `PRINT-001`
 3. `BARCODE-001`
 4. `ACCOUNTING-001`
@@ -377,5 +379,6 @@ Product invariants across this sequence:
 - potential Base, Premium, Pro and add-on packaging resolves to entitlements; feature logic never branches directly on plan names
 - Platform Admin is separate from tenant roles; no impersonation, hard tenant deletion, subscription collection or automatic plan templates exist yet
 - future accounting, POS and other optional modules may reuse the entitlement boundary; Billing, segment pricing management and advanced branding already do
+- POS is provider-neutral and receipt-ready, not a claim of real TPV/terminal, card-acquirer, fiscal printer, barcode, full-accounting or e-invoice integration
 - `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH` remains known visual work: stronger media, richer service visuals, premium timeline, refined financial presentation and continued authenticated-app polish
 - no full accounting or e-invoice compliance is claimed before their dedicated missions
