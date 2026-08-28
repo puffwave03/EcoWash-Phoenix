@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-28
+Last Updated: 2026-08-29
 
-Current Mission: MANUAL-QA-FIX-001 completed
+Current Mission: PAYMENTS-ONLINE-001 provider foundation completed
 
-Next Action: Product Owner decision — PAYMENTS-ONLINE-001 or PRINT-001
+Next Action: PRINT-001
 
 ---
 
@@ -149,6 +149,7 @@ Implemented and smoke-validated:
 - centralized tenant entitlement foundation with stable feature keys, optional limits/validity windows and tenant-safe read-only resolution
 - Billing, segment-pricing management and advanced branding gated without destroying existing commercial or customer-facing data
 - isolated Phoenix Platform administration for bounded tenant listing/detail, entitlement control, commercial labels, suspension/reactivation and audited platform changes
+- provider-neutral customer online payment attempts, hosted-checkout boundary, signed-webhook settlement, canonical ledger integration and `payments.online` entitlement; disabled until a real provider is configured
 - Daily Close dashboard for owner/manager operational review
 - Operational Alerts dashboard for owner/manager issue triage
 - Supabase RLS, Storage, grant, RPC and browser-secret audit completed through SEC-001
@@ -168,7 +169,7 @@ Missing for commercial readiness:
 - global search
 - structured notes and issues
 - management reports and CSV exports
-- online payments, formal e-invoicing/advanced fiscal PDFs and notifications
+- real online payment provider configuration/sandbox acceptance, formal e-invoicing/advanced fiscal PDFs and notifications
 
 ### Priority Classes
 
@@ -261,6 +262,7 @@ Scope:
 - POS-001 — entitlement-gated till sessions, canonical cash/manual-card partial and mixed payments, linked refunds, receipt-ready data and immutable reconciliation, completed and E2E validated
 - QA-PRODUCT-001 — full Platform/Tenant/Portal integration, financial consistency, entitlement, suspension and Tenant A/B acceptance, PASS WITH NON-BLOCKING ISSUES
 - MANUAL-QA-FIX-001 — authenticated Portal support, single POS navigation entry and active till recovery, completed with exact rollback-only financial validation
+- PAYMENTS-ONLINE-001 — hosted-checkout and signed-confirmation foundation over canonical payments, completed and contract-E2E validated; real provider configuration required
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -278,6 +280,7 @@ Current staging validation checkpoint:
 - PLATFORM-ADMIN-001 is applied through migration `20260827000300`; suspension enforcement, tenant/Portal denial, entitlement preservation, audit and reactivation passed with transaction-only fixtures and no permanent staging admin assignment.
 - POS-001 is applied through migrations `20260827000400` and `20260828000100`; six identities validated Owner/Manager/Staff capability boundaries, entitlement disable/reenable, tenant isolation, idempotency, concurrent close/payment locking and exact EUR 50.00 order/payment/refund/reconciliation values with complete rollback cleanup.
 - QA-PRODUCT-001 passed 143/143 focused tests and a nine-identity rollback-only master scenario with exact EUR 15.00 order/POS/Customer Account/Billing/Portal consistency. Authenticated visual desktop/mobile review remains a non-blocking Product Owner follow-up; the reported external-PC loading issue was not reproduced by current staging HTTP checks.
+- PAYMENTS-ONLINE-001 is applied through `20260828000200` plus corrective `20260829000100`; 26/26 focused tests and POS/Billing/Customer Account/Entitlements/Platform regressions passed. Transactional staging proof covered EUR 15.00 exact settlement, replay idempotency, failure, cross-customer denial and concurrent POS reconciliation with zero persistent fixtures. No real provider credentials exist, so status is `PROVIDER CONFIGURATION REQUIRED`.
 
 PILOT-001 planning scope:
 
@@ -359,18 +362,13 @@ Exit criteria:
 
 ### Deferred Until After M3
 
-Customer portal is now part of M1 pilot scoping. Online payments remain separate future work and may move ahead only through the explicit Product Owner decision recorded below. Do not combine them with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
+Customer portal is now part of M1 pilot scoping. The online-payment core is implemented but real provider onboarding/configuration remains separate future work. Do not combine it with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
 
-### Product Decision After MANUAL-QA-FIX-001
+### Product Decision After PAYMENTS-ONLINE-001
 
-The Product Owner will choose the next task between:
+The provider-neutral core is complete and safely disabled. No Stripe, Redsys, SumUp or other provider credentials/configuration were present, so real payment readiness remains blocked on a separately approved official adapter and sandbox validation. Phoenix never stores raw card data and never confirms from a browser redirect.
 
-1. `PAYMENTS-ONLINE-001 — Customer-to-laundry online payments`
-2. `PRINT-001`
-
-`PAYMENTS-ONLINE-001` must be designed separately with a provider-neutral core, Portal “Pay now”, automatic confirmed-payment integration with Billing and Customer Account, selection of the first real provider in that task, and no card-sensitive storage in Phoenix.
-
-If `PRINT-001` is selected first, the remaining approved sequence continues:
+The approved sequence continues:
 
 1. `PRINT-001`
 2. `BARCODE-001`

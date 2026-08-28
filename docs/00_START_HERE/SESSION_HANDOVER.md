@@ -2,11 +2,11 @@
 
 Status: Active
 
-Date: 2026-08-28
+Date: 2026-08-29
 
-Approximate closeout time: after MANUAL-QA-FIX-001 manual acceptance fixes
+Approximate closeout time: after PAYMENTS-ONLINE-001 provider foundation
 
-Session checkpoint: MANUAL-QA-FIX-001 completed; Portal support stays authenticated, POS navigation is unique and the active till read model agrees with the protected mutation path
+Session checkpoint: PAYMENTS-ONLINE-001 core completed; real provider credentials/configuration are still required before live or sandbox payment readiness
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,11 @@ Branch: `main`
 
 Approved baseline before this mission: `af30d70 DOCS-AUTH-CONTEXT-001 docs: record platform and tenant context switching`
 
-Origin/main status: local `main` and `origin/main` include `b7ac1e5 MANUAL-QA-FIX-001 fix: resolve portal navigation and POS usability defects`.
+Origin/main status: local `main` and `origin/main` include `a0f88c5 PAYMENTS-ONLINE-001 feat: add online payment provider foundation`.
 
 Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `b7ac1e5 MANUAL-QA-FIX-001 fix: resolve portal navigation and POS usability defects`; working tree expected clean after documentation push.
+Application closeout commit: `a0f88c5 PAYMENTS-ONLINE-001 feat: add online payment provider foundation`; working tree expected clean after documentation push.
 
 ---
 
@@ -77,6 +77,7 @@ Application closeout commit: `b7ac1e5 MANUAL-QA-FIX-001 fix: resolve portal navi
 - POST-QA-PRODUCT-001 — Customer Account contrast, real EcoWash segment setup and verified Product Owner Platform Admin bootstrap
 - AUTH-CONTEXT-001 — Platform Admin / Tenant Owner login chooser and shell-isolated context switching
 - MANUAL-QA-FIX-001 — Authenticated Portal support, unique POS navigation and active till recovery
+- PAYMENTS-ONLINE-001 — Provider-neutral customer online payment foundation; provider configuration required
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -135,6 +136,7 @@ Completed on EcoWash Staging:
 - ENTITLEMENTS-001 migration `20260827000200` is applied and aligned; Billing, segment-pricing management and full white-label gates, Owner/Manager read-only access, Staff restriction, self-upgrade prevention, expiry, tenant isolation, EcoWash bootstrap and rollback-only fixture cleanup passed.
 - PLATFORM-ADMIN-001 migration `20260827000300` is applied and aligned; isolated Platform Admin identity, cross-tenant summaries, entitlement administration, commercial labels, suspension/reactivation, audit, tenant/Portal denial and rollback-only cleanup passed.
 - POS-001 migrations `20260827000400` and corrective `20260828000100` are applied and aligned; six-identity rollback-only E2E passed for till lifecycle, cash/manual-card partial and mixed payments, refunds, reconciliation, idempotency, role/capability enforcement, entitlement disable/reenable and cross-tenant denial.
+- PAYMENTS-ONLINE-001 migrations `20260828000200` and corrective `20260829000100` are applied and aligned. The Portal CTA, checkout RPC and webhook settlement are gated by `payments.online` plus non-secret tenant configuration; no provider is configured and EcoWash remains OFF. Rollback-only contract E2E proved EUR 15.00 total/paid/outstanding as 15.00/15.00/0.00 with one canonical row after replay, failure with zero canonical rows, cross-customer denial and concurrent EUR 20.00 POS settlement with the external row pending `reconciliation_required`. All fixtures rolled back.
 - QA-PRODUCT-001 master staging acceptance passed across nine identities/roles with temporary Tenant B, exact EUR 15.00 financial reconciliation, entitlement and suspension cycles, Tenant A/B isolation and complete rollback cleanup. Interactive authenticated visual QA was unavailable and remains a non-blocking Product Owner check.
 - POST-QA-PRODUCT-001 configured four active, Portal-visible EcoWash segments using only existing categories/services and base-price fallback: Case Vacanze / Property Manager (35 explicit services, 4 categories), Hotel (9, 3), Ristorazione (3, 1) and Privati (18, 5). No segment price override was created.
 - The sole verified active EcoWash Owner (`f1237796-aa9d-4069-aca2-7a926e0b241e`) was bootstrapped as an active permanent Platform Admin through `platform_admins`; the tenant Owner membership remains active and no other tenant identity gained Platform access.
@@ -176,7 +178,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260828000100`; POS-001 and its safe `app_current_organization_id()` UUID aggregate correction are applied to staging.
+Supabase migration history is aligned through `20260829000100`; PAYMENTS-ONLINE-001 and its explicit canonical-payment enum cast correction are applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -257,7 +259,7 @@ Available now:
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next roadmap decision: `PAYMENTS-ONLINE-001` versus `PRINT-001`, to be confirmed by the Product Owner. Neither task has started.
+Next roadmap task: `PRINT-001`. PAYMENTS-ONLINE-001 core is complete but remains `PROVIDER CONFIGURATION REQUIRED`; no real sandbox or live provider is claimed.
 
 Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. The same Auth user may also have normal tenant memberships, but the two access models remain additive and independently guarded.
 
@@ -286,11 +288,12 @@ Final completed sequence for this session:
 10. `QA-PRODUCT-001`
 11. `AUTH-CONTEXT-001`
 12. `MANUAL-QA-FIX-001`
+13. `PAYMENTS-ONLINE-001` — provider-neutral core; provider configuration required
 
 Approved next product roadmap:
 
-1. Product Owner decision: `PAYMENTS-ONLINE-001` or `PRINT-001`
-2. `BARCODE-001` remains after the print path if `PRINT-001` is selected first
+1. `PRINT-001`
+2. `BARCODE-001`
 3. `ACCOUNTING-001`
 4. `E-INVOICE-001`
 5. `ACCOUNTING-PRO-001` — optional
@@ -578,7 +581,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-MANUAL-QA-FIX-001 completed after Product Owner acceptance found four concrete issues. Resume by choosing `PAYMENTS-ONLINE-001` or `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
+PAYMENTS-ONLINE-001 provider-neutral core completed and is safely disabled pending a real provider. Resume with `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
 
 1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
 2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.
@@ -588,7 +591,7 @@ MANUAL-QA-FIX-001 completed after Product Owner acceptance found four concrete i
 6. Do not start PORTAL-002.2 until explicitly approved.
 7. Record only real functional or visual defects and keep one task per logical commit.
 8. Preserve the order discount as an absolute monetary amount; it is not a stored fraction or percentage.
-9. Keep `PAYMENTS-ONLINE-001` provider-neutral, with Portal “Pay now”, confirmed-payment automation and no card-sensitive Phoenix storage; it remains design/implementation work for a separate task.
+9. Do not enable `payments.online` until an official provider adapter, tenant merchant configuration and real sandbox credentials pass signed-webhook E2E. Phoenix stores no raw card data and never trusts a redirect as confirmation.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

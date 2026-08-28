@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-28
+Last Updated: 2026-08-29
 
-Current Mission: MANUAL-QA-FIX-001 completed
+Current Mission: PAYMENTS-ONLINE-001 provider foundation completed
 
-Next Action: Product Owner decision — PAYMENTS-ONLINE-001 or PRINT-001
+Next Action: PRINT-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | MANUAL-QA-FIX-001 manual acceptance defects completed; next roadmap choice is PAYMENTS-ONLINE-001 versus PRINT-001 |
-| Last completed implementation mission | MANUAL-QA-FIX-001 — Portal support, POS navigation and active-session recovery |
-| Approved baseline before current closeout | b7ac1e5 |
+| Current mission | PAYMENTS-ONLINE-001 provider-neutral core completed; real provider configuration required |
+| Last completed implementation mission | PAYMENTS-ONLINE-001 — hosted checkout, signed confirmation and canonical payment settlement foundation |
+| Approved baseline before current closeout | a0f88c5 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -82,6 +82,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | POST-QA-PRODUCT-001 status | Completed; contrast fix pushed, four real EcoWash segments active/Portal-visible, verified Product Owner bootstrapped as Platform Admin, focused staging E2E passed |
 | AUTH-CONTEXT-001 status | Completed; dual-access chooser, authoritative direct routes, two-way shell switch, six-identity authenticated E2E and redirect-loop checks passed |
 | MANUAL-QA-FIX-001 status | Completed; authenticated Portal support, single capability/entitlement-gated POS nav item, tenant-safe active-session embed and exact EUR 10.00 rollback-only financial E2E passed; discount confirmed monetary |
+| PAYMENTS-ONLINE-001 status | Core completed and pushed; applied through corrective 20260829000100, 26/26 focused tests and rollback-only exact/idempotency/failure/concurrency/isolation E2E passed; PROVIDER CONFIGURATION REQUIRED |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -97,8 +98,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260828000100; POS reuses canonical payments with tenant-safe till sessions, refunds, idempotency and immutable reconciliation |
-| Commercial readiness | Full functional/security acceptance, context switching and verified manual QA fixes passed. Product Owner now chooses PAYMENTS-ONLINE-001 or PRINT-001. Authenticated visual recheck remains with the Product Owner; real terminals, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
+| Backend/SaaS implementation | Supabase Staging aligned through 20260829000100; online attempts settle exactly once into canonical payments after trusted provider verification, with reconciliation-required handling for changed balances |
+| Commercial readiness | Online-payment core is production-safe and OFF by default, but no real provider/sandbox configuration exists. Next is PRINT-001. Real online payments, terminals, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -933,13 +934,14 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da MANUAL-QA-FIX-001 completato e decidiamo tra PAYMENTS-ONLINE-001 e PRINT-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da PAYMENTS-ONLINE-001 core completato e avviamo PRINT-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
 - MANUAL-QA-FIX-001 is completed in `b7ac1e5`; Portal support stays under `/[locale]/portal/support`, POS appears once, and the active till query names `pos_sessions_location_same_org`
+- PAYMENTS-ONLINE-001 application foundation is completed in `a0f88c5`; migrations `20260828000200` and `20260829000100` are aligned, EcoWash remains OFF/unconfigured, and real-provider status is `PROVIDER CONFIGURATION REQUIRED`
 - The order discount is a monetary `discount_amount`, not a percentage; no historical financial data was changed
 - Rollback-only staging E2E proved EUR 10.00 outstanding → EUR 10.00 cash payment → EUR 0.00 outstanding, with Customer Account, Billing and expected cash delta EUR 10.00; role, capability, entitlement and tenant isolation passed with zero QA fixtures
 - POS-001 is completed in `28b5e26`, applied, validated and pushed; local `main` and `origin/main` are expected synchronized
@@ -987,7 +989,7 @@ First checks:
    - `docs/03_DATABASE/Database_Design.md`
    - `docs/06_ROADMAP/Project_Status.md`
    - `docs/06_ROADMAP/Milestones.md`
-3. Ask the Product Owner to choose `PAYMENTS-ONLINE-001` or `PRINT-001`; start only the selected task and keep provider, printing, accounting, e-invoicing, onboarding and subscription scope separate.
+3. Start only `PRINT-001`; keep real provider configuration, barcode, accounting, e-invoicing, onboarding and subscription scope separate.
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.

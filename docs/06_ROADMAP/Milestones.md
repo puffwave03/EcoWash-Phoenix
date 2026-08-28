@@ -4,9 +4,9 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-28
+Last Updated: 2026-08-29
 
-Current Mission: QA-PRODUCT-001 accepted with non-blocking visual follow-up
+Current Mission: PAYMENTS-ONLINE-001 provider foundation completed; provider configuration required
 
 Next Action: PRINT-001
 
@@ -288,6 +288,7 @@ Current staging validation checkpoint:
 - ENTITLEMENTS-001 preserves invoice history, segment overrides and stored branding when access is disabled; EcoWash is bootstrapped only for live modules and future tenants receive no implicit premium access.
 - PLATFORM-ADMIN-001 preserves tenant data through feature changes and suspension; EcoWash remains active/entitled and the controlled staging administrator was rolled back.
 - POS-001 migrations `20260827000400` and `20260828000100` are aligned; exact EUR 50.00 order, EUR 20.00 cash, EUR 30.00 card, EUR 5.00 refund and EUR -1.00 close difference passed across six identities, entitlement changes and tenant isolation with rollback-only cleanup.
+- PAYMENTS-ONLINE-001 migrations `20260828000200` and corrective `20260829000100` are aligned. Hosted checkout and signed-webhook contracts, exact EUR 15.00 canonical settlement, replay idempotency, failure, cross-customer denial and concurrent POS reconciliation passed with rollback-only cleanup. No real provider is configured; EcoWash remains OFF.
 - QA-PRODUCT-001 reconciled a controlled EUR 15.00 order across POS, Customer Account, Billing and Portal; nine identities/roles, Tenant A/B isolation, entitlement preservation and suspension/reactivation passed with complete rollback cleanup. Visual desktop/mobile acceptance remains non-blocking and separate.
 
 Approved product sequence after this milestone checkpoint:
@@ -301,7 +302,7 @@ Approved product sequence after this milestone checkpoint:
 7. future subscription/commercial billing
 8. `PLATFORM-SUPPORT-001` — optional
 
-Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Real TPV/terminal integrations, printing, barcode, full accounting, e-invoicing, subscription payments, Stripe, impersonation, tenant deletion and automated plan templates are not implemented.
+Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Real online-provider/TPV integrations, printing, barcode, full accounting, e-invoicing, subscription payments, impersonation, tenant deletion and automated plan templates are not implemented.
 
 PILOT-001 planning scope:
 
