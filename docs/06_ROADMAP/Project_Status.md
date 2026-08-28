@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-28
 
-Current Mission: POST-QA-PRODUCT-001 completed
+Current Mission: AUTH-CONTEXT-001 completed
 
 Next Action: PRINT-001
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | POST-QA-PRODUCT-001 follow-up completed; PRINT-001 remains next |
-| Last completed implementation mission | POST-QA-PRODUCT-001 — UI polish, EcoWash segment setup and Product Owner Platform access |
-| Approved baseline before current closeout | 39b12e8 |
+| Current mission | AUTH-CONTEXT-001 context switching completed; PRINT-001 remains next |
+| Last completed implementation mission | AUTH-CONTEXT-001 — Platform Admin / Tenant Owner context switching |
+| Approved baseline before current closeout | 5cfc80f |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -80,6 +80,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | POS-001 status | Completed; applied through 20260828000100, exact financial/role/entitlement/tenant E2E passed and pushed |
 | QA-PRODUCT-001 status | PASS WITH NON-BLOCKING ISSUES; 143/143 tests and rollback-only master staging acceptance passed; authenticated visual review unavailable |
 | POST-QA-PRODUCT-001 status | Completed; contrast fix pushed, four real EcoWash segments active/Portal-visible, verified Product Owner bootstrapped as Platform Admin, focused staging E2E passed |
+| AUTH-CONTEXT-001 status | Completed; dual-access chooser, authoritative direct routes, two-way shell switch, six-identity authenticated E2E and redirect-loop checks passed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -96,7 +97,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging aligned through 20260828000100; POS reuses canonical payments with tenant-safe till sessions, refunds, idempotency and immutable reconciliation |
-| Commercial readiness | Full functional/security acceptance and post-QA setup passed; next is PRINT-001. General authenticated visual review remains a non-blocking Product Owner check; real terminals, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
+| Commercial readiness | Full functional/security acceptance, post-QA setup and dual-context access passed; next is PRINT-001. General authenticated visual review remains a non-blocking Product Owner check; real terminals, barcode, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 

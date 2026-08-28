@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-28
 
-Approximate closeout time: after POST-QA-PRODUCT-001 follow-up
+Approximate closeout time: after AUTH-CONTEXT-001 context switching
 
-Session checkpoint: POST-QA-PRODUCT-001 completed; Customer Account history contrast was corrected, four real EcoWash quick catalogs were configured, and the verified Product Owner received permanent Platform Admin access
+Session checkpoint: AUTH-CONTEXT-001 completed; one Auth account can hold additive Platform Admin and tenant membership access, choose its post-login context and switch shells without changing authorization
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `fa52ddf QA-PRODUCT-001 docs: record full product acceptance`
+Approved baseline before this mission: `e662754 DOCS-POST-QA-001 docs: record EcoWash segment and Platform Admin setup`
 
-Origin/main status: local `main` and `origin/main` include `39b12e8 POST-QA-001 fix: polish UI and enable EcoWash segment workflows`.
+Origin/main status: local `main` and `origin/main` include `5cfc80f AUTH-CONTEXT-001 fix: support platform and tenant context switching`.
 
-Working tree status before documentation closeout: application commit pushed; only the minimum handover, status and QA follow-up documents are being updated.
+Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `39b12e8 POST-QA-001 fix: polish UI and enable EcoWash segment workflows`; working tree expected clean after documentation push.
+Application closeout commit: `5cfc80f AUTH-CONTEXT-001 fix: support platform and tenant context switching`; working tree expected clean after documentation push.
 
 ---
 
@@ -75,6 +75,7 @@ Application closeout commit: `39b12e8 POST-QA-001 fix: polish UI and enable EcoW
 - POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations
 - QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES
 - POST-QA-PRODUCT-001 — Customer Account contrast, real EcoWash segment setup and verified Product Owner Platform Admin bootstrap
+- AUTH-CONTEXT-001 — Platform Admin / Tenant Owner login chooser and shell-isolated context switching
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -137,6 +138,8 @@ Completed on EcoWash Staging:
 - POST-QA-PRODUCT-001 configured four active, Portal-visible EcoWash segments using only existing categories/services and base-price fallback: Case Vacanze / Property Manager (35 explicit services, 4 categories), Hotel (9, 3), Ristorazione (3, 1) and Privati (18, 5). No segment price override was created.
 - The sole verified active EcoWash Owner (`f1237796-aa9d-4069-aca2-7a926e0b241e`) was bootstrapped as an active permanent Platform Admin through `platform_admins`; the tenant Owner membership remains active and no other tenant identity gained Platform access.
 - Rollback-only staging checks passed for Owner/Manager selector visibility, Manager assignment/removal, Staff and Customer restriction, tenant isolation, Platform cross-tenant reads and Portal personalization. The Portal returned 65 personalized shortcuts plus 138 remaining services, with 203 priced services total and no missing price.
+- AUTH-CONTEXT-001 preserves direct context routes: `/[locale]/platform` is always guarded Platform context and `/[locale]/app` is always guarded tenant context. Dual-access login opens `/[locale]/auth/context`; each shell exposes only a compact link to the other authorized context.
+- Authenticated HTTP E2E passed for Platform-only, Owner-only, dual Platform Admin + Owner, Manager, Staff and Customer identities, including both direct routes, chooser, two-way switch, Italian locale preservation and redirect-loop prevention. Temporary Platform/Owner fixtures were removed and the real Product Owner retained both permanent access records.
 
 Applied baseline migrations:
 
@@ -254,14 +257,14 @@ Available now:
 
 Next action: `PRINT-001`, followed by `BARCODE-001`.
 
-Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. Staging E2E used a transaction-only administrator and left no permanent assignment.
+Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. The same Auth user may also have normal tenant memberships, but the two access models remain additive and independently guarded.
 
 ```sql
 insert into public.platform_admins (user_id, created_by)
 values ('<verified-auth-user-uuid>'::uuid, null);
 ```
 
-Commercial direction may use Base, Premium, Pro and add-ons, but packaging is intentionally not hardcoded: plan templates must resolve to stable entitlements. Tenant Owner is not Platform Admin and cannot grant paid features.
+Commercial direction may use Base, Premium, Pro and add-ons, but packaging is intentionally not hardcoded: plan templates must resolve to stable entitlements. Tenant Owner access alone is not Platform Admin access and cannot grant paid features.
 
 Lifecycle policy delivered by CUSTOMER-LIFECYCLE-001: `ACTIVE ↔ INACTIVE` is implemented with historical retention, Portal/order enforcement and Owner/Manager authorization. `ANONYMIZED where appropriate → HARD DELETE only when legally and technically safe` remains policy/readiness only; no anonymization or permanent deletion action exists.
 
@@ -296,7 +299,7 @@ Permanent product requirements:
 - premium UI is mandatory, not optional polish; Calm Operations and mobile-first usability remain the product language
 - Customer Portal must continue toward consumer-grade premium UX, including stronger hero/media, richer category/service visuals, a premium order timeline and refined financial/Billing presentation
 - white-label architecture remains required; EcoWash is the first tenant/reference, not hardcoded product identity
-- Owner, Manager, Staff and Customer remain tenant roles; future Platform Admin is separate from tenant Owner
+- Owner, Manager, Staff and Customer remain tenant roles; Platform Admin is separate from tenant Owner even when one Auth user holds both access records
 - future accounting, POS and other optional modules may be gated by the same entitlement foundation
 - no full accounting or e-invoice compliance is claimed yet
 - known future visual stream: `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH`, including continued authenticated-app refinement
