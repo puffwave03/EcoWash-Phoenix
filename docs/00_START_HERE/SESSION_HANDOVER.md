@@ -4,21 +4,21 @@ Status: Active
 
 Date: 2026-08-28
 
-Approximate closeout time: after AUTH-CONTEXT-001 context switching
+Approximate closeout time: after MANUAL-QA-FIX-001 manual acceptance fixes
 
-Session checkpoint: AUTH-CONTEXT-001 completed; one Auth account can hold additive Platform Admin and tenant membership access, choose its post-login context and switch shells without changing authorization
+Session checkpoint: MANUAL-QA-FIX-001 completed; Portal support stays authenticated, POS navigation is unique and the active till read model agrees with the protected mutation path
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `e662754 DOCS-POST-QA-001 docs: record EcoWash segment and Platform Admin setup`
+Approved baseline before this mission: `af30d70 DOCS-AUTH-CONTEXT-001 docs: record platform and tenant context switching`
 
-Origin/main status: local `main` and `origin/main` include `5cfc80f AUTH-CONTEXT-001 fix: support platform and tenant context switching`.
+Origin/main status: local `main` and `origin/main` include `b7ac1e5 MANUAL-QA-FIX-001 fix: resolve portal navigation and POS usability defects`.
 
 Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `5cfc80f AUTH-CONTEXT-001 fix: support platform and tenant context switching`; working tree expected clean after documentation push.
+Application closeout commit: `b7ac1e5 MANUAL-QA-FIX-001 fix: resolve portal navigation and POS usability defects`; working tree expected clean after documentation push.
 
 ---
 
@@ -76,6 +76,7 @@ Application closeout commit: `5cfc80f AUTH-CONTEXT-001 fix: support platform and
 - QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES
 - POST-QA-PRODUCT-001 — Customer Account contrast, real EcoWash segment setup and verified Product Owner Platform Admin bootstrap
 - AUTH-CONTEXT-001 — Platform Admin / Tenant Owner login chooser and shell-isolated context switching
+- MANUAL-QA-FIX-001 — Authenticated Portal support, unique POS navigation and active till recovery
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -140,6 +141,7 @@ Completed on EcoWash Staging:
 - Rollback-only staging checks passed for Owner/Manager selector visibility, Manager assignment/removal, Staff and Customer restriction, tenant isolation, Platform cross-tenant reads and Portal personalization. The Portal returned 65 personalized shortcuts plus 138 remaining services, with 203 priced services total and no missing price.
 - AUTH-CONTEXT-001 preserves direct context routes: `/[locale]/platform` is always guarded Platform context and `/[locale]/app` is always guarded tenant context. Dual-access login opens `/[locale]/auth/context`; each shell exposes only a compact link to the other authorized context.
 - Authenticated HTTP E2E passed for Platform-only, Owner-only, dual Platform Admin + Owner, Manager, Staff and Customer identities, including both direct routes, chooser, two-way switch, Italian locale preservation and redirect-loop prevention. Temporary Platform/Owner fixtures were removed and the real Product Owner retained both permanent access records.
+- MANUAL-QA-FIX-001 traced the false Closed POS state to an ambiguous PostgREST `pos_sessions → locations` embed (`PGRST201`). The query now names the composite tenant-safe FK and throws on read failure instead of degrading to Closed. A rollback-only EUR 10.00 cash payment reconciled order, Customer Account, Billing and expected cash; close/reopen, Owner/Manager, Staff capability/anti-hijack, entitlement OFF/ON and tenant isolation passed. POS was restored ON with its original source, the real till remains open and no QA session/payment/capability fixture remains.
 
 Applied baseline migrations:
 
@@ -255,7 +257,7 @@ Available now:
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next action: `PRINT-001`, followed by `BARCODE-001`.
+Next roadmap decision: `PAYMENTS-ONLINE-001` versus `PRINT-001`, to be confirmed by the Product Owner. Neither task has started.
 
 Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. The same Auth user may also have normal tenant memberships, but the two access models remain additive and independently guarded.
 
@@ -282,11 +284,13 @@ Final completed sequence for this session:
 8. `PLATFORM-ADMIN-001`
 9. `POS-001`
 10. `QA-PRODUCT-001`
+11. `AUTH-CONTEXT-001`
+12. `MANUAL-QA-FIX-001`
 
 Approved next product roadmap:
 
-1. `PRINT-001`
-2. `BARCODE-001`
+1. Product Owner decision: `PAYMENTS-ONLINE-001` or `PRINT-001`
+2. `BARCODE-001` remains after the print path if `PRINT-001` is selected first
 3. `ACCOUNTING-001`
 4. `E-INVOICE-001`
 5. `ACCOUNTING-PRO-001` — optional
@@ -574,7 +578,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-QA-PRODUCT-001 completed as PASS WITH NON-BLOCKING ISSUES. Resume with `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
+MANUAL-QA-FIX-001 completed after Product Owner acceptance found four concrete issues. Resume by choosing `PAYMENTS-ONLINE-001` or `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
 
 1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
 2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.
@@ -583,6 +587,8 @@ QA-PRODUCT-001 completed as PASS WITH NON-BLOCKING ISSUES. Resume with `PRINT-00
 5. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
 6. Do not start PORTAL-002.2 until explicitly approved.
 7. Record only real functional or visual defects and keep one task per logical commit.
+8. Preserve the order discount as an absolute monetary amount; it is not a stored fraction or percentage.
+9. Keep `PAYMENTS-ONLINE-001` provider-neutral, with Portal “Pay now”, confirmed-payment automation and no card-sensitive Phoenix storage; it remains design/implementation work for a separate task.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 
@@ -623,4 +629,5 @@ http://localhost:3000/it/app/staff
 http://localhost:3000/it/app/alerts
 http://localhost:3000/it/portal
 http://localhost:3000/it/portal/orders
+http://localhost:3000/it/portal/support
 ```

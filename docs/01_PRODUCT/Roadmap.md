@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-08-28
 
-Current Mission: QA-PRODUCT-001 accepted with non-blocking visual follow-up
+Current Mission: MANUAL-QA-FIX-001 completed
 
-Next Action: PRINT-001
+Next Action: Product Owner decision — PAYMENTS-ONLINE-001 or PRINT-001
 
 ---
 
@@ -260,6 +260,7 @@ Scope:
 - PLATFORM-ADMIN-001 — SaaS operator control plane separated from Tenant Owner, with cross-tenant commercial controls and no impersonation or deletion, completed and E2E validated
 - POS-001 — entitlement-gated till sessions, canonical cash/manual-card partial and mixed payments, linked refunds, receipt-ready data and immutable reconciliation, completed and E2E validated
 - QA-PRODUCT-001 — full Platform/Tenant/Portal integration, financial consistency, entitlement, suspension and Tenant A/B acceptance, PASS WITH NON-BLOCKING ISSUES
+- MANUAL-QA-FIX-001 — authenticated Portal support, single POS navigation entry and active till recovery, completed with exact rollback-only financial validation
 - PILOT-002 or M1 First Laundry Operational Pilot — planned after release, QA and approved MVP portal implementation
 
 Current staging validation checkpoint:
@@ -358,9 +359,18 @@ Exit criteria:
 
 ### Deferred Until After M3
 
-Customer portal is now part of M1 pilot scoping. Do not start online payments, formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder until M1-M3 are complete or a new commercial decision explicitly changes priority.
+Customer portal is now part of M1 pilot scoping. Online payments remain separate future work and may move ahead only through the explicit Product Owner decision recorded below. Do not combine them with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
 
-### Approved Product Sequence After POS-001
+### Product Decision After MANUAL-QA-FIX-001
+
+The Product Owner will choose the next task between:
+
+1. `PAYMENTS-ONLINE-001 — Customer-to-laundry online payments`
+2. `PRINT-001`
+
+`PAYMENTS-ONLINE-001` must be designed separately with a provider-neutral core, Portal “Pay now”, automatic confirmed-payment integration with Billing and Customer Account, selection of the first real provider in that task, and no card-sensitive storage in Phoenix.
+
+If `PRINT-001` is selected first, the remaining approved sequence continues:
 
 1. `PRINT-001`
 2. `BARCODE-001`

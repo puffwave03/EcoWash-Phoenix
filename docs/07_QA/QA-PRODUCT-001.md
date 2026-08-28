@@ -125,7 +125,7 @@ The order, canonical payments ledger, POS, Customer Account, Portal financial RP
 
 Overall result: **PASS WITH NON-BLOCKING ISSUES**.
 
-Next task: `PRINT-001`.
+Next task at the original QA-PRODUCT-001 acceptance checkpoint: `PRINT-001`.
 
 ## Post-acceptance follow-up — POST-QA-PRODUCT-001
 
@@ -140,4 +140,23 @@ Completed on 2026-08-28 after the acceptance baseline:
 - passed rollback-only Owner/Manager assignment and removal, Staff/Customer denial, Platform access, tenant-isolation and Portal personalization checks;
 - passed 61 focused Customer Account, catalog-segment, entitlement and Platform Admin tests, lint, production build and `git diff --check`.
 
-Interactive browser control was not exposed in the session, so the specific contrast fix is verified by source contract and production compilation rather than an authenticated screenshot. No temporary customer or SQL fixture remains. `PRINT-001` is still next and was not started.
+Interactive browser control was not exposed in the session, so the specific contrast fix is verified by source contract and production compilation rather than an authenticated screenshot. No temporary customer or SQL fixture remains. At this checkpoint, `PRINT-001` was still next and had not started.
+
+## Manual acceptance follow-up — MANUAL-QA-FIX-001
+
+Completed on 2026-08-28 after real Product Owner staging acceptance:
+
+- replaced the Portal “Assistenza” public `/contact` destination with authenticated `/[locale]/portal/support`; the page uses only tenant branding/support data, hides missing fields and has IT/EN/ES/FR/DE copy without marketing chrome;
+- removed the duplicate Owner/Manager POS registration and added one shared capability-and-entitlement-gated navigation item; Staff receives it only with explicit `pos` capability;
+- confirmed that order `discount_amount` is an absolute monetary amount constrained by the order subtotal, not a fractional percentage. No percentage conversion or historical mutation was made;
+- reproduced the POS mismatch: the active session existed, while the read query failed with `PGRST201` because both simple and composite `pos_sessions → locations` relationships matched. The UI converted that read error to `null` and displayed Closed;
+- fixed the read model by selecting `locations!pos_sessions_location_same_org` and making query errors fail closed instead of rendering a false Closed state;
+- verified exact rollback-only staging values: EUR 10.00 outstanding, EUR 10.00 cash payment, EUR 0.00 outstanding, Customer Account paid delta EUR 10.00, Billing paid delta EUR 10.00 and till expected-cash delta EUR 10.00;
+- verified close → closed → new open, duplicate-open rejection, Owner/Manager use, Staff with/without capability, Staff anti-hijack, entitlement OFF/ON and tenant isolation;
+- restored EcoWash POS to ON with source `pos_001_reference_bootstrap`; preserved the real open till and removed all temporary Staff capability, session, payment and SQL fixtures;
+- passed Manual QA 11/11, POS 31/31, Billing 12/12, Customer Account 14/14 and shell 2/2, plus lint, production build and `git diff --check`;
+- required no migration; linked migration history remains aligned through `20260828000100`.
+
+Interactive browser control was not exposed, so support/mobile/POS visual behavior is structurally verified and production-compiled, not reported as an interactive screenshot PASS. Product Owner manual recheck remains appropriate.
+
+`PAYMENTS-ONLINE-001 — Customer-to-laundry online payments` is recorded as future work: provider-neutral core, Portal “Pay now”, automatic confirmed payment, Billing/Customer Account integration and no card-sensitive Phoenix storage. It was not implemented. The next roadmap decision is `PAYMENTS-ONLINE-001` versus `PRINT-001`.
