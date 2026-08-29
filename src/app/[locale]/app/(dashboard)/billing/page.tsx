@@ -10,6 +10,15 @@ import { Link } from "@/i18n/navigation";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { formatCurrency } from "@/lib/number-format";
 
+const issuerFieldLabelKeys = {
+  issuerAddressLine1: "addressLine1",
+  issuerCity: "city",
+  issuerCountryCode: "countryCode",
+  issuerLegalName: "legalName",
+  issuerPostalCode: "postalCode",
+  issuerTaxId: "taxId",
+} as const;
+
 function formatDate(value: string, locale: string) {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value));
 }
@@ -43,7 +52,7 @@ export default async function BillingPage({ params, searchParams }: {
         <SummaryCard label={t("summary.issued")} value={formatCurrency(sameCurrencyIssued.reduce((sum, invoice) => sum + invoice.total, 0), primaryCurrency, locale)} />
         <SummaryCard label={t("summary.outstanding")} tone={sameCurrencyIssued.some((invoice) => invoice.outstanding > 0) ? "warning" : "success"} value={formatCurrency(sameCurrencyIssued.reduce((sum, invoice) => sum + invoice.outstanding, 0), primaryCurrency, locale)} />
       </div>
-      {access.membership.role === "owner" ? <BillingSettingsPanel locale={locale} settings={settings} text={t.raw("settings") as Record<string, string>} /> : !settings.isIssueReady ? <p className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">{t("settings.managerMissing")}</p> : null}
+      {access.membership.role === "owner" ? <BillingSettingsPanel locale={locale} settings={settings} text={t.raw("settings") as Record<string, string>} /> : !settings.isIssueReady ? <p className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">{t("settings.managerMissing")}{settings.missingRequiredFields.length ? ` ${t("settings.missingFields")}: ${settings.missingRequiredFields.map((field) => t(`settings.${issuerFieldLabelKeys[field]}`)).join(", ")}.` : ""}</p> : null}
       <Card className="bg-white">
         <form className="grid gap-4 sm:grid-cols-[1fr_13rem_auto]">
           <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("filters.search")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={query.q} name="q" placeholder={t("filters.placeholder")} /></label>

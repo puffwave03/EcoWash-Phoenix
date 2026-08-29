@@ -1,10 +1,15 @@
 export const BILLING_DOCUMENT_STATUSES = ["draft", "issued", "cancelled"] as const;
 export const BILLING_PAYMENT_STATUSES = ["draft", "unpaid", "partially_paid", "paid", "cancelled"] as const;
+export const BILLING_ISSUER_REQUIRED_FIELDS = ["issuerLegalName", "issuerTaxId", "issuerAddressLine1", "issuerCity", "issuerPostalCode", "issuerCountryCode"] as const;
+export const BILLING_CUSTOMER_FISCAL_FIELDS = ["billingAddressLine1", "billingCity", "billingPostalCode", "billingCountryCode", "taxId"] as const;
 
 export type BillingDocumentStatus = (typeof BILLING_DOCUMENT_STATUSES)[number];
 export type BillingPaymentStatus = (typeof BILLING_PAYMENT_STATUSES)[number];
+export type BillingIssuerRequiredField = (typeof BILLING_ISSUER_REQUIRED_FIELDS)[number];
+export type BillingCustomerFiscalField = (typeof BILLING_CUSTOMER_FISCAL_FIELDS)[number];
 
 export type BillingSettings = {
+  autofilledFields: BillingIssuerRequiredField[];
   defaultSeries: string;
   defaultTaxRate: number;
   issuerAddressLine1: string;
@@ -18,6 +23,22 @@ export type BillingSettings = {
   issuerRegion: string;
   issuerTaxId: string;
   isIssueReady: boolean;
+  missingRequiredFields: BillingIssuerRequiredField[];
+  organizationName: string;
+};
+
+export type BillingCustomerContext = {
+  billingAddressLine1: string;
+  billingCity: string;
+  billingCountryCode: string;
+  billingPostalCode: string;
+  customerId: string;
+  customerName: string;
+  customerType: "individual" | "business";
+  isFiscalReady: boolean;
+  isWalkIn: boolean;
+  missingRequiredFields: BillingCustomerFiscalField[];
+  taxId: string;
 };
 
 export type BillingInvoice = {

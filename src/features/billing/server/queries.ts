@@ -4,6 +4,8 @@ import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
 import { notFound } from "next/navigation";
 import type {
+  BillingCustomerContext,
+  BillingCustomerFiscalField,
   BillingDocumentStatus,
   BillingInvoice,
   BillingInvoiceDetail,
@@ -11,9 +13,11 @@ import type {
   BillingPayment,
   BillingPaymentStatus,
   BillingSettings,
+  BillingIssuerRequiredField,
   CustomerBillingOverview,
   EligibleBillingOrder,
 } from "@/features/billing/types";
+import { BILLING_ISSUER_REQUIRED_FIELDS } from "@/features/billing/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -84,6 +88,25 @@ type SettingsRow = {
   issuer_tax_id: string | null;
 };
 
+type BillingAutofillRow = {
+  business_address: string | null;
+  commercial_name: string | null;
+  support_email: string | null;
+  support_phone: string | null;
+};
+
+type BillingCustomerRow = {
+  billing_address_line1: string | null;
+  billing_city: string | null;
+  billing_country_code: string | null;
+  billing_postal_code: string | null;
+  customer_code: string | null;
+  customer_type: "individual" | "business";
+  display_name: string;
+  id: string;
+  tax_id: string | null;
+};
+
 type EligibleOrderRow = {
   created_at: string;
   currency: string;
@@ -120,6 +143,10 @@ function number(value: number | string | null) {
 
 function relation<T>(value: T | T[] | null) {
   return Array.isArray(value) ? value[0] ?? null : value;
+}
+
+function present(value: string | null | undefined) {
+  return value?.trim() ?? "";
 }
 
 function derivePayment(documentStatus: BillingDocumentStatus, total: number, paid: number): BillingPaymentStatus {
@@ -229,34 +256,98 @@ export async function getBillingSettings(locale: string): Promise<BillingSetting
   const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from("organization_billing_settings")
-    .select(SETTINGS_SELECT)
-    .eq("organization_id", membership.organization.id)
-    .maybeSingle<SettingsRow>();
+  const [settingsResult, brandingResult] = await Promise.all([
+    supabase
+      .from("organization_billing_settings")
+      .select(SETTINGS_SELECT)
+      .eq("organization_id", membership.organization.id)
+      .maybeSingle<SettingsRow>(),
+    supabase
+      .from("organization_branding")
+      .select("commercial_name, business_address, support_email, support_phone")
+      .eq("organization_id", membership.organization.id)
+      .maybeSingle<BillingAutofillRow>(),
+  ]);
 
-  const settings = data ?? null;
+  const settings = settingsResult.data ?? null;
+  const branding = brandingResult.data ?? null;
+  const autofilledFields: BillingIssuerRequiredField[] = [];
+  const issuerLegalName = present(settings?.issuer_legal_name) || present(branding?.commercial_name) || membership.organization.name;
+  const issuerAddressLine1 = present(settings?.issuer_address_line1) || present(branding?.business_address);
+  if (!present(settings?.issuer_legal_name) && issuerLegalName) autofilledFields.push("issuerLegalName");
+  if (!present(settings?.issuer_address_line1) && issuerAddressLine1) autofilledFields.push("issuerAddressLine1");
+  const issuerTaxId = present(settings?.issuer_tax_id);
+  const issuerCity = present(settings?.issuer_city);
+  const issuerPostalCode = present(settings?.issuer_postal_code);
+  const issuerCountryCode = present(settings?.issuer_country_code);
+  const persistedRequired: Record<BillingIssuerRequiredField, string> = {
+    issuerAddressLine1: present(settings?.issuer_address_line1),
+    issuerCity: present(settings?.issuer_city),
+    issuerCountryCode: present(settings?.issuer_country_code),
+    issuerLegalName: present(settings?.issuer_legal_name),
+    issuerPostalCode: present(settings?.issuer_postal_code),
+    issuerTaxId: present(settings?.issuer_tax_id),
+  };
+  const isIssueReady = Boolean(
+    present(settings?.issuer_legal_name)
+    && issuerTaxId
+    && present(settings?.issuer_address_line1)
+    && issuerCity
+    && issuerPostalCode
+    && issuerCountryCode,
+  );
+
   return {
+    autofilledFields,
     defaultSeries: settings?.default_series ?? "A",
     defaultTaxRate: number(settings?.default_tax_rate ?? 0),
-    issuerAddressLine1: settings?.issuer_address_line1 ?? "",
+    issuerAddressLine1,
     issuerAddressLine2: settings?.issuer_address_line2 ?? "",
-    issuerCity: settings?.issuer_city ?? "",
-    issuerCountryCode: settings?.issuer_country_code ?? "",
-    issuerEmail: settings?.issuer_email ?? "",
-    issuerLegalName: settings?.issuer_legal_name ?? "",
-    issuerPhone: settings?.issuer_phone ?? "",
-    issuerPostalCode: settings?.issuer_postal_code ?? "",
+    issuerCity,
+    issuerCountryCode,
+    issuerEmail: present(settings?.issuer_email) || present(branding?.support_email),
+    issuerLegalName,
+    issuerPhone: present(settings?.issuer_phone) || present(branding?.support_phone),
+    issuerPostalCode,
     issuerRegion: settings?.issuer_region ?? "",
-    issuerTaxId: settings?.issuer_tax_id ?? "",
-    isIssueReady: Boolean(
-      settings?.issuer_legal_name
-      && settings.issuer_tax_id
-      && settings.issuer_address_line1
-      && settings.issuer_city
-      && settings.issuer_postal_code
-      && settings.issuer_country_code,
-    ),
+    issuerTaxId,
+    isIssueReady,
+    missingRequiredFields: BILLING_ISSUER_REQUIRED_FIELDS.filter((field) => !persistedRequired[field]),
+    organizationName: membership.organization.name,
+  };
+}
+
+export async function getBillingCustomerContext(locale: string, customerId: string): Promise<BillingCustomerContext> {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, customer_code, customer_type, display_name, tax_id, billing_address_line1, billing_city, billing_postal_code, billing_country_code")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", customerId)
+    .maybeSingle<BillingCustomerRow>();
+  if (error || !data) notFound();
+
+  const missingRequiredFields: BillingCustomerFiscalField[] = [];
+  if (!present(data.billing_address_line1)) missingRequiredFields.push("billingAddressLine1");
+  if (!present(data.billing_city)) missingRequiredFields.push("billingCity");
+  if (!present(data.billing_postal_code)) missingRequiredFields.push("billingPostalCode");
+  if (!present(data.billing_country_code)) missingRequiredFields.push("billingCountryCode");
+  if (data.customer_type === "business" && !present(data.tax_id)) missingRequiredFields.push("taxId");
+
+  return {
+    billingAddressLine1: present(data.billing_address_line1),
+    billingCity: present(data.billing_city),
+    billingCountryCode: present(data.billing_country_code),
+    billingPostalCode: present(data.billing_postal_code),
+    customerId: data.id,
+    customerName: data.display_name,
+    customerType: data.customer_type,
+    isFiscalReady: missingRequiredFields.length === 0,
+    isWalkIn: data.customer_code?.startsWith("WALKIN-") ?? false,
+    missingRequiredFields,
+    taxId: present(data.tax_id),
   };
 }
 
@@ -327,7 +418,7 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
   };
 }
 
-export async function listEligibleBillingOrders(locale: string, customerId?: string): Promise<EligibleBillingOrder[]> {
+export async function listEligibleBillingOrders(locale: string, customerId?: string, orderId?: string): Promise<EligibleBillingOrder[]> {
   const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -342,6 +433,7 @@ export async function listEligibleBillingOrders(locale: string, customerId?: str
     .order("created_at", { ascending: false })
     .limit(100);
   if (customerId) query = query.eq("customer_id", customerId);
+  if (orderId) query = query.eq("id", orderId);
   const { data, error } = await query.returns<EligibleOrderRow[]>();
   if (error) return [];
 

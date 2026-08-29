@@ -196,7 +196,7 @@ test("29 navigation keeps one terminal entry with POS as management fallback", a
 test("30 five locales expose the professional-register vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 67);
+    assert.equal(Object.keys(messages.shopTerminal.labels).length, 68);
     for (const key of ["catalog", "occasionalCustomer", "regularCustomer", "splitPayment", "tillManagement"]) assert.equal(typeof messages.shopTerminal.labels[key], "string");
   }
 });

@@ -20,7 +20,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
     getCurrentPosSession(locale),
-    getCurrentEntitlements(locale, [FEATURES.printing]),
+    getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing]),
     getTranslations({ locale, namespace: "common.shopTerminal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
@@ -38,6 +38,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         submit: submitShopOrderAction.bind(null, locale),
       }}
       canPrint={entitlementEnabled(entitlements, FEATURES.printing)}
+      canInvoice={entitlementEnabled(entitlements, FEATURES.billingInvoicing) && access.membership.role !== "staff"}
       canConfigurePrinters={entitlementEnabled(entitlements, FEATURES.printing) && access.membership.role !== "staff"}
       customers={customers}
       locale={locale}

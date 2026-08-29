@@ -129,6 +129,7 @@ export async function submitShopOrderAction(
   return {
     error: null,
     result: {
+      customerId,
       customerName: typeof payload.customerName === "string" ? payload.customerName.slice(0, 160) : "",
       discountAmount: Number(data.discount_amount),
       dueAt: typeof payload.dueAt === "string" && payload.dueAt ? payload.dueAt : null,

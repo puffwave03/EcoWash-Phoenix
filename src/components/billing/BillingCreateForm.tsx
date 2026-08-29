@@ -9,9 +9,10 @@ function formatDate(value: string, locale: string) {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value));
 }
 
-export function BillingCreateForm({ locale, orders, settings, text }: {
+export function BillingCreateForm({ locale, orders, selectedOrderId, settings, text }: {
   locale: string;
   orders: EligibleBillingOrder[];
+  selectedOrderId?: string;
   settings: BillingSettings;
   text: Record<string, string>;
 }) {
@@ -44,7 +45,7 @@ export function BillingCreateForm({ locale, orders, settings, text }: {
               <div className="mt-5 divide-y divide-border overflow-hidden rounded-control border border-border">
                 {group.map((order) => (
                   <label className="grid cursor-pointer gap-3 bg-white p-4 hover:bg-primary-soft/50 sm:grid-cols-[auto_1fr_auto] sm:items-center" key={order.id}>
-                    <input className="h-5 w-5 accent-primary" name="orderId" type="checkbox" value={order.id} />
+                    <input className="h-5 w-5 accent-primary" defaultChecked={order.id === selectedOrderId} name="orderId" type="checkbox" value={order.id} />
                     <span><strong className="text-primary">{order.orderNumber}</strong><span className="mt-1 block text-xs text-muted">{formatDate(order.createdAt, locale)}</span></span>
                     <strong className="text-right text-primary">{formatCurrency(order.total, order.currency, locale)}</strong>
                   </label>

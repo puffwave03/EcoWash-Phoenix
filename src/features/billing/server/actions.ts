@@ -8,6 +8,8 @@ import { parseTaxRate } from "@/features/billing/tax-rate";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function value(formData: FormData, name: string, max = 1000) {
   return String(formData.get(name) ?? "").trim().slice(0, max);
 }
@@ -53,6 +55,68 @@ export async function saveBillingSettingsAction(locale: string, formData: FormDa
   if (error) redirect(`/${locale}/app/billing?error=${billingError(error.message)}`);
   revalidateBilling(locale);
   redirect(`/${locale}/app/billing?saved=settings`);
+}
+
+export async function saveBillingCustomerFiscalAction(
+  locale: string,
+  customerId: string,
+  orderId: string,
+  formData: FormData,
+) {
+  if (!UUID.test(customerId) || !UUID.test(orderId)) redirect(`/${locale}/app/billing/new?error=orders`);
+  const { membership, user } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const supabase = await createSupabaseServerClient();
+  const { data: customer, error: customerError } = await supabase
+    .from("customers")
+    .select("id, customer_type, tax_id, billing_address_line1, billing_city, billing_postal_code, billing_country_code")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", customerId)
+    .maybeSingle<{
+      billing_address_line1: string | null;
+      billing_city: string | null;
+      billing_country_code: string | null;
+      billing_postal_code: string | null;
+      customer_type: "individual" | "business";
+      id: string;
+      tax_id: string | null;
+    }>();
+  if (customerError || !customer) redirect(`/${locale}/app/billing/new?error=customer`);
+
+  const updates: Record<string, string> = {};
+  const required = [
+    ["billing_address_line1", "billingAddressLine1", customer.billing_address_line1, 180],
+    ["billing_city", "billingCity", customer.billing_city, 100],
+    ["billing_postal_code", "billingPostalCode", customer.billing_postal_code, 24],
+    ["billing_country_code", "billingCountryCode", customer.billing_country_code, 2],
+  ] as const;
+  for (const [column, field, current, max] of required) {
+    if (!current?.trim()) {
+      const next = value(formData, field, max);
+      if (!next || (field === "billingCountryCode" && next.length !== 2)) {
+        redirect(`/${locale}/app/billing/new?customerId=${customerId}&orderId=${orderId}&source=shop&error=customer`);
+      }
+      updates[column] = field === "billingCountryCode" ? next.toUpperCase() : next;
+    }
+  }
+  if (customer.customer_type === "business" && !customer.tax_id?.trim()) {
+    const taxId = value(formData, "taxId", 80);
+    if (!taxId) redirect(`/${locale}/app/billing/new?customerId=${customerId}&orderId=${orderId}&source=shop&error=customer`);
+    updates.tax_id = taxId;
+  }
+
+  if (Object.keys(updates).length) {
+    const { error } = await supabase
+      .from("customers")
+      .update({ ...updates, updated_by: user.id })
+      .eq("organization_id", membership.organization.id)
+      .eq("id", customerId);
+    if (error) redirect(`/${locale}/app/billing/new?customerId=${customerId}&orderId=${orderId}&source=shop&error=customer`);
+  }
+
+  revalidateBilling(locale, customerId);
+  revalidatePath(`/${locale}/app/billing/new`);
+  redirect(`/${locale}/app/billing/new?customerId=${customerId}&orderId=${orderId}&source=shop&saved=customer`);
 }
 
 export async function createBillingDraftAction(locale: string, customerId: string, formData: FormData) {

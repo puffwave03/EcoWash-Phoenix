@@ -19,7 +19,7 @@ export type ShopTerminalText = {
   discount: string; dueAt: string; emptyCart: string; emptyCatalog: string; errorDiscount: string;
   errorGeneric: string; errorTill: string; errorValidation: string; loadingCatalog: string;
   newCustomer: string; newOrder: string; noCustomer: string; notes: string; occasionalCustomer: string;
-  occasionalHelp: string; openOrder: string; openTill: string; operator: string; orderSuccess: string;
+  occasionalHelp: string; openOrder: string; openTill: string; operator: string; orderSuccess: string; invoice: string;
   outstanding: string; paid: string; payLater: string; payNow: string; payment: string;
   paymentCard: string; paymentCash: string; paymentSplit: string; priceFrom: string; printerSettings: string;
   quantity: string; recentCustomers: string; regularCustomer: string; regularHelp: string; remove: string;
@@ -35,6 +35,7 @@ type Props = {
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
   };
   canConfigurePrinters: boolean;
+  canInvoice: boolean;
   canPrint: boolean;
   customers: ShopCustomer[];
   locale: string;
@@ -50,7 +51,7 @@ const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canPrint, customers: initialCustomers, locale, operatorName, organizationName, printText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, customers: initialCustomers, locale, operatorName, organizationName, printText, role, session, text }: Props) {
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
   const [customerMode, setCustomerMode] = useState<CustomerMode>(null);
@@ -196,7 +197,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canPrint,
     return (
       <div className="counter-register-shell min-h-screen bg-[#eef1ed]">
         {terminalHeader}
-        <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><div className="border-l-4 border-primary bg-white p-5 shadow-card sm:p-7"><div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-sm font-black uppercase tracking-[0.12em] text-secondary">✓ {text.orderSuccess}</p><h2 className="mt-1 text-3xl font-black text-primary">{result.orderNumber}</h2><p className="mt-1 text-lg font-semibold text-muted">{result.customerName}</p></div><dl className="grid grid-cols-3 gap-3">{[[text.total, result.total], [text.paid, result.paid], [text.outstanding, result.outstanding]].map(([label, value]) => <div className="min-w-0 border-l border-border pl-3" key={String(label)}><dt className="text-xs font-bold uppercase text-muted">{label}</dt><dd className="mt-1 whitespace-nowrap text-xl font-black text-primary sm:text-2xl">{formatCurrency(Number(value), currency, locale)}</dd></div>)}</dl></div>{result.dueAt ? <p className="mt-4 text-sm text-muted">{text.dueAt}: <strong className="text-primary">{new Date(result.dueAt).toLocaleString(locale)}</strong></p> : null}<div className="mt-6 flex flex-wrap gap-3"><button className="min-h-12 rounded-control bg-primary px-6 font-bold text-white" onClick={resetOrder} type="button">{text.newOrder}</button><Link className="inline-flex min-h-12 items-center rounded-control border border-primary px-5 font-bold !text-primary" href={`/app/orders/${result.orderId}`} locale={locale}>{text.openOrder}</Link>{canPrint ? <PrintOrderActions locale={locale} orderId={result.orderId} text={printText} /> : null}</div></div></section>
+        <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><div className="border-l-4 border-primary bg-white p-5 shadow-card sm:p-7"><div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-sm font-black uppercase tracking-[0.12em] text-secondary">✓ {text.orderSuccess}</p><h2 className="mt-1 text-3xl font-black text-primary">{result.orderNumber}</h2><p className="mt-1 text-lg font-semibold text-muted">{result.customerName}</p></div><dl className="grid grid-cols-3 gap-3">{[[text.total, result.total], [text.paid, result.paid], [text.outstanding, result.outstanding]].map(([label, value]) => <div className="min-w-0 border-l border-border pl-3" key={String(label)}><dt className="text-xs font-bold uppercase text-muted">{label}</dt><dd className="mt-1 whitespace-nowrap text-xl font-black text-primary sm:text-2xl">{formatCurrency(Number(value), currency, locale)}</dd></div>)}</dl></div>{result.dueAt ? <p className="mt-4 text-sm text-muted">{text.dueAt}: <strong className="text-primary">{new Date(result.dueAt).toLocaleString(locale)}</strong></p> : null}<div className="mt-6 flex flex-wrap gap-3"><button className="min-h-12 rounded-control bg-primary px-6 font-bold text-white" onClick={resetOrder} type="button">{text.newOrder}</button><Link className="inline-flex min-h-12 items-center rounded-control border border-primary px-5 font-bold !text-primary" href={`/app/orders/${result.orderId}`} locale={locale}>{text.openOrder}</Link>{canPrint ? <PrintOrderActions locale={locale} orderId={result.orderId} text={printText} /> : null}{canInvoice ? <Link className="inline-flex min-h-12 items-center rounded-control bg-primary-strong px-5 font-bold !text-white" href={`/app/billing/new?customerId=${result.customerId}&orderId=${result.orderId}&source=shop`} locale={locale}>{text.invoice}</Link> : null}</div></div></section>
       </div>
     );
   }

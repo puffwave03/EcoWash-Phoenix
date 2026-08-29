@@ -31,6 +31,7 @@ export type ShopRecentOrder = {
 };
 
 export type ShopOrderResult = {
+  customerId: string;
   customerName: string;
   discountAmount: number;
   dueAt: string | null;
