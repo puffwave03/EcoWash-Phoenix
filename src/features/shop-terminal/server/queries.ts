@@ -22,12 +22,12 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("customers")
-    .select("id, display_name, email, phone, updated_at")
+    .select("id, customer_code, display_name, email, phone, updated_at")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
     .order("updated_at", { ascending: false })
     .limit(80)
-    .returns<{ display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
+    .returns<{ customer_code: string | null; display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
 
   if (error) {
     console.error("Shop customer query failed", error.code);
@@ -37,6 +37,7 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
   return (data ?? []).map((customer) => ({
     email: customer.email,
     id: customer.id,
+    isWalkIn: customer.customer_code?.startsWith("WALKIN-") ?? false,
     name: customer.display_name,
     phone: customer.phone,
     updatedAt: customer.updated_at,

@@ -3,6 +3,7 @@ import type { ServiceUnitType } from "@/features/services/types";
 export type ShopCustomer = {
   email: string | null;
   id: string;
+  isWalkIn: boolean;
   name: string;
   phone: string | null;
   updatedAt: string;

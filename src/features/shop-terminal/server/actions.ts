@@ -28,6 +28,7 @@ export async function createShopCustomerAction(
   const name = String(formData.get("displayName") ?? "").trim().slice(0, 160);
   const phone = String(formData.get("phone") ?? "").trim().slice(0, 40);
   const email = String(formData.get("email") ?? "").trim().toLowerCase().slice(0, 160);
+  const isWalkIn = formData.get("customerKind") === "walk_in";
   if (!name || (phone && !PHONE.test(phone)) || (email && !EMAIL.test(email))) {
     return { customer: null, error: "validation" };
   }
@@ -37,16 +38,18 @@ export async function createShopCustomerAction(
   const { data, error } = await supabase.from("customers").insert({
     billing_country_code: "ES",
     created_by: user.id,
+    customer_code: isWalkIn ? `WALKIN-${crypto.randomUUID().toUpperCase()}` : null,
     customer_type: "individual",
     display_name: name,
     email: email || null,
     is_active: true,
+    notes: isWalkIn ? "Occasional customer created at the shop terminal." : null,
     organization_id: membership.organization.id,
     phone: phone || null,
     preferred_locale: routing.locales.includes(locale as (typeof routing.locales)[number]) ? locale : "es",
     updated_by: user.id,
-  }).select("id, display_name, email, phone, updated_at").single<{
-    display_name: string; email: string | null; id: string; phone: string | null; updated_at: string;
+  }).select("id, customer_code, display_name, email, phone, updated_at").single<{
+    customer_code: string | null; display_name: string; email: string | null; id: string; phone: string | null; updated_at: string;
   }>();
 
   if (error || !data) {
@@ -55,7 +58,7 @@ export async function createShopCustomerAction(
   }
 
   revalidatePath(`/${locale}/app/shop`);
-  return { customer: { email: data.email, id: data.id, name: data.display_name, phone: data.phone, updatedAt: data.updated_at }, error: null };
+  return { customer: { email: data.email, id: data.id, isWalkIn: data.customer_code?.startsWith("WALKIN-") ?? false, name: data.display_name, phone: data.phone, updatedAt: data.updated_at }, error: null };
 }
 
 type SubmitPayload = {

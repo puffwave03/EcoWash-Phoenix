@@ -10,16 +10,15 @@ import {
   submitShopOrderAction,
 } from "@/features/shop-terminal/server/actions";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import { listShopCustomers, listShopRecentOrders } from "@/features/shop-terminal/server/queries";
+import { listShopCustomers } from "@/features/shop-terminal/server/queries";
 
 type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, recentOrders, session, entitlements, t, catalogT, printT] = await Promise.all([
+  const [access, customers, session, entitlements, t, catalogT, printT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
-    listShopRecentOrders(locale),
     getCurrentPosSession(locale),
     getCurrentEntitlements(locale, [FEATURES.printing]),
     getTranslations({ locale, namespace: "common.shopTerminal" }),
@@ -42,8 +41,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
       customers={customers}
       locale={locale}
       organizationName={access.membership.organization.name}
+      operatorName={access.profile.displayName || access.user.email || access.membership.role}
       printText={printT.raw("actions") as PrintActionText}
-      recentOrders={recentOrders}
       role={access.membership.role}
       session={session}
       text={text}
