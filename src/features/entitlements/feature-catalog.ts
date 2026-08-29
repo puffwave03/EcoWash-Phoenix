@@ -18,6 +18,7 @@ export const FEATURES = {
   pos: "pos",
   printing: "printing",
   segmentPriceOverrides: "pricing.segment_overrides",
+  shopTerminal: "shop_terminal",
 } as const;
 
 export type FeatureKey = (typeof FEATURES)[keyof typeof FEATURES];
@@ -39,6 +40,7 @@ export const FEATURE_PRESENTATION: Record<FeatureKey, {
   [FEATURES.fullWhiteLabel]: { group: "branding", labelKey: "fullWhiteLabel" },
   [FEATURES.advancedReports]: { group: "future", labelKey: "advancedReports" },
   [FEATURES.pos]: { group: "future", labelKey: "pos" },
+  [FEATURES.shopTerminal]: { group: "future", labelKey: "pos" },
   [FEATURES.onlinePayments]: { group: "billing", labelKey: "onlinePayments" },
   [FEATURES.printing]: { group: "future", labelKey: "printing" },
   [FEATURES.barcode]: { group: "future", labelKey: "barcode" },

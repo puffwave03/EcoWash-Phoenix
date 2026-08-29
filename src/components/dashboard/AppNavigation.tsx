@@ -28,6 +28,7 @@ type AppNavigationText = {
   production: string;
   quality: string;
   services: string;
+  shop: string;
   staff: string;
   toolsGroup: string;
   work: string;
@@ -74,7 +75,7 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
-  if (href === "/app/pos") {
+  if (href === "/app/pos" || href === "/app/shop") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M5 4h14v16H5V4Zm3 3h8v4H8V7Zm0 8h2m2 0h2m2 0h1" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -148,13 +149,19 @@ export function AppNavigation({
   const posNavigationItem = canUse("pos") && entitlementEnabled(entitlements, FEATURES.pos)
     ? { href: "/app/pos", label: text.pos, match: "/app/pos" }
     : null;
+  const shopNavigationItem = canUse("pos")
+    && entitlementEnabled(entitlements, FEATURES.pos)
+    && entitlementEnabled(entitlements, FEATURES.shopTerminal)
+    ? { href: "/app/shop", label: text.shop, match: "/app/shop" }
+    : null;
+  const counterNavigationItems = shopNavigationItem ? [shopNavigationItem] : posNavigationItem ? [posNavigationItem] : [];
   const navigationGroups = isControlRole
     ? [
         {
           items: [
             { href: "/app/control", label: text.controlCenter, match: "/app/control" },
+            ...counterNavigationItems,
             { href: "/app/orders", label: text.orders, match: "/app/orders" },
-            ...(posNavigationItem ? [posNavigationItem] : []),
           ],
           label: text.controlGroup,
         },
@@ -198,7 +205,7 @@ export function AppNavigation({
         {
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
-            ...(posNavigationItem ? [posNavigationItem] : []),
+            ...counterNavigationItems,
             ...(canUse("production")
               ? [{ href: "/app/work/production", label: text.production, match: "/app/work/production" }]
               : []),
@@ -330,6 +337,7 @@ export function AppNavigation({
     const primaryItems = isControlRole
       ? navigationItems.filter((item) => [
           "/app/control",
+          "/app/shop",
           "/app/orders",
           "/app/pos",
           "/app/work",

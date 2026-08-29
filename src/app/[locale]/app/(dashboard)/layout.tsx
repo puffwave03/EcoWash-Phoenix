@@ -24,7 +24,7 @@ export default async function DashboardLayout({
   const [alertCount, branding, entitlements, contexts] = await Promise.all([
     access.membership.role === "staff" ? 0 : getOperationalAlertCount(locale),
     getTenantBranding(access.membership.organization.id),
-    getCurrentEntitlements(locale, [FEATURES.billingInvoicing, FEATURES.fullWhiteLabel, FEATURES.pos]),
+    getCurrentEntitlements(locale, [FEATURES.billingInvoicing, FEATURES.fullWhiteLabel, FEATURES.pos, FEATURES.shopTerminal]),
     getAuthContexts(access.user.id),
   ]);
 
@@ -59,6 +59,7 @@ export default async function DashboardLayout({
         quality: t("quality"),
         roleLabel: t("roleLabel"),
         services: t("services"),
+        shop: t("shop"),
         staff: t("staff"),
         switchToPlatform: t("switchToPlatform"),
         toolsGroup: t("toolsGroup"),

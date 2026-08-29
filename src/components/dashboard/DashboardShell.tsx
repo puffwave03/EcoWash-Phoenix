@@ -30,6 +30,7 @@ type DashboardShellText = {
   quality: string;
   roleLabel: string;
   services: string;
+  shop: string;
   staff: string;
   switchToPlatform: string;
   toolsGroup: string;
@@ -132,6 +133,7 @@ export function DashboardShell({
                 production: text.production,
                 quality: text.quality,
                 services: text.services,
+                shop: text.shop,
                 staff: text.staff,
                 toolsGroup: text.toolsGroup,
                 work: text.work,
@@ -208,6 +210,7 @@ export function DashboardShell({
               production: text.production,
               quality: text.quality,
               services: text.services,
+              shop: text.shop,
               staff: text.staff,
               toolsGroup: text.toolsGroup,
               work: text.work,
@@ -248,6 +251,7 @@ export function DashboardShell({
           production: text.production,
           quality: text.quality,
           services: text.services,
+          shop: text.shop,
           staff: text.staff,
           toolsGroup: text.toolsGroup,
           work: text.work,

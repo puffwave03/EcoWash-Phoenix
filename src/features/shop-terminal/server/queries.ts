@@ -1,0 +1,101 @@
+import "server-only";
+
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
+import type { ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
+
+type ServiceRow = {
+  amount: number;
+  category: string | null;
+  code: string | null;
+  currency: string;
+  description: string | null;
+  id: string;
+  name: string;
+  price_is_from: boolean;
+  pricing_segment_name: string | null;
+  pricing_source: "base" | "segment";
+  unit_type: ShopService["unitType"];
+};
+
+export async function listShopCustomers(locale: string): Promise<ShopCustomer[]> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("customers")
+    .select("id, display_name, email, phone, updated_at")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .order("updated_at", { ascending: false })
+    .limit(80)
+    .returns<{ display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
+
+  if (error) {
+    console.error("Shop customer query failed", error.code);
+    return [];
+  }
+
+  return (data ?? []).map((customer) => ({
+    email: customer.email,
+    id: customer.id,
+    name: customer.display_name,
+    phone: customer.phone,
+    updatedAt: customer.updated_at,
+  }));
+}
+
+export async function listShopRecentOrders(locale: string): Promise<ShopRecentOrder[]> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("orders")
+    .select("id, order_number, total, customer:customers!orders_customer_same_organization!inner(display_name)")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(6)
+    .returns<{ customer: { display_name: string } | { display_name: string }[]; id: string; order_number: string; total: number }[]>();
+
+  if (error) {
+    console.error("Shop recent order query failed", error.code);
+    return [];
+  }
+
+  return (data ?? []).map((order) => ({
+    customerName: (Array.isArray(order.customer) ? order.customer[0] : order.customer)?.display_name ?? "",
+    id: order.id,
+    orderNumber: order.order_number,
+    total: Number(order.total),
+  }));
+}
+
+export async function listShopServices(
+  locale: string,
+  customerId: string,
+  locationId: string | null,
+): Promise<ShopService[]> {
+  await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("list_shop_terminal_services", {
+    target_customer_id: customerId,
+    target_location_id: locationId,
+  }).returns<ServiceRow[]>();
+
+  if (error) {
+    console.error("Shop service query failed", error.code);
+    return [];
+  }
+
+  const services = (data ?? []) as unknown as ServiceRow[];
+  return services.map((service) => ({
+    amount: Number(service.amount),
+    category: service.category,
+    code: service.code,
+    currency: service.currency,
+    description: service.description,
+    id: service.id,
+    name: service.name,
+    priceIsFrom: service.price_is_from,
+    pricingSegmentName: service.pricing_segment_name,
+    pricingSource: service.pricing_source,
+    unitType: service.unit_type,
+  }));
+}

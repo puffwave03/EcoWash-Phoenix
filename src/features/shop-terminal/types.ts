@@ -1,0 +1,52 @@
+import type { ServiceUnitType } from "@/features/services/types";
+
+export type ShopCustomer = {
+  email: string | null;
+  id: string;
+  name: string;
+  phone: string | null;
+  updatedAt: string;
+};
+
+export type ShopService = {
+  amount: number;
+  category: string | null;
+  code: string | null;
+  currency: string;
+  description: string | null;
+  id: string;
+  name: string;
+  priceIsFrom: boolean;
+  pricingSegmentName: string | null;
+  pricingSource: "base" | "segment";
+  unitType: ServiceUnitType;
+};
+
+export type ShopRecentOrder = {
+  customerName: string;
+  id: string;
+  orderNumber: string;
+  total: number;
+};
+
+export type ShopOrderResult = {
+  customerName: string;
+  discountAmount: number;
+  dueAt: string | null;
+  orderId: string;
+  orderNumber: string;
+  outstanding: number;
+  paid: number;
+  subtotal: number;
+  total: number;
+};
+
+export type ShopSubmitState = {
+  error: string | null;
+  result: ShopOrderResult | null;
+};
+
+export type ShopCustomerState = {
+  customer: ShopCustomer | null;
+  error: string | null;
+};

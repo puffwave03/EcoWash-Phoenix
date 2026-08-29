@@ -154,6 +154,7 @@
       "billing": "Billing",
       "orders": "Orders",
       "pos": "Point of sale",
+      "shop": "Terminal",
       "production": "Production",
       "quality": "Quality",
       "delivery": "Pickups & deliveries",
@@ -1390,6 +1391,7 @@
     "description": "Operational data remains protected and unchanged. Contact the platform operator for service information or reactivation.",
     "logout": "Sign out"
   },
+  "shopTerminal": {"labels": {"addCustomer": "Add customer", "basePrice": "Base price", "card": "Card", "cardReference": "Card reference (optional)", "cart": "Order", "cash": "Cash", "categoryAll": "All", "clear": "Clear", "customer": "Customer", "customerEmail": "Email", "customerName": "Customer name", "customerPhone": "Phone", "customerSearch": "Search customer", "discount": "Discount (€)", "dueAt": "Expected ready / delivery", "emptyCart": "Tap a service to add it", "emptyCatalog": "No services available", "errorDiscount": "This role cannot apply a discount.", "errorGeneric": "The order could not be saved. Try again.", "errorTill": "The till is unavailable. Check the current session.", "errorValidation": "Check the customer, services and amounts.", "loadingCatalog": "Loading price list…", "newCustomer": "New", "newOrder": "New order", "noCustomer": "Select an existing customer or quickly create a new one.", "notes": "Details and notes", "openOrder": "Open order details", "openTill": "Open or manage till", "orderSuccess": "Order saved", "outstanding": "Outstanding", "paid": "Paid", "payLater": "Save · pay later", "payNow": "Confirm and pay", "payment": "Payment", "paymentCard": "Card", "paymentCash": "Cash", "paymentSplit": "Split", "priceFrom": "from", "quantity": "Quantity", "recentCustomers": "Recent", "recentOrders": "Latest orders", "remove": "Remove", "saveCustomer": "Create and select", "saving": "Saving…", "searchServices": "Search service", "segmentPrice": "{segment} price", "selectCustomer": "Who are we serving?", "splitCard": "Card", "splitCash": "Cash", "subtotal": "Subtotal", "tillOpen": "Till open", "tillRequired": "Till required", "title": "Counter terminal", "total": "Total"}},
   "platform": {
     "shell": {"product": "SaaS Control Center", "role": "Platform administrator", "operator": "Platform operator", "overview": "Overview", "organizations": "Organizations", "navigationLabel": "Platform navigation", "switchToTenant": "Go to {organization}", "logout": "Sign out"},
     "overview": {"eyebrow": "Phoenix Platform", "title": "SaaS Control Center", "description": "A concise view of tenant service status and commercial feature access.", "openOrganizations": "Manage organizations", "metrics": {"total": "Total organizations", "active": "Active tenants", "suspended": "Suspended tenants", "billing": "Tenants with Billing", "segmentPricing": "Tenants with segment pricing", "advancedBranding": "Tenants with advanced branding"}},
