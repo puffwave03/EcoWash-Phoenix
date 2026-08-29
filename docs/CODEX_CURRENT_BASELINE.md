@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline on `main` before this docs update: `a3b8f01` (`COUNTER-UI-003`).
-- Latest relevant application commit: `a3b8f01` (`COUNTER-UI-003`).
-- Previous completed product documentation commit: `ae01658` (`DOCS-COUNTER-UX-002`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline on `main` before this docs update: `6629495` (`COUNTER-BILLING-001`).
+- Latest relevant application commit: `6629495` (`COUNTER-BILLING-001`).
+- Previous completed product documentation commit: `30d631b` (`DOCS-COUNTER-UI-003`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260829000400_counter_ui_003_printer_profiles.sql`.
-- At COUNTER-UI-003 application completion: `main == origin/main` and working tree clean.
+- At COUNTER-BILLING-001 application completion: `main == origin/main` and working tree clean.
 
 ## Completed Major Modules
 
@@ -27,12 +27,12 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
 | Customer Lifecycle | Safe activation/deactivation lifecycle and dependent-access behavior complete. |
-| Billing | Invoice foundation and customer billing views complete; this is not a fiscal/e-invoice compliance claim. |
+| Billing / COUNTER-BILLING-001 | Canonical full-invoice foundation and customer billing views complete; completed counter orders now open a preselected invoice flow, with tenant issuer autofill and missing-only customer fiscal completion. This is not an e-invoice or simplified-invoice compliance claim. |
 | Entitlements | Central feature catalog and tenant entitlement enforcement complete. |
 | Platform Admin | Separate SaaS administration context with audited controls complete. |
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
-| Shop Terminal / COUNTER-UI-003 | Professional tablet/desktop register complete with a wide touch catalog, compact operational header and dominant sticky checkout over canonical customers, catalog, pricing, orders, POS and payments; mobile remains usable. |
+| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults now configure the existing PRINT renderer. |
 
 ## Current Important Configuration
@@ -47,6 +47,10 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Printer profiles are tenant/location scoped and support receipt, label and optional ticket purposes; each location has at most one default per purpose.
 - Browser print is the only functional transport. Network, local-bridge and future-adapter profile modes remain honest configuration boundaries and fall back to the browser print dialog.
 - Receipt profiles support 58 mm, 80 mm and browser/PDF layouts; label profiles support custom width, height, orientation, copies, margins and gap.
+- Billing issuer setup derives from the authenticated tenant only. Existing tenant name and branding commercial/address/support values are editable suggestions; an Owner must confirm and persist legal identity once before issue.
+- Configured issuer identity is compact/collapsible. Incomplete configuration identifies the exact persisted legal fields still requiring Owner confirmation.
+- Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Regular and walk-in customers are prompted only for fields missing from the current Billing issue model.
+- Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
 
 ## Current Known Product Boundaries
@@ -56,13 +60,12 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - No Quick Drop workflow yet.
 - No full Accounting module yet.
 - No e-invoice or fiscal-compliance claim yet.
+- No Spanish simplified-invoice document type or legal regime is implemented; operational receipts must not be represented as fiscal or simplified invoices.
 - No raw card-data handling, printer driver, silent printing or hardware-status integration.
 
 ## Next Approved Task
 
-`COUNTER-BILLING-001`
-
-This immediate execution priority supersedes older broad-document “Next Action” references until the next relevant documentation sync. Do not implement it during CODEX-PROTOCOL-001.
+Awaiting explicit Product Owner direction. Do not infer or start a near-future task from this document.
 
 ## Near Future — Not Started by This Task
 
