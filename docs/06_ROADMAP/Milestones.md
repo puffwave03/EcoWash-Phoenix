@@ -6,9 +6,20 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PAYMENTS-ONLINE-001 provider foundation completed; provider configuration required
+Current Mission: SHOP-TERMINAL-001 counter terminal completed
 
 Next Action: PRINT-001
+
+---
+
+## SHOP-TERMINAL-001 — Completed
+
+- Dedicated `/[locale]/app/shop` route with one clear navigation entry and a tablet/touch counter layout.
+- Reuses customers, real tenant catalog/categories, centralized base/segment pricing, canonical order snapshots, monetary discount, POS/till sessions, cash/manual-card payments, Customer Account and Billing.
+- Supports PAY NOW and PAY LATER; online payment remains absent while EcoWash has no configured provider and `payments.online` is OFF.
+- `shop_terminal` entitlement and POS capability enforce Owner/Manager and explicitly enabled Staff access. Tenant isolation and server-side price/customer/service/till authority passed.
+- Migration `20260829000200` is aligned. Exact staging proof: subtotal EUR 20.00, discount EUR 2.00, total EUR 18.00, cash EUR 8.00, card EUR 10.00, outstanding EUR 0.00; PAY LATER outstanding EUR 10.00; rollback cleanup zero.
+- Next sequence: `PRINT-001`, then `BARCODE-001`. Real provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
 
 ---
 

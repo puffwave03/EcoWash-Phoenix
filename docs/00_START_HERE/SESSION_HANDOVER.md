@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-29
 
-Approximate closeout time: after PAYMENTS-ONLINE-001 provider foundation
+Approximate closeout time: after SHOP-TERMINAL-001 counter terminal
 
-Session checkpoint: PAYMENTS-ONLINE-001 core completed; real provider credentials/configuration are still required before live or sandbox payment readiness
+Session checkpoint: SHOP-TERMINAL-001 completed; PRINT-001 is next
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,11 +14,22 @@ Branch: `main`
 
 Approved baseline before this mission: `af30d70 DOCS-AUTH-CONTEXT-001 docs: record platform and tenant context switching`
 
-Origin/main status: local `main` and `origin/main` include `a0f88c5 PAYMENTS-ONLINE-001 feat: add online payment provider foundation`.
+Origin/main status: local `main` and `origin/main` include `90d53fc SHOP-TERMINAL-001 feat: add dry cleaning counter terminal`.
 
 Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `a0f88c5 PAYMENTS-ONLINE-001 feat: add online payment provider foundation`; working tree expected clean after documentation push.
+Application closeout commit: `90d53fc SHOP-TERMINAL-001 feat: add dry cleaning counter terminal`; working tree expected clean after documentation push.
+
+---
+
+## SHOP-TERMINAL-001 Closeout
+
+- Completed `/[locale]/app/shop` as the entitlement-gated, touch-oriented physical counter workflow over existing customers, tenant catalog/categories, centralized effective pricing, canonical orders and POS payments.
+- Includes quick customer search/select/create, fast service add, discrete/continuous quantity handling, monetary discount, PAY NOW/PAY LATER, open-till reuse, cash/manual-card split payment and a bounded success summary. Current orders require a real customer; no anonymous/walk-in model was added.
+- Migration `20260829000200_shop_terminal_001_counter_experience.sql` is applied and aligned. It adds the `shop_terminal` entitlement plus an idempotent transactional wrapper; it does not create another catalog, pricing, order or payment engine.
+- Transactional staging E2E with rollback proved `2 × EUR 7.50 + 1 × EUR 5.00 = EUR 20.00`, monetary discount `EUR 2.00`, total/paid/outstanding `EUR 18.00 / EUR 18.00 / EUR 0.00`, split `EUR 8.00` cash + `EUR 10.00` manual card, till cash delta `EUR 8.00`, and PAY LATER `EUR 10.00 / EUR 0.00 / EUR 10.00`. Customer Account, Billing, idempotency, roles and tenant isolation passed; fixture count returned zero.
+- Final gates: terminal 28/28, POS 31/31, segment pricing 20/20, lint, production build and `git diff --check` PASS. Interactive browser control was unavailable; responsive layout was verified structurally and remains subject to Product Owner visual acceptance.
+- Next: `PRINT-001`, then `BARCODE-001`. Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain separate future work.
 
 ---
 

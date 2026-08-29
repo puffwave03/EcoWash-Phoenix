@@ -6,9 +6,22 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PAYMENTS-ONLINE-001 provider foundation completed
+Current Mission: SHOP-TERMINAL-001 counter terminal completed
 
 Next Action: PRINT-001
+
+---
+
+## SHOP-TERMINAL-001 — Completed
+
+Phoenix now provides an entitlement-gated `/[locale]/app/shop` counter experience with quick customer selection/creation, visual tenant catalog and categories, effective base/segment pricing, touch cart, monetary discount, canonical order creation, PAY NOW/PAY LATER and existing POS/till cash/manual-card settlement. Migration `20260829000200` is aligned; exact EUR 18.00 paid and EUR 10.00 pay-later staging scenarios passed with rollback and zero fixtures.
+
+Sequence remains:
+
+1. `PRINT-001`
+2. `BARCODE-001`
+
+Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
 
 ---
 

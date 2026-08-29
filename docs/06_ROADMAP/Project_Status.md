@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PAYMENTS-ONLINE-001 provider foundation completed
+Current Mission: SHOP-TERMINAL-001 counter terminal completed
 
 Next Action: PRINT-001
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PAYMENTS-ONLINE-001 provider-neutral core completed; real provider configuration required |
-| Last completed implementation mission | PAYMENTS-ONLINE-001 — hosted checkout, signed confirmation and canonical payment settlement foundation |
-| Approved baseline before current closeout | a0f88c5 |
+| Current mission | SHOP-TERMINAL-001 counter terminal completed; PRINT-001 next |
+| Last completed implementation mission | SHOP-TERMINAL-001 — customer, catalog, cart, monetary discount, canonical order and PAY NOW/PAY LATER counter flow |
+| Approved baseline before current closeout | 90d53fc |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -83,6 +83,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | AUTH-CONTEXT-001 status | Completed; dual-access chooser, authoritative direct routes, two-way shell switch, six-identity authenticated E2E and redirect-loop checks passed |
 | MANUAL-QA-FIX-001 status | Completed; authenticated Portal support, single capability/entitlement-gated POS nav item, tenant-safe active-session embed and exact EUR 10.00 rollback-only financial E2E passed; discount confirmed monetary |
 | PAYMENTS-ONLINE-001 status | Core completed and pushed; applied through corrective 20260829000100, 26/26 focused tests and rollback-only exact/idempotency/failure/concurrency/isolation E2E passed; PROVIDER CONFIGURATION REQUIRED |
+| SHOP-TERMINAL-001 status | Completed and pushed; migration 20260829000200 aligned; terminal 28/28, POS 31/31, pricing 20/20 and exact EUR 18.00 paid / EUR 10.00 pay-later rollback E2E passed with zero fixtures |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
