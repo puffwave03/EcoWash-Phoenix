@@ -8,6 +8,7 @@ import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
 import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
+import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { Link } from "@/i18n/navigation";
 import {
   saveDeliveryAction,
@@ -80,7 +81,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, entitlements, t, catalogT] = await Promise.all([
+  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, entitlements, t, catalogT, printT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -91,15 +92,18 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
-    getCurrentEntitlements(locale, [FEATURES.pos]),
+    getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing]),
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.catalog" }),
+    getTranslations({ locale, namespace: "common.print" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
   const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
+    && hasOperationalCapability(access.membership, "pos");
+  const canPrint = entitlementEnabled(entitlements, FEATURES.printing)
     && hasOperationalCapability(access.membership, "pos");
   const sectionLinks = [
     { href: "#items", label: t("items.title") },
@@ -132,9 +136,12 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               </span>
             </div>
           </div>
-          <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
-            <Button className="w-full lg:w-auto" variant="secondary">{t("edit")}</Button>
-          </Link>
+          <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
+            {canPrint ? <PrintOrderActions locale={locale} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
+            <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
+              <Button className="w-full lg:w-auto" variant="secondary">{t("edit")}</Button>
+            </Link>
+          </div>
         </div>
 
         <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

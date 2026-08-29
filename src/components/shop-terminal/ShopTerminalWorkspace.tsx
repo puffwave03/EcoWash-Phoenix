@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useRef, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
+import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { formatCurrency } from "@/lib/number-format";
 import { isDiscreteServiceUnit } from "@/features/services/types";
 import type { PosSession } from "@/features/pos/types";
@@ -36,9 +37,11 @@ type Props = {
     loadServices: (customerId: string, locationId: string | null) => Promise<ShopService[]>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
   };
+  canPrint: boolean;
   customers: ShopCustomer[];
   locale: string;
   organizationName: string;
+  printText: PrintActionText;
   recentOrders: ShopRecentOrder[];
   role: string;
   session: PosSession | null;
@@ -50,7 +53,7 @@ const initialSubmitState: ShopSubmitState = { error: null, result: null };
 
 function roundMoney(value: number) { return Math.round(value * 100) / 100; }
 
-export function ShopTerminalWorkspace({ actions, customers: initialCustomers, locale, organizationName, recentOrders, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canPrint, customers: initialCustomers, locale, organizationName, printText, recentOrders, role, session, text }: Props) {
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
   const [customerQuery, setCustomerQuery] = useState("");
@@ -181,6 +184,7 @@ export function ShopTerminalWorkspace({ actions, customers: initialCustomers, lo
           <button className="min-h-14 rounded-control bg-primary px-5 font-bold text-white" onClick={resetOrder} type="button">{text.newOrder}</button>
           <Link className="flex min-h-14 items-center justify-center rounded-control border border-primary px-5 font-bold !text-primary" href={`/app/orders/${result.orderId}`} locale={locale}>{text.openOrder}</Link>
         </div>
+        {canPrint ? <PrintOrderActions className="mt-3 justify-center" locale={locale} orderId={result.orderId} text={printText} /> : null}
       </section>
     );
   }

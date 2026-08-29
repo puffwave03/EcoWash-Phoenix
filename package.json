@@ -18,6 +18,7 @@
     "test:manual-qa": "node --test tests/manual-qa-fix-contract.test.mjs",
     "test:payments-online": "NODE_ENV=test node --test tests/payments-online-contract.test.mjs",
     "test:shop-terminal": "node --test tests/shop-terminal-contract.test.mjs",
+    "test:print": "node --test tests/print-contract.test.mjs",
     "test:shell": "node --test tests/authenticated-shell-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"
