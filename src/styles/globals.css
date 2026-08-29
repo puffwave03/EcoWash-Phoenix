@@ -171,9 +171,13 @@
 .print-payment-methods p { display: flex; justify-content: space-between; }
 .print-receipt-sheet footer { margin-top: 1.25rem; border-top: 1px dashed #555; padding-top: 0.75rem; text-align: center; }
 .print-legal-boundary { margin-top: 0.4rem; font-size: 0.62rem; line-height: 1.3; }
-.print-ticket-number { margin-block: 1.5rem; border: 4px solid #111; padding: 1rem; text-align: center; }
+.print-ticket-code-block { margin-block: 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 1rem; }
+.print-ticket-number { display: flex; flex-direction: column; justify-content: center; border: 4px solid #111; padding: 1rem; text-align: center; }
 .print-ticket-number p { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
 .print-ticket-number h2 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 950; line-height: 1; }
+.print-ticket-qr { display: flex; width: 34mm; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; text-align: center; }
+.print-ticket-qr p { font-size: 0.62rem; font-weight: 800; line-height: 1.2; text-transform: uppercase; }
+.scannable-qr { display: block; width: 100%; max-width: 100%; height: auto; background: #fff; }
 .print-ticket-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem 1.5rem; }
 .print-ticket-grid > div { border-bottom: 1px solid #ccc; padding-bottom: 0.4rem; }
 .print-ticket-items { margin-top: 1.5rem; }
@@ -189,10 +193,20 @@
 .print-label h2 { margin-top: 8mm; font-size: 2.15rem; font-weight: 950; line-height: 1; }
 .print-label h3 { margin-top: 3mm; font-size: 1.25rem; font-weight: 800; }
 .print-label-service { margin-block: 4mm; font-size: 1rem; font-weight: 700; }
-.print-code-area { margin-top: 7mm; display: flex; min-height: 22mm; align-items: center; justify-content: center; border: 2px dashed #555; color: #555; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; }
+.print-label-code { margin-top: 4mm; display: flex; justify-content: center; }
+.print-label-qr { width: 24mm; }
+.print-label-grid-custom .print-label { display: grid; grid-template-columns: minmax(0, 1fr) min(18mm, 42%); grid-template-rows: repeat(5, auto); column-gap: 1.5mm; align-content: center; }
+.print-label-grid-custom .print-label > :not(.print-label-code):not(.print-label-position) { grid-column: 1; }
+.print-label-grid-custom .print-label-code { grid-column: 2; grid-row: 1 / -1; margin-top: 0; align-items: center; }
+.print-label-grid-custom .print-label-qr { width: 100%; }
+.print-label-grid-custom .print-label h2 { margin-top: 2mm; font-size: 1.15rem; }
+.print-label-grid-custom .print-label h3 { margin-top: 1mm; font-size: 0.85rem; }
+.print-label-grid-custom .print-label-service { margin-block: 1mm; font-size: 0.72rem; }
+.print-label-grid-custom .print-label-position { top: var(--print-label-margin); right: var(--print-label-margin); font-size: 0.62rem; }
 
 @media (max-width: 640px) {
-  .print-ticket-grid, .print-label-grid { grid-template-columns: 1fr; }
+  .print-ticket-grid, .print-label-grid, .print-ticket-code-block { grid-template-columns: 1fr; }
+  .print-ticket-qr { width: 30mm; justify-self: center; }
   .print-preview-actions { align-items: stretch; }
 }
 

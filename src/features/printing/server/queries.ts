@@ -9,6 +9,8 @@ import { requirePrintAccess } from "@/features/printing/server/access";
 import type { PrintOrderContext } from "@/features/printing/types";
 import { getDefaultPrinterProfiles } from "@/features/printer-settings/server/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { hasEntitlement } from "@/features/entitlements/server/resolver";
 
 type MetadataRow = {
   created_by_profile: { display_name: string } | { display_name: string }[] | null;
@@ -29,13 +31,14 @@ export async function getPrintOrderContext(locale: string, orderId: string): Pro
     .eq("organization_id", access.membership.organization.id)
     .eq("id", orderId)
     .maybeSingle<MetadataRow>();
-  const [order, items, payments, paymentSummary, logistics, branding, metadataResult] = await Promise.all([
+  const [order, items, payments, paymentSummary, logistics, branding, barcodeEnabled, metadataResult] = await Promise.all([
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
     getOrderLogistics(locale, orderId),
     getTenantBranding(access.membership.organization.id),
+    hasEntitlement(locale, FEATURES.barcode),
     metadataPromise,
   ]);
 
@@ -44,6 +47,7 @@ export async function getPrintOrderContext(locale: string, orderId: string): Pro
   const printerProfiles = await getDefaultPrinterProfiles(locale, metadata.location_id);
 
   return {
+    barcodeEnabled,
     branding,
     createdByName: relation(metadata.created_by_profile)?.display_name ?? null,
     customerPhone: relation(metadata.customer)?.phone ?? null,

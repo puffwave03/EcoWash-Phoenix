@@ -7,6 +7,7 @@ import { getCurrentPosSession } from "@/features/pos/server/queries";
 import {
   createShopCustomerAction,
   loadShopServicesAction,
+  resolveShopCodeAction,
   submitShopOrderAction,
 } from "@/features/shop-terminal/server/actions";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
@@ -16,17 +17,24 @@ type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, session, entitlements, t, catalogT, printT] = await Promise.all([
+  const [access, customers, session, entitlements, t, catalogT, printT, barcodeT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
     getCurrentPosSession(locale),
-    getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing]),
+    getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
     getTranslations({ locale, namespace: "common.shopTerminal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
+    getTranslations({ locale, namespace: "common.barcode.terminal" }),
   ]);
   const text = {
     ...(t.raw("labels") as Omit<ShopTerminalText, "unitTypes">),
+    scanCode: barcodeT("scanCode"),
+    scanInvalid: barcodeT("scanInvalid"),
+    scanning: barcodeT("scanning"),
+    scanNotFound: barcodeT("scanNotFound"),
+    scanPlaceholder: barcodeT("scanPlaceholder"),
+    scanSubmit: barcodeT("scanSubmit"),
     unitTypes: catalogT.raw("unitTypes") as Record<string, string>,
   } satisfies ShopTerminalText;
 
@@ -35,9 +43,11 @@ export default async function ShopPage({ params }: ShopPageProps) {
       actions={{
         createCustomer: createShopCustomerAction.bind(null, locale),
         loadServices: loadShopServicesAction.bind(null, locale),
+        resolveCode: resolveShopCodeAction.bind(null, locale),
         submit: submitShopOrderAction.bind(null, locale),
       }}
       canPrint={entitlementEnabled(entitlements, FEATURES.printing)}
+      canScan={entitlementEnabled(entitlements, FEATURES.barcode)}
       canInvoice={entitlementEnabled(entitlements, FEATURES.billingInvoicing) && access.membership.role !== "staff"}
       canConfigurePrinters={entitlementEnabled(entitlements, FEATURES.printing) && access.membership.role !== "staff"}
       customers={customers}

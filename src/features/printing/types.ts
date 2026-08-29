@@ -5,6 +5,7 @@ import type { Payment, PaymentSummary } from "@/features/payments/types";
 import type { PrinterProfileDefaults } from "@/features/printer-settings/types";
 
 export type PrintOrderContext = {
+  barcodeEnabled: boolean;
   branding: TenantBrandingExperience;
   createdByName: string | null;
   customerPhone: string | null;
@@ -20,6 +21,7 @@ export type PrintOrderContext = {
 };
 
 export type PrintLabel = {
+  codePayload: string;
   customerName: string;
   dueAt: string | null;
   index: number;
@@ -27,5 +29,6 @@ export type PrintLabel = {
   orderNumber: string;
   serviceName: string;
   total: number;
+  unitIndex: number;
   unitLabel: string | null;
 };

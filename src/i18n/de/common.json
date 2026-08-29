@@ -1661,6 +1661,21 @@
       }
     }
   },
+  "barcode": {
+    "terminal": {
+      "scanCode": "Code scannen / suchen",
+      "scanPlaceholder": "Phoenix-Code scannen oder einfügen",
+      "scanSubmit": "Auftrag öffnen",
+      "scanning": "Wird geprüft…",
+      "scanInvalid": "Ungültiger Code",
+      "scanNotFound": "Auftrag in dieser Organisation nicht gefunden"
+    },
+    "print": {
+      "orderAria": "QR-Code für diesen Auftrag",
+      "labelAria": "QR-Code für dieses Auftragsetikett",
+      "scanOrder": "Scannen, um den Auftrag zu öffnen"
+    }
+  },
   "properties": {
     "active": "Aktiv",
     "inactive": "Inaktiv",

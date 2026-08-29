@@ -4,8 +4,8 @@ import { useActionState, useMemo, useRef, useState, useTransition } from "react"
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
-import type { ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
-import { Link } from "@/i18n/navigation";
+import type { ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
 
 type CartLine = { quantity: number; service: ShopService };
@@ -26,17 +26,20 @@ export type ShopTerminalText = {
   saveCustomer: string; saving: string; searchServices: string; segmentPrice: string; selectCustomer: string;
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
   tillOpen: string; tillRequired: string; title: string; total: string; unitTypes: Record<string, string>;
+  scanCode: string; scanPlaceholder: string; scanSubmit: string; scanning: string; scanInvalid: string; scanNotFound: string;
 };
 
 type Props = {
   actions: {
     createCustomer: (state: ShopCustomerState, formData: FormData) => Promise<ShopCustomerState>;
     loadServices: (customerId: string, locationId: string | null) => Promise<ShopService[]>;
+    resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
   };
   canConfigurePrinters: boolean;
   canInvoice: boolean;
   canPrint: boolean;
+  canScan: boolean;
   customers: ShopCustomer[];
   locale: string;
   operatorName: string;
@@ -51,7 +54,8 @@ const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, customers: initialCustomers, locale, operatorName, organizationName, printText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, customers: initialCustomers, locale, operatorName, organizationName, printText, role, session, text }: Props) {
+  const router = useRouter();
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
   const [customerMode, setCustomerMode] = useState<CustomerMode>(null);
@@ -67,6 +71,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [showSplitPayment, setShowSplitPayment] = useState(false);
   const [dismissedOrderId, setDismissedOrderId] = useState<string | null>(null);
   const [isLoading, startLoading] = useTransition();
+  const [isResolving, startResolving] = useTransition();
+  const [scanError, setScanError] = useState<ShopCodeResolveResult["error"]>(null);
+  const [scanValue, setScanValue] = useState("");
   const [customerState, createCustomer, isCreatingCustomer] = useActionState(async (state: ShopCustomerState, formData: FormData) => {
     const result = await actions.createCustomer(state, formData);
     if (result.customer) {
@@ -179,6 +186,21 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setShowSplitPayment(false);
   }
 
+  function resolveCode(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const raw = scanValue.trim();
+    if (!raw) return;
+    setScanError(null);
+    startResolving(async () => {
+      const result = await actions.resolveCode(raw);
+      if (result.orderId) {
+        router.push(`/app/orders/${result.orderId}`);
+        return;
+      }
+      setScanError(result.error);
+    });
+  }
+
   const terminalHeader = (
     <header className="border-b border-white/10 bg-primary px-4 py-3 text-white sm:px-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -206,6 +228,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     <div className="counter-register-shell min-h-screen bg-[#eef1ed]">
       {terminalHeader}
       <section className="border-b border-border bg-white px-4 py-3 sm:px-5">
+        {canScan ? <form className="mb-3 flex min-w-0 flex-col gap-2 border-l-4 border-primary bg-primary-soft p-3 sm:flex-row sm:items-end" onSubmit={resolveCode}><label className="min-w-0 flex-1 text-xs font-black uppercase tracking-[0.1em] text-primary">{text.scanCode}<input autoComplete="off" className="mt-1 min-h-11 w-full min-w-0 rounded-control border border-primary/30 bg-white px-3 font-mono text-base text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary" disabled={isResolving} onChange={(event) => { setScanValue(event.target.value); setScanError(null); }} placeholder={text.scanPlaceholder} spellCheck={false} value={scanValue} /></label><button className="min-h-11 shrink-0 rounded-control bg-primary px-5 font-bold text-white disabled:opacity-50" disabled={isResolving || !scanValue.trim()} type="submit">{isResolving ? text.scanning : text.scanSubmit}</button>{scanError ? <p aria-live="polite" className="text-sm font-semibold text-red-700 sm:self-center">{scanError === "invalid" ? text.scanInvalid : text.scanNotFound}</p> : null}</form> : null}
         {selectedCustomer ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-muted">{text.currentCustomer}</p><div className="mt-0.5 flex flex-wrap items-center gap-2"><strong className="truncate text-lg text-primary">{selectedCustomer.name}</strong>{selectedCustomer.isWalkIn ? <span className="rounded-full bg-gold-soft px-2.5 py-1 text-xs font-bold text-primary">{text.occasionalCustomer}</span> : null}<span className="text-sm text-muted">{selectedCustomer.phone || selectedCustomer.email || "—"}</span></div></div><button className="min-h-10 rounded-control border border-primary/25 px-4 text-sm font-bold text-primary" onClick={clearCustomer} type="button">{text.changeCustomer}</button></div>
         ) : (

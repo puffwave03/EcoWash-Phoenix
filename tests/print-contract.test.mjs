@@ -116,14 +116,17 @@ test("17 continuous quantities produce one label per order line", async () => {
   assert.doesNotMatch(labels, /Math\.ceil\(item\.quantity\)/);
 });
 
-test("18 labels contain a reserved code area but no fabricated barcode", async () => {
-  const [document, messages] = await Promise.all([
+test("18 ticket and labels render real Phoenix QR codes when barcode is entitled", async () => {
+  const [document, renderer] = await Promise.all([
     source("src/components/printing/OrderPrintDocument.tsx"),
-    source("src/i18n/en/common.json"),
+    source("src/components/barcode/ScannableQrCode.tsx"),
   ]);
-  assert.match(document, /print-code-area/);
-  assert.match(messages, /RESERVED CODE AREA/);
-  assert.doesNotMatch(document, /<svg|<canvas|barcode|qr-code/i);
+  assert.match(document, /createOrderCode\(context\.order\.id\)/);
+  assert.match(document, /label\.codePayload/);
+  assert.match(document, /context\.barcodeEnabled/);
+  assert.match(renderer, /QRCode\.create/);
+  assert.match(renderer, /<svg/);
+  assert.doesNotMatch(document, /print-code-area/);
 });
 
 test("19 print is explicit and never automatic", async () => {
@@ -170,7 +173,7 @@ test("24 no printing code creates orders or mutates financial data", async () =>
     source("src/components/printing/OrderPrintDocument.tsx"),
     source("src/components/printing/PrintButton.tsx"),
   ]);
-  assert.doesNotMatch(files.join("\n"), /\.insert\(|\.update\(|\.delete\(|createOrder|recordPayment/);
+  assert.doesNotMatch(files.join("\n"), /\.insert\(|\.update\(|\.delete\(|createOrder\(|recordPayment\(/);
 });
 
 test("25 all five locales expose complete print vocabulary", async () => {

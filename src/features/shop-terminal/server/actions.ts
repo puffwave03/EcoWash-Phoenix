@@ -6,10 +6,53 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { listShopServices } from "@/features/shop-terminal/server/queries";
 import type { ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import type { ShopCodeResolveResult } from "@/features/shop-terminal/types";
+import { parsePhoenixCode } from "@/features/barcode/payload";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { requireEntitlement } from "@/features/entitlements/server/resolver";
+import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[+()\d\s.-]{3,32}$/;
+
+export async function resolveShopCodeAction(locale: string, raw: string): Promise<ShopCodeResolveResult> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  await requireEntitlement(locale, FEATURES.barcode);
+  const parsed = parsePhoenixCode(raw);
+  if (!parsed) return { error: "invalid", orderId: null, orderNumber: null };
+
+  const supabase = await createSupabaseServerClient();
+  const { data: order, error: orderError } = await supabase.from("orders")
+    .select("id, order_number")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", parsed.orderId)
+    .maybeSingle<{ id: string; order_number: string }>();
+  if (orderError || !order) {
+    if (orderError) console.error("Shop code order resolution failed", orderError.code);
+    return { error: "not_found", orderId: null, orderNumber: null };
+  }
+
+  if (parsed.kind === "label") {
+    const { data: item, error: itemError } = await supabase.from("order_items")
+      .select("id, quantity, unit_type")
+      .eq("organization_id", membership.organization.id)
+      .eq("order_id", order.id)
+      .eq("id", parsed.itemId)
+      .eq("is_active", true)
+      .maybeSingle<{ id: string; quantity: number; unit_type: ServiceUnitType }>();
+    const expectedUnitIndex = item && !isDiscreteServiceUnit(item.unit_type) ? 0 : parsed.unitIndex;
+    const validDiscreteUnit = item && isDiscreteServiceUnit(item.unit_type)
+      ? parsed.unitIndex >= 1 && parsed.unitIndex <= Math.max(1, Math.trunc(Number(item.quantity)))
+      : parsed.unitIndex === 0;
+    if (itemError || !item || expectedUnitIndex !== parsed.unitIndex || !validDiscreteUnit) {
+      if (itemError) console.error("Shop code label resolution failed", itemError.code);
+      return { error: "not_found", orderId: null, orderNumber: null };
+    }
+  }
+
+  return { error: null, orderId: order.id, orderNumber: order.order_number };
+}
 
 export async function loadShopServicesAction(
   locale: string,

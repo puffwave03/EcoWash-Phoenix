@@ -52,3 +52,9 @@ export type ShopCustomerState = {
   customer: ShopCustomer | null;
   error: string | null;
 };
+
+export type ShopCodeResolveResult = {
+  error: "invalid" | "not_found" | null;
+  orderId: string | null;
+  orderNumber: string | null;
+};

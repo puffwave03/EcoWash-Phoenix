@@ -8,6 +8,8 @@ import type { PrinterProfile } from "@/features/printer-settings/types";
 import type { PaymentMethod } from "@/features/payments/types";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
+import { ScannableQrCode } from "@/components/barcode/ScannableQrCode";
+import { createOrderCode } from "@/features/barcode/payload";
 
 export type OrderPrintMode = "labels" | "receipt" | "ticket";
 
@@ -81,11 +83,15 @@ async function Receipt({ context, locale, profile }: { context: PrintOrderContex
 
 async function Ticket({ context, locale }: { context: PrintOrderContext; locale: string }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
+  const codeT = await getTranslations({ locale, namespace: "common.barcode.print" });
   const logistics = [["pickup", context.logistics.pickup], ["delivery", context.logistics.delivery]] as const;
   return (
     <article className="print-sheet print-ticket-sheet">
       <BrandHeader compact context={context} />
-      <section className="print-ticket-number"><p>{t("ticket.internalTicket")}</p><h2>{context.order.orderNumber}</h2></section>
+      <section className="print-ticket-code-block">
+        <div className="print-ticket-number"><p>{t("ticket.internalTicket")}</p><h2>{context.order.orderNumber}</h2></div>
+        {context.barcodeEnabled ? <div className="print-ticket-qr"><ScannableQrCode ariaLabel={codeT("orderAria")} payload={createOrderCode(context.order.id)} /><p>{codeT("scanOrder")}</p></div> : null}
+      </section>
       <dl className="print-ticket-grid">
         <div><dt>{t("fields.customer")}</dt><dd>{context.order.customerName}</dd></div>
         {context.customerPhone ? <div><dt>{t("fields.phone")}</dt><dd>{context.customerPhone}</dd></div> : null}
@@ -103,6 +109,7 @@ async function Ticket({ context, locale }: { context: PrintOrderContext; locale:
 
 async function Labels({ context, locale, profile }: { context: PrintOrderContext; locale: string; profile: PrinterProfile | null }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
+  const codeT = await getTranslations({ locale, namespace: "common.barcode.print" });
   const sourceLabels = buildPrintLabels(context);
   const copies = profile?.paperFormat === "label_custom" ? profile.labelCopies ?? 1 : 1;
   const labels = Array.from({ length: copies }, (_, copyIndex) => sourceLabels.map((label) => ({ copyIndex, label }))).flat();
@@ -115,7 +122,7 @@ async function Labels({ context, locale, profile }: { context: PrintOrderContext
     "--print-label-margin": `${profile.labelMarginMm ?? 2}mm`,
     "--print-label-width": `${landscape ? labelHeight : labelWidth}mm`,
   } as CSSProperties : undefined;
-  return <div className={`print-label-grid ${customStyle ? "print-label-grid-custom" : ""}`} style={customStyle}>{labels.map(({ copyIndex, label }) => <article className="print-label" key={`${copyIndex}-${label.index}-${label.serviceName}`}><div className="print-label-position">{label.index}/{label.total}</div><p className="print-label-org">{context.branding.brand.name ?? context.organizationName}{label.locationName ? ` · ${label.locationName}` : ""}</p><h2>{label.orderNumber}</h2><h3>{label.customerName}</h3><p className="print-label-service">{label.serviceName}{label.unitLabel ? ` · ${label.unitLabel}` : ""}</p>{label.dueAt ? <p>{t("fields.expectedReady")}: <strong>{formatDate(label.dueAt, locale, context.timezone)}</strong></p> : null}<div aria-label={t("labels.codeAreaAria")} className="print-code-area">{t("labels.codeArea")}</div></article>)}</div>;
+  return <div className={`print-label-grid ${customStyle ? "print-label-grid-custom" : ""}`} style={customStyle}>{labels.map(({ copyIndex, label }) => <article className="print-label" key={`${copyIndex}-${label.codePayload}`}><div className="print-label-position">{label.index}/{label.total}</div><p className="print-label-org">{context.branding.brand.name ?? context.organizationName}{label.locationName ? ` · ${label.locationName}` : ""}</p><h2>{label.orderNumber}</h2><h3>{label.customerName}</h3><p className="print-label-service">{label.serviceName}{label.unitLabel ? ` · ${label.unitLabel}` : ""}</p>{label.dueAt ? <p>{t("fields.expectedReady")}: <strong>{formatDate(label.dueAt, locale, context.timezone)}</strong></p> : null}{context.barcodeEnabled ? <div className="print-label-code"><ScannableQrCode ariaLabel={codeT("labelAria")} className="print-label-qr" payload={label.codePayload} /></div> : null}</article>)}</div>;
 }
 
 export async function OrderPrintDocument({ context, locale, mode }: { context: PrintOrderContext; locale: string; mode: OrderPrintMode }) {

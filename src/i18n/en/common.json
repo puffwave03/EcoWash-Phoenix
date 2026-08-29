@@ -1712,6 +1712,21 @@
       }
     }
   },
+  "barcode": {
+    "terminal": {
+      "scanCode": "Scan / search code",
+      "scanPlaceholder": "Scan or paste a Phoenix code",
+      "scanSubmit": "Open order",
+      "scanning": "Checking…",
+      "scanInvalid": "Invalid code",
+      "scanNotFound": "Order not found in this organization"
+    },
+    "print": {
+      "orderAria": "QR code for this order",
+      "labelAria": "QR code for this order label",
+      "scanOrder": "Scan to open order"
+    }
+  },
   "properties": {
     "active": "Active",
     "inactive": "Inactive",

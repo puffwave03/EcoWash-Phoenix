@@ -1661,6 +1661,21 @@
       }
     }
   },
+  "barcode": {
+    "terminal": {
+      "scanCode": "Escanear / buscar código",
+      "scanPlaceholder": "Escanea o pega un código Phoenix",
+      "scanSubmit": "Abrir pedido",
+      "scanning": "Comprobando…",
+      "scanInvalid": "Código no válido",
+      "scanNotFound": "Pedido no encontrado en esta organización"
+    },
+    "print": {
+      "orderAria": "Código QR de este pedido",
+      "labelAria": "Código QR de esta etiqueta de pedido",
+      "scanOrder": "Escanea para abrir el pedido"
+    }
+  },
   "properties": {
     "active": "Activa",
     "inactive": "Inactiva",
