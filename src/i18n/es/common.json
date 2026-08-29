@@ -164,6 +164,7 @@
       "branding": "Marca y Portal",
       "catalogAdmin": "Catálogo cliente",
       "printers": "Impresoras",
+      "settings": "Configuración",
       "dailyClose": "Cierre diario",
       "alerts": "Alertas operativas",
       "userLabel": "Usuario",
@@ -1243,6 +1244,24 @@
     "paymentStatuses": {"unpaid": "No pagado", "partially_paid": "Pago parcial", "paid": "Pagado", "pending": "Pendiente", "confirmed": "Confirmado", "void": "Anulado", "refunded": "Reembolsado"},
     "paymentMethods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia bancaria", "other": "Otro"}
   },
+  "settings": {
+    "eyebrow": "Administración",
+    "title": "Configuración",
+    "description": "Gestiona la empresa, la experiencia del cliente, la configuración operativa y los accesos fuera del trabajo diario.",
+    "groups": {
+      "company": {"title": "Empresa", "description": "Identidad legal y valores predeterminados de la organización."},
+      "appearance": {"title": "Aspecto y Portal", "description": "Marca, Portal del Cliente y presentación de contactos de soporte."},
+      "operations": {"title": "Operaciones", "description": "Configura el catálogo de clientes y los perfiles de impresión existentes."},
+      "people": {"title": "Personas y accesos", "description": "Gestiona quién accede a la organización y qué puede hacer."}
+    },
+    "items": {
+      "billingIssuer": {"title": "Datos fiscales y facturación", "description": "Revisa la identidad legal y fiscal utilizada en las facturas."},
+      "brandPortal": {"title": "Marca y Portal del Cliente", "description": "Gestiona la marca, el contenido del Portal y los contactos de soporte."},
+      "catalog": {"title": "Catálogo cliente", "description": "Controla la visibilidad de servicios y su presentación al cliente."},
+      "printers": {"title": "Impresoras", "description": "Configura perfiles de recibos, etiquetas y tickets internos por sede."},
+      "staff": {"title": "Personal y accesos", "description": "Invita al personal y gestiona roles y capacidades operativas."}
+    }
+  },
   "catalogAdmin": {
     "eyebrow": "Experiencia del cliente",
     "title": "Catálogo cliente",
@@ -1581,6 +1600,7 @@
     },
     "payments": {
       "title": "Pagos",
+      "history": "Historial de pagos",
       "totalDue": "Total adeudado",
       "totalPaid": "Total pagado",
       "balanceDue": "Saldo pendiente",

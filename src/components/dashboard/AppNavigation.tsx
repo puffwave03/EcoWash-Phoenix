@@ -14,8 +14,6 @@ import {
 type AppNavigationText = {
   alerts: string;
   billing: string;
-  branding: string;
-  catalogAdmin: string;
   controlCenter: string;
   controlGroup: string;
   customers: string;
@@ -25,12 +23,11 @@ type AppNavigationText = {
   orders: string;
   pos: string;
   overview: string;
-  printers: string;
   production: string;
   quality: string;
   services: string;
   shop: string;
-  staff: string;
+  settings: string;
   toolsGroup: string;
   work: string;
   workExperience: string;
@@ -55,6 +52,19 @@ type AppNavigationProps = {
   switchToPlatformLabel?: string;
   text: AppNavigationText;
   userLabel?: string;
+};
+
+type NavigationItem = {
+  alertBadge?: boolean;
+  aliases?: string[];
+  href: string;
+  label: string;
+  match: string;
+};
+
+type NavigationGroup = {
+  items: NavigationItem[];
+  label: string;
 };
 
 function NavigationIcon({ href }: { href: string }) {
@@ -108,6 +118,15 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
+  if (href === "/app/settings") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.55v-.09A1.7 1.7 0 0 0 8.45 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.05 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2.3V9.55h.09A1.7 1.7 0 0 0 4.05 8.45a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.86-2.86.06.06A1.7 1.7 0 0 0 8.45 4.05a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2.3h4.05v.09A1.7 1.7 0 0 0 15 4.05a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 8.45c.16.43.42.79.76 1.07.31.25.69.39 1.09.39H21v4.05h-.09A1.7 1.7 0 0 0 19.4 15Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.4" />
+      </svg>
+    );
+  }
+
   if (href === "/app/delivery" || href === "/app/work/deliveries") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
@@ -156,7 +175,7 @@ export function AppNavigation({
     ? { href: "/app/shop", label: text.shop, match: "/app/shop" }
     : null;
   const counterNavigationItems = shopNavigationItem ? [shopNavigationItem] : posNavigationItem ? [posNavigationItem] : [];
-  const navigationGroups = isControlRole
+  const navigationGroups: NavigationGroup[] = isControlRole
     ? [
         {
           items: [
@@ -182,18 +201,7 @@ export function AppNavigation({
               ? [{ href: "/app/billing", label: text.billing, match: "/app/billing" }]
               : []),
             { href: "/app/services", label: text.services, match: "/app/services" },
-            { href: "/app/settings/catalog", label: text.catalogAdmin, match: "/app/settings/catalog" },
-            ...(entitlementEnabled(entitlements, FEATURES.printing)
-              ? [{ href: "/app/settings/printers", label: text.printers, match: "/app/settings/printers" }]
-              : []),
-            ...(role === "owner"
-              ? [
-                  { href: "/app/staff", label: text.staff, match: "/app/staff" },
-                  ...(entitlementEnabled(entitlements, FEATURES.fullWhiteLabel)
-                    ? [{ href: "/app/settings/branding", label: text.branding, match: "/app/settings/branding" }]
-                    : []),
-                ]
-              : []),
+            { href: "/app/settings", label: text.settings, match: "/app/settings", aliases: ["/app/staff"] },
           ],
           label: text.managementGroup,
         },
@@ -226,9 +234,10 @@ export function AppNavigation({
   const navigationItems = navigationGroups.flatMap((group) => group.items);
   const activeItem =
     navigationItems.find((item) =>
-      item.match === "/app" || item.match === "/app/work"
+      (item.match === "/app" || item.match === "/app/work"
         ? pathname === item.match
-        : pathname.startsWith(item.match),
+        : pathname.startsWith(item.match))
+      || ("aliases" in item && item.aliases?.some((alias) => pathname.startsWith(alias)) === true),
     ) ?? navigationItems[0];
   const activeExperience = !isControlRole
     || activeItem.href === "/app/work"
@@ -287,35 +296,15 @@ export function AppNavigation({
                       </div>
                     ) : null}
                   </dl>
-                  {role === "owner" && entitlementEnabled(entitlements, FEATURES.fullWhiteLabel) ? (
+                  {isControlRole ? (
                     <div className="mt-4 border-t border-border pt-4">
                       <Link
                         className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        href="/app/settings/branding"
+                        href="/app/settings"
                         locale={locale}
                       >
-                        {text.branding}<span aria-hidden="true">→</span>
+                        {text.settings}<span aria-hidden="true">→</span>
                       </Link>
-                    </div>
-                  ) : null}
-                  {isControlRole ? (
-                    <div className="mt-4 space-y-2 border-t border-border pt-4">
-                      <Link
-                        className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        href="/app/settings/catalog"
-                        locale={locale}
-                      >
-                        {text.catalogAdmin}<span aria-hidden="true">→</span>
-                      </Link>
-                      {entitlementEnabled(entitlements, FEATURES.printing) ? (
-                        <Link
-                          className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                          href="/app/settings/printers"
-                          locale={locale}
-                        >
-                          {text.printers}<span aria-hidden="true">→</span>
-                        </Link>
-                      ) : null}
                     </div>
                   ) : null}
                   {platformAccess && switchToPlatformLabel ? (

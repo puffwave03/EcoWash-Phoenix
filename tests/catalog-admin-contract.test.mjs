@@ -22,18 +22,23 @@ test("catalog administration uses the existing Owner/Manager guard while brandin
   assert.match(brandingActions, /requireOwner\(locale\)/);
 });
 
-test("Staff navigation does not include management catalog routes", async () => {
-  const navigation = await source("src/components/dashboard/AppNavigation.tsx");
-  const controlBranch = navigation.indexOf("const navigationGroups = isControlRole");
+test("Staff navigation does not include management settings and catalog remains in the guarded Settings hub", async () => {
+  const [navigation, settings] = await Promise.all([
+    source("src/components/dashboard/AppNavigation.tsx"),
+    source("src/app/[locale]/app/(dashboard)/settings/page.tsx"),
+  ]);
+  const controlBranch = navigation.indexOf("const navigationGroups: NavigationGroup[] = isControlRole");
   const staffBranch = navigation.indexOf("\n    : [\n        {", controlBranch);
   const navigationEnd = navigation.indexOf("\n      ];", staffBranch);
   const controlNavigation = navigation.slice(controlBranch, staffBranch);
   const staffNavigation = navigation.slice(staffBranch, navigationEnd);
 
   assert.ok(controlBranch >= 0 && staffBranch > controlBranch && navigationEnd > staffBranch);
-  assert.match(controlNavigation, /\/app\/settings\/catalog/);
+  assert.match(controlNavigation, /\/app\/settings/);
   assert.doesNotMatch(staffNavigation, /\/app\/settings\/(?:catalog|branding)/);
   assert.doesNotMatch(staffNavigation, /\/app\/(?:billing|services|customers|staff)/);
+  assert.match(settings, /requireOwnerOrManager\(locale\)/);
+  assert.match(settings, /href: "\/app\/settings\/catalog"/);
 });
 
 test("Portal discovery enforces active service, visibility, visible category and current price", async () => {

@@ -164,6 +164,7 @@
       "branding": "Marke und Portal",
       "catalogAdmin": "Kundenkatalog",
       "printers": "Drucker",
+      "settings": "Einstellungen",
       "dailyClose": "Tagesabschluss",
       "alerts": "Operative Hinweise",
       "userLabel": "Benutzer",
@@ -1243,6 +1244,24 @@
     "paymentStatuses": {"unpaid": "Unbezahlt", "partially_paid": "Teilweise bezahlt", "paid": "Bezahlt", "pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Storniert", "refunded": "Erstattet"},
     "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Banküberweisung", "other": "Andere"}
   },
+  "settings": {
+    "eyebrow": "Verwaltung",
+    "title": "Einstellungen",
+    "description": "Verwalten Sie Unternehmen, Kundenerlebnis, Betriebskonfiguration und Zugriffe außerhalb der täglichen Arbeit.",
+    "groups": {
+      "company": {"title": "Unternehmen", "description": "Rechtliche Identität und organisationsweite Standardwerte."},
+      "appearance": {"title": "Erscheinungsbild und Portal", "description": "Marke, Kundenportal und Darstellung der Supportkontakte."},
+      "operations": {"title": "Betrieb", "description": "Konfigurieren Sie den bestehenden Kundenkatalog und Druckprofile."},
+      "people": {"title": "Personen und Zugriffe", "description": "Verwalten Sie, wer auf die Organisation zugreifen darf und was möglich ist."}
+    },
+    "items": {
+      "billingIssuer": {"title": "Steuer- und Rechnungsdaten", "description": "Prüfen Sie die rechtliche und steuerliche Identität auf Rechnungen."},
+      "brandPortal": {"title": "Marke und Kundenportal", "description": "Verwalten Sie Marke, Portalinhalte und Supportkontakte."},
+      "catalog": {"title": "Kundenkatalog", "description": "Steuern Sie die Sichtbarkeit und kundenseitige Darstellung von Leistungen."},
+      "printers": {"title": "Drucker", "description": "Konfigurieren Sie Beleg-, Etiketten- und interne Ticketprofile je Standort."},
+      "staff": {"title": "Personal und Zugriffe", "description": "Laden Sie Personal ein und verwalten Sie Rollen und betriebliche Berechtigungen."}
+    }
+  },
   "catalogAdmin": {
     "eyebrow": "Kundenerlebnis",
     "title": "Kundenkatalog",
@@ -1581,6 +1600,7 @@
     },
     "payments": {
       "title": "Zahlungen",
+      "history": "Zahlungsverlauf",
       "totalDue": "Fälliger Gesamtbetrag",
       "totalPaid": "Bezahlt gesamt",
       "balanceDue": "Offener Betrag",

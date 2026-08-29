@@ -164,6 +164,7 @@
       "branding": "Brand e Portale",
       "catalogAdmin": "Catalogo cliente",
       "printers": "Stampanti",
+      "settings": "Impostazioni",
       "dailyClose": "Chiusura giornaliera",
       "alerts": "Avvisi operativi",
       "userLabel": "Utente",
@@ -1254,6 +1255,24 @@
     "paymentStatuses": {"unpaid": "Non pagato", "partially_paid": "Parzialmente pagato", "paid": "Pagato", "pending": "In attesa", "confirmed": "Confermato", "void": "Stornato", "refunded": "Rimborsato"},
     "paymentMethods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"}
   },
+  "settings": {
+    "eyebrow": "Amministrazione",
+    "title": "Impostazioni",
+    "description": "Gestisci azienda, esperienza cliente, configurazione operativa e accessi fuori dal lavoro quotidiano.",
+    "groups": {
+      "company": {"title": "Azienda", "description": "Identità legale e impostazioni predefinite dell'organizzazione."},
+      "appearance": {"title": "Aspetto e Portale", "description": "Brand, Portale Cliente e presentazione dei contatti di assistenza."},
+      "operations": {"title": "Operazioni", "description": "Configura il catalogo cliente esistente e i profili di stampa."},
+      "people": {"title": "Persone e accessi", "description": "Gestisci chi può accedere all'organizzazione e cosa può fare."}
+    },
+    "items": {
+      "billingIssuer": {"title": "Dati fiscali e fatturazione", "description": "Verifica l'identità legale e fiscale usata nelle fatture."},
+      "brandPortal": {"title": "Brand e Portale Cliente", "description": "Gestisci il brand, i contenuti del Portale e i contatti di assistenza."},
+      "catalog": {"title": "Catalogo cliente", "description": "Controlla la visibilità dei servizi e la presentazione al cliente."},
+      "printers": {"title": "Stampanti", "description": "Configura profili per ricevute, etichette e ticket interni per sede."},
+      "staff": {"title": "Staff e accessi", "description": "Invita lo staff e gestisci ruoli e capacità operative."}
+    }
+  },
   "catalogAdmin": {
     "eyebrow": "Esperienza cliente",
     "title": "Catalogo cliente",
@@ -1594,6 +1613,7 @@
     },
     "payments": {
       "title": "Pagamenti",
+      "history": "Storico pagamenti",
       "totalDue": "Totale dovuto",
       "totalPaid": "Totale pagato",
       "balanceDue": "Saldo dovuto",

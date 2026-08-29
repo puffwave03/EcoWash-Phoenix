@@ -164,6 +164,7 @@
       "branding": "Marque et Portail",
       "catalogAdmin": "Catalogue client",
       "printers": "Imprimantes",
+      "settings": "Paramètres",
       "dailyClose": "Clôture quotidienne",
       "alerts": "Alertes opérationnelles",
       "userLabel": "Utilisateur",
@@ -1243,6 +1244,24 @@
     "paymentStatuses": {"unpaid": "Impayé", "partially_paid": "Partiellement payé", "paid": "Payé", "pending": "En attente", "confirmed": "Confirmé", "void": "Annulé", "refunded": "Remboursé"},
     "paymentMethods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement bancaire", "other": "Autre"}
   },
+  "settings": {
+    "eyebrow": "Administration",
+    "title": "Paramètres",
+    "description": "Gérez l'entreprise, l'expérience client, la configuration opérationnelle et les accès hors du travail quotidien.",
+    "groups": {
+      "company": {"title": "Entreprise", "description": "Identité légale et valeurs par défaut de l'organisation."},
+      "appearance": {"title": "Apparence et Portail", "description": "Marque, Portail Client et présentation des contacts d'assistance."},
+      "operations": {"title": "Opérations", "description": "Configurez le catalogue client existant et les profils d'impression."},
+      "people": {"title": "Personnes et accès", "description": "Gérez qui peut accéder à l'organisation et ce qu'il peut faire."}
+    },
+    "items": {
+      "billingIssuer": {"title": "Données fiscales et facturation", "description": "Vérifiez l'identité légale et fiscale utilisée sur les factures."},
+      "brandPortal": {"title": "Marque et Portail Client", "description": "Gérez la marque, le contenu du Portail et les contacts d'assistance."},
+      "catalog": {"title": "Catalogue client", "description": "Contrôlez la visibilité des services et leur présentation au client."},
+      "printers": {"title": "Imprimantes", "description": "Configurez les profils de reçus, étiquettes et tickets internes par site."},
+      "staff": {"title": "Personnel et accès", "description": "Invitez le personnel et gérez les rôles et capacités opérationnelles."}
+    }
+  },
   "catalogAdmin": {
     "eyebrow": "Expérience client",
     "title": "Catalogue client",
@@ -1581,6 +1600,7 @@
     },
     "payments": {
       "title": "Paiements",
+      "history": "Historique des paiements",
       "totalDue": "Total dû",
       "totalPaid": "Total payé",
       "balanceDue": "Solde dû",

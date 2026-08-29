@@ -164,6 +164,7 @@
       "branding": "Brand & Portal",
       "catalogAdmin": "Customer catalog",
       "printers": "Printers",
+      "settings": "Settings",
       "dailyClose": "Daily close",
       "alerts": "Operational alerts",
       "userLabel": "User",
@@ -1268,6 +1269,24 @@
     "paymentStatuses": {"unpaid": "Unpaid", "partially_paid": "Partially paid", "paid": "Paid", "pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
     "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"}
   },
+  "settings": {
+    "eyebrow": "Administration",
+    "title": "Settings",
+    "description": "Manage the organization, customer experience, operational setup and access away from daily work.",
+    "groups": {
+      "company": {"title": "Company", "description": "Legal identity and organization-wide defaults."},
+      "appearance": {"title": "Appearance & Portal", "description": "Brand, Customer Portal and support contact presentation."},
+      "operations": {"title": "Operations", "description": "Configure the existing customer catalog and print profiles."},
+      "people": {"title": "People & Access", "description": "Manage who can access the organization and what they can do."}
+    },
+    "items": {
+      "billingIssuer": {"title": "Billing issuer", "description": "Review the legal and fiscal identity used on invoices."},
+      "brandPortal": {"title": "Brand & Customer Portal", "description": "Manage brand presentation, Portal content and support contacts."},
+      "catalog": {"title": "Customer catalog", "description": "Control service visibility and customer-facing presentation."},
+      "printers": {"title": "Printers", "description": "Configure receipt, label and internal ticket profiles by location."},
+      "staff": {"title": "Staff & access", "description": "Invite staff and manage roles and operational capabilities."}
+    }
+  },
   "catalogAdmin": {
     "eyebrow": "Customer experience",
     "title": "Customer catalog",
@@ -1632,6 +1651,7 @@
     },
     "payments": {
       "title": "Payments",
+      "history": "Payment history",
       "totalDue": "Total due",
       "totalPaid": "Total paid",
       "balanceDue": "Balance due",

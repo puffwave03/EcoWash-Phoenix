@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { DisclosureSection } from "@/components/DisclosureSection";
 import { CustomerBillingSection } from "@/components/billing/CustomerBillingSection";
 import { CustomerPortalAccessPanel } from "@/components/customers/CustomerPortalAccessPanel";
 import { CustomerLifecycleControl } from "@/components/customers/CustomerLifecycleControl";
@@ -235,13 +236,17 @@ export async function CustomerAccountView({
         ))}
       </nav>
 
-      <section className="space-y-4" aria-labelledby="customer-orders">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground" id="customer-orders">{t("orders.title")}</h2>
-            <p className="mt-1 text-sm text-muted">{t("orders.description")}</p>
-          </div>
-        </div>
+      <DisclosureSection
+        contentClassName="space-y-4"
+        count={financials.orders.length}
+        defaultOpen={financials.orders.length <= 3}
+        id="customer-orders"
+        summary={financials.orders[0]
+          ? `${formatDate(financials.orders[0].createdAt, locale)} · ${formatCurrency(financials.orders[0].total, financials.orders[0].currency, locale)}`
+          : t("orders.description")}
+        title={t("orders.title")}
+      >
+        <p className="text-sm text-muted">{t("orders.description")}</p>
         {financials.orders.length === 0 ? <EmptyState>{t("orders.empty")}</EmptyState> : (
           <div className="grid gap-3 lg:grid-cols-2">
             {financials.orders.map((order) => (
@@ -266,13 +271,19 @@ export async function CustomerAccountView({
             ))}
           </div>
         )}
-      </section>
+      </DisclosureSection>
 
-      <section className="space-y-4" aria-labelledby="customer-payments">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground" id="customer-payments">{t("payments.title")}</h2>
-          <p className="mt-1 text-sm text-muted">{t("payments.description")}</p>
-        </div>
+      <DisclosureSection
+        contentClassName="space-y-4"
+        count={financials.payments.length}
+        defaultOpen={financials.payments.length <= 3}
+        id="customer-payments"
+        summary={financials.payments[0]
+          ? `${formatDate(financials.payments[0].paidAt, locale, true)} · ${formatCurrency(financials.payments[0].amount, financials.payments[0].currency, locale)}`
+          : t("payments.description")}
+        title={t("payments.title")}
+      >
+        <p className="text-sm text-muted">{t("payments.description")}</p>
         {financials.payments.length === 0 ? <EmptyState>{t("payments.empty")}</EmptyState> : (
           <div className="divide-y divide-border overflow-hidden rounded-card border border-border bg-white shadow-card">
             {financials.payments.map((payment) => (
@@ -297,18 +308,21 @@ export async function CustomerAccountView({
           </div>
         )}
         <p className="text-xs leading-5 text-muted">{t("history.boundedNote")}</p>
-      </section>
+      </DisclosureSection>
 
-      <section className="space-y-4" aria-labelledby="customer-properties">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground" id="customer-properties">{t("properties.title")}</h2>
-            <p className="mt-1 text-sm text-muted">{t("properties.description", { count: properties.length })}</p>
-          </div>
+      <DisclosureSection
+        contentClassName="space-y-4"
+        count={properties.length}
+        defaultOpen={properties.length <= 3}
+        id="customer-properties"
+        summary={t("properties.description", { count: properties.length })}
+        title={t("properties.title")}
+      >
+        <div className="flex justify-end">
           <Link href={`/app/customers/${customer.id}/properties/new`} locale={locale}><Button variant="secondary">{customerText("newProperty")}</Button></Link>
         </div>
         <PropertyList empty={customerText("propertiesEmpty")} locale={locale} properties={properties} view={customerText("view")} />
-      </section>
+      </DisclosureSection>
 
       <section className="space-y-4" id="account-admin" aria-labelledby="account-admin-title">
         <div>

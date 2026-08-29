@@ -10,8 +10,6 @@ import { Link } from "@/i18n/navigation";
 type DashboardShellText = {
   alerts: string;
   billing: string;
-  branding: string;
-  catalogAdmin: string;
   controlCenter: string;
   controlGroup: string;
   dailyClose: string;
@@ -26,13 +24,12 @@ type DashboardShellText = {
   pos: string;
   organizationLabel: string;
   overview: string;
-  printers: string;
   production: string;
   quality: string;
   roleLabel: string;
   services: string;
   shop: string;
-  staff: string;
+  settings: string;
   switchToPlatform: string;
   toolsGroup: string;
   userLabel: string;
@@ -120,8 +117,6 @@ export function DashboardShell({
               text={{
                 alerts: text.alerts,
                 billing: text.billing,
-                branding: text.branding,
-                catalogAdmin: text.catalogAdmin,
                 controlCenter: text.controlCenter,
                 controlGroup: text.controlGroup,
                 customers: text.customers,
@@ -131,12 +126,11 @@ export function DashboardShell({
                 orders: text.orders,
                 pos: text.pos,
                 overview: text.overview,
-                printers: text.printers,
                 production: text.production,
                 quality: text.quality,
                 services: text.services,
                 shop: text.shop,
-                staff: text.staff,
+                settings: text.settings,
                 toolsGroup: text.toolsGroup,
                 work: text.work,
                 workExperience: text.workExperience,
@@ -198,8 +192,6 @@ export function DashboardShell({
             text={{
               alerts: text.alerts,
               billing: text.billing,
-              branding: text.branding,
-              catalogAdmin: text.catalogAdmin,
               controlCenter: text.controlCenter,
               controlGroup: text.controlGroup,
               customers: text.customers,
@@ -209,12 +201,11 @@ export function DashboardShell({
               orders: text.orders,
               pos: text.pos,
               overview: text.overview,
-              printers: text.printers,
               production: text.production,
               quality: text.quality,
               services: text.services,
               shop: text.shop,
-              staff: text.staff,
+              settings: text.settings,
               toolsGroup: text.toolsGroup,
               work: text.work,
               workExperience: text.workExperience,
@@ -240,8 +231,6 @@ export function DashboardShell({
         text={{
           alerts: text.alerts,
           billing: text.billing,
-          branding: text.branding,
-          catalogAdmin: text.catalogAdmin,
           controlCenter: text.controlCenter,
           controlGroup: text.controlGroup,
           customers: text.customers,
@@ -251,12 +240,11 @@ export function DashboardShell({
           orders: text.orders,
           pos: text.pos,
           overview: text.overview,
-          printers: text.printers,
           production: text.production,
           quality: text.quality,
           services: text.services,
           shop: text.shop,
-          staff: text.staff,
+          settings: text.settings,
           toolsGroup: text.toolsGroup,
           work: text.work,
           workExperience: text.workExperience,

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { DisclosureSection } from "@/components/DisclosureSection";
 import { Link } from "@/i18n/navigation";
 import type {
   Payment,
@@ -19,6 +20,7 @@ type PaymentsPanelText = {
   date: string;
   empty: string;
   error: string;
+  history: string;
   method: string;
   methods: Record<PaymentMethod, string>;
   notes: string;
@@ -85,36 +87,45 @@ export function PaymentsPanel({
         </Link>
       ) : null}
 
-      <div className="divide-y divide-border overflow-hidden rounded-card border border-border">
-        {payments.length === 0 ? (
-          <p className="p-4 text-sm text-muted">{text.empty}</p>
-        ) : payments.map((payment) => (
-          <div className="grid gap-3 p-4 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-start" key={payment.id}>
-            <div>
-              <p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p>
-              <p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p>
+      <DisclosureSection
+        count={payments.length}
+        defaultOpen={payments.length <= 3}
+        summary={payments[0]
+          ? `${new Date(payments[0].paidAt).toLocaleString(locale)} · ${formatCurrency(payments[0].amount, currency, locale)}`
+          : text.empty}
+        title={text.history}
+      >
+        <div className="divide-y divide-border overflow-hidden rounded-card border border-border">
+          {payments.length === 0 ? (
+            <p className="p-4 text-sm text-muted">{text.empty}</p>
+          ) : payments.map((payment) => (
+            <div className="grid gap-3 p-4 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-start" key={payment.id}>
+              <div>
+                <p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p>
+                <p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p>
+              </div>
+              <p className="text-sm text-muted">{text.date}: {new Date(payment.paidAt).toLocaleString(locale)}</p>
+              <p className="text-sm text-muted">{text.reference}: {payment.reference || "-"}</p>
+              <div className="space-y-2 text-sm text-muted">
+                <p>{text.actor}: {payment.recordedByName || "-"}</p>
+                {canManageCorrections && payment.status === "confirmed" ? (
+                  <div className="flex flex-col gap-2">
+                    <form action={actions.void.bind(null, payment.id)} className="flex gap-2">
+                      <input className="min-h-11 min-w-0 rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.voidReason} required />
+                      <Button type="submit" variant="secondary">{text.void}</Button>
+                    </form>
+                    <form action={actions.refund.bind(null, payment.id)} className="flex gap-2">
+                      <input className="min-h-11 w-24 rounded-control border border-border px-3 text-sm" min="0.01" name="amount" step="0.01" type="number" />
+                      <input className="min-h-11 min-w-0 rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.refundReason} required />
+                      <Button type="submit" variant="secondary">{text.refund}</Button>
+                    </form>
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <p className="text-sm text-muted">{text.date}: {new Date(payment.paidAt).toLocaleString(locale)}</p>
-            <p className="text-sm text-muted">{text.reference}: {payment.reference || "-"}</p>
-            <div className="space-y-2 text-sm text-muted">
-              <p>{text.actor}: {payment.recordedByName || "-"}</p>
-              {canManageCorrections && payment.status === "confirmed" ? (
-                <div className="flex flex-col gap-2">
-                  <form action={actions.void.bind(null, payment.id)} className="flex gap-2">
-                    <input className="min-h-11 min-w-0 rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.voidReason} required />
-                    <Button type="submit" variant="secondary">{text.void}</Button>
-                  </form>
-                  <form action={actions.refund.bind(null, payment.id)} className="flex gap-2">
-                    <input className="min-h-11 w-24 rounded-control border border-border px-3 text-sm" min="0.01" name="amount" step="0.01" type="number" />
-                    <input className="min-h-11 min-w-0 rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.refundReason} required />
-                    <Button type="submit" variant="secondary">{text.refund}</Button>
-                  </form>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </DisclosureSection>
     </Card>
   );
 }

@@ -142,11 +142,16 @@ test("17 no barcode, proprietary SDK or silent printing was added", async () => 
   assert.doesNotMatch(files.join("\n"), /\b(?:zebra|epson|brother|star)\b|esc\/pos|window\.print\(\).*useEffect|barcode|qr-code/i);
 });
 
-test("18 management navigation exposes one printer settings entry", async () => {
-  const navigation = await source("src/components/dashboard/AppNavigation.tsx");
-  assert.match(navigation, /href: "\/app\/settings\/printers"/);
-  assert.match(navigation, /FEATURES\.printing/);
-  assert.equal((navigation.match(/href: "\/app\/settings\/printers"/g) ?? []).length, 1);
+test("18 management navigation exposes printers once through the Settings hub", async () => {
+  const [navigation, settings] = await Promise.all([
+    source("src/components/dashboard/AppNavigation.tsx"),
+    source("src/app/[locale]/app/(dashboard)/settings/page.tsx"),
+  ]);
+  assert.match(navigation, /href: "\/app\/settings"/);
+  assert.doesNotMatch(navigation, /href: "\/app\/settings\/printers"/);
+  assert.match(settings, /href: "\/app\/settings\/printers"/);
+  assert.match(settings, /FEATURES\.printing/);
+  assert.equal((settings.match(/href: "\/app\/settings\/printers"/g) ?? []).length, 1);
 });
 
 test("19 counter shell is compact on desktop while mobile navigation remains", async () => {

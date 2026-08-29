@@ -30,8 +30,9 @@ test("2 tenant display identity stays an editable unconfirmed fallback", async (
 
 test("3 issuer configuration is compact when ready and names missing required fields", async () => {
   const panel = await source("src/components/billing/BillingSettingsPanel.tsx");
-  assert.match(panel, /<details open=\{!settings\.isIssueReady\}>/);
-  assert.match(panel, /settings\.issuerLegalName.*settings\.issuerTaxId.*settings\.issuerAddressLine1/);
+  assert.match(panel, /<DisclosureSection/);
+  assert.match(panel, /defaultOpen=\{!settings\.isIssueReady\}/);
+  assert.match(panel, /const issuerSummary = \[[\s\S]*settings\.issuerLegalName[\s\S]*settings\.issuerTaxId[\s\S]*settings\.issuerAddressLine1[\s\S]*settings\.issuerCountryCode/);
   assert.match(panel, /settings\.missingRequiredFields\.map/);
   assert.match(panel, /requiredLabels\[field\]/);
 });

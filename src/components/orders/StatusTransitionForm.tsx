@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import { DisclosureSection } from "@/components/DisclosureSection";
 import type { OrderHistory, ProductionStatus } from "@/features/orders/types";
 import { getAllowedTransitions, requiresReason } from "@/features/orders/workflow";
 
@@ -42,8 +43,13 @@ export function StatusTransitionForm({
         </form>
       ) : null}
 
-      <div className="space-y-3">
-        <h3 className="font-semibold text-primary">{text.history}</h3>
+      <DisclosureSection
+        contentClassName="space-y-3"
+        count={history.length}
+        defaultOpen={history.length <= 3}
+        summary={history[0] ? text.statusLabels[history[0].toStatus] : undefined}
+        title={text.history}
+      >
         {history.map((entry) => (
           <div className="rounded-control border border-border bg-white px-4 py-3 text-sm" key={entry.id}>
             <p className="font-semibold text-primary">
@@ -53,7 +59,7 @@ export function StatusTransitionForm({
             {entry.reason ? <p className="text-muted">{entry.reason}</p> : null}
           </div>
         ))}
-      </div>
+      </DisclosureSection>
     </div>
   );
 }

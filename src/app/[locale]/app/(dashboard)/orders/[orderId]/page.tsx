@@ -386,6 +386,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             date: t("payments.date"),
             empty: t("payments.empty"),
             error: t("payments.error"),
+            history: t("payments.history"),
             method: t("payments.method"),
             methods: t.raw("payments.methods"),
             notes: t("payments.notes"),
