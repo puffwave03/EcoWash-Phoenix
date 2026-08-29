@@ -6,9 +6,20 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PRINT-001 counter printing foundation completed
+Current Mission: COUNTER-UX-002 professional counter register redesign completed
 
 Next Action: BARCODE-001
+
+---
+
+## COUNTER-UX-002 — Completed
+
+- `/[locale]/app/shop` is a compact touch-first laundry register with a fast customer strip, tenant categories, service search/tiles and a persistent tablet/desktop cart with responsive mobile stacking.
+- Regular and occasional customers use the canonical tenant customer model; every walk-in gets a distinct traceable `WALKIN-<UUID>` identity without relaxing required `customer_id` or adding schema.
+- Effective segment/base pricing, discrete/continuous quantity rules, monetary discounts, active-till reuse and canonical cash/manual-card/PAY LATER behavior remain server-authoritative. No fake online CTA exists.
+- PRINT-001 receipt, ticket and label actions remain available from the compact success state. Existing entitlement, Owner/Manager, explicitly capable Staff and tenant boundaries remain authoritative.
+- No migration was added; staging remains aligned through PRINT-owned `20260829000300`. Exact EUR 18.00 paid and EUR 10.00 walk-in PAY LATER scenarios passed with rollback and zero fixtures.
+- Next sequence: `BARCODE-001`. `COUNTER-BILLING-001`, Accounting, fiscal invoicing and real provider configuration remain future work.
 
 ---
 
@@ -146,6 +157,9 @@ Approved and current areas:
 - ENTITLEMENTS-001 — SaaS Plans, Modules and Tenant Feature Access: Completed, staging migration aligned and feature/role/tenant/preservation E2E passed
 - PLATFORM-ADMIN-001 — Phoenix SaaS Control Center: Completed, staging migration aligned and identity/control/suspension/audit E2E passed
 - POS-001 — Vendor-neutral Point of Sale, Cash Register and Payment Operations: Completed, staging migrations aligned and financial/role/tenant E2E passed
+- SHOP-TERMINAL-001 — Dry Cleaning / Laundry Counter Terminal: Completed, migration aligned and exact paid/pay-later E2E passed
+- PRINT-001 — Counter receipt, internal ticket and label-ready browser printing: Completed, migration aligned and rollback E2E passed
+- COUNTER-UX-002 — Professional Dry Cleaning / Laundry Counter Register redesign: Completed, no migration required and exact regular/walk-in E2E passed
 - QA-PRODUCT-001 — Full Product Acceptance Test: PASS WITH NON-BLOCKING ISSUES; functional/security acceptance passed and authenticated visual review remains a Product Owner follow-up
 - OPS-001.5 — Daily Close MVP: Completed and pushed
 - OPS-001.6 — Operational Alerts MVP: Completed and pushed

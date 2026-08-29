@@ -4,21 +4,34 @@ Status: Active
 
 Date: 2026-08-29
 
-Approximate closeout time: after PRINT-001 counter printing foundation
+Approximate closeout time: after COUNTER-UX-002 professional counter register redesign
 
-Session checkpoint: PRINT-001 completed; BARCODE-001 is next and not started
+Session checkpoint: COUNTER-UX-002 completed; BARCODE-001 is next and not started
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `af30d70 DOCS-AUTH-CONTEXT-001 docs: record platform and tenant context switching`
+Approved baseline before this mission: `18e0f3d DOCS-PRINT-001 docs: record counter printing foundation`
 
-Origin/main status: local `main` and `origin/main` include `3318ea9 PRINT-001 feat: add counter receipt ticket and label printing`.
+Origin/main status: local `main` and `origin/main` include `6691e95 COUNTER-UX-002 feat: redesign shop terminal for dry cleaning counter`.
 
 Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `3318ea9 PRINT-001 feat: add counter receipt ticket and label printing`; working tree expected clean after documentation push.
+Application closeout commit: `6691e95 COUNTER-UX-002 feat: redesign shop terminal for dry cleaning counter`; working tree expected clean after documentation push.
+
+---
+
+## COUNTER-UX-002 Closeout
+
+- Redesigned `/[locale]/app/shop` as a compact touch-first laundry counter: customer strip, real category navigation, service search and large service tiles on the left/centre, with a persistent readable cart and large monetary summary/payment controls on tablet and desktop plus responsive mobile stacking.
+- Fast regular-customer creation remains canonical. Every `Cliente occasionale` creates its own tenant-scoped canonical customer with a distinct `WALKIN-<UUID>` code, optional phone/email and traceable order history; `orders.customer_id` remains required and no shared anonymous customer or parallel schema was added.
+- Reuses authoritative tenant services, effective segment/base pricing, integer versus continuous quantities, monetary discounts, existing active till and canonical cash/manual-card payment ledger. PAY LATER creates no payment row and no fake online-payment action exists.
+- The compact success state keeps PRINT-001 receipt, ticket and label actions. Owner/Manager inherit POS access; Staff still needs explicit POS capability; existing entitlement, capability and tenant gates remain authoritative.
+- No COUNTER migration was needed. Local and staging history remain aligned through PRINT-owned `20260829000300_print_001_output_entitlement.sql`.
+- Rollback-only staging proof passed `2 × EUR 7.50 + 1 × EUR 5.00 = EUR 20.00`, discount `EUR 2.00`, cash/card `EUR 8.00 / EUR 10.00`, paid/outstanding `EUR 18.00 / EUR 0.00`, expected cash `+EUR 8.00`; distinct walk-in `Cliente Banco Test` passed PAY LATER `EUR 10.00 / EUR 0.00 / EUR 10.00`, tenant isolation and zero fixtures.
+- Final gates: COUNTER 30/30, Shop Terminal 28/28, POS 31/31, pricing 20/20, Customer Account 14/14, PRINT 25/25, lint, production build and `git diff --check` PASS. In-app browser control was unavailable, so responsive rendering remains structurally covered and subject to Product Owner visual acceptance.
+- Next: `BARCODE-001`, not started. `COUNTER-BILLING-001`, Accounting, fiscal invoicing and real online-provider work were not started.
 
 ---
 
@@ -92,6 +105,7 @@ Application closeout commit: `3318ea9 PRINT-001 feat: add counter receipt ticket
 - PAYMENTS-ONLINE-001 — Provider-neutral customer online payment foundation; provider configuration required
 - SHOP-TERMINAL-001 — Dry Cleaning / Laundry Counter Terminal
 - PRINT-001 — Customer receipt, internal ticket and label-ready browser printing
+- COUNTER-UX-002 — Professional Dry Cleaning / Laundry Counter Register redesign
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -594,7 +608,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-PRINT-001 is completed and uses browser-native printing without barcodes or hardware dependencies. Resume with `BARCODE-001`; do not reopen accepted foundations unless a reproducible defect is found:
+COUNTER-UX-002 is completed on top of PRINT-001. The terminal now behaves as a professional touch-first counter register while retaining browser-native receipt, ticket and label previews. Resume with `BARCODE-001`; do not reopen accepted foundations unless a reproducible defect is found:
 
 1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
 2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.

@@ -6,9 +6,21 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PRINT-001 counter printing foundation completed
+Current Mission: COUNTER-UX-002 professional counter register redesign completed
 
 Next Action: BARCODE-001
+
+---
+
+## COUNTER-UX-002 — Completed
+
+The Shop Terminal is now a touch-first professional laundry counter register with fast canonical customer selection/creation, distinct tenant-scoped walk-ins, real category and service search, large service tiles, discrete/continuous quantities, server-authoritative segment/base pricing, monetary discounts, a persistent cart and direct cash/manual-card/PAY LATER actions. It reuses the active till and canonical payment ledger, retains all PRINT-001 actions and exposes no fake online payment. No migration was required; staging remains aligned through PRINT-owned `20260829000300`. Exact paid and pay-later rollback scenarios passed with zero fixtures.
+
+Sequence remains:
+
+1. `BARCODE-001`
+
+`COUNTER-BILLING-001`, Accounting, fiscal invoicing and real provider configuration remain separate future work.
 
 ---
 
@@ -376,9 +388,9 @@ Exit criteria:
 
 Customer portal is now part of M1 pilot scoping. The online-payment core is implemented but real provider onboarding/configuration remains separate future work. Do not combine it with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
 
-### Product Decision After PRINT-001
+### Product Decision After COUNTER-UX-002
 
-The print foundation is complete with browser-native receipt, ticket and label previews. Barcode generation/scanning remains a separate next task; real payment-provider readiness remains blocked on a separately approved official adapter and sandbox validation.
+The professional counter redesign and print foundation are complete. Barcode generation/scanning remains a separate next task; real payment-provider readiness remains blocked on a separately approved official adapter and sandbox validation.
 
 The approved sequence continues:
 

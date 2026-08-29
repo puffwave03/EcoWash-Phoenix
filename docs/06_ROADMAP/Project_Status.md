@@ -6,7 +6,7 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: PRINT-001 counter printing foundation completed
+Current Mission: COUNTER-UX-002 professional counter register redesign completed
 
 Next Action: BARCODE-001
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PRINT-001 counter printing foundation completed; BARCODE-001 next and not started |
-| Last completed implementation mission | PRINT-001 — canonical customer receipt, internal ticket and label-ready browser printing |
-| Approved baseline before current closeout | 3318ea9 |
+| Current mission | COUNTER-UX-002 professional counter register redesign completed; BARCODE-001 next and not started |
+| Last completed implementation mission | COUNTER-UX-002 — touch-first canonical laundry counter register |
+| Approved baseline before current closeout | 18e0f3d |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -85,6 +85,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PAYMENTS-ONLINE-001 status | Core completed and pushed; applied through corrective 20260829000100, 26/26 focused tests and rollback-only exact/idempotency/failure/concurrency/isolation E2E passed; PROVIDER CONFIGURATION REQUIRED |
 | SHOP-TERMINAL-001 status | Completed and pushed; migration 20260829000200 aligned; terminal 28/28, POS 31/31, pricing 20/20 and exact EUR 18.00 paid / EUR 10.00 pay-later rollback E2E passed with zero fixtures |
 | PRINT-001 status | Completed and pushed; migration 20260829000300 aligned; PRINT 25/25, Shop Terminal 28/28, POS 31/31 and exact receipt/payment/label rollback E2E passed with zero fixtures |
+| COUNTER-UX-002 status | Completed and pushed in 6691e95; no migration required; COUNTER 30/30 plus Shop/POS/pricing/Customer Account/PRINT regressions, exact EUR 18.00 split payment and distinct EUR 10.00 walk-in PAY LATER rollback E2E passed with zero fixtures |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -100,8 +101,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260829000300; counter orders and browser-native receipt/ticket/label previews reuse canonical orders and payments |
-| Commercial readiness | PRINT-001 is complete. Next is BARCODE-001. Real online-provider configuration, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
+| Backend/SaaS implementation | Supabase Staging aligned through 20260829000300; professional counter orders and browser-native receipt/ticket/label previews reuse canonical customers, catalog, pricing, orders, till and payments |
+| Commercial readiness | COUNTER-UX-002 and PRINT-001 are complete. Next is BARCODE-001. Real online-provider configuration, subscription collection, onboarding, formal e-invoicing and full accounting remain future work |
 
 ## Operational Access Testing Checkpoint
 
@@ -936,12 +937,13 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da PRINT-001 completato e avviamo BARCODE-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da COUNTER-UX-002 completato e avviamo BARCODE-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
+- COUNTER-UX-002 is completed in `6691e95`; the Shop Terminal is now a touch-first professional register with canonical regular/distinct walk-in customers, authoritative pricing, active-till reuse, cash/card/PAY LATER and preserved PRINT actions; no migration was added
 - MANUAL-QA-FIX-001 is completed in `b7ac1e5`; Portal support stays under `/[locale]/portal/support`, POS appears once, and the active till query names `pos_sessions_location_same_org`
 - PAYMENTS-ONLINE-001 application foundation is completed in `a0f88c5`; migrations `20260828000200` and `20260829000100` are aligned, EcoWash remains OFF/unconfigured, and real-provider status is `PROVIDER CONFIGURATION REQUIRED`
 - The order discount is a monetary `discount_amount`, not a percentage; no historical financial data was changed
