@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline on `main` before this docs update: `6629495` (`COUNTER-BILLING-001`).
-- Latest relevant application commit: `6629495` (`COUNTER-BILLING-001`).
-- Previous completed product documentation commit: `30d631b` (`DOCS-COUNTER-UI-003`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline on `main` before this docs update: `85c72fa` (`UX-POLISH-001`).
+- Latest relevant application commit: `85c72fa` (`UX-POLISH-001`).
+- Previous completed product documentation commit: `54698cf` (`DOCS-COUNTER-BILLING-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260829000400_counter_ui_003_printer_profiles.sql`.
-- At COUNTER-BILLING-001 application completion: `main == origin/main` and working tree clean.
+- At UX-POLISH-001 application completion: `main == origin/main` and working tree clean.
 
 ## Completed Major Modules
 
@@ -34,6 +34,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
 | Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults now configure the existing PRINT renderer. |
+| Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
 
 ## Current Important Configuration
 
@@ -49,6 +50,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Receipt profiles support 58 mm, 80 mm and browser/PDF layouts; label profiles support custom width, height, orientation, copies, margins and gap.
 - Billing issuer setup derives from the authenticated tenant only. Existing tenant name and branding commercial/address/support values are editable suggestions; an Owner must confirm and persist legal identity once before issue.
 - Configured issuer identity is compact/collapsible. Incomplete configuration identifies the exact persisted legal fields still requiring Owner confirmation.
+- Brand/Portal, Customer catalog, printer profiles and Staff & Access keep their existing guarded routes but are discovered through Settings instead of separate daily-navigation entries.
+- Customer Account order/payment/property histories and order status/payment histories reuse one accessible disclosure control. Lists longer than three entries collapse by default; current balances, statuses, actions and short histories remain visible.
 - Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Regular and walk-in customers are prompted only for fields missing from the current Billing issue model.
 - Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
@@ -65,12 +68,10 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-Awaiting explicit Product Owner direction. Do not infer or start a near-future task from this document.
+`BARCODE-001`
 
 ## Near Future — Not Started by This Task
 
-- `UX-POLISH-001`
-- `BARCODE-001`
 - `QUICK-DROP-001`
 - `ACCOUNTING-001`
 - `E-INVOICE-001`
