@@ -9,12 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline on `main` before the docs-only CODEX-PROTOCOL-001 commit: `ae01658` (`DOCS-COUNTER-UX-002`).
-- Latest relevant application commit: `6691e95` (`COUNTER-UX-002`).
-- Latest completed product documentation commit: `ae01658` (`DOCS-COUNTER-UX-002`).
-- Latest migration: `20260829000300_print_001_output_entitlement.sql`.
-- At protocol start: `main == origin/main` and working tree clean.
-- CODEX-PROTOCOL-001 must finish with `main == origin/main` and working tree clean; its own commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline on `main` before this docs update: `a3b8f01` (`COUNTER-UI-003`).
+- Latest relevant application commit: `a3b8f01` (`COUNTER-UI-003`).
+- Previous completed product documentation commit: `ae01658` (`DOCS-COUNTER-UX-002`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260829000400_counter_ui_003_printer_profiles.sql`.
+- At COUNTER-UI-003 application completion: `main == origin/main` and working tree clean.
 
 ## Completed Major Modules
 
@@ -33,8 +32,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Platform Admin | Separate SaaS administration context with audited controls complete. |
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
-| Shop Terminal / COUNTER-UX-002 | Touch-first counter register complete over canonical customers, catalog, pricing, orders, POS and payments. |
-| Printing | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability. |
+| Shop Terminal / COUNTER-UI-003 | Professional tablet/desktop register complete with a wide touch catalog, compact operational header and dominant sticky checkout over canonical customers, catalog, pricing, orders, POS and payments; mobile remains usable. |
+| Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults now configure the existing PRINT renderer. |
 
 ## Current Important Configuration
 
@@ -45,6 +44,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Walk-ins use distinct canonical tenant-scoped customer records with `WALKIN-<UUID>` codes; no shared anonymous history exists.
 - Shop Terminal reuses a valid active till and canonical cash/manual-card payments; PAY LATER writes no fake payment.
 - Printed customer receipts are operational and explicitly non-fiscal. Printing does not create orders or payments.
+- Printer profiles are tenant/location scoped and support receipt, label and optional ticket purposes; each location has at most one default per purpose.
+- Browser print is the only functional transport. Network, local-bridge and future-adapter profile modes remain honest configuration boundaries and fall back to the browser print dialog.
+- Receipt profiles support 58 mm, 80 mm and browser/PDF layouts; label profiles support custom width, height, orientation, copies, margins and gap.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
 
 ## Current Known Product Boundaries
@@ -54,7 +56,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - No Quick Drop workflow yet.
 - No full Accounting module yet.
 - No e-invoice or fiscal-compliance claim yet.
-- No raw card-data handling or printer-hardware integration.
+- No raw card-data handling, printer driver, silent printing or hardware-status integration.
 
 ## Next Approved Task
 
