@@ -1,8 +1,10 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { CSSProperties } from "react";
 import { PrintButton } from "@/components/printing/PrintButton";
 import { buildPrintLabels } from "@/features/printing/labels";
 import type { PrintOrderContext } from "@/features/printing/types";
+import type { PrinterProfile } from "@/features/printer-settings/types";
 import type { PaymentMethod } from "@/features/payments/types";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
@@ -44,11 +46,11 @@ function BrandHeader({ context, compact = false }: { context: PrintOrderContext;
   );
 }
 
-async function Receipt({ context, locale }: { context: PrintOrderContext; locale: string }) {
+async function Receipt({ context, locale, profile }: { context: PrintOrderContext; locale: string; profile: PrinterProfile | null }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
   const methods = paymentMethodTotals(context);
   return (
-    <article className="print-sheet print-receipt-sheet">
+    <article className={`print-sheet print-receipt-sheet ${profile?.paperFormat === "receipt_58mm" ? "print-receipt-sheet-58mm" : profile?.paperFormat === "browser_pdf" ? "print-receipt-sheet-pdf" : "print-receipt-sheet-80mm"}`}>
       <BrandHeader context={context} />
       <section className="print-title-block">
         <p className="print-document-kind">{t("receipt.operationalReceipt")}</p>
@@ -99,21 +101,43 @@ async function Ticket({ context, locale }: { context: PrintOrderContext; locale:
   );
 }
 
-async function Labels({ context, locale }: { context: PrintOrderContext; locale: string }) {
+async function Labels({ context, locale, profile }: { context: PrintOrderContext; locale: string; profile: PrinterProfile | null }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
-  const labels = buildPrintLabels(context);
-  return <div className="print-label-grid">{labels.map((label) => <article className="print-label" key={`${label.index}-${label.serviceName}`}><div className="print-label-position">{label.index}/{label.total}</div><p className="print-label-org">{context.branding.brand.name ?? context.organizationName}{label.locationName ? ` · ${label.locationName}` : ""}</p><h2>{label.orderNumber}</h2><h3>{label.customerName}</h3><p className="print-label-service">{label.serviceName}{label.unitLabel ? ` · ${label.unitLabel}` : ""}</p>{label.dueAt ? <p>{t("fields.expectedReady")}: <strong>{formatDate(label.dueAt, locale, context.timezone)}</strong></p> : null}<div aria-label={t("labels.codeAreaAria")} className="print-code-area">{t("labels.codeArea")}</div></article>)}</div>;
+  const sourceLabels = buildPrintLabels(context);
+  const copies = profile?.paperFormat === "label_custom" ? profile.labelCopies ?? 1 : 1;
+  const labels = Array.from({ length: copies }, (_, copyIndex) => sourceLabels.map((label) => ({ copyIndex, label }))).flat();
+  const landscape = profile?.labelOrientation === "landscape";
+  const labelWidth = profile?.labelWidthMm ?? 50;
+  const labelHeight = profile?.labelHeightMm ?? 30;
+  const customStyle = profile?.paperFormat === "label_custom" ? {
+    "--print-label-gap": `${profile.labelGapMm ?? 3}mm`,
+    "--print-label-height": `${landscape ? labelWidth : labelHeight}mm`,
+    "--print-label-margin": `${profile.labelMarginMm ?? 2}mm`,
+    "--print-label-width": `${landscape ? labelHeight : labelWidth}mm`,
+  } as CSSProperties : undefined;
+  return <div className={`print-label-grid ${customStyle ? "print-label-grid-custom" : ""}`} style={customStyle}>{labels.map(({ copyIndex, label }) => <article className="print-label" key={`${copyIndex}-${label.index}-${label.serviceName}`}><div className="print-label-position">{label.index}/{label.total}</div><p className="print-label-org">{context.branding.brand.name ?? context.organizationName}{label.locationName ? ` · ${label.locationName}` : ""}</p><h2>{label.orderNumber}</h2><h3>{label.customerName}</h3><p className="print-label-service">{label.serviceName}{label.unitLabel ? ` · ${label.unitLabel}` : ""}</p>{label.dueAt ? <p>{t("fields.expectedReady")}: <strong>{formatDate(label.dueAt, locale, context.timezone)}</strong></p> : null}<div aria-label={t("labels.codeAreaAria")} className="print-code-area">{t("labels.codeArea")}</div></article>)}</div>;
 }
 
 export async function OrderPrintDocument({ context, locale, mode }: { context: PrintOrderContext; locale: string; mode: OrderPrintMode }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
+  const purpose = mode === "labels" ? "label" : mode;
+  const profile = context.printerProfiles[purpose] ?? null;
+  const profileClass = mode === "receipt"
+    ? profile?.paperFormat === "receipt_58mm" ? "order-print-receipt-58mm" : profile?.paperFormat === "browser_pdf" ? "order-print-receipt-pdf" : "order-print-receipt-80mm"
+    : mode === "labels" && profile?.paperFormat === "label_custom" ? "order-print-labels-custom" : "";
   return (
-    <div className={`order-print-document order-print-${mode}`}>
-      <div className="print-preview-actions print:hidden">
-        <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href={`/app/orders/${context.order.id}`} locale={locale}>← {t("actions.back")}</Link>
-        <PrintButton label={t("actions.print")} />
+    <div className={`order-print-document order-print-${mode} ${profileClass}`}>
+      <div className="print-preview-toolbar print:hidden">
+        <div className="print-preview-actions">
+          <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href={`/app/orders/${context.order.id}`} locale={locale}>← {t("actions.back")}</Link>
+          <PrintButton label={t("actions.print")} />
+        </div>
+        <p className="print-profile-status">
+          <strong>{profile ? `${t("profile.selected")}: ${profile.displayName}` : t("profile.browserFallback")}</strong>
+          <span>{profile && profile.connectionMode !== "browser" ? t("profile.adapterFallback") : t("profile.browserOnly")}</span>
+        </p>
       </div>
-      {mode === "receipt" ? <Receipt context={context} locale={locale} /> : mode === "ticket" ? <Ticket context={context} locale={locale} /> : <Labels context={context} locale={locale} />}
+      {mode === "receipt" ? <Receipt context={context} locale={locale} profile={profile} /> : mode === "ticket" ? <Ticket context={context} locale={locale} /> : <Labels context={context} locale={locale} profile={profile} />}
     </div>
   );
 }

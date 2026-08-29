@@ -38,6 +38,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         submit: submitShopOrderAction.bind(null, locale),
       }}
       canPrint={entitlementEnabled(entitlements, FEATURES.printing)}
+      canConfigurePrinters={entitlementEnabled(entitlements, FEATURES.printing) && access.membership.role !== "staff"}
       customers={customers}
       locale={locale}
       organizationName={access.membership.organization.name}

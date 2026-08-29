@@ -34,9 +34,26 @@
   --transition-standard: 180ms ease;
 }
 
+@media (min-width: 64rem) {
+  .dashboard-shell:has(.counter-register-shell) .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-shell:has(.counter-register-shell) .dashboard-desktop-nav,
+  .dashboard-shell:has(.counter-register-shell) .dashboard-topbar { display: none; }
+  .dashboard-shell:has(.counter-register-shell) .dashboard-content { padding: 0; }
+}
+
 @page receipt {
   size: 80mm auto;
   margin: 4mm;
+}
+
+@page receipt-58 {
+  size: 58mm auto;
+  margin: 3mm;
+}
+
+@page receipt-pdf {
+  size: A4 portrait;
+  margin: 12mm;
 }
 
 @page ticket {
@@ -86,6 +103,8 @@
   }
 
   .order-print-receipt { page: receipt; }
+  .order-print-receipt-58mm { page: receipt-58; }
+  .order-print-receipt-pdf { page: receipt-pdf; }
   .order-print-ticket { page: ticket; }
   .order-print-labels { page: labels; }
   .print-sheet, .print-label { box-shadow: none !important; }
@@ -97,6 +116,11 @@
   color: #111;
 }
 
+.print-preview-toolbar {
+  margin: 0 auto 1rem;
+  max-width: 52rem;
+}
+
 .print-preview-actions {
   margin: 0 auto 1rem;
   display: flex;
@@ -106,6 +130,9 @@
   gap: 1rem;
 }
 
+.print-profile-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-left: 4px solid var(--color-primary); background: #fff; padding: 0.75rem 1rem; color: var(--color-muted); font-size: 0.75rem; box-shadow: var(--shadow-card); }
+.print-profile-status strong { color: var(--color-primary); }
+
 .print-sheet {
   margin-inline: auto;
   background: #fff;
@@ -114,6 +141,9 @@
 }
 
 .print-receipt-sheet { width: min(80mm, 100%); padding: 5mm; font-size: 11px; }
+.print-receipt-sheet-58mm { width: min(58mm, 100%); padding: 3mm; font-size: 9px; }
+.print-receipt-sheet-80mm { width: min(80mm, 100%); }
+.print-receipt-sheet-pdf { width: min(100%, 52rem); padding: 12mm; font-size: 12px; }
 .print-ticket-sheet { max-width: 52rem; padding: clamp(1.25rem, 4vw, 2.5rem); font-size: 14px; }
 .print-brand-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; border-bottom: 1px solid #222; padding-bottom: 0.85rem; text-align: center; }
 .print-brand-header h1 { font-size: 1.35rem; font-weight: 800; line-height: 1.15; }
@@ -152,6 +182,8 @@
 .print-ticket-notes p, .print-logistics p { margin-top: 0.35rem; white-space: pre-wrap; }
 .print-label-grid { margin-inline: auto; display: grid; max-width: 52rem; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8mm; }
 .print-label { position: relative; min-height: 82mm; border: 2px solid #111; background: #fff; padding: 7mm; overflow: hidden; }
+.print-label-grid-custom { max-width: none; grid-template-columns: repeat(auto-fit, minmax(var(--print-label-width), var(--print-label-width))); gap: var(--print-label-gap); justify-content: center; }
+.print-label-grid-custom .print-label { width: var(--print-label-width); min-height: var(--print-label-height); padding: var(--print-label-margin); }
 .print-label-position { position: absolute; top: 5mm; right: 5mm; font-size: 0.85rem; font-weight: 800; }
 .print-label-org { max-width: 80%; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
 .print-label h2 { margin-top: 8mm; font-size: 2.15rem; font-weight: 950; line-height: 1; }

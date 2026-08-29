@@ -25,6 +25,7 @@ type AppNavigationText = {
   orders: string;
   pos: string;
   overview: string;
+  printers: string;
   production: string;
   quality: string;
   services: string;
@@ -182,6 +183,9 @@ export function AppNavigation({
               : []),
             { href: "/app/services", label: text.services, match: "/app/services" },
             { href: "/app/settings/catalog", label: text.catalogAdmin, match: "/app/settings/catalog" },
+            ...(entitlementEnabled(entitlements, FEATURES.printing)
+              ? [{ href: "/app/settings/printers", label: text.printers, match: "/app/settings/printers" }]
+              : []),
             ...(role === "owner"
               ? [
                   { href: "/app/staff", label: text.staff, match: "/app/staff" },
@@ -234,7 +238,7 @@ export function AppNavigation({
 
   if (mode === "header") {
     return (
-      <header className="sticky top-0 z-30 border-b border-border bg-white/95 px-4 py-3 backdrop-blur lg:px-8 lg:py-4">
+      <header className="dashboard-topbar sticky top-0 z-30 border-b border-border bg-white/95 px-4 py-3 backdrop-blur lg:px-8 lg:py-4">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase text-muted lg:text-sm lg:normal-case">
@@ -295,7 +299,7 @@ export function AppNavigation({
                     </div>
                   ) : null}
                   {isControlRole ? (
-                    <div className="mt-4 border-t border-border pt-4">
+                    <div className="mt-4 space-y-2 border-t border-border pt-4">
                       <Link
                         className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         href="/app/settings/catalog"
@@ -303,6 +307,15 @@ export function AppNavigation({
                       >
                         {text.catalogAdmin}<span aria-hidden="true">→</span>
                       </Link>
+                      {entitlementEnabled(entitlements, FEATURES.printing) ? (
+                        <Link
+                          className="flex min-h-11 items-center justify-between rounded-control border border-border px-3 text-sm font-semibold !text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          href="/app/settings/printers"
+                          locale={locale}
+                        >
+                          {text.printers}<span aria-hidden="true">→</span>
+                        </Link>
+                      ) : null}
                     </div>
                   ) : null}
                   {platformAccess && switchToPlatformLabel ? (

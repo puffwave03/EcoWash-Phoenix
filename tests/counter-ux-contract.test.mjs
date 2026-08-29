@@ -22,10 +22,11 @@ test("3 Staff still requires explicit POS capability", async () => {
   assert.match(capabilities, /DEFAULT_STAFF_OPERATIONAL_CAPABILITIES[\s\S]*capability !== "pos"/);
 });
 
-test("4 register uses a wide catalog and fixed one-third cart", async () => {
+test("4 register uses a wide catalog and fixed checkout from the tablet breakpoint", async () => {
   const ui = await source(uiPath);
-  assert.match(ui, /xl:grid-cols-\[minmax\(0,2fr\)_minmax\(22rem,1fr\)\]/);
-  assert.match(ui, /xl:sticky/);
+  assert.match(ui, /lg:grid-cols-\[minmax\(0,2\.1fr\)_minmax\(20rem,1fr\)\]/);
+  assert.match(ui, /lg:sticky/);
+  assert.match(ui, /counter-register-shell/);
 });
 
 test("5 compact top bar exposes organization, operator, location and till management", async () => {
@@ -83,7 +84,7 @@ test("12 catalog offers real category navigation and service search", async () =
 
 test("13 service tiles are touch-sized and add immediately", async () => {
   const ui = await source(uiPath);
-  assert.match(ui, /min-h-36/);
+  assert.match(ui, /min-h-40/);
   assert.match(ui, /onClick=\{\(\) => addService\(service\)\}/);
 });
 
@@ -195,7 +196,7 @@ test("29 navigation keeps one terminal entry with POS as management fallback", a
 test("30 five locales expose the professional-register vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 66);
+    assert.equal(Object.keys(messages.shopTerminal.labels).length, 67);
     for (const key of ["catalog", "occasionalCustomer", "regularCustomer", "splitPayment", "tillManagement"]) assert.equal(typeof messages.shopTerminal.labels[key], "string");
   }
 });

@@ -26,6 +26,7 @@ type DashboardShellText = {
   pos: string;
   organizationLabel: string;
   overview: string;
+  printers: string;
   production: string;
   quality: string;
   roleLabel: string;
@@ -77,11 +78,11 @@ export function DashboardShell({
     .toUpperCase();
 
   return (
-    <main className="min-h-screen bg-background text-foreground" style={brandStyle}>
-      <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
+    <main className="dashboard-shell min-h-screen bg-background text-foreground" style={brandStyle}>
+      <div className="dashboard-grid grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside
           aria-label={text.navigationLabel}
-          className="hidden flex-col justify-between border-r border-border bg-white px-4 py-5 lg:flex lg:min-h-screen"
+          className="dashboard-desktop-nav hidden flex-col justify-between border-r border-border bg-white px-4 py-5 lg:flex lg:min-h-screen"
         >
           <div className="space-y-8">
             <div className="space-y-3">
@@ -130,6 +131,7 @@ export function DashboardShell({
                 orders: text.orders,
                 pos: text.pos,
                 overview: text.overview,
+                printers: text.printers,
                 production: text.production,
                 quality: text.quality,
                 services: text.services,
@@ -207,6 +209,7 @@ export function DashboardShell({
               orders: text.orders,
               pos: text.pos,
               overview: text.overview,
+              printers: text.printers,
               production: text.production,
               quality: text.quality,
               services: text.services,
@@ -220,7 +223,7 @@ export function DashboardShell({
             userLabel={text.userLabel}
           />
 
-          <section className="px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:py-7 lg:pb-10 xl:px-10">
+          <section className="dashboard-content px-4 py-5 pb-[calc(5.25rem_+_env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:py-7 lg:pb-10 xl:px-10">
             {children}
           </section>
         </div>
@@ -248,6 +251,7 @@ export function DashboardShell({
           orders: text.orders,
           pos: text.pos,
           overview: text.overview,
+          printers: text.printers,
           production: text.production,
           quality: text.quality,
           services: text.services,
