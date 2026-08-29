@@ -6,20 +6,19 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: SHOP-TERMINAL-001 counter terminal completed
+Current Mission: PRINT-001 counter printing foundation completed
 
-Next Action: PRINT-001
+Next Action: BARCODE-001
 
 ---
 
-## SHOP-TERMINAL-001 — Completed
+## PRINT-001 — Completed
 
-Phoenix now provides an entitlement-gated `/[locale]/app/shop` counter experience with quick customer selection/creation, visual tenant catalog and categories, effective base/segment pricing, touch cart, monetary discount, canonical order creation, PAY NOW/PAY LATER and existing POS/till cash/manual-card settlement. Migration `20260829000200` is aligned; exact EUR 18.00 paid and EUR 10.00 pay-later staging scenarios passed with rollback and zero fixtures.
+Phoenix now provides entitlement- and POS-capability-gated customer receipts, internal order tickets and label-ready output through dedicated browser print previews. The output reuses canonical orders/payments, tenant branding and organization timezone; it adds no fiscal claim, fabricated barcode, hardware dependency or parallel financial system. Migration `20260829000300` is aligned; exact EUR 18.00 paid and EUR 10.00 pay-later staging scenarios passed with rollback and zero fixtures.
 
 Sequence remains:
 
-1. `PRINT-001`
-2. `BARCODE-001`
+1. `BARCODE-001`
 
 Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
 
@@ -377,20 +376,19 @@ Exit criteria:
 
 Customer portal is now part of M1 pilot scoping. The online-payment core is implemented but real provider onboarding/configuration remains separate future work. Do not combine it with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
 
-### Product Decision After PAYMENTS-ONLINE-001
+### Product Decision After PRINT-001
 
-The provider-neutral core is complete and safely disabled. No Stripe, Redsys, SumUp or other provider credentials/configuration were present, so real payment readiness remains blocked on a separately approved official adapter and sandbox validation. Phoenix never stores raw card data and never confirms from a browser redirect.
+The print foundation is complete with browser-native receipt, ticket and label previews. Barcode generation/scanning remains a separate next task; real payment-provider readiness remains blocked on a separately approved official adapter and sandbox validation.
 
 The approved sequence continues:
 
-1. `PRINT-001`
-2. `BARCODE-001`
-3. `ACCOUNTING-001`
-4. `E-INVOICE-001`
-5. `ACCOUNTING-PRO-001` — optional
-6. `ONBOARDING-001`
-7. future subscription/commercial billing
-8. `PLATFORM-SUPPORT-001` — optional
+1. `BARCODE-001`
+2. `ACCOUNTING-001`
+3. `E-INVOICE-001`
+4. `ACCOUNTING-PRO-001` — optional
+5. `ONBOARDING-001`
+6. future subscription/commercial billing
+7. `PLATFORM-SUPPORT-001` — optional
 
 Product invariants across this sequence:
 

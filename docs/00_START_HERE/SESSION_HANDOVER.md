@@ -4,9 +4,9 @@ Status: Active
 
 Date: 2026-08-29
 
-Approximate closeout time: after SHOP-TERMINAL-001 counter terminal
+Approximate closeout time: after PRINT-001 counter printing foundation
 
-Session checkpoint: SHOP-TERMINAL-001 completed; PRINT-001 is next
+Session checkpoint: PRINT-001 completed; BARCODE-001 is next and not started
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
@@ -14,22 +14,23 @@ Branch: `main`
 
 Approved baseline before this mission: `af30d70 DOCS-AUTH-CONTEXT-001 docs: record platform and tenant context switching`
 
-Origin/main status: local `main` and `origin/main` include `90d53fc SHOP-TERMINAL-001 feat: add dry cleaning counter terminal`.
+Origin/main status: local `main` and `origin/main` include `3318ea9 PRINT-001 feat: add counter receipt ticket and label printing`.
 
 Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
 
-Application closeout commit: `90d53fc SHOP-TERMINAL-001 feat: add dry cleaning counter terminal`; working tree expected clean after documentation push.
+Application closeout commit: `3318ea9 PRINT-001 feat: add counter receipt ticket and label printing`; working tree expected clean after documentation push.
 
 ---
 
-## SHOP-TERMINAL-001 Closeout
+## PRINT-001 Closeout
 
-- Completed `/[locale]/app/shop` as the entitlement-gated, touch-oriented physical counter workflow over existing customers, tenant catalog/categories, centralized effective pricing, canonical orders and POS payments.
-- Includes quick customer search/select/create, fast service add, discrete/continuous quantity handling, monetary discount, PAY NOW/PAY LATER, open-till reuse, cash/manual-card split payment and a bounded success summary. Current orders require a real customer; no anonymous/walk-in model was added.
-- Migration `20260829000200_shop_terminal_001_counter_experience.sql` is applied and aligned. It adds the `shop_terminal` entitlement plus an idempotent transactional wrapper; it does not create another catalog, pricing, order or payment engine.
-- Transactional staging E2E with rollback proved `2 × EUR 7.50 + 1 × EUR 5.00 = EUR 20.00`, monetary discount `EUR 2.00`, total/paid/outstanding `EUR 18.00 / EUR 18.00 / EUR 0.00`, split `EUR 8.00` cash + `EUR 10.00` manual card, till cash delta `EUR 8.00`, and PAY LATER `EUR 10.00 / EUR 0.00 / EUR 10.00`. Customer Account, Billing, idempotency, roles and tenant isolation passed; fixture count returned zero.
-- Final gates: terminal 28/28, POS 31/31, segment pricing 20/20, lint, production build and `git diff --check` PASS. Interactive browser control was unavailable; responsive layout was verified structurally and remains subject to Product Owner visual acceptance.
-- Next: `PRINT-001`, then `BARCODE-001`. Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain separate future work.
+- Added entitlement- and POS-capability-gated receipt, internal ticket and label previews at `/[locale]/app/orders/[orderId]/print/{receipt|ticket|labels}`, with explicit browser print/Save PDF actions and no automatic printing.
+- Reuses canonical order snapshots, confirmed-minus-refunded payment summary, tenant branding and organization timezone. The customer receipt excludes internal/provider data and is explicitly non-fiscal; the internal ticket is operational; labels are one per discrete unit or one per continuous line with a reserved future-code area and no barcode/QR.
+- Shop Terminal success and order detail expose all three actions without mixing printing into another order/payment system. Owner/Manager inherit POS capability; Staff requires explicit POS capability; the existing server guards remain authoritative.
+- Migration `20260829000300_print_001_output_entitlement.sql` is applied and aligned. It only bootstraps the existing `printing` entitlement for EcoWash with `ON CONFLICT DO NOTHING`; no schema, financial history, privileged function or grant changed.
+- Rollback-only staging proof passed exact subtotal/discount/total `EUR 20.00 / EUR 2.00 / EUR 18.00`, cash/card `EUR 8.00 / EUR 10.00`, paid/outstanding `EUR 18.00 / EUR 0.00`, three discrete labels, PAY LATER `EUR 10.00 / EUR 0.00 / EUR 10.00`, tenant isolation and zero fixtures.
+- Final gates: PRINT 25/25, Shop Terminal 28/28, POS 31/31, lint, production build and `git diff --check` PASS. Interactive browser control was unavailable; HTML/CSS and route rendering were verified structurally and remain subject to Product Owner visual acceptance.
+- Next: `BARCODE-001`, not started. Real provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain separate future work.
 
 ---
 
@@ -89,6 +90,8 @@ Application closeout commit: `90d53fc SHOP-TERMINAL-001 feat: add dry cleaning c
 - AUTH-CONTEXT-001 — Platform Admin / Tenant Owner login chooser and shell-isolated context switching
 - MANUAL-QA-FIX-001 — Authenticated Portal support, unique POS navigation and active till recovery
 - PAYMENTS-ONLINE-001 — Provider-neutral customer online payment foundation; provider configuration required
+- SHOP-TERMINAL-001 — Dry Cleaning / Laundry Counter Terminal
+- PRINT-001 — Customer receipt, internal ticket and label-ready browser printing
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -189,7 +192,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260829000100`; PAYMENTS-ONLINE-001 and its explicit canonical-payment enum cast correction are applied to staging.
+Supabase migration history is aligned through `20260829000300`; SHOP-TERMINAL-001 and the additive PRINT-001 entitlement bootstrap are applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -270,7 +273,7 @@ Available now:
 - authenticated `/app` and `/portal` routes now bypass public marketing chrome while preserving compact page context, organization, identity, role, account/logout controls and mobile application navigation
 - the Customer Account selector correctly lists active tenant segments regardless of Portal visibility; EcoWash La Tejita currently has no real segments, so “Nessun segmento” is truthful until an Owner/Manager creates one
 
-Next roadmap task: `PRINT-001`. PAYMENTS-ONLINE-001 core is complete but remains `PROVIDER CONFIGURATION REQUIRED`; no real sandbox or live provider is claimed.
+Next roadmap task: `BARCODE-001`, not started. PAYMENTS-ONLINE-001 core is complete but remains `PROVIDER CONFIGURATION REQUIRED`; no real sandbox or live provider is claimed.
 
 Platform Admin bootstrap is intentionally not automatic. After verifying the intended Supabase Auth user UUID out of band, a trusted database operator inserts exactly that `user_id` into `public.platform_admins`; no tenant-facing route or RPC can perform this step. The same Auth user may also have normal tenant memberships, but the two access models remain additive and independently guarded.
 
@@ -303,13 +306,12 @@ Final completed sequence for this session:
 
 Approved next product roadmap:
 
-1. `PRINT-001`
-2. `BARCODE-001`
-3. `ACCOUNTING-001`
-4. `E-INVOICE-001`
-5. `ACCOUNTING-PRO-001` — optional
-6. `ONBOARDING-001`
-7. future subscription/commercial billing
+1. `BARCODE-001`
+2. `ACCOUNTING-001`
+3. `E-INVOICE-001`
+4. `ACCOUNTING-PRO-001` — optional
+5. `ONBOARDING-001`
+6. future subscription/commercial billing
 8. `PLATFORM-SUPPORT-001` — optional, without impersonation until separately designed
 
 Permanent product requirements:
@@ -592,7 +594,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-PAYMENTS-ONLINE-001 provider-neutral core completed and is safely disabled pending a real provider. Resume with `PRINT-001`; do not reopen accepted foundations unless a reproducible defect is found:
+PRINT-001 is completed and uses browser-native printing without barcodes or hardware dependencies. Resume with `BARCODE-001`; do not reopen accepted foundations unless a reproducible defect is found:
 
 1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
 2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.

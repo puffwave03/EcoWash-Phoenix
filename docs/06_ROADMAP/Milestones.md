@@ -6,20 +6,19 @@ Version: 0.1
 
 Last Updated: 2026-08-29
 
-Current Mission: SHOP-TERMINAL-001 counter terminal completed
+Current Mission: PRINT-001 counter printing foundation completed
 
-Next Action: PRINT-001
+Next Action: BARCODE-001
 
 ---
 
-## SHOP-TERMINAL-001 — Completed
+## PRINT-001 — Completed
 
-- Dedicated `/[locale]/app/shop` route with one clear navigation entry and a tablet/touch counter layout.
-- Reuses customers, real tenant catalog/categories, centralized base/segment pricing, canonical order snapshots, monetary discount, POS/till sessions, cash/manual-card payments, Customer Account and Billing.
-- Supports PAY NOW and PAY LATER; online payment remains absent while EcoWash has no configured provider and `payments.online` is OFF.
-- `shop_terminal` entitlement and POS capability enforce Owner/Manager and explicitly enabled Staff access. Tenant isolation and server-side price/customer/service/till authority passed.
-- Migration `20260829000200` is aligned. Exact staging proof: subtotal EUR 20.00, discount EUR 2.00, total EUR 18.00, cash EUR 8.00, card EUR 10.00, outstanding EUR 0.00; PAY LATER outstanding EUR 10.00; rollback cleanup zero.
-- Next sequence: `PRINT-001`, then `BARCODE-001`. Real provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
+- Dedicated receipt, internal ticket and label preview routes reuse canonical order/payment data, branding and tenant timezone.
+- Receipt privacy/non-fiscal boundary, operational ticket content, discrete/continuous label rules and reserved future-code area are enforced without barcode, QR, hardware or automatic printing.
+- Existing `printing` entitlement plus POS capability enforce Owner/Manager and explicitly enabled Staff access; tenant isolation passed.
+- Migration `20260829000300` is additive, applied and aligned. Exact staging proof: subtotal EUR 20.00, discount EUR 2.00, total EUR 18.00, cash EUR 8.00, card EUR 10.00, outstanding EUR 0.00; PAY LATER outstanding EUR 10.00; rollback cleanup zero.
+- Next sequence: `BARCODE-001`. Real provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
 
 ---
 
@@ -304,14 +303,13 @@ Current staging validation checkpoint:
 
 Approved product sequence after this milestone checkpoint:
 
-1. `PRINT-001`
-2. `BARCODE-001`
-3. `ACCOUNTING-001`
-4. `E-INVOICE-001`
-5. `ACCOUNTING-PRO-001` — optional
-6. `ONBOARDING-001`
-7. future subscription/commercial billing
-8. `PLATFORM-SUPPORT-001` — optional
+1. `BARCODE-001`
+2. `ACCOUNTING-001`
+3. `E-INVOICE-001`
+4. `ACCOUNTING-PRO-001` — optional
+5. `ONBOARDING-001`
+6. future subscription/commercial billing
+7. `PLATFORM-SUPPORT-001` — optional
 
 Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Real online-provider/TPV integrations, printing, barcode, full accounting, e-invoicing, subscription payments, impersonation, tenant deletion and automated plan templates are not implemented.
 
