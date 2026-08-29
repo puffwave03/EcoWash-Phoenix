@@ -23,6 +23,7 @@
     "test:printer-settings": "node --test tests/printer-settings-contract.test.mjs",
     "test:print": "node --test tests/print-contract.test.mjs",
     "test:barcode": "node --test tests/barcode-contract.test.mjs",
+    "test:quick-drop": "node --test tests/quick-drop-contract.test.mjs",
     "test:shell": "node --test tests/authenticated-shell-contract.test.mjs",
     "start": "next start",
     "lint": "eslint"

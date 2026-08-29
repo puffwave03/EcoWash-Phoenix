@@ -7,6 +7,8 @@ import { isDiscreteServiceUnit } from "@/features/services/types";
 import type { ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
+import { QuickDropTerminalPanel, type QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
+import type { PendingQuickDrop, QuickDropCreateResult } from "@/features/quick-drop/types";
 
 type CartLine = { quantity: number; service: ShopService };
 type CustomerMode = "regular" | "walk_in" | null;
@@ -33,6 +35,7 @@ type Props = {
   actions: {
     createCustomer: (state: ShopCustomerState, formData: FormData) => Promise<ShopCustomerState>;
     loadServices: (customerId: string, locationId: string | null) => Promise<ShopService[]>;
+    createQuickDrop: (formData: FormData) => Promise<QuickDropCreateResult>;
     resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
   };
@@ -44,7 +47,9 @@ type Props = {
   locale: string;
   operatorName: string;
   organizationName: string;
+  pendingQuickDrops: PendingQuickDrop[];
   printText: PrintActionText;
+  quickDropText: QuickDropText;
   role: string;
   session: PosSession | null;
   text: ShopTerminalText;
@@ -54,7 +59,7 @@ const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, customers: initialCustomers, locale, operatorName, organizationName, printText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, customers: initialCustomers, locale, operatorName, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
@@ -236,6 +241,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
             {!customerMode ? <div className="flex gap-2 overflow-x-auto pb-1">{filteredCustomers.map((customer) => <button className="min-h-11 shrink-0 rounded-control border border-border bg-white px-4 text-left hover:border-primary/40" key={customer.id} onClick={() => selectCustomer(customer.id)} type="button"><strong className="block max-w-56 truncate text-sm text-primary">{customer.name}</strong><span className="block max-w-56 truncate text-xs text-muted">{customer.phone || customer.email || (customer.isWalkIn ? text.occasionalCustomer : "—")}</span></button>)}</div> : <form action={createCustomer} className="grid gap-3 border-l-4 border-primary bg-[#f8faf8] p-3 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-3 text-base text-primary" name="displayName" placeholder={text.customerName} required /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-3 text-base text-primary" name="phone" placeholder={text.customerPhone} /></label><label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-3 text-base text-primary" name="email" placeholder={text.customerEmail} type="email" /></label><button className="min-h-11 rounded-control bg-primary px-5 font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
           </div>
         )}
+        <div className="mt-3"><QuickDropTerminalPanel action={actions.createQuickDrop} canPrint={canPrint} canQr={canScan} customer={selectedCustomer ? { id: selectedCustomer.id, name: selectedCustomer.name } : null} locale={locale} locationId={session?.locationId ?? null} onNewOrder={clearCustomer} pending={pendingQuickDrops} printText={printText} text={quickDropText} /></div>
       </section>
 
       <div className="grid min-w-0 lg:grid-cols-[minmax(0,2.1fr)_minmax(20rem,1fr)] xl:grid-cols-[minmax(0,2.2fr)_minmax(23rem,1fr)]">

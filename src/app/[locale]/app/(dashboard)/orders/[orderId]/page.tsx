@@ -55,6 +55,7 @@ import { canEditCatalog } from "@/features/orders/workflow";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { formatCurrency, formatNumberInput } from "@/lib/number-format";
+import { getQuickDropOrderOrNull } from "@/features/quick-drop/server/queries";
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -81,7 +82,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, entitlements, t, catalogT, printT] = await Promise.all([
+  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -92,11 +93,14 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
+    getQuickDropOrderOrNull(locale, orderId),
     getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing]),
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
+    getTranslations({ locale, namespace: "common.quickDrop" }),
   ]);
+  const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
@@ -131,13 +135,13 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
                 {t(`priorities.${order.priority}`)}
               </span>
-              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
-                {paymentStatusLabels[paymentSummary.paymentStatus]}
-              </span>
+              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : paymentStatusLabels[paymentSummary.paymentStatus]}</span>
+              {pendingQuickDrop ? <span className="rounded-control bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-950">{quickDropT("pendingDetail")}</span> : null}
             </div>
           </div>
           <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
-            {canPrint ? <PrintOrderActions locale={locale} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
+            {canPrint ? <PrintOrderActions locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
+            {pendingQuickDrop ? <a className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-white px-4 font-semibold text-primary lg:w-auto" href="#items">{quickDropT("detailOrder")}</a> : null}
             <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
               <Button className="w-full lg:w-auto" variant="secondary">{t("edit")}</Button>
             </Link>
@@ -159,7 +163,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
             <dt className="text-xs font-semibold uppercase text-white/68">{t("total")}</dt>
-            <dd className="mt-2 text-xl font-semibold text-white">{formatCurrency(order.total, order.currency, locale)}</dd>
+            <dd className="mt-2 text-xl font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : formatCurrency(order.total, order.currency, locale)}</dd>
           </div>
         </dl>
       </section>
@@ -177,6 +181,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           ))}
         </div>
       </nav>
+
+      {pendingQuickDrop ? <section className="rounded-card border border-amber-200 bg-amber-50 p-4"><h3 className="font-semibold text-amber-950">{quickDropT("pendingDetail")}</h3><p className="mt-1 text-sm text-amber-900">{quickDropT("productionBlocked")}</p></section> : null}
 
       <dl className="grid gap-4 lg:grid-cols-4">
         <Card className="lg:col-span-2">
@@ -207,7 +213,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("payments.balanceDue")}</dt>
-          <dd className="mt-1 text-xl font-semibold text-primary">{formatCurrency(paymentSummary.balanceDue, order.currency, locale)}</dd>
+          <dd className="mt-1 text-xl font-semibold text-primary">{pendingQuickDrop ? quickDropT("unpriced") : formatCurrency(paymentSummary.balanceDue, order.currency, locale)}</dd>
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("photos.title")}</dt>
@@ -274,7 +280,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             />
           </div>
 
-          {canEditCatalog(access.membership.role) ? (
+          {canEditCatalog(access.membership.role) && !pendingQuickDrop ? (
             <Card className="h-fit">
               <form action={updateOrderDiscountAction.bind(null, locale, order.id)} className="flex flex-col gap-3">
                 <label className="space-y-2 text-sm font-semibold text-primary">
@@ -291,7 +297,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <SectionShell id="production" title={t("workflow.change")}>
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <Card>
-            <StatusTransitionForm
+            {pendingQuickDrop ? <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950">{quickDropT("productionBlocked")}</div> : <StatusTransitionForm
               action={transitionOrderStatusAction.bind(null, locale, order.id, "order")}
               currentStatus={order.productionStatus}
               history={history}
@@ -301,7 +307,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 reason: t("workflow.reason"),
                 statusLabels,
               }}
-            />
+            />}
           </Card>
           <Card className="h-fit">
             <OrderAssignmentForm
@@ -366,7 +372,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       </SectionShell>
 
       <SectionShell id="payments" title={t("payments.title")}>
-        <PaymentsPanel
+        {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
           actions={{
             record: recordPaymentAction.bind(null, locale, order.id),
             refund: refundPaymentAction.bind(null, locale, order.id),
@@ -405,7 +411,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             void: t("payments.void"),
             voidReason: t("payments.voidReason"),
           }}
-        />
+        />}
       </SectionShell>
 
       <SectionShell id="photos" title={t("photos.title")}>

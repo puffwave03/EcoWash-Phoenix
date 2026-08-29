@@ -1661,6 +1661,31 @@
       }
     }
   },
+  "quickDrop": {
+    "action": "Schnellannahme",
+    "cancel": "Abbrechen",
+    "confirm": "Annahme bestätigen",
+    "confirming": "Wird erfasst…",
+    "detailBeforeFinancial": "Fügen Sie die Auftragspositionen hinzu, bevor Sie Zahlungen erfassen oder eine Rechnung vorbereiten.",
+    "detailOrder": "Auftrag detaillieren",
+    "dueAt": "Voraussichtlich fertig",
+    "errorGeneric": "Die Schnellannahme konnte nicht erfasst werden. Versuchen Sie es erneut.",
+    "errorValidation": "Prüfen Sie Kunde, Standort, Hinweis und Fertigstellungstermin.",
+    "help": "Nehmen Sie den Beutel jetzt an; Positionen und Preis folgen später.",
+    "labelsDeferred": "Artikeletiketten sind verfügbar, nachdem der Auftrag detailliert wurde.",
+    "newQuickDrop": "Neue Schnellannahme",
+    "newOrder": "Neuer Auftrag",
+    "note": "Kurzer Annahmehinweis",
+    "notePlaceholder": "Hinweis zu Beutel oder Behandlung (optional)",
+    "openOrder": "Auftrag öffnen",
+    "pendingDetail": "Zu detaillieren",
+    "pendingList": "Zu detaillierende Schnellannahmen",
+    "productionBlocked": "Vervollständigen Sie die Auftragspositionen, bevor Sie die Produktion starten.",
+    "qrAria": "QR-Code des per Schnellannahme erfassten Auftrags",
+    "received": "Angenommen",
+    "success": "Schnellannahme erfasst",
+    "unpriced": "Preis noch nicht festgelegt"
+  },
   "barcode": {
     "terminal": {
       "scanCode": "Code scannen / suchen",

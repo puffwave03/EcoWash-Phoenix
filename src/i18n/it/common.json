@@ -1674,6 +1674,31 @@
       }
     }
   },
+  "quickDrop": {
+    "action": "Deposito rapido",
+    "cancel": "Annulla",
+    "confirm": "Conferma ricezione",
+    "confirming": "Registrazione…",
+    "detailBeforeFinancial": "Aggiungi gli articoli dell’ordine prima di registrare pagamenti o preparare una fattura.",
+    "detailOrder": "Dettaglia ordine",
+    "dueAt": "Pronto / consegna prevista",
+    "errorGeneric": "Impossibile registrare il deposito rapido. Riprova.",
+    "errorValidation": "Controlla cliente, sede, nota e data prevista.",
+    "help": "Ricevi subito la borsa; articoli e prezzo verranno aggiunti dopo.",
+    "labelsDeferred": "Le etichette articolo saranno disponibili dopo aver dettagliato l’ordine.",
+    "newQuickDrop": "Nuovo deposito rapido",
+    "newOrder": "Nuovo ordine",
+    "note": "Nota breve di ricezione",
+    "notePlaceholder": "Nota sulla borsa o lavorazione (facoltativa)",
+    "openOrder": "Apri ordine",
+    "pendingDetail": "Da dettagliare",
+    "pendingList": "Depositi da dettagliare",
+    "productionBlocked": "Completa gli articoli dell’ordine prima di avviare la lavorazione.",
+    "qrAria": "Codice QR dell’ordine ricevuto con deposito rapido",
+    "received": "Ricevuto",
+    "success": "Deposito rapido ricevuto",
+    "unpriced": "Prezzo non ancora definito"
+  },
   "barcode": {
     "terminal": {
       "scanCode": "Scansiona / cerca codice",

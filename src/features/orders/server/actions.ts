@@ -273,6 +273,9 @@ export async function transitionOrderStatusAction(
   });
 
   if (error) {
+    if (error.message.includes("quick_drop_detail_required")) {
+      redirect(`/${locale}/app/orders/${orderId}#items`);
+    }
     console.error("Order status transition failed", error.code);
     return;
   }

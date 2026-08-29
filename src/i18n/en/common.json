@@ -1712,6 +1712,31 @@
       }
     }
   },
+  "quickDrop": {
+    "action": "Quick Drop",
+    "cancel": "Cancel",
+    "confirm": "Confirm receipt",
+    "confirming": "Registering…",
+    "detailBeforeFinancial": "Add the order items before recording payments or preparing an invoice.",
+    "detailOrder": "Detail order",
+    "dueAt": "Expected ready date",
+    "errorGeneric": "The Quick Drop could not be registered. Try again.",
+    "errorValidation": "Check the customer, location, note and expected date.",
+    "help": "Receive the bag now; add items and pricing later.",
+    "labelsDeferred": "Item labels become available after the order has been detailed.",
+    "newQuickDrop": "New Quick Drop",
+    "newOrder": "New order",
+    "note": "Short intake note",
+    "notePlaceholder": "Bag or handling note (optional)",
+    "openOrder": "Open order",
+    "pendingDetail": "Pending detail",
+    "pendingList": "Quick Drops to detail",
+    "productionBlocked": "Complete the order items before starting production.",
+    "qrAria": "QR code for the received Quick Drop order",
+    "received": "Received",
+    "success": "Quick Drop received",
+    "unpriced": "Price not yet defined"
+  },
   "barcode": {
     "terminal": {
       "scanCode": "Scan / search code",

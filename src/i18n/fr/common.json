@@ -1661,6 +1661,31 @@
       }
     }
   },
+  "quickDrop": {
+    "action": "Dépôt rapide",
+    "cancel": "Annuler",
+    "confirm": "Confirmer la réception",
+    "confirming": "Enregistrement…",
+    "detailBeforeFinancial": "Ajoutez les articles de la commande avant d’enregistrer un paiement ou de préparer une facture.",
+    "detailOrder": "Détailler la commande",
+    "dueAt": "Date prévue",
+    "errorGeneric": "Le dépôt rapide n’a pas pu être enregistré. Réessayez.",
+    "errorValidation": "Vérifiez le client, le site, la note et la date prévue.",
+    "help": "Réceptionnez le sac maintenant ; ajoutez les articles et le prix plus tard.",
+    "labelsDeferred": "Les étiquettes d’articles seront disponibles après avoir détaillé la commande.",
+    "newQuickDrop": "Nouveau dépôt rapide",
+    "newOrder": "Nouvelle commande",
+    "note": "Note de réception courte",
+    "notePlaceholder": "Note sur le sac ou le traitement (facultatif)",
+    "openOrder": "Ouvrir la commande",
+    "pendingDetail": "À détailler",
+    "pendingList": "Dépôts à détailler",
+    "productionBlocked": "Complétez les articles de la commande avant de démarrer la production.",
+    "qrAria": "Code QR de la commande reçue en dépôt rapide",
+    "received": "Reçu",
+    "success": "Dépôt rapide reçu",
+    "unpriced": "Prix pas encore défini"
+  },
   "barcode": {
     "terminal": {
       "scanCode": "Scanner / rechercher un code",

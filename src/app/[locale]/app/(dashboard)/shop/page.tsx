@@ -12,20 +12,25 @@ import {
 } from "@/features/shop-terminal/server/actions";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { listShopCustomers } from "@/features/shop-terminal/server/queries";
+import { createQuickDropAction } from "@/features/quick-drop/server/actions";
+import { listPendingQuickDrops } from "@/features/quick-drop/server/queries";
+import type { QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
 
 type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, session, entitlements, t, catalogT, printT, barcodeT] = await Promise.all([
+  const [access, customers, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
     getCurrentPosSession(locale),
+    listPendingQuickDrops(locale),
     getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
     getTranslations({ locale, namespace: "common.shopTerminal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
     getTranslations({ locale, namespace: "common.barcode.terminal" }),
+    getTranslations({ locale, namespace: "common.quickDrop" }),
   ]);
   const text = {
     ...(t.raw("labels") as Omit<ShopTerminalText, "unitTypes">),
@@ -42,6 +47,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     <ShopTerminalWorkspace
       actions={{
         createCustomer: createShopCustomerAction.bind(null, locale),
+        createQuickDrop: createQuickDropAction.bind(null, locale),
         loadServices: loadShopServicesAction.bind(null, locale),
         resolveCode: resolveShopCodeAction.bind(null, locale),
         submit: submitShopOrderAction.bind(null, locale),
@@ -54,7 +60,31 @@ export default async function ShopPage({ params }: ShopPageProps) {
       locale={locale}
       organizationName={access.membership.organization.name}
       operatorName={access.profile.displayName || access.user.email || access.membership.role}
+      pendingQuickDrops={pendingQuickDrops}
       printText={printT.raw("actions") as PrintActionText}
+      quickDropText={{
+        action: quickDropT("action"),
+        cancel: quickDropT("cancel"),
+        confirm: quickDropT("confirm"),
+        confirming: quickDropT("confirming"),
+        detailOrder: quickDropT("detailOrder"),
+        dueAt: quickDropT("dueAt"),
+        errorGeneric: quickDropT("errorGeneric"),
+        errorValidation: quickDropT("errorValidation"),
+        help: quickDropT("help"),
+        labelsDeferred: quickDropT("labelsDeferred"),
+        newOrder: quickDropT("newOrder"),
+        newQuickDrop: quickDropT("newQuickDrop"),
+        note: quickDropT("note"),
+        notePlaceholder: quickDropT("notePlaceholder"),
+        openOrder: quickDropT("openOrder"),
+        pendingDetail: quickDropT("pendingDetail"),
+        pendingList: quickDropT("pendingList"),
+        qrAria: quickDropT("qrAria"),
+        received: quickDropT("received"),
+        success: quickDropT("success"),
+        unpriced: quickDropT("unpriced"),
+      } satisfies QuickDropText}
       role={access.membership.role}
       session={session}
       text={text}
