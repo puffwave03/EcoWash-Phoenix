@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `0a0a3b1` (`BARCODE-001`).
-- Latest relevant application commit: `0a0a3b1` (`BARCODE-001`).
-- Previous completed product documentation commit: `722a72d` (`DOCS-UX-POLISH-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260829000500_barcode_001_reference_entitlement.sql`.
-- BARCODE-001 linked migration history is aligned through `20260829000500`.
+- Product baseline before this docs update: `707be3f` (`QUICK-DROP-001`).
+- Latest relevant application commit: `707be3f` (`QUICK-DROP-001`).
+- Previous completed product documentation commit: `23eef2b` (`DOCS-BARCODE-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260829000600_quick_drop_001a_canonical_intake.sql`.
+- QUICK-DROP-001 linked migration history is aligned through `20260829000600`.
 
 ## Completed Major Modules
 
@@ -33,6 +33,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
 | Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
+| Quick Drop | Canonical received-order intake supports regular and distinct walk-in customers without initial items or financial rows. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
@@ -45,6 +46,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - EcoWash Printing is enabled by the applied `20260829000300_print_001_output_entitlement.sql` bootstrap.
 - EcoWash Barcode is enabled by the additive `20260829000500_barcode_001_reference_entitlement.sql` reference bootstrap; it adds no barcode tables or historical data mutations.
 - Walk-ins use distinct canonical tenant-scoped customer records with `WALKIN-<UUID>` codes; no shared anonymous history exists.
+- Quick Drop creates a canonical `received` order with `order_status_history.metadata.source = "quick_drop"`. Zero active items means explicit `pending_detail` / unpriced state; no fake line, price, payment or invoice is created.
+- Quick Drop returns the stable `PHX1:O:<order UUID>` reference immediately and permits the internal order ticket only. Item labels remain unavailable until canonical items exist.
+- Pending Quick Drops are discoverable in the Shop Terminal. Adding items details the same order, activates canonical pricing and then permits normal production transitions; idempotency prevents duplicate physical intake records.
 - Shop Terminal reuses a valid active till and canonical cash/manual-card payments; PAY LATER writes no fake payment.
 - Printed customer receipts are operational and explicitly non-fiscal. Printing does not create orders or payments.
 - Printer profiles are tenant/location scoped and support receipt, label and optional ticket purposes; each location has at most one default per purpose.
@@ -65,7 +69,6 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 - No real online-provider settlement is configured or claimed.
 - No garment-instance lifecycle, barcode scan-event history or inventory tracking is claimed; BARCODE-001 identifies canonical orders and order-line units only.
-- No Quick Drop workflow yet.
 - No full Accounting module yet.
 - No e-invoice or fiscal-compliance claim yet.
 - No Spanish simplified-invoice document type or legal regime is implemented; operational receipts must not be represented as fiscal or simplified invoices.
@@ -73,12 +76,13 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`QUICK-DROP-001`
+`ACCOUNTING-001`
 
 ## Near Future — Not Started by This Task
 
-- `ACCOUNTING-001`
 - `E-INVOICE-001`
+- Real online payment provider integration
+- `QA-HARNESS-001` if still useful
 
 ## QA Structure
 
