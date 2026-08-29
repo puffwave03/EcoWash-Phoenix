@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline on `main` before this docs update: `85c72fa` (`UX-POLISH-001`).
-- Latest relevant application commit: `85c72fa` (`UX-POLISH-001`).
-- Previous completed product documentation commit: `54698cf` (`DOCS-COUNTER-BILLING-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260829000400_counter_ui_003_printer_profiles.sql`.
-- At UX-POLISH-001 application completion: `main == origin/main` and working tree clean.
+- Product baseline before this docs update: `0a0a3b1` (`BARCODE-001`).
+- Latest relevant application commit: `0a0a3b1` (`BARCODE-001`).
+- Previous completed product documentation commit: `722a72d` (`DOCS-UX-POLISH-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260829000500_barcode_001_reference_entitlement.sql`.
+- BARCODE-001 linked migration history is aligned through `20260829000500`.
 
 ## Completed Major Modules
 
@@ -33,7 +33,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
 | Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
-| Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults now configure the existing PRINT renderer. |
+| Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
+| Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
 
 ## Current Important Configuration
@@ -42,12 +43,16 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - EcoWash `payments.online` is currently OFF; status remains `PROVIDER CONFIGURATION REQUIRED`.
 - EcoWash Shop Terminal is enabled by the applied `20260829000200_shop_terminal_001_counter_experience.sql` reference bootstrap.
 - EcoWash Printing is enabled by the applied `20260829000300_print_001_output_entitlement.sql` bootstrap.
+- EcoWash Barcode is enabled by the additive `20260829000500_barcode_001_reference_entitlement.sql` reference bootstrap; it adds no barcode tables or historical data mutations.
 - Walk-ins use distinct canonical tenant-scoped customer records with `WALKIN-<UUID>` codes; no shared anonymous history exists.
 - Shop Terminal reuses a valid active till and canonical cash/manual-card payments; PAY LATER writes no fake payment.
 - Printed customer receipts are operational and explicitly non-fiscal. Printing does not create orders or payments.
 - Printer profiles are tenant/location scoped and support receipt, label and optional ticket purposes; each location has at most one default per purpose.
 - Browser print is the only functional transport. Network, local-bridge and future-adapter profile modes remain honest configuration boundaries and fall back to the browser print dialog.
 - Receipt profiles support 58 mm, 80 mm and browser/PDF layouts; label profiles support custom width, height, orientation, copies, margins and gap.
+- BARCODE-001 uses QR with medium error correction and a four-module quiet zone. Payloads are locale-independent opaque references: `PHX1:O:<order UUID>` and `PHX1:L:<order UUID>:<order-item UUID>:<unit index>`.
+- Scanned codes are identifiers, never authorization tokens. Resolution rechecks authenticated Shop Terminal/POS access, barcode entitlement, tenant-owned order existence and canonical active item/unit semantics; cross-tenant references return the same safe not-found result.
+- Common USB/Bluetooth keyboard-wedge scanners work through the compact Terminal form and Enter submission; manual type/paste is the V1 fallback. No camera or proprietary scanner SDK is required.
 - Billing issuer setup derives from the authenticated tenant only. Existing tenant name and branding commercial/address/support values are editable suggestions; an Owner must confirm and persist legal identity once before issue.
 - Configured issuer identity is compact/collapsible. Incomplete configuration identifies the exact persisted legal fields still requiring Owner confirmation.
 - Brand/Portal, Customer catalog, printer profiles and Staff & Access keep their existing guarded routes but are discovered through Settings instead of separate daily-navigation entries.
@@ -59,7 +64,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 ## Current Known Product Boundaries
 
 - No real online-provider settlement is configured or claimed.
-- No Barcode workflow yet.
+- No garment-instance lifecycle, barcode scan-event history or inventory tracking is claimed; BARCODE-001 identifies canonical orders and order-line units only.
 - No Quick Drop workflow yet.
 - No full Accounting module yet.
 - No e-invoice or fiscal-compliance claim yet.
@@ -68,11 +73,10 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`BARCODE-001`
+`QUICK-DROP-001`
 
 ## Near Future — Not Started by This Task
 
-- `QUICK-DROP-001`
 - `ACCOUNTING-001`
 - `E-INVOICE-001`
 
