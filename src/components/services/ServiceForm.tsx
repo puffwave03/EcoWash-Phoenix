@@ -53,7 +53,7 @@ export function ServiceForm({ action, service, text }: ServiceFormProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.name}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.name))} defaultValue={service?.name ?? ""} name="name" />
+          <input aria-invalid={Boolean(state.fieldErrors.name)} className={fieldClass(Boolean(state.fieldErrors.name))} defaultValue={service?.name ?? ""} maxLength={160} name="name" required />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.code}</span>

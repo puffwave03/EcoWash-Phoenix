@@ -12,6 +12,10 @@ function text(formData: FormData, name: string, max = 180) {
   return String(formData.get(name) ?? "").trim().slice(0, max);
 }
 
+function requiredName(formData: FormData) {
+  return String(formData.get("name") ?? "").trim();
+}
+
 function isUnitType(value: string): value is ServiceUnitType {
   return SERVICE_UNIT_TYPES.includes(value as ServiceUnitType);
 }
@@ -28,7 +32,7 @@ export function parseServiceStatusFilter(value: string | null): ServiceStatusFil
 
 export function parseServiceForm(formData: FormData) {
   const fieldErrors: Record<string, string> = {};
-  const name = text(formData, "name", 160);
+  const name = requiredName(formData);
   const unitType = text(formData, "unitType", 24);
   const amountText = text(formData, "amount", 24);
   const amount = Number(amountText);
@@ -37,6 +41,7 @@ export function parseServiceForm(formData: FormData) {
   const validTo = text(formData, "validTo", 10);
 
   if (!name) fieldErrors.name = "required";
+  else if (name.length > 160) fieldErrors.name = "invalid";
   if (!isUnitType(unitType)) fieldErrors.unitType = "invalid";
   if (!Number.isFinite(amount) || amount < 0) fieldErrors.amount = "invalid";
   if (currency.length !== 3) fieldErrors.currency = "invalid";

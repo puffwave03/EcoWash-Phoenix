@@ -22,7 +22,29 @@ function fail(
 function revalidateServices(locale: string) {
   revalidatePath(`/${locale}/app`);
   revalidatePath(`/${locale}/app/services`);
+  revalidatePath(`/${locale}/app/orders/new`);
+  revalidatePath(`/${locale}/app/shop`);
+  revalidatePath(`/${locale}/portal`);
+  revalidatePath(`/${locale}/portal/requests/new`);
 }
+
+type CurrentServiceRow = {
+  category: string | null;
+  code: string | null;
+  description: string | null;
+  id: string;
+  is_active: boolean;
+  name: string;
+  unit_type: string;
+};
+
+type CurrentPriceRow = {
+  amount: number;
+  currency: string;
+  is_from: boolean;
+  valid_from: string;
+  valid_to: string | null;
+};
 
 export async function createServiceAction(
   locale: string,
@@ -92,7 +114,39 @@ export async function updateServiceAction(
 
   const { membership, user } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const [{ data: currentService, error: currentServiceError }, { data: currentPrices, error: currentPricesError }] = await Promise.all([
+    supabase.from("services")
+      .select("id, code, name, description, unit_type, category, is_active")
+      .eq("organization_id", membership.organization.id)
+      .eq("id", serviceId)
+      .maybeSingle<CurrentServiceRow>(),
+    supabase.from("service_prices")
+      .select("amount, currency, is_from, valid_from, valid_to")
+      .eq("organization_id", membership.organization.id)
+      .eq("service_id", serviceId)
+      .eq("is_active", true)
+      .returns<CurrentPriceRow[]>(),
+  ]);
+  if (currentServiceError || currentPricesError || !currentService) {
+    console.error("Service update target lookup failed", currentServiceError?.code ?? currentPricesError?.code);
+    return fail("generic");
+  }
+
+  const serviceFieldsUnchanged =
+    currentService.code === optionalDbValue(input.code)
+    && currentService.description === optionalDbValue(input.description)
+    && currentService.unit_type === input.unitType
+    && currentService.category === optionalDbValue(input.category)
+    && currentService.is_active === input.isActive;
+  const submittedPriceAlreadyExists = (currentPrices ?? []).some((price) =>
+    Number(price.amount) === input.amount
+    && price.currency === input.currency
+    && price.is_from === input.priceIsFrom
+    && price.valid_from === input.validFrom
+    && price.valid_to === optionalDbValue(input.validTo));
+  const nameOnlyUpdate = serviceFieldsUnchanged && submittedPriceAlreadyExists;
+
+  const { data: updatedService, error } = await supabase
     .from("services")
     .update({
       category: optionalDbValue(input.category),
@@ -104,11 +158,18 @@ export async function updateServiceAction(
       updated_by: user.id,
     })
     .eq("organization_id", membership.organization.id)
-    .eq("id", serviceId);
+    .eq("id", serviceId)
+    .select("id")
+    .maybeSingle<{ id: string }>();
 
-  if (error) {
-    console.error("Service update failed", error.code);
+  if (error || !updatedService) {
+    console.error("Service update failed", error?.code ?? "not_found");
     return fail("generic");
+  }
+
+  if (nameOnlyUpdate) {
+    revalidateServices(locale);
+    redirect(`/${locale}/app/services`);
   }
 
   await supabase
