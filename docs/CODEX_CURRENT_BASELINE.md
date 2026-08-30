@@ -9,14 +9,15 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `ed7108a` (`CATALOG-STRUCTURE-001.1`).
-- Latest relevant application commit: `ed7108a` (`CATALOG-STRUCTURE-001.1`).
-- Previous completed product documentation commit: `771c222` (`DOCS-ACCOUNTING-001AB`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `82f5f8f` (`CATALOG-MEDIA-FIX-001`).
+- Latest relevant application commit: `82f5f8f` (`CATALOG-MEDIA-FIX-001`).
+- Previous completed product documentation commit: `0ea61a6` (`DOCS-CATALOG-STRUCTURE-001.1`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
 - ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - CATALOG-STRUCTURE-001.1 status: `READY`; no new migration was required.
+- CATALOG-MEDIA-FIX-001 status: `READY`; no new migration was required.
 
 ## Completed Major Modules
 
@@ -25,7 +26,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Public Site | Multilingual IT/EN/ES/FR/DE site is release-ready; deployment/domain decision remains deferred. |
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
 | Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
-| Catalog | Canonical tenant service/category administration complete and exposed at `/[locale]/app/settings/catalog`. Owner/Manager can create, rename, reorder and safely archive stable-keyed service families, move services between them, rename services and archive services without changing identity, pricing, segment/media relationships or historical snapshots. Structural family controls remain separate from customer-facing presentation. |
+| Catalog | Canonical tenant service/category administration complete and exposed at `/[locale]/app/settings/catalog`. Owner/Manager can create, rename, reorder and safely archive stable-keyed service families, move services between them, rename services and archive services without changing identity, pricing, segment/media relationships or historical snapshots. Tenant-scoped service images persist across edits and render from the canonical media path in Catalog admin, Shop Terminal and Customer Portal. Structural family controls remain separate from customer-facing presentation. |
 | Catalog Segments | Tenant customer segment catalog visibility/orderability complete. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
@@ -72,6 +73,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
 - Catalog family management uses explicit create/rename, accessible up/down ordering, safe archive blocking and an archived-family toggle. It reuses `20260830000100_catalog_structure_001_category_lifecycle.sql`; CATALOG-STRUCTURE-001.1 adds no migration.
+- Service images accept signature-validated JPEG, PNG and WebP files up to 2 MB in tenant-scoped `brand-media` paths. Editing without a file preserves the current path; replacement cleans the previous managed object after a successful save, while explicit removal alone clears it. Catalog admin, Shop Terminal and Customer Portal resolve and render the same canonical path with safe visual fallbacks.
 - Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
 - Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
 
@@ -87,7 +89,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`ACCOUNTING-001C`.
+`TERMINAL-UX-004`.
 
 ## Near Future — Not Started by This Task
 
@@ -102,4 +104,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Linked database E2E uses deterministic task-local SQL with rollback/cleanup and zero persistent fixtures.
 - CATALOG-STRUCTURE-001 rollback proof covered `Tintoria` → `Tintoreria`, category order change, service move in/out, safe category/service archive, Terminal/Portal absence, Owner/Staff and cross-tenant enforcement, unchanged UUID/code/price/segment/image relations and immutable order/invoice descriptions; fixture counts returned to zero.
 - ACCOUNTING-001B rollback proof reconciled EUR 2,100 of posted expenses exactly: Rent 1,200, Energy 500, Laundry products 300 and Maintenance 100; Supplier A totaled 300, Manager access passed, Staff/cross-tenant access was denied and all fixtures rolled back to zero.
+- CATALOG-MEDIA-FIX-001 linked proof uploaded and reloaded a controlled service image, preserved it through an edit without a file, replaced it, retained service UUID/code and pricing, restored the original path and removed both temporary storage objects.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
