@@ -73,22 +73,30 @@ export async function listShopServices(
   customerId: string,
   locationId: string | null,
 ): Promise<ShopService[]> {
-  await requireShopTerminalAccess(locale);
+  const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("list_shop_terminal_services", {
-    target_customer_id: customerId,
-    target_location_id: locationId,
-  }).returns<ServiceRow[]>();
+  const [servicesResult, categoriesResult] = await Promise.all([
+    supabase.rpc("list_shop_terminal_services", {
+      target_customer_id: customerId,
+      target_location_id: locationId,
+    }).returns<ServiceRow[]>(),
+    supabase.from("organization_portal_categories")
+      .select("category_key, portal_title")
+      .eq("organization_id", membership.organization.id)
+      .eq("is_active", true)
+      .returns<{ category_key: string; portal_title: string | null }[]>(),
+  ]);
 
-  if (error) {
-    console.error("Shop service query failed", error.code);
+  if (servicesResult.error || categoriesResult.error) {
+    console.error("Shop service query failed", servicesResult.error?.code ?? categoriesResult.error?.code);
     return [];
   }
 
-  const services = (data ?? []) as unknown as ServiceRow[];
+  const categoryTitles = new Map((categoriesResult.data ?? []).map((category) => [category.category_key, category.portal_title]));
+  const services = (servicesResult.data ?? []) as unknown as ServiceRow[];
   return services.map((service) => ({
     amount: Number(service.amount),
-    category: service.category,
+    category: service.category ? categoryTitles.get(service.category) || service.category : null,
     code: service.code,
     currency: service.currency,
     description: service.description,

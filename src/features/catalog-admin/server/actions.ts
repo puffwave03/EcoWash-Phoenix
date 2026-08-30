@@ -7,6 +7,7 @@ import {
   parseBulkCatalogForm,
   parseCatalogCategoryForm,
   parseCatalogServiceForm,
+  parseNewCatalogCategoryForm,
 } from "@/features/catalog-admin/validation";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -28,6 +29,38 @@ function revalidateCatalog(locale: string) {
   revalidatePath(`/${locale}/app/settings/catalog`);
   revalidatePath(`/${locale}/portal`);
   revalidatePath(`/${locale}/portal/requests/new`);
+  revalidatePath(`/${locale}/app/services`);
+  revalidatePath(`/${locale}/app/shop`);
+}
+
+async function activeCategoryExists(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  organizationId: string,
+  categoryKey: string,
+) {
+  const { data } = await supabase.from("organization_portal_categories").select("category_key")
+    .eq("organization_id", organizationId).eq("category_key", categoryKey).eq("is_active", true).maybeSingle();
+  return Boolean(data);
+}
+
+export async function createCatalogCategoryAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  const { membership } = await requireOwnerOrManager(locale);
+  const parsed = parseNewCatalogCategoryForm(formData);
+  if (!parsed.valid) return fail(parsed.fieldErrors);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("organization_portal_categories").insert({
+    category_key: parsed.input.categoryKey,
+    organization_id: membership.organization.id,
+    portal_title: parsed.input.portalTitle,
+  });
+  if (error) return fail({}, error.code === "23505" ? "duplicate" : error.code === "42703" ? "migration" : "generic");
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
 }
 
 function managedMediaPath(path: string | null, organizationId: string, kind: "category" | "service") {
@@ -73,6 +106,9 @@ export async function saveCatalogServiceAction(
   if (!image.valid) return fail({ image: "invalid" });
 
   const supabase = await createSupabaseServerClient();
+  if (!await activeCategoryExists(supabase, membership.organization.id, parsed.input.portalCategoryKey)) {
+    return fail({ portalCategoryKey: "invalid" });
+  }
   const { data: current, error: currentError } = await supabase
     .from("services")
     .select("portal_image_path")
@@ -101,6 +137,7 @@ export async function saveCatalogServiceAction(
   const { error } = await supabase
     .from("services")
     .update({
+      category: parsed.input.portalCategoryKey,
       customer_orderable: parsed.input.customerOrderable,
       portal_category_key: parsed.input.portalCategoryKey,
       portal_description: parsed.input.portalDescription || null,
@@ -184,6 +221,40 @@ export async function saveCatalogCategoryAction(
   return { ...initialState, success: true };
 }
 
+export async function archiveCatalogCategoryAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  await requireOwnerOrManager(locale);
+  const categoryKey = String(formData.get("categoryKey") ?? "").trim();
+  if (!/^[a-z0-9_]{1,64}$/.test(categoryKey)) return fail({ categoryKey: "invalid" });
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("archive_catalog_category", { target_category_key: categoryKey });
+  if (error) return fail({}, error.code === "23503" ? "categoryNotEmpty" : error.code === "42883" ? "migration" : "generic");
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
+}
+
+export async function archiveCatalogServiceAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  const { membership, user } = await requireOwnerOrManager(locale);
+  const serviceId = String(formData.get("serviceId") ?? "").trim();
+  if (!/^[0-9a-f-]{36}$/i.test(serviceId)) return fail({ serviceId: "invalid" });
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("services")
+    .update({ customer_orderable: false, is_active: false, portal_visible: false, updated_by: user.id })
+    .eq("organization_id", membership.organization.id).eq("id", serviceId).select("id").maybeSingle();
+  if (error || !data) return fail({}, error?.code === "42703" ? "migration" : "generic");
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
+}
+
 export async function bulkUpdateCatalogServicesAction(
   locale: string,
   _state: CatalogAdminActionState = initialState,
@@ -205,9 +276,12 @@ export async function bulkUpdateCatalogServicesAction(
           : { portal_category_key: parsed.input.category };
 
   const supabase = await createSupabaseServerClient();
+  if (parsed.input.action === "category" && !await activeCategoryExists(supabase, membership.organization.id, parsed.input.category)) {
+    return fail({ bulkCategory: "invalid" });
+  }
   const { error } = await supabase
     .from("services")
-    .update({ ...updates, updated_by: user.id })
+    .update({ ...updates, ...(parsed.input.action === "category" ? { category: parsed.input.category } : {}), updated_by: user.id })
     .eq("organization_id", membership.organization.id)
     .in("id", parsed.input.serviceIds);
 

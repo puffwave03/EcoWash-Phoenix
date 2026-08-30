@@ -1314,7 +1314,17 @@
     "imageHelp": "JPEG, PNG o WebP, massimo 2 MB. Usa i media del brand limitati all'organizzazione.",
     "removeImage": "Rimuovi immagine attuale",
     "focalPosition": "Fuoco immagine",
-    "focalPositions": { "center": "Centro", "top": "Alto", "bottom": "Basso", "left": "Sinistra", "right": "Destra" }
+    "focalPositions": { "center": "Centro", "top": "Alto", "bottom": "Basso", "left": "Sinistra", "right": "Destra" },
+    "categoryName": "Nome categoria",
+    "categoryCreate": "Crea categoria",
+    "categoryCreateHelp": "Il nome resta modificabile; la chiave tecnica viene creata una sola volta.",
+    "categoryDuplicate": "Esiste già una categoria con questo nome.",
+    "categoryArchive": "Archivia categoria",
+    "categoryArchiveConfirm": "Archiviare questa categoria inutilizzata?",
+    "categoryArchiveBlocked": "Sposta o archivia prima tutti i servizi attivi della categoria.",
+    "categoryArchived": "Archiviata",
+    "serviceArchive": "Archivia servizio",
+    "serviceArchiveConfirm": "Archiviare questo servizio? Non sarà più disponibile per nuove vendite, ma resterà nello storico."
   },
   "catalogSegments": {
     "eyebrow": "Esperienza cliente",

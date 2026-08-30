@@ -1303,7 +1303,17 @@
     "imageHelp": "JPEG, PNG oder WebP, bis 2 MB. Verwendet organisationsgebundene Markenmedien.",
     "removeImage": "Aktuelles Bild entfernen",
     "focalPosition": "Bildfokus",
-    "focalPositions": { "center": "Mitte", "top": "Oben", "bottom": "Unten", "left": "Links", "right": "Rechts" }
+    "focalPositions": { "center": "Mitte", "top": "Oben", "bottom": "Unten", "left": "Links", "right": "Rechts" },
+    "categoryName": "Kategoriename",
+    "categoryCreate": "Kategorie erstellen",
+    "categoryCreateHelp": "Der Name bleibt bearbeitbar; der technische Schlüssel wird einmalig erstellt.",
+    "categoryDuplicate": "Eine Kategorie mit diesem Namen besteht bereits.",
+    "categoryArchive": "Kategorie archivieren",
+    "categoryArchiveConfirm": "Diese ungenutzte Kategorie archivieren?",
+    "categoryArchiveBlocked": "Zuerst alle aktiven Dienste dieser Kategorie verschieben oder archivieren.",
+    "categoryArchived": "Archiviert",
+    "serviceArchive": "Dienst archivieren",
+    "serviceArchiveConfirm": "Diesen Dienst archivieren? Er entfällt für neue Verkäufe, bleibt aber im Verlauf erhalten."
   },
   "catalogSegments": {
     "eyebrow": "Kundenerlebnis",

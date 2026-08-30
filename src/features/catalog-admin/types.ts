@@ -1,5 +1,4 @@
 import type { BrandFocalPosition } from "@/features/branding/types";
-import type { ServiceCategoryKey } from "@/features/services/catalog";
 import type { ServiceUnitType } from "@/features/services/types";
 
 export type CatalogAdminService = {
@@ -12,7 +11,7 @@ export type CatalogAdminService = {
   internalDescription: string | null;
   isActive: boolean;
   name: string;
-  portalCategoryKey: ServiceCategoryKey | null;
+  portalCategoryKey: string | null;
   portalDescription: string;
   portalFeatured: boolean;
   portalImagePath: string | null;
@@ -24,10 +23,12 @@ export type CatalogAdminService = {
 };
 
 export type CatalogAdminCategory = {
-  categoryKey: ServiceCategoryKey;
+  activeServiceCount: number;
+  categoryKey: string;
   focalPosition: BrandFocalPosition;
   imagePath: string | null;
   imageUrl: string | null;
+  isActive: boolean;
   portalFeatured: boolean;
   portalSortOrder: number;
   portalTitle: string;
@@ -42,6 +43,6 @@ export type CatalogAdminSettings = {
 
 export type CatalogAdminActionState = {
   fieldErrors: Record<string, string>;
-  formError: "generic" | "migration" | "upload" | null;
+  formError: "categoryNotEmpty" | "duplicate" | "generic" | "migration" | "upload" | null;
   success: boolean;
 };

@@ -1,7 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { CatalogManagement } from "@/components/catalog-admin/CatalogManagement";
 import {
+  archiveCatalogCategoryAction,
+  archiveCatalogServiceAction,
   bulkUpdateCatalogServicesAction,
+  createCatalogCategoryAction,
   saveCatalogCategoryAction,
   saveCatalogServiceAction,
 } from "@/features/catalog-admin/server/actions";
@@ -30,17 +33,20 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
       {settings.available ? (
         <CatalogManagement
           bulkAction={bulkUpdateCatalogServicesAction.bind(null, locale)}
+          categoryArchiveAction={archiveCatalogCategoryAction.bind(null, locale)}
           categories={settings.categories}
           categoryAction={saveCatalogCategoryAction.bind(null, locale)}
+          categoryCreateAction={createCatalogCategoryAction.bind(null, locale)}
           locale={locale}
           serviceAction={saveCatalogServiceAction.bind(null, locale)}
+          serviceArchiveAction={archiveCatalogServiceAction.bind(null, locale)}
           services={settings.services}
           text={{
             all: t("all"),
             bulkAction: t("bulkAction"), bulkApply: t("bulkApply"), bulkCategory: t("bulkCategory"), bulkConfirm: t.raw("bulkConfirm") as string, bulkOptions: t.raw("bulkOptions"), bulkSelect: t("bulkSelect"),
-            categories: t("categories"), categoriesHelp: t("categoriesHelp"), category: t("category"), categoryFeatured: t("categoryFeatured"), categoryHiddenHelp: t("categoryHiddenHelp"), categoryImage: t("categoryImage"), categoryTitle: t("categoryTitle"),
+            categories: t("categories"), categoriesHelp: t("categoriesHelp"), category: t("category"), categoryArchive: t("categoryArchive"), categoryArchiveBlocked: t("categoryArchiveBlocked"), categoryArchiveConfirm: t("categoryArchiveConfirm"), categoryArchived: t("categoryArchived"), categoryCreate: t("categoryCreate"), categoryCreateHelp: t("categoryCreateHelp"), categoryDuplicate: t("categoryDuplicate"), categoryFeatured: t("categoryFeatured"), categoryHiddenHelp: t("categoryHiddenHelp"), categoryImage: t("categoryImage"), categoryName: t("categoryName"), categoryTitle: t("categoryTitle"),
             customerDescription: t("customerDescription"), customerOrderable: t("customerOrderable"), displayOrder: t("displayOrder"), editPresentation: t("editPresentation"), featured: t("featured"), filters: t.raw("filters"),
-            focalPosition: t("focalPosition"), focalPositions: t.raw("focalPositions"), formError: t("formError"), fromPrice: catalogT("fromPrice"), imageHelp: t("imageHelp"), internalDescription: t("internalDescription"), migrationRequired: t("migrationRequired"), noResults: t("noResults"), removeImage: t("removeImage"), save: t("save"), saved: t("saved"), saving: t("saving"), search: t("search"), searchPlaceholder: t("searchPlaceholder"), selectAll: t("selectAll"), selectedCount: t.raw("selectedCount") as string, summary: t.raw("summary"), unitTypes: catalogT.raw("unitTypes") as Record<ServiceUnitType, string>, visible: t("visible"), categoryLabels: catalogT.raw("categories"),
+            focalPosition: t("focalPosition"), focalPositions: t.raw("focalPositions"), formError: t("formError"), fromPrice: catalogT("fromPrice"), imageHelp: t("imageHelp"), internalDescription: t("internalDescription"), migrationRequired: t("migrationRequired"), noResults: t("noResults"), removeImage: t("removeImage"), save: t("save"), saved: t("saved"), saving: t("saving"), search: t("search"), searchPlaceholder: t("searchPlaceholder"), selectAll: t("selectAll"), selectedCount: t.raw("selectedCount") as string, serviceArchive: t("serviceArchive"), serviceArchiveConfirm: t("serviceArchiveConfirm"), summary: t.raw("summary"), unitTypes: catalogT.raw("unitTypes") as Record<ServiceUnitType, string>, visible: t("visible"), categoryLabels: catalogT.raw("categories"),
           }}
         />
       ) : (

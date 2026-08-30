@@ -1347,7 +1347,17 @@
     "imageHelp": "JPEG, PNG or WebP, up to 2 MB. Uses organization-scoped brand media.",
     "removeImage": "Remove current image",
     "focalPosition": "Image focus",
-    "focalPositions": { "center": "Center", "top": "Top", "bottom": "Bottom", "left": "Left", "right": "Right" }
+    "focalPositions": { "center": "Center", "top": "Top", "bottom": "Bottom", "left": "Left", "right": "Right" },
+    "categoryName": "Category name",
+    "categoryCreate": "Create category",
+    "categoryCreateHelp": "The name stays editable; the technical key is created once.",
+    "categoryDuplicate": "A category with this name already exists.",
+    "categoryArchive": "Archive category",
+    "categoryArchiveConfirm": "Archive this unused category?",
+    "categoryArchiveBlocked": "Move or archive every active service in this category first.",
+    "categoryArchived": "Archived",
+    "serviceArchive": "Archive service",
+    "serviceArchiveConfirm": "Archive this service? It will leave new-sale flows but remain in history."
   },
   "catalogSegments": {
     "eyebrow": "Customer experience",

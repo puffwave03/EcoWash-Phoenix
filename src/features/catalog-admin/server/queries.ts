@@ -1,6 +1,6 @@
 import "server-only";
 
-import { SERVICE_CATEGORY_KEYS, type ServiceCategoryKey } from "@/features/services/catalog";
+import { SERVICE_CATEGORY_KEYS } from "@/features/services/catalog";
 import type { BrandFocalPosition } from "@/features/branding/types";
 import type {
   CatalogAdminCategory,
@@ -14,7 +14,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 type ServiceRow = {
   customer_orderable: boolean;
   id: string;
-  portal_category_key: ServiceCategoryKey | null;
+  portal_category_key: string | null;
   portal_description: string | null;
   portal_featured: boolean;
   portal_image_path: string | null;
@@ -23,9 +23,10 @@ type ServiceRow = {
 };
 
 type CategoryRow = {
-  category_key: ServiceCategoryKey;
+  category_key: string;
   focal_position: BrandFocalPosition;
   image_path: string | null;
+  is_active: boolean;
   portal_featured: boolean;
   portal_sort_order: number;
   portal_title: string | null;
@@ -55,7 +56,7 @@ export async function getCatalogAdminSettings(locale: string): Promise<CatalogAd
       .returns<ServiceRow[]>(),
     supabase
       .from("organization_portal_categories")
-      .select("category_key, image_path, focal_position, portal_visible, portal_featured, portal_sort_order, portal_title")
+      .select("category_key, image_path, focal_position, is_active, portal_visible, portal_featured, portal_sort_order, portal_title")
       .eq("organization_id", membership.organization.id)
       .order("portal_sort_order", { ascending: true })
       .returns<CategoryRow[]>(),
@@ -67,13 +68,21 @@ export async function getCatalogAdminSettings(locale: string): Promise<CatalogAd
   }
 
   const rowsByKey = new Map((categoriesResult.data ?? []).map((row) => [row.category_key, row]));
-  const categories: CatalogAdminCategory[] = SERVICE_CATEGORY_KEYS.map((categoryKey, index) => {
+  const categoryKeys = [...new Set([...SERVICE_CATEGORY_KEYS, ...(categoriesResult.data ?? []).map((row) => row.category_key)])];
+  const activeServiceCounts = new Map<string, number>();
+  for (const service of internalServices.filter((item) => item.isActive)) {
+    const categoryKey = (servicesResult.data ?? []).find((row) => row.id === service.id)?.portal_category_key ?? service.category;
+    if (categoryKey) activeServiceCounts.set(categoryKey, (activeServiceCounts.get(categoryKey) ?? 0) + 1);
+  }
+  const categories: CatalogAdminCategory[] = categoryKeys.map((categoryKey, index) => {
     const row = rowsByKey.get(categoryKey);
     return {
+      activeServiceCount: activeServiceCounts.get(categoryKey) ?? 0,
       categoryKey,
       focalPosition: row?.focal_position ?? "center",
       imagePath: row?.image_path ?? null,
       imageUrl: storageUrl(supabase, row?.image_path ?? null),
+      isActive: row?.is_active ?? true,
       portalFeatured: row?.portal_featured ?? false,
       portalSortOrder: row?.portal_sort_order ?? index,
       portalTitle: row?.portal_title ?? "",

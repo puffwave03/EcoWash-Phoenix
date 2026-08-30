@@ -1,4 +1,3 @@
-import { SERVICE_CATEGORY_KEYS, type ServiceCategoryKey } from "@/features/services/catalog";
 import { BRAND_FOCAL_POSITIONS, type BrandFocalPosition } from "@/features/branding/types";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -12,8 +11,22 @@ function integer(value: string, maximum = 100000) {
   return Number.isInteger(parsed) && parsed >= 0 && parsed <= maximum ? parsed : null;
 }
 
-export function isServiceCategoryKey(value: string): value is ServiceCategoryKey {
-  return SERVICE_CATEGORY_KEYS.includes(value as ServiceCategoryKey);
+export function isServiceCategoryKey(value: string) {
+  return /^[a-z0-9_]{1,64}$/.test(value);
+}
+
+export function categoryKeyFromTitle(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 64);
+}
+
+export function parseNewCatalogCategoryForm(formData: FormData) {
+  const fieldErrors: Record<string, string> = {};
+  const portalTitle = text(formData, "portalTitle", 120);
+  const categoryKey = categoryKeyFromTitle(portalTitle);
+  if (!portalTitle) fieldErrors.portalTitle = "required";
+  if (!isServiceCategoryKey(categoryKey)) fieldErrors.portalTitle = "invalid";
+  return { input: { categoryKey, portalTitle }, valid: Object.keys(fieldErrors).length === 0, fieldErrors };
 }
 
 export function parseCatalogServiceForm(formData: FormData) {
@@ -30,7 +43,7 @@ export function parseCatalogServiceForm(formData: FormData) {
   return {
     input: {
       customerOrderable: formData.get("customerOrderable") === "true",
-      portalCategoryKey: category as ServiceCategoryKey,
+      portalCategoryKey: category,
       portalDescription,
       portalFeatured: formData.get("portalFeatured") === "true",
       portalSortOrder: portalSortOrder ?? 0,
@@ -58,7 +71,7 @@ export function parseCatalogCategoryForm(formData: FormData) {
 
   return {
     input: {
-      categoryKey: categoryKey as ServiceCategoryKey,
+      categoryKey,
       focalPosition: focalPosition as BrandFocalPosition,
       portalFeatured: formData.get("portalFeatured") === "true",
       portalSortOrder: portalSortOrder ?? 0,
@@ -96,7 +109,7 @@ export function parseBulkCatalogForm(formData: FormData) {
   }
 
   return {
-    input: { action, category: category as ServiceCategoryKey, serviceIds },
+    input: { action, category, serviceIds },
     valid: Object.keys(fieldErrors).length === 0,
     fieldErrors,
   };
