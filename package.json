@@ -8,6 +8,8 @@
     "test:catalog": "node --test tests/catalog-admin-contract.test.mjs",
     "test:catalog-naming": "node --test tests/catalog-naming-contract.test.mjs",
     "test:catalog-structure": "node --test tests/catalog-structure-contract.test.mjs",
+    "test:accounting": "node --test tests/accounting-read-model.test.mjs",
+    "test:accounting-expenses": "node --test tests/accounting-expenses-contract.test.mjs",
     "test:segments": "node --test tests/catalog-segments-contract.test.mjs",
     "test:pricing-segments": "node --test tests/pricing-segments-contract.test.mjs",
     "test:entitlements": "node --test tests/entitlements-contract.test.mjs",
