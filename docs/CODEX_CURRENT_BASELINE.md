@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `7eeaf2d` (`CATALOG-STRUCTURE-001`).
-- Latest relevant application commit: `7eeaf2d` (`CATALOG-STRUCTURE-001`).
-- Previous completed product documentation commit: `501cfb8` (`DOCS-CATALOG-NAMING-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260830000100_catalog_structure_001_category_lifecycle.sql`.
-- CATALOG-STRUCTURE-001 linked migration history is aligned through `20260830000100`.
+- Product baseline before this docs update: `642d0c8` (`ACCOUNTING-001A+B`).
+- Latest relevant application commit: `642d0c8` (`ACCOUNTING-001A+B`).
+- Previous completed product documentation commit: `b22b368` (`DOCS-CATALOG-STRUCTURE-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
+- ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
 
 ## Completed Major Modules
 
@@ -37,6 +37,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
+| Accounting Foundation / ACCOUNTING-001A+B | Currency-separated canonical read models cover sales, collections, refunds, outstanding balances and POS reconciliation without invoice double-counting. Tenant-scoped suppliers, expense categories and auditable draft/posted/void expenses provide the new expense domain for the future Accounting workspace. |
 
 ## Current Important Configuration
 
@@ -67,12 +68,14 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
 - Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
+- Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
+- Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
 
 ## Current Known Product Boundaries
 
 - No real online-provider settlement is configured or claimed.
 - No garment-instance lifecycle, barcode scan-event history or inventory tracking is claimed; BARCODE-001 identifies canonical orders and order-line units only.
-- No full Accounting module yet.
+- No final Accounting workspace/dashboard, exports, general ledger, double-entry bookkeeping, bank reconciliation or tax filing exists yet.
 - No e-invoice or fiscal-compliance claim yet.
 - No Spanish simplified-invoice document type or legal regime is implemented; operational receipts must not be represented as fiscal or simplified invoices.
 - No raw card-data handling, printer driver, silent printing or hardware-status integration.
@@ -80,7 +83,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`ACCOUNTING-001B`
+`ACCOUNTING-001C`
 
 ## Near Future — Not Started by This Task
 
@@ -94,4 +97,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Database migrations and authoritative SQL behavior: `supabase/migrations/`.
 - Linked database E2E uses deterministic task-local SQL with rollback/cleanup and zero persistent fixtures.
 - CATALOG-STRUCTURE-001 rollback proof covered `Tintoria` → `Tintoreria`, category order change, service move in/out, safe category/service archive, Terminal/Portal absence, Owner/Staff and cross-tenant enforcement, unchanged UUID/code/price/segment/image relations and immutable order/invoice descriptions; fixture counts returned to zero.
+- ACCOUNTING-001B rollback proof reconciled EUR 2,100 of posted expenses exactly: Rent 1,200, Energy 500, Laundry products 300 and Maintenance 100; Supplier A totaled 300, Manager access passed, Staff/cross-tenant access was denied and all fixtures rolled back to zero.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
