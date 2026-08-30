@@ -14,6 +14,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Previous completed product documentation commit: `b22b368` (`DOCS-CATALOG-STRUCTURE-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
 - ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
+- ACCOUNTING-001A status: `READY`.
+- ACCOUNTING-001B status: `READY`.
 
 ## Completed Major Modules
 
@@ -83,7 +85,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`ACCOUNTING-001C`
+`CATALOG-STRUCTURE-001.1 — UI management for service categories`
+
+Then: `ACCOUNTING-001C`.
 
 ## Near Future — Not Started by This Task
 
