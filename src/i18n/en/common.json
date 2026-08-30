@@ -1307,6 +1307,7 @@
     "saving": "Saving...",
     "saved": "Saved",
     "formError": "The catalog change could not be saved.",
+    "uploadError": "The image upload failed. Check its format and size, then try again.",
     "migrationRequired": "Catalog administration will be available after the pending CATALOG-ADMIN-001 migration is reviewed and applied.",
     "noResults": "No services match these filters.",
     "selectAll": "Select filtered",

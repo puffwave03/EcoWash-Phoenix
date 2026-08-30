@@ -1282,6 +1282,7 @@
     "saving": "Guardando...",
     "saved": "Guardado",
     "formError": "No se pudo guardar el cambio del catálogo.",
+    "uploadError": "No se pudo cargar la imagen. Comprueba el formato y el tamaño e inténtalo de nuevo.",
     "migrationRequired": "La administración del catálogo estará disponible tras revisar y aplicar la migración CATALOG-ADMIN-001.",
     "noResults": "Ningún servicio coincide con los filtros.",
     "selectAll": "Seleccionar filtrados",

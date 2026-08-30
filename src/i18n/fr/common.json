@@ -1282,6 +1282,7 @@
     "saving": "Enregistrement...",
     "saved": "Enregistré",
     "formError": "La modification du catalogue n'a pas pu être enregistrée.",
+    "uploadError": "Le chargement de l'image a échoué. Vérifiez son format et sa taille, puis réessayez.",
     "migrationRequired": "L'administration du catalogue sera disponible après révision et application de la migration CATALOG-ADMIN-001.",
     "noResults": "Aucun service ne correspond aux filtres.",
     "selectAll": "Sélectionner les filtrés",

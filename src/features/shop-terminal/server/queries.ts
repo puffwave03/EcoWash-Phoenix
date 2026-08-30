@@ -18,6 +18,15 @@ type ServiceRow = {
   unit_type: ShopService["unitType"];
 };
 
+function serviceImageUrl(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  path: string | null,
+) {
+  if (!path) return null;
+  if (path.startsWith("/")) return path;
+  return supabase.storage.from("brand-media").getPublicUrl(path).data.publicUrl;
+}
+
 export async function listShopCustomers(locale: string): Promise<ShopCustomer[]> {
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
@@ -92,8 +101,18 @@ export async function listShopServices(
     return [];
   }
 
-  const categoryTitles = new Map((categoriesResult.data ?? []).map((category) => [category.category_key, category.portal_title]));
   const services = (servicesResult.data ?? []) as unknown as ServiceRow[];
+  const mediaResult = services.length > 0
+    ? await supabase.from("services")
+      .select("id, portal_image_path")
+      .eq("organization_id", membership.organization.id)
+      .in("id", services.map((service) => service.id))
+      .returns<{ id: string; portal_image_path: string | null }[]>()
+    : { data: [], error: null };
+  if (mediaResult.error) console.error("Shop service media query failed", mediaResult.error.code);
+
+  const categoryTitles = new Map((categoriesResult.data ?? []).map((category) => [category.category_key, category.portal_title]));
+  const imagePaths = new Map((mediaResult.data ?? []).map((service) => [service.id, service.portal_image_path]));
   return services.map((service) => ({
     amount: Number(service.amount),
     category: service.category ? categoryTitles.get(service.category) || service.category : null,
@@ -101,6 +120,7 @@ export async function listShopServices(
     currency: service.currency,
     description: service.description,
     id: service.id,
+    imageUrl: serviceImageUrl(supabase, imagePaths.get(service.id) ?? null),
     name: service.name,
     priceIsFrom: service.price_is_from,
     pricingSegmentName: service.pricing_segment_name,

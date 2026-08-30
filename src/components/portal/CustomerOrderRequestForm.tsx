@@ -470,6 +470,7 @@ export function CustomerOrderRequestForm({
                         const selected = service.id in quantities;
                         return (
                           <article className={`rounded-card border bg-white p-4 transition-standard ${selected ? "border-primary shadow-card ring-1 ring-primary/15" : "border-border"}`} key={service.id}>
+                            {service.portalImagePath ? <PortalMedia alt={service.name} className="mb-4 aspect-[16/7] w-full rounded-control border border-border" sizes="(max-width: 767px) 100vw, 50vw" src={service.portalImagePath} /> : null}
                             <div className="flex min-h-24 flex-col">
                               <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">

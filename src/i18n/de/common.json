@@ -1282,6 +1282,7 @@
     "saving": "Wird gespeichert...",
     "saved": "Gespeichert",
     "formError": "Die Katalogänderung konnte nicht gespeichert werden.",
+    "uploadError": "Das Bild konnte nicht hochgeladen werden. Format und Größe prüfen und erneut versuchen.",
     "migrationRequired": "Die Katalogverwaltung ist nach Prüfung und Anwendung der Migration CATALOG-ADMIN-001 verfügbar.",
     "noResults": "Keine Leistungen entsprechen den Filtern.",
     "selectAll": "Gefilterte auswählen",

@@ -16,6 +16,7 @@ export type ShopService = {
   currency: string;
   description: string | null;
   id: string;
+  imageUrl: string | null;
   name: string;
   priceIsFrom: boolean;
   pricingSegmentName: string | null;

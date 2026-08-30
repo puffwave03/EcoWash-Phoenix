@@ -1293,6 +1293,7 @@
     "saving": "Salvataggio...",
     "saved": "Salvato",
     "formError": "Non è stato possibile salvare la modifica al catalogo.",
+    "uploadError": "Caricamento immagine non riuscito. Verifica formato e dimensione, quindi riprova.",
     "migrationRequired": "L'amministrazione del catalogo sarà disponibile dopo la revisione e l'applicazione della migrazione CATALOG-ADMIN-001.",
     "noResults": "Nessun servizio corrisponde ai filtri.",
     "selectAll": "Seleziona filtrati",

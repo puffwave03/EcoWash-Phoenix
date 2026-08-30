@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
+import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { CatalogAdminActionState, CatalogAdminCategory, CatalogAdminService } from "@/features/catalog-admin/types";
 import type { ServiceUnitType } from "@/features/services/types";
 import { formatCurrency } from "@/lib/number-format";
@@ -52,6 +53,7 @@ type CatalogManagementText = {
   formError: string;
   fromPrice: string;
   imageHelp: string;
+  uploadError: string;
   internalDescription: string;
   migrationRequired: string;
   moveDown: string;
@@ -92,7 +94,7 @@ function SubmitButton({ text }: { text: Pick<CatalogManagementText, "save" | "sa
 
 function Result({ state, text }: { state: CatalogAdminActionState; text: CatalogManagementText }) {
   if (state.success) return <p className="text-sm font-semibold text-emerald-700" role="status">{text.saved}</p>;
-  if (state.formError) return <p className="text-sm text-red-700" role="alert">{state.formError === "migration" ? text.migrationRequired : state.formError === "categoryNotEmpty" ? text.categoryArchiveBlocked : state.formError === "duplicate" ? text.categoryDuplicate : text.formError}</p>;
+  if (state.formError) return <p className="text-sm text-red-700" role="alert">{state.formError === "migration" ? text.migrationRequired : state.formError === "categoryNotEmpty" ? text.categoryArchiveBlocked : state.formError === "duplicate" ? text.categoryDuplicate : state.formError === "upload" ? text.uploadError : text.formError}</p>;
   if (Object.keys(state.fieldErrors).length > 0) return <p className="text-sm text-red-700" role="alert">{text.formError}</p>;
   return null;
 }
@@ -232,6 +234,7 @@ function ServiceEditor({ action, archiveAction, categories, service, text }: { a
           </label>
           <label className="flex min-h-11 items-center gap-2 text-sm text-muted"><input className="h-5 w-5 accent-primary" name="removeImage" type="checkbox" value="true" />{text.removeImage}</label>
         </div>
+        {service.portalImageUrl ? <PortalMedia alt={service.name} className="aspect-[16/7] max-w-sm rounded-control border border-border" sizes="(max-width: 639px) 100vw, 384px" src={service.portalImageUrl} /> : null}
         <div className="flex flex-wrap items-center justify-between gap-3"><Result state={state} text={text} /><SubmitButton text={text} /></div>
       </form>
       {service.isActive ? <form action={archiveFormAction} className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border border-amber-200 bg-amber-50/60 p-3" onSubmit={(event) => { if (!window.confirm(text.serviceArchiveConfirm)) event.preventDefault(); }}>
@@ -373,8 +376,9 @@ export function CatalogManagement({
               {group.items.map((service) => {
                 const isVisible = effectiveVisibility(service, categoryMap);
                 return (
-                  <article className="grid gap-3 p-4 xl:grid-cols-[auto_minmax(14rem,1.25fr)_minmax(8rem,0.55fr)_minmax(15rem,0.8fr)_minmax(10rem,0.55fr)] xl:items-center" key={service.id}>
+                  <article className="grid gap-3 p-4 xl:grid-cols-[auto_auto_minmax(14rem,1.25fr)_minmax(8rem,0.55fr)_minmax(15rem,0.8fr)_minmax(10rem,0.55fr)] xl:items-center" key={service.id}>
                     <input aria-label={`${text.bulkSelect}: ${service.name}`} checked={selected.has(service.id)} className="h-5 w-5 accent-primary" onChange={(event) => setSelected((current) => { const next = new Set(current); if (event.target.checked) next.add(service.id); else next.delete(service.id); return next; })} type="checkbox" />
+                    <PortalMedia alt={service.name} className="h-14 w-20 rounded-control border border-border" sizes="80px" src={service.portalImageUrl} />
                     <div className="min-w-0"><p className="font-semibold text-foreground">{service.name}</p><p className="truncate text-xs text-muted">{service.code || service.internalCategory || "—"}</p></div>
                     <p className="text-sm font-semibold text-primary">{service.amount === null ? "—" : `${service.priceIsFrom ? `${text.fromPrice} ` : ""}${formatCurrency(service.amount, service.currency ?? "EUR", locale)}`}<span className="block text-xs font-normal text-muted">{text.unitTypes[service.unitType]}</span></p>
                     <div className="flex flex-wrap gap-2"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isVisible ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{isVisible ? text.filters.visible : text.filters.hidden}</span><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isVisible && service.customerOrderable ? "bg-blue-50 text-blue-800" : "bg-amber-50 text-amber-800"}`}>{isVisible && service.customerOrderable ? text.filters.orderable : text.filters.nonOrderable}</span>{service.portalFeatured ? <span className="rounded-full bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-800">{text.featured}</span> : null}</div>
