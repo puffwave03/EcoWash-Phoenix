@@ -2,16 +2,16 @@
 
 Status: Active
 
-Recorded: 2026-08-29
+Recorded: 2026-08-30
 Purpose: Short mutable product baseline for the next Codex task
 
 Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each completed product task.
 
 ## Current Git
 
-- Product baseline before this docs update: `707be3f` (`QUICK-DROP-001`).
-- Latest relevant application commit: `707be3f` (`QUICK-DROP-001`).
-- Previous completed product documentation commit: `23eef2b` (`DOCS-BARCODE-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `9897d6b` (`CATALOG-NAMING-001`).
+- Latest relevant application commit: `9897d6b` (`CATALOG-NAMING-001`).
+- Previous completed product documentation commit: `236adee` (`DOCS-QUICK-DROP-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260829000600_quick_drop_001a_canonical_intake.sql`.
 - QUICK-DROP-001 linked migration history is aligned through `20260829000600`.
 
@@ -22,7 +22,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Public Site | Multilingual IT/EN/ES/FR/DE site is release-ready; deployment/domain decision remains deferred. |
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
 | Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
-| Catalog | Canonical tenant service/catalog administration complete. |
+| Catalog | Canonical tenant service/catalog administration complete. Owner/Manager can safely rename the current service display name without changing service identity, pricing, segment/media relationships or historical snapshots. |
 | Catalog Segments | Tenant customer segment catalog visibility/orderability complete. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
@@ -64,6 +64,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Regular and walk-in customers are prompted only for fields missing from the current Billing issue model.
 - Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
+- Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
 
 ## Current Known Product Boundaries
 
