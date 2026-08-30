@@ -221,6 +221,52 @@ export async function saveCatalogCategoryAction(
   return { ...initialState, success: true };
 }
 
+export async function reorderCatalogCategoryAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  const { membership } = await requireOwnerOrManager(locale);
+  const categoryKey = String(formData.get("categoryKey") ?? "").trim();
+  const direction = String(formData.get("direction") ?? "");
+  if (!/^[a-z0-9_]{1,64}$/.test(categoryKey) || !["up", "down"].includes(direction)) {
+    return fail({ categoryKey: "invalid" });
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error: readError } = await supabase
+    .from("organization_portal_categories")
+    .select("category_key, portal_sort_order")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .order("portal_sort_order", { ascending: true })
+    .order("category_key", { ascending: true })
+    .returns<Array<{ category_key: string; portal_sort_order: number }>>();
+  if (readError) return fail({}, readError.code === "42703" ? "migration" : "generic");
+
+  const orderedKeys = (data ?? []).map((category) => category.category_key);
+  const currentIndex = orderedKeys.indexOf(categoryKey);
+  const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+  if (currentIndex < 0 || targetIndex < 0 || targetIndex >= orderedKeys.length) {
+    return { ...initialState, success: true };
+  }
+
+  [orderedKeys[currentIndex], orderedKeys[targetIndex]] = [orderedKeys[targetIndex], orderedKeys[currentIndex]];
+  const { error } = await supabase.from("organization_portal_categories").upsert(
+    orderedKeys.map((key, index) => ({
+      category_key: key,
+      organization_id: membership.organization.id,
+      portal_sort_order: index,
+    })),
+    { onConflict: "organization_id,category_key" },
+  );
+  if (error) return fail({}, error.code === "42703" ? "migration" : "generic");
+
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
+}
+
 export async function archiveCatalogCategoryAction(
   locale: string,
   _state: CatalogAdminActionState = initialState,

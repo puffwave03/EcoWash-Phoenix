@@ -1,7 +1,7 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { useActionState, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import type { CatalogAdminActionState, CatalogAdminCategory, CatalogAdminService } from "@/features/catalog-admin/types";
 import type { ServiceUnitType } from "@/features/services/types";
@@ -17,9 +17,11 @@ type CatalogManagementText = {
   bulkSelect: string;
   categories: string;
   categoriesHelp: string;
+  activeServices: string;
   categoryArchive: string;
   categoryArchiveBlocked: string;
   categoryArchiveConfirm: string;
+  categoryActive: string;
   categoryArchived: string;
   categoryCreate: string;
   categoryCreateHelp: string;
@@ -30,6 +32,8 @@ type CatalogManagementText = {
   categoryHiddenHelp: string;
   categoryImage: string;
   categoryTitle: string;
+  customerPresentation: string;
+  customerPresentationHelp: string;
   customerDescription: string;
   customerOrderable: string;
   displayOrder: string;
@@ -50,6 +54,8 @@ type CatalogManagementText = {
   imageHelp: string;
   internalDescription: string;
   migrationRequired: string;
+  moveDown: string;
+  moveUp: string;
   noResults: string;
   removeImage: string;
   save: string;
@@ -57,6 +63,7 @@ type CatalogManagementText = {
   saving: string;
   search: string;
   searchPlaceholder: string;
+  showArchived: string;
   selectAll: string;
   selectedCount: string;
   serviceArchive: string;
@@ -114,58 +121,74 @@ function BooleanControl({ defaultChecked, label, name }: { defaultChecked: boole
   );
 }
 
-function CategoryEditor({ action, archiveAction, category, text }: { action: Action; archiveAction: Action; category: CatalogAdminCategory; text: CatalogManagementText }) {
+function OrderButton({ children, disabled, value }: { children: ReactNode; disabled: boolean; value: "down" | "up" }) {
+  const { pending } = useFormStatus();
+  return <button className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control border border-border bg-white px-3 text-lg font-semibold text-primary transition-standard hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-40" disabled={disabled || pending} name="direction" type="submit" value={value}>{children}</button>;
+}
+
+function CategoryStructureEditor({ action, archiveAction, canMoveDown, canMoveUp, category, reorderAction, text }: { action: Action; archiveAction: Action; canMoveDown: boolean; canMoveUp: boolean; category: CatalogAdminCategory; reorderAction: Action; text: CatalogManagementText }) {
   const [state, formAction] = useActionState(action, initialState);
   const [archiveState, archiveFormAction] = useActionState(archiveAction, initialState);
+  const [orderState, orderFormAction] = useActionState(reorderAction, initialState);
   const label = category.portalTitle || text.categoryLabels[category.categoryKey] || category.categoryKey;
 
   return (
+    <article className="rounded-card border border-border bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-primary">{label}</p>
+          <p className="mt-1 text-xs text-muted">{text.activeServices.replace("{count}", String(category.activeServiceCount))} · {text.displayOrder} {category.portalSortOrder}</p>
+        </div>
+        <span className={`rounded-full px-2.5 py-1 text-xs ${category.isActive ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{category.isActive ? text.categoryActive : text.categoryArchived}</span>
+      </div>
+      {category.isActive ? <>
+      <form action={formAction} className="mt-4 grid gap-3 sm:grid-cols-[minmax(12rem,1fr)_auto] sm:items-end">
+        <input name="categoryKey" type="hidden" value={category.categoryKey} />
+        <input name="focalPosition" type="hidden" value={category.focalPosition} />
+        <input name="portalSortOrder" type="hidden" value={category.portalSortOrder} />
+        {category.portalFeatured ? <input name="portalFeatured" type="hidden" value="true" /> : null}
+        {category.portalVisible ? <input name="portalVisible" type="hidden" value="true" /> : null}
+        <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.categoryName}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={label} maxLength={120} name="portalTitle" required /></label>
+        <SubmitButton text={text} />
+        <div className="sm:col-span-2"><Result state={state} text={text} /></div>
+      </form>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+        <form action={orderFormAction} className="flex items-center gap-2">
+          <input name="categoryKey" type="hidden" value={category.categoryKey} />
+          <OrderButton disabled={!canMoveUp} value="up"><span aria-hidden>↑</span><span className="sr-only">{text.moveUp}: {label}</span></OrderButton>
+          <OrderButton disabled={!canMoveDown} value="down"><span aria-hidden>↓</span><span className="sr-only">{text.moveDown}: {label}</span></OrderButton>
+        </form>
+        <form action={archiveFormAction} className="flex flex-wrap items-center justify-end gap-3" onSubmit={(event) => { if (!window.confirm(text.categoryArchiveConfirm)) event.preventDefault(); }}>
+        <input name="categoryKey" type="hidden" value={category.categoryKey} />
+        {category.activeServiceCount > 0 ? <p className="max-w-sm text-xs leading-5 text-amber-800">{text.categoryArchiveBlocked}</p> : null}
+        <button className="min-h-11 rounded-control border border-amber-300 px-4 text-sm font-semibold text-amber-800 disabled:opacity-50" disabled={category.activeServiceCount > 0} type="submit">{text.categoryArchive}</button>
+        </form>
+      </div>
+      <Result state={orderState} text={text} /><Result state={archiveState} text={text} />
+      </> : null}
+    </article>
+  );
+}
+
+function CategoryPresentationEditor({ action, category, text }: { action: Action; category: CatalogAdminCategory; text: CatalogManagementText }) {
+  const [state, formAction] = useActionState(action, initialState);
+  const label = category.portalTitle || text.categoryLabels[category.categoryKey] || category.categoryKey;
+  return (
     <details className="rounded-card border border-border bg-white shadow-sm">
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-primary [&::-webkit-details-marker]:hidden">
-        <span className="flex min-w-0 items-center gap-3">
-          {category.imageUrl ? <img alt="" className="h-10 w-14 rounded-control object-cover" src={category.imageUrl} /> : null}
-          <span className="truncate">{label}</span>
-        </span>
-        <span className={`rounded-full px-2.5 py-1 text-xs ${category.isActive && category.portalVisible ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{category.isActive ? (category.portalVisible ? text.filters.visible : text.filters.hidden) : text.categoryArchived}</span>
-      </summary>
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-primary [&::-webkit-details-marker]:hidden"><span className="truncate">{label}</span><span className={`rounded-full px-2.5 py-1 text-xs ${category.portalVisible ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{category.portalVisible ? text.filters.visible : text.filters.hidden}</span></summary>
       <form action={formAction} className="space-y-4 border-t border-border p-4">
         <input name="categoryKey" type="hidden" value={category.categoryKey} />
-        <div className="grid gap-3 sm:grid-cols-2">
-          <BooleanControl defaultChecked={category.portalVisible} label={text.visible} name="portalVisible" />
-          <BooleanControl defaultChecked={category.portalFeatured} label={text.categoryFeatured} name="portalFeatured" />
-        </div>
+        <input name="portalSortOrder" type="hidden" value={category.portalSortOrder} />
+        <input name="portalTitle" type="hidden" value={category.portalTitle} />
+        <div className="grid gap-3 sm:grid-cols-2"><BooleanControl defaultChecked={category.portalVisible} label={text.visible} name="portalVisible" /><BooleanControl defaultChecked={category.portalFeatured} label={text.categoryFeatured} name="portalFeatured" /></div>
         <p className="text-xs leading-5 text-muted">{text.categoryHiddenHelp}</p>
-        <div className="grid gap-4 md:grid-cols-3">
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.categoryTitle}</span>
-            <input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={category.portalTitle} maxLength={120} name="portalTitle" />
-          </label>
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.displayOrder}</span>
-            <input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={category.portalSortOrder} min={0} name="portalSortOrder" type="number" />
-          </label>
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.focalPosition}</span>
-            <select className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue={category.focalPosition} name="focalPosition">
-              {Object.entries(text.focalPositions).map(([value, labelText]) => <option key={value} value={value}>{labelText}</option>)}
-            </select>
-          </label>
+        <div className="grid gap-4 md:grid-cols-[minmax(10rem,0.35fr)_minmax(14rem,0.65fr)]">
+          <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.focalPosition}</span><select className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue={category.focalPosition} name="focalPosition">{Object.entries(text.focalPositions).map(([value, labelText]) => <option key={value} value={value}>{labelText}</option>)}</select></label>
+          <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.categoryImage}</span><input accept="image/jpeg,image/png,image/webp" className="block min-h-11 w-full rounded-control border border-border bg-white px-3 py-2 text-sm" name="image" type="file" /><span className="block text-xs font-normal text-muted">{text.imageHelp}</span></label>
         </div>
-        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.categoryImage}</span>
-            <input accept="image/jpeg,image/png,image/webp" className="block min-h-11 w-full rounded-control border border-border bg-white px-3 py-2 text-sm" name="image" type="file" />
-            <span className="block text-xs font-normal text-muted">{text.imageHelp}</span>
-          </label>
-          <label className="flex min-h-11 items-center gap-2 text-sm text-muted"><input className="h-5 w-5 accent-primary" name="removeImage" type="checkbox" value="true" />{text.removeImage}</label>
-        </div>
+        <label className="flex min-h-11 items-center gap-2 text-sm text-muted"><input className="h-5 w-5 accent-primary" name="removeImage" type="checkbox" value="true" />{text.removeImage}</label>
         <div className="flex flex-wrap items-center justify-between gap-3"><Result state={state} text={text} /><SubmitButton text={text} /></div>
       </form>
-      {category.isActive ? <form action={archiveFormAction} className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3" onSubmit={(event) => { if (!window.confirm(text.categoryArchiveConfirm)) event.preventDefault(); }}>
-        <input name="categoryKey" type="hidden" value={category.categoryKey} />
-        <div><p className="text-xs text-muted">{category.activeServiceCount} · {text.summary.internal}</p><Result state={archiveState} text={text} /></div>
-        <button className="min-h-11 rounded-control border border-amber-300 px-4 text-sm font-semibold text-amber-800 disabled:opacity-50" disabled={category.activeServiceCount > 0} type="submit">{text.categoryArchive}</button>
-      </form> : null}
     </details>
   );
 }
@@ -231,6 +254,7 @@ export function CatalogManagement({
   categories,
   categoryAction,
   categoryCreateAction,
+  categoryReorderAction,
   locale,
   serviceAction,
   serviceArchiveAction,
@@ -242,6 +266,7 @@ export function CatalogManagement({
   categories: CatalogAdminCategory[];
   categoryAction: Action;
   categoryCreateAction: Action;
+  categoryReorderAction: Action;
   locale: string;
   serviceAction: Action;
   serviceArchiveAction: Action;
@@ -250,12 +275,15 @@ export function CatalogManagement({
 }) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [showArchived, setShowArchived] = useState(false);
   const [visibilityFilter, setVisibilityFilter] = useState("all");
   const [orderabilityFilter, setOrderabilityFilter] = useState("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkChoice, setBulkChoice] = useState("");
   const [bulkState, bulkFormAction] = useActionState(bulkAction, initialState);
   const categoryMap = useMemo(() => new Map(categories.map((category) => [category.categoryKey, category])), [categories]);
+  const activeCategories = categories.filter((category) => category.isActive);
+  const managedCategories = showArchived ? categories : activeCategories;
   const visible = services.filter((service) => effectiveVisibility(service, categoryMap));
   const orderable = visible.filter((service) => service.customerOrderable);
   const featured = visible.filter((service) => service.portalFeatured || Boolean(service.portalCategoryKey && categoryMap.get(service.portalCategoryKey)?.portalFeatured));
@@ -292,14 +320,25 @@ export function CatalogManagement({
         ].map(([label, value]) => <div className="rounded-card border border-border bg-white p-4 shadow-sm" key={label}><p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">{label}</p><p className="mt-2 text-2xl font-semibold text-primary">{value}</p></div>)}
       </section>
 
-      <details className="rounded-card border border-border bg-primary-soft/35 p-4">
-        <summary className="cursor-pointer list-none text-lg font-semibold text-primary [&::-webkit-details-marker]:hidden">{text.categories}</summary>
-        <p className="mt-2 text-sm leading-6 text-muted">{text.categoriesHelp}</p>
+      <section aria-labelledby="service-families-title" className="rounded-card border border-border bg-primary-soft/35 p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="max-w-2xl"><h2 className="text-xl font-semibold text-primary" id="service-families-title">{text.categories}</h2><p className="mt-2 text-sm leading-6 text-muted">{text.categoriesHelp}</p></div>
+          {categories.some((category) => !category.isActive) ? <label className="flex min-h-11 items-center gap-2 rounded-control border border-border bg-white px-3 text-sm font-semibold text-primary"><input checked={showArchived} className="h-5 w-5 accent-primary" onChange={(event) => setShowArchived(event.target.checked)} type="checkbox" />{text.showArchived}</label> : null}
+        </div>
         <CreateCategory action={categoryCreateAction} text={text} />
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          {categories.map((category) => <CategoryEditor action={categoryAction} archiveAction={categoryArchiveAction} category={category} key={category.categoryKey} text={text} />)}
+          {managedCategories.map((category) => {
+            const activeIndex = activeCategories.findIndex((item) => item.categoryKey === category.categoryKey);
+            return <CategoryStructureEditor action={categoryAction} archiveAction={categoryArchiveAction} canMoveDown={category.isActive && activeIndex < activeCategories.length - 1} canMoveUp={category.isActive && activeIndex > 0} category={category} key={category.categoryKey} reorderAction={categoryReorderAction} text={text} />;
+          })}
         </div>
-      </details>
+      </section>
+
+      <section aria-labelledby="customer-presentation-title" className="rounded-card border border-border bg-white p-4 shadow-sm sm:p-5">
+        <h2 className="text-xl font-semibold text-primary" id="customer-presentation-title">{text.customerPresentation}</h2>
+        <p className="mt-2 text-sm leading-6 text-muted">{text.customerPresentationHelp}</p>
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">{activeCategories.map((category) => <CategoryPresentationEditor action={categoryAction} category={category} key={category.categoryKey} text={text} />)}</div>
+      </section>
 
       <section className="sticky top-[4.5rem] z-20 rounded-card border border-border bg-white/95 p-4 shadow-card backdrop-blur sm:top-[5.5rem]">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">

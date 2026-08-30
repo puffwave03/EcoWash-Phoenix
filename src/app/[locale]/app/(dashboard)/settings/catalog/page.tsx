@@ -5,6 +5,7 @@ import {
   archiveCatalogServiceAction,
   bulkUpdateCatalogServicesAction,
   createCatalogCategoryAction,
+  reorderCatalogCategoryAction,
   saveCatalogCategoryAction,
   saveCatalogServiceAction,
 } from "@/features/catalog-admin/server/actions";
@@ -37,6 +38,7 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
           categories={settings.categories}
           categoryAction={saveCatalogCategoryAction.bind(null, locale)}
           categoryCreateAction={createCatalogCategoryAction.bind(null, locale)}
+          categoryReorderAction={reorderCatalogCategoryAction.bind(null, locale)}
           locale={locale}
           serviceAction={saveCatalogServiceAction.bind(null, locale)}
           serviceArchiveAction={archiveCatalogServiceAction.bind(null, locale)}
@@ -44,9 +46,9 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
           text={{
             all: t("all"),
             bulkAction: t("bulkAction"), bulkApply: t("bulkApply"), bulkCategory: t("bulkCategory"), bulkConfirm: t.raw("bulkConfirm") as string, bulkOptions: t.raw("bulkOptions"), bulkSelect: t("bulkSelect"),
-            categories: t("categories"), categoriesHelp: t("categoriesHelp"), category: t("category"), categoryArchive: t("categoryArchive"), categoryArchiveBlocked: t("categoryArchiveBlocked"), categoryArchiveConfirm: t("categoryArchiveConfirm"), categoryArchived: t("categoryArchived"), categoryCreate: t("categoryCreate"), categoryCreateHelp: t("categoryCreateHelp"), categoryDuplicate: t("categoryDuplicate"), categoryFeatured: t("categoryFeatured"), categoryHiddenHelp: t("categoryHiddenHelp"), categoryImage: t("categoryImage"), categoryName: t("categoryName"), categoryTitle: t("categoryTitle"),
-            customerDescription: t("customerDescription"), customerOrderable: t("customerOrderable"), displayOrder: t("displayOrder"), editPresentation: t("editPresentation"), featured: t("featured"), filters: t.raw("filters"),
-            focalPosition: t("focalPosition"), focalPositions: t.raw("focalPositions"), formError: t("formError"), fromPrice: catalogT("fromPrice"), imageHelp: t("imageHelp"), internalDescription: t("internalDescription"), migrationRequired: t("migrationRequired"), noResults: t("noResults"), removeImage: t("removeImage"), save: t("save"), saved: t("saved"), saving: t("saving"), search: t("search"), searchPlaceholder: t("searchPlaceholder"), selectAll: t("selectAll"), selectedCount: t.raw("selectedCount") as string, serviceArchive: t("serviceArchive"), serviceArchiveConfirm: t("serviceArchiveConfirm"), summary: t.raw("summary"), unitTypes: catalogT.raw("unitTypes") as Record<ServiceUnitType, string>, visible: t("visible"), categoryLabels: catalogT.raw("categories"),
+            activeServices: t.raw("activeServices") as string, categories: t("categories"), categoriesHelp: t("categoriesHelp"), category: t("category"), categoryActive: t("categoryActive"), categoryArchive: t("categoryArchive"), categoryArchiveBlocked: t("categoryArchiveBlocked"), categoryArchiveConfirm: t("categoryArchiveConfirm"), categoryArchived: t("categoryArchived"), categoryCreate: t("categoryCreate"), categoryCreateHelp: t("categoryCreateHelp"), categoryDuplicate: t("categoryDuplicate"), categoryFeatured: t("categoryFeatured"), categoryHiddenHelp: t("categoryHiddenHelp"), categoryImage: t("categoryImage"), categoryName: t("categoryName"), categoryTitle: t("categoryTitle"),
+            customerDescription: t("customerDescription"), customerOrderable: t("customerOrderable"), customerPresentation: t("customerPresentation"), customerPresentationHelp: t("customerPresentationHelp"), displayOrder: t("displayOrder"), editPresentation: t("editPresentation"), featured: t("featured"), filters: t.raw("filters"),
+            focalPosition: t("focalPosition"), focalPositions: t.raw("focalPositions"), formError: t("formError"), fromPrice: catalogT("fromPrice"), imageHelp: t("imageHelp"), internalDescription: t("internalDescription"), migrationRequired: t("migrationRequired"), moveDown: t("moveDown"), moveUp: t("moveUp"), noResults: t("noResults"), removeImage: t("removeImage"), save: t("save"), saved: t("saved"), saving: t("saving"), search: t("search"), searchPlaceholder: t("searchPlaceholder"), selectAll: t("selectAll"), selectedCount: t.raw("selectedCount") as string, serviceArchive: t("serviceArchive"), serviceArchiveConfirm: t("serviceArchiveConfirm"), showArchived: t("showArchived"), summary: t.raw("summary"), unitTypes: catalogT.raw("unitTypes") as Record<ServiceUnitType, string>, visible: t("visible"), categoryLabels: catalogT.raw("categories"),
           }}
         />
       ) : (

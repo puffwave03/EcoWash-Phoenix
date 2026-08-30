@@ -29,6 +29,38 @@ test("category create, rename and order keep the immutable category key", async 
   assert.doesNotMatch(categorySave, /category_key:\s*parsed\.input\.portalTitle/);
 });
 
+test("category management UI separates structure from customer presentation", async () => {
+  const [page, management] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/settings/catalog/page.tsx"),
+    source("src/components/catalog-admin/CatalogManagement.tsx"),
+  ]);
+  assert.match(page, /categoryReorderAction=\{reorderCatalogCategoryAction\.bind\(null, locale\)\}/);
+  assert.match(management, /id="service-families-title"/);
+  assert.match(management, /id="customer-presentation-title"/);
+  assert.match(management, /categoryCreateAction/);
+  assert.match(management, /name="portalTitle" required/);
+  assert.match(management, /name="direction" type="submit" value=\{value\}/);
+  assert.match(management, /<span className="sr-only">\{text\.moveUp\}/);
+  assert.match(management, /showArchived/);
+  assert.match(management, /category\.activeServiceCount > 0/);
+  assert.match(management, /disabled=\{category\.activeServiceCount > 0\}/);
+  assert.match(management, /name="portalCategoryKey"/);
+  assert.match(management, /text\.serviceArchive/);
+});
+
+test("up/down ordering is server-authorized, tenant-scoped and normalized deterministically", async () => {
+  const actions = await source("src/features/catalog-admin/server/actions.ts");
+  const reorder = actions.slice(actions.indexOf("export async function reorderCatalogCategoryAction"), actions.indexOf("export async function archiveCatalogCategoryAction"));
+  assert.match(reorder, /requireOwnerOrManager\(locale\)/);
+  assert.match(reorder, /\.eq\("organization_id", membership\.organization\.id\)/);
+  assert.match(reorder, /\.eq\("is_active", true\)/);
+  assert.match(reorder, /\.order\("portal_sort_order", \{ ascending: true \}\)/);
+  assert.match(reorder, /\.order\("category_key", \{ ascending: true \}\)/);
+  assert.match(reorder, /orderedKeys\.map\(\(key, index\)/);
+  assert.match(reorder, /portal_sort_order: index/);
+  assert.match(reorder, /onConflict: "organization_id,category_key"/);
+});
+
 test("service moves update internal and Portal category together without changing identity", async () => {
   const actions = await source("src/features/catalog-admin/server/actions.ts");
   const serviceSave = actions.slice(actions.indexOf("export async function saveCatalogServiceAction"), actions.indexOf("export async function saveCatalogCategoryAction"));
@@ -89,6 +121,10 @@ test("all locales expose create and safe archive controls", async () => {
   for (const locale of ["en", "it", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.catalogAdmin.categoryCreate, "string");
+    assert.equal(typeof messages.catalogAdmin.customerPresentation, "string");
+    assert.equal(typeof messages.catalogAdmin.moveUp, "string");
+    assert.equal(typeof messages.catalogAdmin.moveDown, "string");
+    assert.equal(typeof messages.catalogAdmin.showArchived, "string");
     assert.equal(typeof messages.catalogAdmin.categoryArchiveBlocked, "string");
     assert.equal(typeof messages.catalogAdmin.serviceArchive, "string");
   }
