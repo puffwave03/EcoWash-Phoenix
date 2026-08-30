@@ -9,15 +9,16 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `82f5f8f` (`CATALOG-MEDIA-FIX-001`).
-- Latest relevant application commit: `82f5f8f` (`CATALOG-MEDIA-FIX-001`).
-- Previous completed product documentation commit: `0ea61a6` (`DOCS-CATALOG-STRUCTURE-001.1`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `60c02e6` (`TERMINAL-UX-004`).
+- Latest relevant application commit: `60c02e6` (`TERMINAL-UX-004`).
+- Previous completed product documentation commit: `12149a4` (`DOCS-CATALOG-MEDIA-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
 - ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - CATALOG-STRUCTURE-001.1 status: `READY`; no new migration was required.
 - CATALOG-MEDIA-FIX-001 status: `READY`; no new migration was required.
+- TERMINAL-UX-004 status: `READY`; no new migration was required.
 
 ## Completed Major Modules
 
@@ -36,7 +37,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Platform Admin | Separate SaaS administration context with audited controls complete. |
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
-| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
+| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments. The counter workspace uses a compact customer/scanner band, dense family chips, responsive visual service cards with canonical images and neutral fallback, plus a persistent readable cart; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
 | Quick Drop | Canonical received-order intake supports regular and distinct walk-in customers without initial items or financial rows. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
@@ -74,6 +75,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
 - Catalog family management uses explicit create/rename, accessible up/down ordering, safe archive blocking and an archived-family toggle. It reuses `20260830000100_catalog_structure_001_category_lifecycle.sql`; CATALOG-STRUCTURE-001.1 adds no migration.
 - Service images accept signature-validated JPEG, PNG and WebP files up to 2 MB in tenant-scoped `brand-media` paths. Editing without a file preserves the current path; replacement cleans the previous managed object after a successful save, while explicit removal alone clears it. Catalog admin, Shop Terminal and Customer Portal resolve and render the same canonical path with safe visual fallbacks.
+- Shop Terminal keeps customer/walk-in switching and scanner/search access in a compact responsive band. Service families use touch-friendly scrollable chips; service cards use a dense 2/3/4-column responsive grid with fixed-aspect canonical media or the shared neutral fallback. Desktop retains the established approximately two-thirds catalog and one-third sticky cart split.
 - Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
 - Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
 
@@ -89,7 +91,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`TERMINAL-UX-004`.
+`ACCOUNTING-001C RESUME`.
 
 ## Near Future — Not Started by This Task
 
