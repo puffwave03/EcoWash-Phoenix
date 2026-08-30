@@ -67,6 +67,7 @@ test("11 catalog has category and search UX", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
   assert.match(ui, /setCategory/);
   assert.match(ui, /searchServices/);
+  assert.match(ui, /aria-pressed=\{category === item\}/);
 });
 
 test("12 service taps quick-add and safely increment", async () => {
@@ -173,4 +174,42 @@ test("28 five locales expose complete terminal vocabulary", async () => {
     assert.equal(Object.keys(messages.shopTerminal.labels).length, 68);
     assert.equal(Object.keys(messages.barcode.terminal).length, 6);
   }
+});
+
+test("29 compact visual cards use canonical images and the shared neutral fallback", async () => {
+  const [ui, media] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/components/portal/PortalMedia.tsx"),
+  ]);
+  assert.match(ui, /data-terminal-service-grid/);
+  assert.match(ui, /src=\{service\.imageUrl\}/);
+  assert.match(ui, /alt=\{service\.imageUrl \? service\.name : ""\}/);
+  assert.match(media, /src && failedSrc !== src/);
+  assert.match(media, /absolute inset-0 flex items-center justify-center/);
+  assert.doesNotMatch(ui, /\ud83d\udc55|\ud83d\udc56|\ud83e\udde5|\ud83d\udc57|\ud83d\udc5f/);
+});
+
+test("30 customer modes, cart controls and scanner stay compact and accessible", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  assert.match(ui, /aria-pressed=\{customerMode === "regular"\}/);
+  assert.match(ui, /aria-pressed=\{customerMode === "walk_in"\}/);
+  assert.match(ui, /function clearCustomer/);
+  assert.match(ui, /function addService/);
+  assert.match(ui, /function updateQuantity/);
+  assert.match(ui, /current\.filter\(\(item\) => item\.service\.id !== line\.service\.id\)/);
+  assert.match(ui, /onSubmit=\{resolveCode\}/);
+  assert.match(ui, /placeholder=\{text\.searchServices\}/);
+});
+
+test("31 responsive POS structure keeps a dense catalog and persistent one-third cart", async () => {
+  const [ui, queries] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/server/queries.ts"),
+  ]);
+  assert.match(ui, /grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
+  assert.match(ui, /lg:grid-cols-\[minmax\(0,2\.1fr\)_minmax\(20rem,1fr\)\]/);
+  assert.match(ui, /lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto/);
+  assert.match(queries, /rpc\("list_shop_terminal_services"/);
+  assert.match(queries, /eq\("organization_id", membership\.organization\.id\)/);
+  assert.match(queries, /imageUrl: serviceImageUrl/);
 });
