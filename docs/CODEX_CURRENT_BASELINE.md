@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `9897d6b` (`CATALOG-NAMING-001`).
-- Latest relevant application commit: `9897d6b` (`CATALOG-NAMING-001`).
-- Previous completed product documentation commit: `236adee` (`DOCS-QUICK-DROP-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260829000600_quick_drop_001a_canonical_intake.sql`.
-- QUICK-DROP-001 linked migration history is aligned through `20260829000600`.
+- Product baseline before this docs update: `7eeaf2d` (`CATALOG-STRUCTURE-001`).
+- Latest relevant application commit: `7eeaf2d` (`CATALOG-STRUCTURE-001`).
+- Previous completed product documentation commit: `501cfb8` (`DOCS-CATALOG-NAMING-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260830000100_catalog_structure_001_category_lifecycle.sql`.
+- CATALOG-STRUCTURE-001 linked migration history is aligned through `20260830000100`.
 
 ## Completed Major Modules
 
@@ -22,7 +22,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Public Site | Multilingual IT/EN/ES/FR/DE site is release-ready; deployment/domain decision remains deferred. |
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
 | Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
-| Catalog | Canonical tenant service/catalog administration complete. Owner/Manager can safely rename the current service display name without changing service identity, pricing, segment/media relationships or historical snapshots. |
+| Catalog | Canonical tenant service/category administration complete. Owner/Manager can create, rename, order and safely archive stable-keyed categories, move services between them, rename services and archive services without changing identity, pricing, segment/media relationships or historical snapshots. |
 | Catalog Segments | Tenant customer segment catalog visibility/orderability complete. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
@@ -65,6 +65,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
 - Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
+- Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
+- Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
 
 ## Current Known Product Boundaries
 
@@ -74,10 +76,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - No e-invoice or fiscal-compliance claim yet.
 - No Spanish simplified-invoice document type or legal regime is implemented; operational receipts must not be represented as fiscal or simplified invoices.
 - No raw card-data handling, printer driver, silent printing or hardware-status integration.
+- No permanent service/category deletion UI is exposed; lifecycle archival is the safe policy while canonical dependencies exist.
 
 ## Next Approved Task
 
-`ACCOUNTING-001`
+`ACCOUNTING-001B`
 
 ## Near Future — Not Started by This Task
 
@@ -90,4 +93,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Module contract tests: `tests/*.test.mjs`.
 - Database migrations and authoritative SQL behavior: `supabase/migrations/`.
 - Linked database E2E uses deterministic task-local SQL with rollback/cleanup and zero persistent fixtures.
+- CATALOG-STRUCTURE-001 rollback proof covered `Tintoria` → `Tintoreria`, category order change, service move in/out, safe category/service archive, Terminal/Portal absence, Owner/Staff and cross-tenant enforcement, unchanged UUID/code/price/segment/image relations and immutable order/invoice descriptions; fixture counts returned to zero.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
