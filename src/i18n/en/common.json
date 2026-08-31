@@ -152,6 +152,7 @@
       "work": "My Day",
       "customers": "Customers",
       "billing": "Billing",
+      "accounting": "Accounting",
       "orders": "Orders",
       "pos": "Point of sale",
       "shop": "Terminal",
@@ -1285,6 +1286,33 @@
       "catalog": {"title": "Customer catalog", "description": "Control service visibility and customer-facing presentation."},
       "printers": {"title": "Printers", "description": "Configure receipt, label and internal ticket profiles by location."},
       "staff": {"title": "Staff & access", "description": "Invite staff and manage roles and operational capabilities."}
+    }
+  },
+  "accountingWorkspace": {
+    "eyebrow": "Operational financial control",
+    "title": "Accounting",
+    "description": "Review sales, collections, receivables and expenses from canonical operational sources.",
+    "filters": {"period": "Period", "start": "From", "end": "To", "location": "Location", "allLocations": "All locations", "apply": "Apply"},
+    "presets": {"today": "Today", "week": "This week", "month": "This month", "previousMonth": "Previous month", "custom": "Custom"},
+    "summary": {"netSales": "Net sales", "collected": "Collected", "outstanding": "Outstanding", "refunds": "Refunds", "expenses": "Expenses", "operationalResult": "Operational result", "netCollected": "Net collected", "online": "Online"},
+    "sections": {"sales": "Sales", "cashflow": "Cashflow", "expenses": "Expenses", "byCategory": "By category", "bySupplier": "By supplier", "byLocation": "By location", "activity": "Financial activity"},
+    "activityTypes": {"sale": "Sale", "payment": "Payment", "refund": "Refund", "expense": "Expense"},
+    "exports": {"sales": "Export sales and collections CSV", "expenses": "Export expenses CSV", "disclaimer": "Operational export, not an official tax filing."},
+    "empty": {"summary": "No financial movements in the selected period.", "expenses": "No posted expenses.", "activity": "No financial activity in this period."},
+    "mixedCurrencies": "Currencies kept separate",
+    "invalidPeriod": "The period was invalid, so the current month is shown.",
+    "queryError": "Accounting data is unavailable. Missing data has not been replaced with misleading zeroes.",
+    "boundary": "Operational workspace based on canonical orders, payments and expenses. It is not certified statutory accounting, financial statements or a tax filing.",
+    "management": {
+      "actions": {"archive": "Archive", "create": "Create", "edit": "Edit", "post": "Post expense", "save": "Save", "saving": "Saving…", "void": "Void posted expense"},
+      "common": {"archived": "Archived", "active": "Active", "optional": "Optional"},
+      "form": {"duplicate": "A record with this reference already exists.", "generic": "Check the fields and try again.", "immutable": "A posted expense cannot be edited.", "invalidReference": "The supplier, category or location is invalid.", "saved": "Saved."},
+      "expenses": {"title": "Expense management", "new": "New expense", "empty": "No expenses in this period.", "expenseDate": "Expense date", "category": "Category", "supplier": "Supplier", "location": "Location", "description": "Description", "gross": "Gross amount", "currency": "Currency", "reference": "Supplier reference", "documentDate": "Document date", "taxAmount": "Tax amount", "taxRate": "Tax rate %", "paymentStatus": "Payment status", "paidDate": "Paid date", "paymentMethod": "Payment method", "notes": "Notes"},
+      "suppliers": {"title": "Suppliers", "new": "New supplier", "empty": "No suppliers.", "displayName": "Display name", "legalName": "Legal name", "fiscalId": "Fiscal identifier", "email": "Email", "phone": "Phone", "address1": "Address", "address2": "Address 2", "city": "City", "postalCode": "Postal code", "country": "Country", "notes": "Notes"},
+      "categories": {"title": "Expense categories", "new": "New category", "empty": "No expense categories.", "name": "Name", "description": "Description", "displayOrder": "Order"},
+      "methods": {"bank_transfer": "Bank transfer", "card": "Card", "cash": "Cash", "other": "Other"},
+      "paymentStatuses": {"paid": "Paid", "unpaid": "Unpaid"},
+      "statuses": {"draft": "Draft", "posted": "Posted", "void": "Void"}
     }
   },
   "catalogAdmin": {

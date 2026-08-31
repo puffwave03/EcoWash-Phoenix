@@ -76,6 +76,18 @@ export async function setSupplierActiveAction(locale: string, supplierId: string
   return { ...initialState, id: supplierId, success: true };
 }
 
+export async function setSupplierActiveFormAction(
+  locale: string,
+  supplierId: string,
+  isActive: boolean,
+  _state: ExpenseActionState = initialState,
+  _formData?: FormData,
+) {
+  void _state;
+  void _formData;
+  return setSupplierActiveAction(locale, supplierId, isActive);
+}
+
 export async function saveExpenseCategoryAction(
   locale: string,
   categoryId: string | null,
@@ -110,6 +122,18 @@ export async function setExpenseCategoryActiveAction(locale: string, categoryId:
   if (error) return errorState(error);
   revalidateAccounting(locale);
   return { ...initialState, id: categoryId, success: true };
+}
+
+export async function setExpenseCategoryActiveFormAction(
+  locale: string,
+  categoryId: string,
+  isActive: boolean,
+  _state: ExpenseActionState = initialState,
+  _formData?: FormData,
+) {
+  void _state;
+  void _formData;
+  return setExpenseCategoryActiveAction(locale, categoryId, isActive);
 }
 
 export async function saveExpenseAction(
@@ -158,4 +182,16 @@ export async function setExpenseStatusAction(locale: string, expenseId: string, 
   if (error) return errorState(error);
   revalidateAccounting(locale);
   return { ...initialState, id: expenseId, success: true };
+}
+
+export async function setExpenseStatusFormAction(
+  locale: string,
+  expenseId: string,
+  status: Extract<ExpenseStatus, "posted" | "void">,
+  _state: ExpenseActionState = initialState,
+  _formData?: FormData,
+) {
+  void _state;
+  void _formData;
+  return setExpenseStatusAction(locale, expenseId, status);
 }

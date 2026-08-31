@@ -152,6 +152,7 @@
       "work": "Mein Tag",
       "customers": "Kunden",
       "billing": "Abrechnung",
+      "accounting": "Buchhaltung",
       "orders": "Aufträge",
       "pos": "Kassensystem",
       "shop": "Terminal",
@@ -1260,6 +1261,26 @@
       "catalog": {"title": "Kundenkatalog", "description": "Steuern Sie die Sichtbarkeit und kundenseitige Darstellung von Leistungen."},
       "printers": {"title": "Drucker", "description": "Konfigurieren Sie Beleg-, Etiketten- und interne Ticketprofile je Standort."},
       "staff": {"title": "Personal und Zugriffe", "description": "Laden Sie Personal ein und verwalten Sie Rollen und betriebliche Berechtigungen."}
+    }
+  },
+  "accountingWorkspace": {
+    "eyebrow": "Operative Finanzkontrolle", "title": "Buchhaltung", "description": "Verkäufe, Einnahmen, offene Beträge und Ausgaben aus kanonischen operativen Quellen prüfen.",
+    "filters": {"period": "Zeitraum", "start": "Von", "end": "Bis", "location": "Standort", "allLocations": "Alle Standorte", "apply": "Anwenden"},
+    "presets": {"today": "Heute", "week": "Diese Woche", "month": "Dieser Monat", "previousMonth": "Vorheriger Monat", "custom": "Benutzerdefiniert"},
+    "summary": {"netSales": "Nettoumsatz", "collected": "Eingenommen", "outstanding": "Offen", "refunds": "Erstattungen", "expenses": "Ausgaben", "operationalResult": "Operatives Ergebnis", "netCollected": "Nettoeinnahmen", "online": "Online"},
+    "sections": {"sales": "Verkäufe", "cashflow": "Zahlungsfluss", "expenses": "Ausgaben", "byCategory": "Nach Kategorie", "bySupplier": "Nach Lieferant", "byLocation": "Nach Standort", "activity": "Finanzaktivität"},
+    "activityTypes": {"sale": "Verkauf", "payment": "Zahlung", "refund": "Erstattung", "expense": "Ausgabe"},
+    "exports": {"sales": "Verkäufe und Einnahmen als CSV", "expenses": "Ausgaben als CSV", "disclaimer": "Operativer Export, keine offizielle Steuererklärung."},
+    "empty": {"summary": "Keine Finanzbewegungen im gewählten Zeitraum.", "expenses": "Keine gebuchten Ausgaben.", "activity": "Keine Finanzaktivität im Zeitraum."},
+    "mixedCurrencies": "Währungen getrennt", "invalidPeriod": "Der Zeitraum war ungültig; angezeigt wird der aktuelle Monat.", "queryError": "Buchhaltungsdaten sind nicht verfügbar. Fehlende Daten wurden nicht durch irreführende Nullen ersetzt.", "boundary": "Operativer Arbeitsbereich auf Basis kanonischer Aufträge, Zahlungen und Ausgaben. Keine zertifizierte gesetzliche Buchhaltung, kein Abschluss und keine Steuererklärung.",
+    "management": {
+      "actions": {"archive": "Archivieren", "create": "Erstellen", "edit": "Bearbeiten", "post": "Ausgabe buchen", "save": "Speichern", "saving": "Wird gespeichert…", "void": "Gebuchte Ausgabe stornieren"},
+      "common": {"archived": "Archiviert", "active": "Aktiv", "optional": "Optional"},
+      "form": {"duplicate": "Ein Datensatz mit dieser Referenz ist bereits vorhanden.", "generic": "Felder prüfen und erneut versuchen.", "immutable": "Eine gebuchte Ausgabe kann nicht bearbeitet werden.", "invalidReference": "Lieferant, Kategorie oder Standort ist ungültig.", "saved": "Gespeichert."},
+      "expenses": {"title": "Ausgabenverwaltung", "new": "Neue Ausgabe", "empty": "Keine Ausgaben in diesem Zeitraum.", "expenseDate": "Ausgabendatum", "category": "Kategorie", "supplier": "Lieferant", "location": "Standort", "description": "Beschreibung", "gross": "Bruttobetrag", "currency": "Währung", "reference": "Lieferantenreferenz", "documentDate": "Belegdatum", "taxAmount": "Steuerbetrag", "taxRate": "Steuersatz %", "paymentStatus": "Zahlungsstatus", "paidDate": "Zahlungsdatum", "paymentMethod": "Zahlungsart", "notes": "Notizen"},
+      "suppliers": {"title": "Lieferanten", "new": "Neuer Lieferant", "empty": "Keine Lieferanten.", "displayName": "Anzeigename", "legalName": "Rechtlicher Name", "fiscalId": "Steuerkennung", "email": "E-Mail", "phone": "Telefon", "address1": "Adresse", "address2": "Adresse 2", "city": "Ort", "postalCode": "Postleitzahl", "country": "Land", "notes": "Notizen"},
+      "categories": {"title": "Ausgabenkategorien", "new": "Neue Kategorie", "empty": "Keine Ausgabenkategorien.", "name": "Name", "description": "Beschreibung", "displayOrder": "Reihenfolge"},
+      "methods": {"bank_transfer": "Überweisung", "card": "Karte", "cash": "Bar", "other": "Andere"}, "paymentStatuses": {"paid": "Bezahlt", "unpaid": "Offen"}, "statuses": {"draft": "Entwurf", "posted": "Gebucht", "void": "Storniert"}
     }
   },
   "catalogAdmin": {

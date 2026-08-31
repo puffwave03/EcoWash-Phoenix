@@ -152,6 +152,7 @@
       "work": "Ma journée",
       "customers": "Clients",
       "billing": "Facturation",
+      "accounting": "Comptabilité",
       "orders": "Commandes",
       "pos": "Point de vente",
       "shop": "Terminal",
@@ -1260,6 +1261,26 @@
       "catalog": {"title": "Catalogue client", "description": "Contrôlez la visibilité des services et leur présentation au client."},
       "printers": {"title": "Imprimantes", "description": "Configurez les profils de reçus, étiquettes et tickets internes par site."},
       "staff": {"title": "Personnel et accès", "description": "Invitez le personnel et gérez les rôles et capacités opérationnelles."}
+    }
+  },
+  "accountingWorkspace": {
+    "eyebrow": "Contrôle financier opérationnel", "title": "Comptabilité", "description": "Consultez ventes, encaissements, créances et dépenses depuis les sources opérationnelles canoniques.",
+    "filters": {"period": "Période", "start": "Du", "end": "Au", "location": "Site", "allLocations": "Tous les sites", "apply": "Appliquer"},
+    "presets": {"today": "Aujourd’hui", "week": "Cette semaine", "month": "Ce mois", "previousMonth": "Mois précédent", "custom": "Personnalisé"},
+    "summary": {"netSales": "Ventes nettes", "collected": "Encaissé", "outstanding": "À encaisser", "refunds": "Remboursements", "expenses": "Dépenses", "operationalResult": "Résultat opérationnel", "netCollected": "Encaissement net", "online": "En ligne"},
+    "sections": {"sales": "Ventes", "cashflow": "Flux de trésorerie", "expenses": "Dépenses", "byCategory": "Par catégorie", "bySupplier": "Par fournisseur", "byLocation": "Par site", "activity": "Activité financière"},
+    "activityTypes": {"sale": "Vente", "payment": "Paiement", "refund": "Remboursement", "expense": "Dépense"},
+    "exports": {"sales": "Exporter ventes et encaissements CSV", "expenses": "Exporter dépenses CSV", "disclaimer": "Export opérationnel, pas une déclaration fiscale officielle."},
+    "empty": {"summary": "Aucun mouvement financier sur la période.", "expenses": "Aucune dépense comptabilisée.", "activity": "Aucune activité financière sur la période."},
+    "mixedCurrencies": "Devises séparées", "invalidPeriod": "La période était invalide ; le mois courant est affiché.", "queryError": "Les données comptables sont indisponibles. Elles n’ont pas été remplacées par des zéros trompeurs.", "boundary": "Espace opérationnel fondé sur les commandes, paiements et dépenses canoniques. Il ne constitue ni une comptabilité légale certifiée, ni des états financiers, ni une déclaration fiscale.",
+    "management": {
+      "actions": {"archive": "Archiver", "create": "Créer", "edit": "Modifier", "post": "Comptabiliser", "save": "Enregistrer", "saving": "Enregistrement…", "void": "Annuler la dépense comptabilisée"},
+      "common": {"archived": "Archivé", "active": "Actif", "optional": "Facultatif"},
+      "form": {"duplicate": "Un enregistrement porte déjà cette référence.", "generic": "Vérifiez les champs et réessayez.", "immutable": "Une dépense comptabilisée ne peut pas être modifiée.", "invalidReference": "Fournisseur, catégorie ou site invalide.", "saved": "Enregistré."},
+      "expenses": {"title": "Gestion des dépenses", "new": "Nouvelle dépense", "empty": "Aucune dépense sur cette période.", "expenseDate": "Date de dépense", "category": "Catégorie", "supplier": "Fournisseur", "location": "Site", "description": "Description", "gross": "Montant brut", "currency": "Devise", "reference": "Référence fournisseur", "documentDate": "Date du document", "taxAmount": "Taxe", "taxRate": "Taux %", "paymentStatus": "État du paiement", "paidDate": "Date de paiement", "paymentMethod": "Mode de paiement", "notes": "Notes"},
+      "suppliers": {"title": "Fournisseurs", "new": "Nouveau fournisseur", "empty": "Aucun fournisseur.", "displayName": "Nom affiché", "legalName": "Raison sociale", "fiscalId": "Identifiant fiscal", "email": "E-mail", "phone": "Téléphone", "address1": "Adresse", "address2": "Adresse 2", "city": "Ville", "postalCode": "Code postal", "country": "Pays", "notes": "Notes"},
+      "categories": {"title": "Catégories de dépense", "new": "Nouvelle catégorie", "empty": "Aucune catégorie de dépense.", "name": "Nom", "description": "Description", "displayOrder": "Ordre"},
+      "methods": {"bank_transfer": "Virement", "card": "Carte", "cash": "Espèces", "other": "Autre"}, "paymentStatuses": {"paid": "Payée", "unpaid": "À payer"}, "statuses": {"draft": "Brouillon", "posted": "Comptabilisée", "void": "Annulée"}
     }
   },
   "catalogAdmin": {

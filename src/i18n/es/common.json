@@ -152,6 +152,7 @@
       "work": "Mi día",
       "customers": "Clientes",
       "billing": "Facturación",
+      "accounting": "Contabilidad",
       "orders": "Pedidos",
       "pos": "Punto de venta",
       "shop": "Terminal",
@@ -1260,6 +1261,26 @@
       "catalog": {"title": "Catálogo cliente", "description": "Controla la visibilidad de servicios y su presentación al cliente."},
       "printers": {"title": "Impresoras", "description": "Configura perfiles de recibos, etiquetas y tickets internos por sede."},
       "staff": {"title": "Personal y accesos", "description": "Invita al personal y gestiona roles y capacidades operativas."}
+    }
+  },
+  "accountingWorkspace": {
+    "eyebrow": "Control financiero operativo", "title": "Contabilidad", "description": "Consulta ventas, cobros, saldos pendientes y gastos desde fuentes operativas canónicas.",
+    "filters": {"period": "Periodo", "start": "Desde", "end": "Hasta", "location": "Sede", "allLocations": "Todas las sedes", "apply": "Aplicar"},
+    "presets": {"today": "Hoy", "week": "Esta semana", "month": "Este mes", "previousMonth": "Mes anterior", "custom": "Personalizado"},
+    "summary": {"netSales": "Ventas netas", "collected": "Cobrado", "outstanding": "Pendiente", "refunds": "Reembolsos", "expenses": "Gastos", "operationalResult": "Resultado operativo", "netCollected": "Cobro neto", "online": "Online"},
+    "sections": {"sales": "Ventas", "cashflow": "Flujo de caja", "expenses": "Gastos", "byCategory": "Por categoría", "bySupplier": "Por proveedor", "byLocation": "Por sede", "activity": "Actividad financiera"},
+    "activityTypes": {"sale": "Venta", "payment": "Pago", "refund": "Reembolso", "expense": "Gasto"},
+    "exports": {"sales": "Exportar ventas y cobros CSV", "expenses": "Exportar gastos CSV", "disclaimer": "Exportación operativa, no declaración fiscal oficial."},
+    "empty": {"summary": "No hay movimientos financieros en el periodo.", "expenses": "No hay gastos contabilizados.", "activity": "No hay actividad financiera en el periodo."},
+    "mixedCurrencies": "Monedas separadas", "invalidPeriod": "El periodo no era válido; se muestra el mes actual.", "queryError": "Los datos contables no están disponibles. No se han sustituido por ceros engañosos.", "boundary": "Espacio operativo basado en pedidos, pagos y gastos canónicos. No es contabilidad legal certificada, estados financieros ni declaración fiscal.",
+    "management": {
+      "actions": {"archive": "Archivar", "create": "Crear", "edit": "Editar", "post": "Contabilizar gasto", "save": "Guardar", "saving": "Guardando…", "void": "Anular gasto contabilizado"},
+      "common": {"archived": "Archivado", "active": "Activo", "optional": "Opcional"},
+      "form": {"duplicate": "Ya existe un registro con esta referencia.", "generic": "Revisa los campos e inténtalo de nuevo.", "immutable": "Un gasto contabilizado no se puede editar.", "invalidReference": "Proveedor, categoría o sede no válidos.", "saved": "Guardado."},
+      "expenses": {"title": "Gestión de gastos", "new": "Nuevo gasto", "empty": "No hay gastos en este periodo.", "expenseDate": "Fecha del gasto", "category": "Categoría", "supplier": "Proveedor", "location": "Sede", "description": "Descripción", "gross": "Importe bruto", "currency": "Moneda", "reference": "Referencia del proveedor", "documentDate": "Fecha del documento", "taxAmount": "Impuesto", "taxRate": "Tipo %", "paymentStatus": "Estado de pago", "paidDate": "Fecha de pago", "paymentMethod": "Método de pago", "notes": "Notas"},
+      "suppliers": {"title": "Proveedores", "new": "Nuevo proveedor", "empty": "No hay proveedores.", "displayName": "Nombre visible", "legalName": "Razón social", "fiscalId": "Identificador fiscal", "email": "Email", "phone": "Teléfono", "address1": "Dirección", "address2": "Dirección 2", "city": "Ciudad", "postalCode": "Código postal", "country": "País", "notes": "Notas"},
+      "categories": {"title": "Categorías de gasto", "new": "Nueva categoría", "empty": "No hay categorías de gasto.", "name": "Nombre", "description": "Descripción", "displayOrder": "Orden"},
+      "methods": {"bank_transfer": "Transferencia", "card": "Tarjeta", "cash": "Efectivo", "other": "Otro"}, "paymentStatuses": {"paid": "Pagado", "unpaid": "Pendiente"}, "statuses": {"draft": "Borrador", "posted": "Contabilizado", "void": "Anulado"}
     }
   },
   "catalogAdmin": {

@@ -12,6 +12,7 @@ import {
 } from "@/features/entitlements/feature-catalog";
 
 type AppNavigationText = {
+  accounting: string;
   alerts: string;
   billing: string;
   controlCenter: string;
@@ -200,6 +201,7 @@ export function AppNavigation({
             ...(entitlementEnabled(entitlements, FEATURES.billingInvoicing)
               ? [{ href: "/app/billing", label: text.billing, match: "/app/billing" }]
               : []),
+            { href: "/app/accounting", label: text.accounting, match: "/app/accounting" },
             { href: "/app/services", label: text.services, match: "/app/services" },
             { href: "/app/settings", label: text.settings, match: "/app/settings", aliases: ["/app/staff"] },
           ],
