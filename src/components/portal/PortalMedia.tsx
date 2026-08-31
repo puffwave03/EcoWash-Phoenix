@@ -7,6 +7,7 @@ type PortalMediaProps = {
   alt?: string;
   children?: ReactNode;
   className?: string;
+  fit?: "contain" | "cover";
   imageClassName?: string;
   objectPosition?: string;
   overlayClassName?: string;
@@ -19,6 +20,7 @@ export function PortalMedia({
   alt = "",
   children,
   className = "",
+  fit = "cover",
   imageClassName = "",
   objectPosition = "center",
   overlayClassName,
@@ -36,7 +38,7 @@ export function PortalMedia({
       {src && failedSrc !== src ? (
         <Image
           alt={alt}
-          className={`object-cover ${imageClassName}`}
+          className={`${fit === "contain" ? "object-contain" : "object-cover"} ${imageClassName}`}
           fill
           onError={() => setFailedSrc(src)}
           priority={priority}

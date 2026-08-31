@@ -185,7 +185,11 @@ test("29 compact visual cards use canonical images and the shared neutral fallba
   assert.match(ui, /data-terminal-service-grid/);
   assert.match(ui, /src=\{service\.imageUrl\}/);
   assert.match(ui, /alt=\{service\.imageUrl \? service\.name : ""\}/);
+  assert.match(ui, /fit="contain"/);
+  assert.match(ui, /h-28 w-full shrink-0 border-b border-border sm:h-32/);
   assert.match(media, /src && failedSrc !== src/);
+  assert.match(media, /fit = "cover"/);
+  assert.match(media, /fit === "contain" \? "object-contain" : "object-cover"/);
   assert.match(media, /absolute inset-0 flex items-center justify-center/);
   assert.doesNotMatch(ui, /\ud83d\udc55|\ud83d\udc56|\ud83e\udde5|\ud83d\udc57|\ud83d\udc5f/);
 });
@@ -247,4 +251,18 @@ test("34 Terminal category filtering and order retain stable keys", async () => 
   assert.match(ui, /Array\.from\(options, \(\[key, label\]\) => \(\{ key, label \}\)\)/);
   assert.match(queries, /categoryKey: service\.category/);
   assert.match(page, /catalogT\.raw\("categories"\)/);
+});
+
+test("35 normalized previews align card content without changing Terminal behavior", async () => {
+  const [ui, queries] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/server/queries.ts"),
+  ]);
+  assert.match(ui, /flex h-full min-w-0 flex-col/);
+  assert.match(ui, /line-clamp-2 min-h-10/);
+  assert.match(ui, /mt-auto block pt-2 text-lg font-black/);
+  assert.match(ui, /onClick=\{\(\) => addService\(service\)\}/);
+  assert.match(ui, /service\.categoryKey === category/);
+  assert.match(ui, /grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
+  assert.match(queries, /imageUrl: serviceImageUrl/);
 });
