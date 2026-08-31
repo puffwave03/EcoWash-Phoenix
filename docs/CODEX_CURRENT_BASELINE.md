@@ -9,9 +9,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `e70cc7c` (`ACCOUNTING-001`).
-- Latest relevant application commit: `e70cc7c` (`ACCOUNTING-001`).
-- Previous completed product documentation commit: `11f5fcf` (`DOCS-TERMINAL-UX-004`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `98c97d4` (`TERMINAL-I18N-FIX-001`).
+- Latest relevant application commit: `98c97d4` (`TERMINAL-I18N-FIX-001`).
+- Previous completed product documentation commit: `fc524c4` (`DOCS-ACCOUNTING-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
 - ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
 - ACCOUNTING-001A status: `READY`.
@@ -20,6 +20,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - CATALOG-STRUCTURE-001.1 status: `READY`; no new migration was required.
 - CATALOG-MEDIA-FIX-001 status: `READY`; no new migration was required.
 - TERMINAL-UX-004 status: `READY`; no new migration was required.
+- TERMINAL-I18N-FIX-001 status: `READY`; no new migration was required.
 
 ## Completed Major Modules
 
@@ -77,6 +78,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Catalog family management uses explicit create/rename, accessible up/down ordering, safe archive blocking and an archived-family toggle. It reuses `20260830000100_catalog_structure_001_category_lifecycle.sql`; CATALOG-STRUCTURE-001.1 adds no migration.
 - Service images accept signature-validated JPEG, PNG and WebP files up to 2 MB in tenant-scoped `brand-media` paths. Editing without a file preserves the current path; replacement cleans the previous managed object after a successful save, while explicit removal alone clears it. Catalog admin, Shop Terminal and Customer Portal resolve and render the same canonical path with safe visual fallbacks.
 - Shop Terminal keeps customer/walk-in switching and scanner/search access in a compact responsive band. Service families use touch-friendly scrollable chips; service cards use a dense 2/3/4-column responsive grid with fixed-aspect canonical media or the shared neutral fallback. Desktop retains the established approximately two-thirds catalog and one-third sticky cart split.
+- Shop Terminal family labels at `/[locale]/app/shop` follow the active route locale for known system keys. Stable category keys remain the filtering identity; custom tenant-entered titles remain canonical and are never auto-translated, with a human-readable fallback when neither localized nor canonical display text is available.
 - Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
 - Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
 - Accounting period presets cover today, this week, this month, previous month and custom dates in the organization timezone, with an optional tenant location filter. Sales/collections and expenses exports reuse the same scoped workspace semantics and mitigate CSV formula injection.
@@ -94,7 +96,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`E-INVOICE-001 RESEARCH / ARCHITECTURE`.
+`PILOT / USER ACCEPTANCE TEST`.
 
 ## Near Future — Not Started by This Task
 
