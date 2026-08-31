@@ -1732,6 +1732,7 @@
     "errorValidation": "Controlla cliente, sede, nota e data prevista.",
     "help": "Ricevi subito la borsa; articoli e prezzo verranno aggiunti dopo.",
     "labelsDeferred": "Le etichette articolo saranno disponibili dopo aver dettagliato l’ordine.",
+    "locationRequired": "Apri una sessione Terminale con una sede per usare il deposito rapido.",
     "newQuickDrop": "Nuovo deposito rapido",
     "newOrder": "Nuovo ordine",
     "note": "Nota breve di ricezione",

@@ -1712,6 +1712,7 @@
     "errorValidation": "Prüfen Sie Kunde, Standort, Hinweis und Fertigstellungstermin.",
     "help": "Nehmen Sie den Beutel jetzt an; Positionen und Preis folgen später.",
     "labelsDeferred": "Artikeletiketten sind verfügbar, nachdem der Auftrag detailliert wurde.",
+    "locationRequired": "Öffnen Sie eine Terminal-Sitzung mit Standort, um die Schnellannahme zu nutzen.",
     "newQuickDrop": "Neue Schnellannahme",
     "newOrder": "Neuer Auftrag",
     "note": "Kurzer Annahmehinweis",

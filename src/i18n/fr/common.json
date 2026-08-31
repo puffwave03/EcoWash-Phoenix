@@ -1712,6 +1712,7 @@
     "errorValidation": "Vérifiez le client, le site, la note et la date prévue.",
     "help": "Réceptionnez le sac maintenant ; ajoutez les articles et le prix plus tard.",
     "labelsDeferred": "Les étiquettes d’articles seront disponibles après avoir détaillé la commande.",
+    "locationRequired": "Ouvrez une session Terminal avec un site pour utiliser le dépôt rapide.",
     "newQuickDrop": "Nouveau dépôt rapide",
     "newOrder": "Nouvelle commande",
     "note": "Note de réception courte",

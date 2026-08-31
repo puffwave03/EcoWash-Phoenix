@@ -1712,6 +1712,7 @@
     "errorValidation": "Comprueba el cliente, la ubicación, la nota y la fecha prevista.",
     "help": "Recibe la bolsa ahora; añade los artículos y el precio después.",
     "labelsDeferred": "Las etiquetas de artículos estarán disponibles después de detallar el pedido.",
+    "locationRequired": "Abre una sesión de Terminal con una ubicación para usar el depósito rápido.",
     "newQuickDrop": "Nuevo depósito rápido",
     "newOrder": "Nuevo pedido",
     "note": "Nota breve de recepción",

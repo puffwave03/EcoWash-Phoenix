@@ -74,6 +74,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         errorValidation: quickDropT("errorValidation"),
         help: quickDropT("help"),
         labelsDeferred: quickDropT("labelsDeferred"),
+        locationRequired: quickDropT("locationRequired"),
         newOrder: quickDropT("newOrder"),
         newQuickDrop: quickDropT("newQuickDrop"),
         note: quickDropT("note"),

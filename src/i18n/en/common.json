@@ -1770,6 +1770,7 @@
     "errorValidation": "Check the customer, location, note and expected date.",
     "help": "Receive the bag now; add items and pricing later.",
     "labelsDeferred": "Item labels become available after the order has been detailed.",
+    "locationRequired": "Open a Terminal session with a location to use Quick Drop.",
     "newQuickDrop": "New Quick Drop",
     "newOrder": "New order",
     "note": "Short intake note",

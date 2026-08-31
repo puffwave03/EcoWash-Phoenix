@@ -253,14 +253,18 @@ test("34 Terminal category filtering and order retain stable keys", async () => 
   assert.match(page, /catalogT\.raw\("categories"\)/);
 });
 
-test("35 normalized previews align card content without changing Terminal behavior", async () => {
+test("35 compact cards preserve normalized previews and Terminal behavior", async () => {
   const [ui, queries] = await Promise.all([
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/features/shop-terminal/server/queries.ts"),
   ]);
   assert.match(ui, /flex h-full min-w-0 flex-col/);
-  assert.match(ui, /line-clamp-2 min-h-10/);
-  assert.match(ui, /mt-auto block pt-2 text-lg font-black/);
+  assert.match(ui, /h-28 w-full shrink-0 border-b border-border sm:h-32/);
+  assert.match(ui, /flex w-full flex-1 flex-col px-2\.5 py-1\.5/);
+  assert.match(ui, /line-clamp-2 min-h-8 text-sm leading-4/);
+  assert.match(ui, /mt-0\.5 block truncate text-\[0\.65rem\]/);
+  assert.match(ui, /mt-auto block pt-1 text-base font-black text-primary sm:text-lg/);
+  assert.match(ui, /flex h-8 w-8 shrink-0/);
   assert.match(ui, /onClick=\{\(\) => addService\(service\)\}/);
   assert.match(ui, /service\.categoryKey === category/);
   assert.match(ui, /grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4/);

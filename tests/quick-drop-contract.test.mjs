@@ -179,6 +179,26 @@ test("17 pending Quick Drops are tenant-scoped and discoverable from Terminal", 
   assert.match(panel, /href=\{`\/app\/orders\/\$\{order\.id\}#items`\}/);
 });
 
+test("17a Quick Drop eligibility stays customer and active-location scoped with an accessible reason", async () => {
+  const [page, workspace, panel] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/shop/page.tsx"),
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/components/quick-drop/QuickDropTerminalPanel.tsx"),
+  ]);
+  assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id, name: selectedCustomer\.name \} : null\}/);
+  assert.match(workspace, /locationId=\{session\?\.locationId \?\? null\}/);
+  assert.match(panel, /customer \? <section/);
+  assert.match(panel, /disabled=\{!locationId\}/);
+  assert.match(panel, /disabled=\{isPending \|\| !locationId\}/);
+  assert.match(panel, /aria-describedby=\{!locationId \? "quick-drop-location-required" : undefined\}/);
+  assert.match(panel, /text\.locationRequired/);
+  assert.match(page, /locationRequired: quickDropT\("locationRequired"\)/);
+  for (const locale of ["it", "en", "es", "fr", "de"]) {
+    const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.equal(typeof messages.quickDrop.locationRequired, "string");
+  }
+});
+
 test("18 later detail opens the same order item section and keeps canonical item save", async () => {
   const [panel, detail, actions] = await Promise.all([
     source("src/components/quick-drop/QuickDropTerminalPanel.tsx"),
@@ -216,7 +236,7 @@ test("21 client and database both protect against duplicate receipt submission",
 });
 
 test("22 all five locales expose the complete Quick Drop UX vocabulary", async () => {
-  const expectedKeys = ["action", "cancel", "confirm", "confirming", "detailBeforeFinancial", "detailOrder", "dueAt", "errorGeneric", "errorValidation", "help", "labelsDeferred", "newOrder", "newQuickDrop", "note", "notePlaceholder", "openOrder", "pendingDetail", "pendingList", "productionBlocked", "qrAria", "received", "success", "unpriced"];
+  const expectedKeys = ["action", "cancel", "confirm", "confirming", "detailBeforeFinancial", "detailOrder", "dueAt", "errorGeneric", "errorValidation", "help", "labelsDeferred", "locationRequired", "newOrder", "newQuickDrop", "note", "notePlaceholder", "openOrder", "pendingDetail", "pendingList", "productionBlocked", "qrAria", "received", "success", "unpriced"];
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.deepEqual(Object.keys(messages.quickDrop).sort(), [...expectedKeys].sort());
