@@ -2,20 +2,21 @@
 
 Status: Active
 
-Recorded: 2026-08-30
+Recorded: 2026-08-31
 Purpose: Short mutable product baseline for the next Codex task
 
 Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each completed product task.
 
 ## Current Git
 
-- Product baseline before this docs update: `60c02e6` (`TERMINAL-UX-004`).
-- Latest relevant application commit: `60c02e6` (`TERMINAL-UX-004`).
-- Previous completed product documentation commit: `12149a4` (`DOCS-CATALOG-MEDIA-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `e70cc7c` (`ACCOUNTING-001`).
+- Latest relevant application commit: `e70cc7c` (`ACCOUNTING-001`).
+- Previous completed product documentation commit: `11f5fcf` (`DOCS-TERMINAL-UX-004`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
 - ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
+- ACCOUNTING-001C status: `READY`; no new migration was required.
 - CATALOG-STRUCTURE-001.1 status: `READY`; no new migration was required.
 - CATALOG-MEDIA-FIX-001 status: `READY`; no new migration was required.
 - TERMINAL-UX-004 status: `READY`; no new migration was required.
@@ -42,7 +43,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
-| Accounting Foundation / ACCOUNTING-001A+B | Currency-separated canonical read models cover sales, collections, refunds, outstanding balances and POS reconciliation without invoice double-counting. Tenant-scoped suppliers, expense categories and auditable draft/posted/void expenses provide the new expense domain for the future Accounting workspace. |
+| Accounting / ACCOUNTING-001A+B+C | Operational Accounting is available at `/[locale]/app/accounting`. Currency-separated canonical summaries cover net sales, collections, refunds, outstanding balances, expenses and operational result without invoice double-counting. Period/location filters, activity views, payment/expense breakdowns, tenant-scoped supplier/category/expense management and UTF-8 CSV exports complete the operational workspace. |
 
 ## Current Important Configuration
 
@@ -78,12 +79,14 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Shop Terminal keeps customer/walk-in switching and scanner/search access in a compact responsive band. Service families use touch-friendly scrollable chips; service cards use a dense 2/3/4-column responsive grid with fixed-aspect canonical media or the shared neutral fallback. Desktop retains the established approximately two-thirds catalog and one-third sticky cart split.
 - Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
 - Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
+- Accounting period presets cover today, this week, this month, previous month and custom dates in the organization timezone, with an optional tenant location filter. Sales/collections and expenses exports reuse the same scoped workspace semantics and mitigate CSV formula injection.
+- Accounting is operational reporting only. It is not certified statutory accounting, a general ledger, double-entry bookkeeping, tax filing or fiscal compliance.
 
 ## Current Known Product Boundaries
 
 - No real online-provider settlement is configured or claimed.
 - No garment-instance lifecycle, barcode scan-event history or inventory tracking is claimed; BARCODE-001 identifies canonical orders and order-line units only.
-- No final Accounting workspace/dashboard, exports, general ledger, double-entry bookkeeping, bank reconciliation or tax filing exists yet.
+- No general ledger, double-entry bookkeeping, bank reconciliation, statutory accounting or tax filing is claimed.
 - No e-invoice or fiscal-compliance claim yet.
 - No Spanish simplified-invoice document type or legal regime is implemented; operational receipts must not be represented as fiscal or simplified invoices.
 - No raw card-data handling, printer driver, silent printing or hardware-status integration.
@@ -91,7 +94,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Next Approved Task
 
-`ACCOUNTING-001C RESUME`.
+`E-INVOICE-001 RESEARCH / ARCHITECTURE`.
 
 ## Near Future — Not Started by This Task
 
@@ -107,4 +110,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - CATALOG-STRUCTURE-001 rollback proof covered `Tintoria` → `Tintoreria`, category order change, service move in/out, safe category/service archive, Terminal/Portal absence, Owner/Staff and cross-tenant enforcement, unchanged UUID/code/price/segment/image relations and immutable order/invoice descriptions; fixture counts returned to zero.
 - ACCOUNTING-001B rollback proof reconciled EUR 2,100 of posted expenses exactly: Rent 1,200, Energy 500, Laundry products 300 and Maintenance 100; Supplier A totaled 300, Manager access passed, Staff/cross-tenant access was denied and all fixtures rolled back to zero.
 - CATALOG-MEDIA-FIX-001 linked proof uploaded and reloaded a controlled service image, preserved it through an edit without a file, replaced it, retained service UUID/code and pricing, restored the original path and removed both temporary storage objects.
+- ACCOUNTING-001C linked rollback proof reconciled EUR 1,000 net sales, EUR 800 gross collected (EUR 300 cash + EUR 500 card), EUR 50 refunds, EUR 750 net collected, EUR 200 outstanding, EUR 600 posted expenses and EUR 400 operational result. It used canonical POS payment/refund RPCs and left zero fixtures.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
