@@ -115,7 +115,8 @@ export async function listShopServices(
   const imagePaths = new Map((mediaResult.data ?? []).map((service) => [service.id, service.portal_image_path]));
   return services.map((service) => ({
     amount: Number(service.amount),
-    category: service.category ? categoryTitles.get(service.category) || service.category : null,
+    category: service.category ? categoryTitles.get(service.category) || null : null,
+    categoryKey: service.category,
     code: service.code,
     currency: service.currency,
     description: service.description,

@@ -5,6 +5,7 @@ import { PrintOrderActions, type PrintActionText } from "@/components/printing/P
 import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
+import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
 import type { ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
@@ -44,6 +45,7 @@ type Props = {
   canInvoice: boolean;
   canPrint: boolean;
   canScan: boolean;
+  categoryLabels: Record<string, string>;
   customers: ShopCustomer[];
   locale: string;
   operatorName: string;
@@ -60,7 +62,7 @@ const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, customers: initialCustomers, locale, operatorName, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, locale, operatorName, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
@@ -105,12 +107,20 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     return customers.filter((customer) => !query || [customer.name, customer.phone, customer.email]
       .some((value) => value?.toLocaleLowerCase(locale).includes(query))).slice(0, 8);
   }, [customerQuery, customers, locale]);
-  const categories = useMemo(() => Array.from(new Set(services.map((service) => service.category).filter(Boolean) as string[])), [services]);
+  const categories = useMemo(() => {
+    const options = new Map<string, string>();
+    for (const service of services) {
+      if (service.categoryKey && !options.has(service.categoryKey)) {
+        options.set(service.categoryKey, resolveShopCategoryLabel(service.categoryKey, service.category, categoryLabels));
+      }
+    }
+    return Array.from(options, ([key, label]) => ({ key, label }));
+  }, [categoryLabels, services]);
   const filteredServices = useMemo(() => {
     const query = serviceQuery.trim().toLocaleLowerCase(locale);
-    return services.filter((service) => (category === "all" || service.category === category)
-      && (!query || [service.name, service.code, service.description].some((value) => value?.toLocaleLowerCase(locale).includes(query))));
-  }, [category, locale, serviceQuery, services]);
+    return services.filter((service) => (category === "all" || service.categoryKey === category)
+      && (!query || [service.name, service.code, service.description, service.category, service.categoryKey ? resolveShopCategoryLabel(service.categoryKey, service.category, categoryLabels) : null].some((value) => value?.toLocaleLowerCase(locale).includes(query))));
+  }, [category, categoryLabels, locale, serviceQuery, services]);
 
   function selectCustomer(nextCustomerId: string) {
     setCustomerId(nextCustomerId);
@@ -264,8 +274,8 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       <div className="grid min-w-0 lg:grid-cols-[minmax(0,2.1fr)_minmax(20rem,1fr)] xl:grid-cols-[minmax(0,2.2fr)_minmax(23rem,1fr)]">
         <main className="min-w-0 p-3 sm:p-4">
           <div className="mb-2 flex items-center gap-2"><h2 className="shrink-0 text-sm font-black uppercase tracking-[0.08em] text-primary">{text.catalog}</h2><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 sm:ml-auto sm:max-w-xs" disabled={!selectedCustomer} onChange={(event) => setServiceQuery(event.target.value)} placeholder={text.searchServices} type="search" value={serviceQuery} /></div>
-          <nav aria-label={text.catalog} className="mb-3 flex min-w-0 gap-1.5 overflow-x-auto pb-1"><button aria-pressed={category === "all"} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === "all" ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} disabled={!selectedCustomer} onClick={() => setCategory("all")} type="button">{text.categoryAll}</button>{categories.map((item) => <button aria-pressed={category === item} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === item ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} key={item} onClick={() => setCategory(item)} type="button">{item}</button>)}</nav>
-          {!selectedCustomer ? <div className="flex min-h-64 flex-col items-center justify-center rounded-control border border-dashed border-primary/25 bg-white px-6 text-center"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary"><svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m6.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7.5 0 2 2 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg></span><h3 className="mt-3 text-lg font-black text-primary">{text.selectCustomer}</h3><p className="mt-1 max-w-md text-sm text-muted">{text.noCustomer}</p></div> : isLoading ? <div className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.loadingCatalog}</div> : filteredServices.length ? <div className="grid grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4" data-terminal-service-grid>{filteredServices.map((service) => <button className="group relative min-w-0 overflow-hidden rounded-control border border-border bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" data-terminal-service-card key={service.id} onClick={() => addService(service)} type="button"><PortalMedia alt={service.imageUrl ? service.name : ""} className="aspect-[5/3] w-full border-b border-border" imageClassName="transition-transform duration-300 group-hover:scale-105" sizes="(max-width: 767px) 50vw, (max-width: 1535px) 33vw, 25vw" src={service.imageUrl} /><span className="block p-3"><span className="flex min-w-0 items-start justify-between gap-2"><strong className="line-clamp-2 text-sm leading-tight text-primary sm:text-base">{service.name}</strong><span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-black text-white">+</span></span><span className="mt-1 block truncate text-[0.68rem] font-bold uppercase tracking-wide text-muted">{service.category || text.categoryAll} · {text.unitTypes[service.unitType]}</span><strong className="mt-2 block text-lg font-black text-primary">{service.priceIsFrom ? `${text.priceFrom} ` : ""}{formatCurrency(service.amount, service.currency, locale)}</strong>{service.pricingSource === "segment" ? <span className="mt-1 block truncate text-[0.68rem] font-bold text-secondary">{text.segmentPrice.replace("{segment}", service.pricingSegmentName ?? "")}</span> : null}</span></button>)}</div> : <p className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.emptyCatalog}</p>}
+          <nav aria-label={text.catalog} className="mb-3 flex min-w-0 gap-1.5 overflow-x-auto pb-1"><button aria-pressed={category === "all"} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === "all" ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} disabled={!selectedCustomer} onClick={() => setCategory("all")} type="button">{text.categoryAll}</button>{categories.map((item) => <button aria-pressed={category === item.key} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === item.key ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} key={item.key} onClick={() => setCategory(item.key)} type="button">{item.label}</button>)}</nav>
+          {!selectedCustomer ? <div className="flex min-h-64 flex-col items-center justify-center rounded-control border border-dashed border-primary/25 bg-white px-6 text-center"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary"><svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m6.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7.5 0 2 2 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg></span><h3 className="mt-3 text-lg font-black text-primary">{text.selectCustomer}</h3><p className="mt-1 max-w-md text-sm text-muted">{text.noCustomer}</p></div> : isLoading ? <div className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.loadingCatalog}</div> : filteredServices.length ? <div className="grid grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4" data-terminal-service-grid>{filteredServices.map((service) => <button className="group relative min-w-0 overflow-hidden rounded-control border border-border bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" data-terminal-service-card key={service.id} onClick={() => addService(service)} type="button"><PortalMedia alt={service.imageUrl ? service.name : ""} className="aspect-[5/3] w-full border-b border-border" imageClassName="transition-transform duration-300 group-hover:scale-105" sizes="(max-width: 767px) 50vw, (max-width: 1535px) 33vw, 25vw" src={service.imageUrl} /><span className="block p-3"><span className="flex min-w-0 items-start justify-between gap-2"><strong className="line-clamp-2 text-sm leading-tight text-primary sm:text-base">{service.name}</strong><span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-black text-white">+</span></span><span className="mt-1 block truncate text-[0.68rem] font-bold uppercase tracking-wide text-muted">{service.categoryKey ? resolveShopCategoryLabel(service.categoryKey, service.category, categoryLabels) : text.categoryAll} · {text.unitTypes[service.unitType]}</span><strong className="mt-2 block text-lg font-black text-primary">{service.priceIsFrom ? `${text.priceFrom} ` : ""}{formatCurrency(service.amount, service.currency, locale)}</strong>{service.pricingSource === "segment" ? <span className="mt-1 block truncate text-[0.68rem] font-bold text-secondary">{text.segmentPrice.replace("{segment}", service.pricingSegmentName ?? "")}</span> : null}</span></button>)}</div> : <p className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.emptyCatalog}</p>}
         </main>
 
         <aside className="min-w-0 border-t border-border bg-white shadow-[-12px_0_30px_rgb(15_59_46_/_0.06)] lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0">

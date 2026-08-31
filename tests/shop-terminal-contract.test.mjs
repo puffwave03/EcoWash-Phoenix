@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { resolveShopCategoryLabel } from "../src/features/shop-terminal/category-label.ts";
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migrationPath = "supabase/migrations/20260829000200_shop_terminal_001_counter_experience.sql";
@@ -67,7 +68,7 @@ test("11 catalog has category and search UX", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
   assert.match(ui, /setCategory/);
   assert.match(ui, /searchServices/);
-  assert.match(ui, /aria-pressed=\{category === item\}/);
+  assert.match(ui, /aria-pressed=\{category === item\.key\}/);
 });
 
 test("12 service taps quick-add and safely increment", async () => {
@@ -212,4 +213,38 @@ test("31 responsive POS structure keeps a dense catalog and persistent one-third
   assert.match(queries, /rpc\("list_shop_terminal_services"/);
   assert.match(queries, /eq\("organization_id", membership\.organization\.id\)/);
   assert.match(queries, /imageUrl: serviceImageUrl/);
+});
+
+test("32 known Terminal families resolve through every active route locale", async () => {
+  const expectations = {
+    it: ["Lavaggio al kg", "Stireria", "Biancheria da letto", "Casa e tessili", "Autoservizio", "Servizi professionali", "Servizi speciali"],
+    es: ["Lavado por kilo", "Planchado", "Ropa de cama", "Hogar y textiles", "Autoservicio", "Servicios profesionales", "Servicios especiales"],
+    en: ["Laundry by weight", "Ironing", "Bed linen", "Home textiles", "Self-service", "Professional services", "Special services"],
+    fr: ["Lavage au kilo", "Repassage", "Linge de lit", "Maison et textiles", "Libre-service", "Services professionnels", "Services spéciaux"],
+    de: ["Wäsche nach Gewicht", "Bügelservice", "Bettwäsche", "Heimtextilien", "Selbstbedienung", "Gewerbliche Leistungen", "Spezialleistungen"],
+  };
+  const keys = ["laundry_by_weight", "ironing", "bed_linen", "home_textiles", "self_service", "professional_services", "special_services"];
+  for (const [locale, expected] of Object.entries(expectations)) {
+    const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.deepEqual(keys.map((key) => resolveShopCategoryLabel(key, key, messages.catalog.categories)), expected);
+    assert.ok(expected.every((label) => !label.includes("_")));
+  }
+});
+
+test("33 custom and missing-label families keep canonical titles with a safe final fallback", () => {
+  assert.equal(resolveShopCategoryLabel("custom_family", "Tintoreria", {}), "Tintoreria");
+  assert.equal(resolveShopCategoryLabel("custom_family", null, {}), "Custom family");
+  assert.equal(resolveShopCategoryLabel("custom_family", "custom_family", {}), "Custom family");
+});
+
+test("34 Terminal category filtering and order retain stable keys", async () => {
+  const [ui, queries, page] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/server/queries.ts"),
+    source("src/app/[locale]/app/(dashboard)/shop/page.tsx"),
+  ]);
+  assert.match(ui, /service\.categoryKey === category/);
+  assert.match(ui, /Array\.from\(options, \(\[key, label\]\) => \(\{ key, label \}\)\)/);
+  assert.match(queries, /categoryKey: service\.category/);
+  assert.match(page, /catalogT\.raw\("categories"\)/);
 });

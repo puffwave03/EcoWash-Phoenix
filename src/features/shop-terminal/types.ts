@@ -12,6 +12,7 @@ export type ShopCustomer = {
 export type ShopService = {
   amount: number;
   category: string | null;
+  categoryKey: string | null;
   code: string | null;
   currency: string;
   description: string | null;
