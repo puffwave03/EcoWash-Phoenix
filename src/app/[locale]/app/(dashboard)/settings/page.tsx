@@ -23,6 +23,7 @@ export default async function SettingsPage({ params }: {
     requireOwnerOrManager(locale),
     getCurrentEntitlements(locale, [
       FEATURES.billingInvoicing,
+      FEATURES.catalogSegments,
       FEATURES.fullWhiteLabel,
       FEATURES.printing,
     ]),
@@ -63,6 +64,13 @@ export default async function SettingsPage({ params }: {
           href: "/app/settings/catalog",
           title: t("items.catalog.title"),
         },
+        ...(entitlementEnabled(entitlements, FEATURES.catalogSegments)
+          ? [{
+              description: t("items.customerSegments.description"),
+              href: "/app/settings/catalog/segments",
+              title: t("items.customerSegments.title"),
+            }]
+          : []),
         ...(entitlementEnabled(entitlements, FEATURES.printing)
           ? [{
               description: t("items.printers.description"),

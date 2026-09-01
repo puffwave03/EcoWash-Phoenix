@@ -1259,6 +1259,7 @@
       "billingIssuer": {"title": "Steuer- und Rechnungsdaten", "description": "Prüfen Sie die rechtliche und steuerliche Identität auf Rechnungen."},
       "brandPortal": {"title": "Marke und Kundenportal", "description": "Verwalten Sie Marke, Portalinhalte und Supportkontakte."},
       "catalog": {"title": "Kundenkatalog", "description": "Steuern Sie die Sichtbarkeit und kundenseitige Darstellung von Leistungen."},
+      "customerSegments": {"title": "Kundensegmente", "description": "Verwalten Sie kompakte Kundenkataloge und Segmentzuweisungen."},
       "printers": {"title": "Drucker", "description": "Konfigurieren Sie Beleg-, Etiketten- und interne Ticketprofile je Standort."},
       "staff": {"title": "Personal und Zugriffe", "description": "Laden Sie Personal ein und verwalten Sie Rollen und betriebliche Berechtigungen."}
     }
@@ -1377,6 +1378,8 @@
     "segmentDescription": "Beschreibung",
     "displayOrder": "Anzeigereihenfolge",
     "active": "Aktiv",
+    "activeSegments": "Aktive Segmente",
+    "inactiveSegments": "Inaktive Segmente",
     "inactive": "Inaktiv",
     "portalVisible": "Im Portal sichtbar",
     "visible": "Sichtbar",
@@ -1392,8 +1395,15 @@
     "duplicate": "Ein Segment mit diesem Namen ist bereits vorhanden.",
     "migrationRequired": "Kundensegmente sind nach Anwendung der ausstehenden CATALOG-SEGMENTS-001-Migration verfügbar.",
     "categories": "Schnellkategorien",
+    "categorySearch": "Kategorien suchen",
+    "allCategories": "Alle Kategorien",
+    "selectAll": "Alle auswählen",
+    "clearAll": "Auswahl aufheben",
     "categoryHelp": "Ausgewählte Kategorien priorisieren aktuell erlaubte und bestellbare Leistungen. Globale Regeln gelten weiterhin.",
     "services": "Schnellleistungen",
+    "serviceSearch": "Nach Servicename oder Code suchen",
+    "selectAllVisible": "Alle sichtbaren auswählen",
+    "clearAllVisible": "Alle sichtbaren abwählen",
     "serviceHelp": "Wählen und ordnen Sie Verweise auf bestehende Leistungen. Nicht verfügbare Leistungen werden Kunden nie angezeigt.",
     "customers": "Zugeordnete Kunden",
     "customerHelp": "Jeder Kunde kann ein Hauptsegment haben. Eine Auswahl verschiebt ihn aus seinem vorherigen Segment.",
@@ -1402,7 +1412,11 @@
     "linkedServices": "verknüpfte Leistungen",
     "assignedCustomers": "zugeordnete Kunden",
     "noCustomers": "Keine Kunden verfügbar.",
-    "noSegments": "Es wurden noch keine Kundensegmente erstellt."
+    "noSegments": "Es wurden noch keine Kundensegmente erstellt.",
+    "portalVisibility": "Portal / Sichtbarkeit",
+    "quickNavigation": "Schnellnavigation für Segmente",
+    "expand": "Segment erweitern",
+    "collapse": "Segment reduzieren"
   },
   "pricingSegments": {
     "title": "Segmentpreise", "description": "Legen Sie datierte Preisüberschreibungen für ein Kundensegment fest. Der aktuelle Katalogpreis bleibt der sichere Rückfall.", "overridePrice": "Preisregeln",

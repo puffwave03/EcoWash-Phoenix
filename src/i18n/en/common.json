@@ -1284,6 +1284,7 @@
       "billingIssuer": {"title": "Billing issuer", "description": "Review the legal and fiscal identity used on invoices."},
       "brandPortal": {"title": "Brand & Customer Portal", "description": "Manage brand presentation, Portal content and support contacts."},
       "catalog": {"title": "Customer catalog", "description": "Control service visibility and customer-facing presentation."},
+      "customerSegments": {"title": "Customer segments", "description": "Manage compact customer catalogues and segment assignments."},
       "printers": {"title": "Printers", "description": "Configure receipt, label and internal ticket profiles by location."},
       "staff": {"title": "Staff & access", "description": "Invite staff and manage roles and operational capabilities."}
     }
@@ -1428,6 +1429,8 @@
     "segmentDescription": "Description",
     "displayOrder": "Display order",
     "active": "Active",
+    "activeSegments": "Active segments",
+    "inactiveSegments": "Inactive segments",
     "inactive": "Inactive",
     "portalVisible": "Visible in Portal",
     "visible": "Visible",
@@ -1443,8 +1446,15 @@
     "duplicate": "A segment with this name already exists.",
     "migrationRequired": "Customer segments will be available after the pending CATALOG-SEGMENTS-001 migration is applied.",
     "categories": "Quick categories",
+    "categorySearch": "Search categories",
+    "allCategories": "All categories",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
     "categoryHelp": "Selected categories prioritize their currently allowed, orderable services. Global catalogue rules still apply.",
     "services": "Quick services",
+    "serviceSearch": "Search by service name or code",
+    "selectAllVisible": "Select all visible",
+    "clearAllVisible": "Clear all visible",
     "serviceHelp": "Select and order references to existing services. Unavailable services remain linked but never appear to customers.",
     "customers": "Assigned customers",
     "customerHelp": "Each customer can have one primary segment. Selecting a customer here moves them from any previous segment.",
@@ -1453,7 +1463,11 @@
     "linkedServices": "linked services",
     "assignedCustomers": "assigned customers",
     "noCustomers": "No customers are available.",
-    "noSegments": "No customer segments have been created yet."
+    "noSegments": "No customer segments have been created yet.",
+    "portalVisibility": "Portal / visibility",
+    "quickNavigation": "Segment quick navigation",
+    "expand": "Expand segment",
+    "collapse": "Collapse segment"
   },
   "pricingSegments": {
     "title": "Segment pricing", "description": "Set dated price overrides for a customer segment. The current catalogue price remains the safe fallback.", "overridePrice": "Pricing rules",

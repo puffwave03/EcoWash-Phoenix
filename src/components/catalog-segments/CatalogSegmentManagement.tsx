@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { CatalogAdminCategory, CatalogAdminService } from "@/features/catalog-admin/types";
 import type {
@@ -17,9 +17,15 @@ type SegmentAction = (
 
 export type CatalogSegmentManagementText = {
   active: string;
+  activeSegments: string;
+  allCategories: string;
   assignedCustomers: string;
   categories: string;
+  categorySearch: string;
   categoryHelp: string;
+  clearAll: string;
+  clearAllVisible: string;
+  collapse: string;
   create: string;
   createDescription: string;
   createTitle: string;
@@ -28,21 +34,28 @@ export type CatalogSegmentManagementText = {
   description: string;
   displayOrder: string;
   duplicate: string;
+  expand: string;
   featured: string;
   formError: string;
   hidden: string;
   inactive: string;
+  inactiveSegments: string;
   linkedServices: string;
   migrationRequired: string;
   name: string;
   noCustomers: string;
   noSegments: string;
   portalVisible: string;
+  portalVisibility: string;
+  quickNavigation: string;
   save: string;
   saved: string;
   saving: string;
   serviceHelp: string;
+  serviceSearch: string;
   services: string;
+  selectAll: string;
+  selectAllVisible: string;
   starter: string;
   starterHelp: string;
   starters: Record<CatalogSegmentStarter, string>;
@@ -108,6 +121,8 @@ function SegmentEditor({
   segment,
   services,
   text,
+  expanded,
+  onToggle,
 }: {
   action: SegmentAction;
   categories: CatalogAdminCategory[];
@@ -115,54 +130,79 @@ function SegmentEditor({
   segment: CatalogSegment;
   services: CatalogAdminService[];
   text: CatalogSegmentManagementText;
+  expanded: boolean;
+  onToggle: () => void;
 }) {
   const [state, formAction] = useActionState(action, initialState);
   const serviceLinks = new Map(segment.serviceLinks.map((link) => [link.serviceId, link]));
   const categoryLinks = new Map(segment.categoryLinks.map((link) => [link.categoryKey, link]));
   const selectedCustomers = new Set(segment.customerIds);
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [serviceCategory, setServiceCategory] = useState("");
+  const [selectedCategoryKeys, setSelectedCategoryKeys] = useState(() => new Set(segment.categoryLinks.map((link) => link.categoryKey)));
+  const [selectedServiceIds, setSelectedServiceIds] = useState(() => new Set(segment.serviceLinks.map((link) => link.serviceId)));
+  const visibleCategoryKeys = useMemo(() => new Set(categories
+    .filter((category) => categoryLabel(category).toLocaleLowerCase().includes(categoryQuery.trim().toLocaleLowerCase()))
+    .map((category) => category.categoryKey)), [categories, categoryQuery]);
+  const visibleServiceIds = useMemo(() => {
+    const query = serviceQuery.trim().toLocaleLowerCase();
+    return new Set(services.filter((service) => {
+      const categoryKey = service.portalCategoryKey ?? service.internalCategory ?? "";
+      return (!serviceCategory || categoryKey === serviceCategory)
+        && (!query || `${service.name} ${service.code ?? ""}`.toLocaleLowerCase().includes(query));
+    }).map((service) => service.id));
+  }, [serviceCategory, serviceQuery, services]);
+  const editorId = `segment-editor-${segment.id}`;
 
   return (
-    <details className="overflow-hidden rounded-card border border-border bg-white shadow-card">
-      <summary className="flex min-h-16 cursor-pointer list-none flex-wrap items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
+    <article className="scroll-mt-24 overflow-hidden rounded-card border border-border bg-white shadow-card" id={`segment-${segment.id}`}>
+      <button
+        aria-controls={editorId}
+        aria-expanded={expanded}
+        className="flex min-h-16 w-full items-center justify-between gap-3 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+        onClick={onToggle}
+        type="button"
+      >
         <span>
           <span className="block text-lg font-semibold text-foreground">{segment.name}</span>
-          <span className="mt-1 block text-sm text-muted">{segment.serviceLinks.length} {text.linkedServices} · {segment.customerIds.length} {text.assignedCustomers}</span>
+          <span className="mt-1 block text-sm text-muted">{segment.categoryLinks.length} {text.categories.toLocaleLowerCase()} · {segment.serviceLinks.length} {text.linkedServices}</span>
         </span>
-        <span className="flex flex-wrap gap-2 text-xs font-semibold">
+        <span className="flex flex-wrap items-center justify-end gap-2 text-xs font-semibold">
           <span className={`rounded-full px-2.5 py-1 ${segment.isActive ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{segment.isActive ? text.active : text.inactive}</span>
-          <span className={`rounded-full px-2.5 py-1 ${segment.portalVisible ? "bg-blue-50 text-blue-800" : "bg-slate-100 text-slate-600"}`}>{segment.portalVisible ? text.visible : text.hidden}</span>
+          <span className={`rounded-full px-2.5 py-1 ${segment.portalVisible ? "bg-blue-50 text-blue-800" : "bg-slate-100 text-slate-600"}`}>{segment.portalVisible ? text.portalVisible : text.hidden}</span>
+          <span aria-hidden="true" className="text-base text-primary">{expanded ? "−" : "+"}</span>
+          <span className="sr-only">{expanded ? text.collapse : text.expand}</span>
         </span>
-      </summary>
-      <form action={formAction} className="space-y-6 border-t border-border bg-[#fafcfa] p-5">
+      </button>
+      {expanded ? <form action={formAction} className="space-y-4 border-t border-border bg-[#fafcfa] p-4 sm:p-5" id={editorId}>
         <input name="segmentId" type="hidden" value={segment.id} />
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_10rem]">
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.name}</span>
-            <input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={segment.name} maxLength={120} name="name" required />
-          </label>
-          <label className="space-y-1.5 text-sm font-semibold text-primary">
-            <span>{text.displayOrder}</span>
-            <input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={segment.displayOrder} min={0} name="displayOrder" type="number" />
-          </label>
-        </div>
-        <label className="block space-y-1.5 text-sm font-semibold text-primary">
-          <span>{text.description}</span>
-          <textarea className="min-h-24 w-full rounded-control border border-border px-3 py-2 font-normal" defaultValue={segment.description} maxLength={1000} name="description" />
-        </label>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Toggle defaultChecked={segment.isActive} label={text.active} name="isActive" />
-          <Toggle defaultChecked={segment.portalVisible} label={text.portalVisible} name="portalVisible" />
-        </div>
+
+        <details className="rounded-card border border-border bg-white p-4" open>
+          <summary className="cursor-pointer font-semibold text-primary">{text.name} / {text.description}</summary>
+          <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_10rem]">
+            <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.name}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={segment.name} maxLength={120} name="name" required /></label>
+            <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.displayOrder}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={segment.displayOrder} min={0} name="displayOrder" type="number" /></label>
+          </div>
+          <label className="mt-4 block space-y-1.5 text-sm font-semibold text-primary"><span>{text.description}</span><textarea className="min-h-20 w-full rounded-control border border-border px-3 py-2 font-normal" defaultValue={segment.description} maxLength={1000} name="description" /></label>
+        </details>
 
         <details className="rounded-card border border-border bg-white p-4">
           <summary className="cursor-pointer list-none font-semibold text-primary [&::-webkit-details-marker]:hidden">{text.categories} · {segment.categoryLinks.length}</summary>
           <p className="mt-2 text-sm leading-6 text-muted">{text.categoryHelp}</p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <label className="min-w-0 flex-1 space-y-1.5 text-sm font-semibold text-primary"><span>{text.categorySearch}</span><input className="min-h-11 w-full rounded-control border border-border px-3" onChange={(event) => setCategoryQuery(event.target.value)} type="search" value={categoryQuery} /></label>
+            <span className="flex flex-wrap gap-2">
+              <button className="min-h-11 rounded-control border border-border px-3 text-sm font-semibold text-primary" onClick={() => setSelectedCategoryKeys(new Set(categories.map((category) => category.categoryKey)))} type="button">{text.selectAll}</button>
+              <button className="min-h-11 rounded-control border border-border px-3 text-sm font-semibold text-primary" onClick={() => setSelectedCategoryKeys(new Set())} type="button">{text.clearAll}</button>
+            </span>
+          </div>
           <div className="mt-4 grid gap-2 md:grid-cols-2">
             {categories.map((category) => {
               const link = categoryLinks.get(category.categoryKey);
               return (
-                <div className="grid grid-cols-[auto_minmax(0,1fr)_6rem] items-center gap-3 rounded-control border border-border p-3" key={category.categoryKey}>
-                  <input className="h-5 w-5 accent-primary" defaultChecked={Boolean(link)} name="categoryKeys" type="checkbox" value={category.categoryKey} />
+                <div className="grid grid-cols-[auto_minmax(0,1fr)_5rem] items-center gap-3 rounded-control border border-border p-3" hidden={!visibleCategoryKeys.has(category.categoryKey)} key={category.categoryKey}>
+                  <input checked={selectedCategoryKeys.has(category.categoryKey)} className="h-5 w-5 accent-primary" name="categoryKeys" onChange={(event) => setSelectedCategoryKeys((current) => { const next = new Set(current); if (event.target.checked) next.add(category.categoryKey); else next.delete(category.categoryKey); return next; })} type="checkbox" value={category.categoryKey} />
                   <span className="truncate text-sm font-semibold text-foreground">{categoryLabel(category)}</span>
                   <input aria-label={`${text.displayOrder}: ${categoryLabel(category)}`} className="min-h-10 w-full rounded-control border border-border px-2 text-sm" defaultValue={link?.displayOrder ?? category.portalSortOrder} min={0} name={`categoryOrder_${category.categoryKey}`} type="number" />
                 </div>
@@ -174,13 +214,21 @@ function SegmentEditor({
         <details className="rounded-card border border-border bg-white p-4">
           <summary className="cursor-pointer list-none font-semibold text-primary [&::-webkit-details-marker]:hidden">{text.services} · {segment.serviceLinks.length}</summary>
           <p className="mt-2 text-sm leading-6 text-muted">{text.serviceHelp}</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,0.55fr)]">
+            <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.serviceSearch}</span><input className="min-h-11 w-full rounded-control border border-border px-3" onChange={(event) => setServiceQuery(event.target.value)} type="search" value={serviceQuery} /></label>
+            <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{text.categories}</span><select className="min-h-11 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setServiceCategory(event.target.value)} value={serviceCategory}><option value="">{text.allCategories}</option>{categories.map((category) => <option key={category.categoryKey} value={category.categoryKey}>{categoryLabel(category)}</option>)}</select></label>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button className="min-h-11 rounded-control border border-border px-3 text-sm font-semibold text-primary" onClick={() => setSelectedServiceIds((current) => new Set([...current, ...visibleServiceIds]))} type="button">{text.selectAllVisible}</button>
+            <button className="min-h-11 rounded-control border border-border px-3 text-sm font-semibold text-primary" onClick={() => setSelectedServiceIds((current) => { const next = new Set(current); visibleServiceIds.forEach((id) => next.delete(id)); return next; })} type="button">{text.clearAllVisible}</button>
+          </div>
           <div className="mt-4 space-y-2">
             {services.map((service) => {
               const link = serviceLinks.get(service.id);
               const available = serviceAvailable(service, categories);
               return (
-                <div className="grid gap-2 rounded-control border border-border p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_6rem] sm:items-center" key={service.id}>
-                  <input className="h-5 w-5 accent-primary" defaultChecked={Boolean(link)} name="serviceIds" type="checkbox" value={service.id} />
+                <div className="grid gap-2 rounded-control border border-border p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_5rem] sm:items-center" hidden={!visibleServiceIds.has(service.id)} key={service.id}>
+                  <input checked={selectedServiceIds.has(service.id)} className="h-5 w-5 accent-primary" name="serviceIds" onChange={(event) => setSelectedServiceIds((current) => { const next = new Set(current); if (event.target.checked) next.add(service.id); else next.delete(service.id); return next; })} type="checkbox" value={service.id} />
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-semibold text-foreground">{service.name}</span>
                     <span className={`text-xs ${available ? "text-emerald-700" : "text-amber-700"}`}>{available ? text.visible : text.unavailable}</span>
@@ -190,6 +238,14 @@ function SegmentEditor({
                 </div>
               );
             })}
+          </div>
+        </details>
+
+        <details className="rounded-card border border-border bg-white p-4">
+          <summary className="cursor-pointer font-semibold text-primary">{text.portalVisibility}</summary>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Toggle defaultChecked={segment.isActive} label={text.active} name="isActive" />
+            <Toggle defaultChecked={segment.portalVisible} label={text.portalVisible} name="portalVisible" />
           </div>
         </details>
 
@@ -213,8 +269,8 @@ function SegmentEditor({
           <Result state={state} text={text} />
           <SubmitButton label={text.save} pendingLabel={text.saving} />
         </div>
-      </form>
-    </details>
+      </form> : null}
+    </article>
   );
 }
 
@@ -234,10 +290,22 @@ export function CatalogSegmentManagement({
   text: CatalogSegmentManagementText;
 }) {
   const [createState, createAction] = useActionState(action, initialState);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [expandedSegmentId, setExpandedSegmentId] = useState<string | null>(null);
+  const activeSegments = segments.filter((segment) => segment.isActive);
+  const inactiveSegments = segments.filter((segment) => !segment.isActive);
 
   return (
     <div className="space-y-6">
-      <form action={createAction} className="space-y-5 rounded-card border border-primary/15 bg-primary-soft/45 p-5 shadow-card">
+      <nav aria-label={text.quickNavigation} className="sticky top-3 z-10 flex flex-wrap gap-2 rounded-card border border-border bg-white/95 p-3 shadow-card backdrop-blur">
+        <button className="inline-flex min-h-11 items-center rounded-control bg-primary px-4 text-sm font-semibold text-white" onClick={() => setCreateOpen(true)} type="button">{text.createTitle}</button>
+        <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold text-primary" href="#active-segments">{text.activeSegments} · {activeSegments.length}</a>
+        <a className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold text-primary" href="#inactive-segments">{text.inactiveSegments} · {inactiveSegments.length}</a>
+      </nav>
+
+      <details className="scroll-mt-24 rounded-card border border-primary/15 bg-primary-soft/45 shadow-card" id="create-segment" onToggle={(event) => setCreateOpen(event.currentTarget.open)} open={createOpen}>
+        <summary className="min-h-14 cursor-pointer px-5 py-4 text-lg font-semibold text-foreground">{text.createTitle}</summary>
+        <form action={createAction} className="space-y-5 border-t border-primary/10 p-5">
         <div>
           <h2 className="text-xl font-semibold text-foreground">{text.createTitle}</h2>
           <p className="mt-1 text-sm leading-6 text-muted">{text.createDescription}</p>
@@ -259,12 +327,12 @@ export function CatalogSegmentManagement({
           <Toggle defaultChecked label={text.portalVisible} name="portalVisible" />
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3"><Result state={createState} text={text} /><SubmitButton label={text.create} pendingLabel={text.saving} /></div>
-      </form>
+        </form>
+      </details>
 
       {segments.length === 0 ? <p className="rounded-card border border-dashed border-border bg-white p-6 text-center text-sm text-muted">{text.noSegments}</p> : null}
-      {segments.map((segment) => (
-        <SegmentEditor action={action} categories={categories} customers={customers} key={segment.id} segment={segment} services={services} text={text} />
-      ))}
+      <section className="scroll-mt-24 space-y-3" id="active-segments"><h2 className="text-lg font-semibold text-foreground">{text.activeSegments}</h2>{activeSegments.map((segment) => <SegmentEditor action={action} categories={categories} customers={customers} expanded={expandedSegmentId === segment.id} key={segment.id} onToggle={() => setExpandedSegmentId((current) => current === segment.id ? null : segment.id)} segment={segment} services={services} text={text} />)}</section>
+      <section className="scroll-mt-24 space-y-3" id="inactive-segments"><h2 className="text-lg font-semibold text-foreground">{text.inactiveSegments}</h2>{inactiveSegments.map((segment) => <SegmentEditor action={action} categories={categories} customers={customers} expanded={expandedSegmentId === segment.id} key={segment.id} onToggle={() => setExpandedSegmentId((current) => current === segment.id ? null : segment.id)} segment={segment} services={services} text={text} />)}</section>
     </div>
   );
 }

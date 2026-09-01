@@ -122,9 +122,49 @@ test("all five locales include segment admin, assignment and Portal personalizat
   for (const locale of ["en", "it", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.catalogSegments.title, "string");
+    assert.equal(typeof messages.catalogSegments.quickNavigation, "string");
+    assert.equal(typeof messages.catalogSegments.categorySearch, "string");
+    assert.equal(typeof messages.catalogSegments.serviceSearch, "string");
+    assert.equal(typeof messages.catalogSegments.selectAllVisible, "string");
     assert.equal(typeof messages.catalogAdmin.segmentsLink, "string");
+    assert.equal(typeof messages.settings.items.customerSegments.title, "string");
     assert.equal(typeof messages.customers.segment.title, "string");
     assert.equal(typeof messages.portal.segments.servicesForYou, "string");
     assert.equal(typeof messages.portal.segments.completeCatalog, "string");
   }
+});
+
+test("Settings exposes the unchanged Customer Segments route behind its existing entitlement", async () => {
+  const settings = await source("src/app/[locale]/app/(dashboard)/settings/page.tsx");
+
+  assert.match(settings, /FEATURES\.catalogSegments/);
+  assert.match(settings, /href: "\/app\/settings\/catalog\/segments"/);
+  assert.match(settings, /items\.customerSegments/);
+});
+
+test("segment management stays compact with one accessible expanded editor and quick anchors", async () => {
+  const management = await source("src/components/catalog-segments/CatalogSegmentManagement.tsx");
+
+  assert.match(management, /const \[expandedSegmentId, setExpandedSegmentId\]/);
+  assert.match(management, /aria-expanded=\{expanded\}/);
+  assert.match(management, /aria-controls=\{editorId\}/);
+  assert.match(management, /segment\.categoryLinks\.length/);
+  assert.match(management, /segment\.serviceLinks\.length/);
+  assert.match(management, /id="active-segments"/);
+  assert.match(management, /id="inactive-segments"/);
+  assert.match(management, /id="create-segment"/);
+});
+
+test("category and service selectors filter and batch-select without changing save field names", async () => {
+  const management = await source("src/components/catalog-segments/CatalogSegmentManagement.tsx");
+
+  assert.match(management, /setCategoryQuery/);
+  assert.match(management, /setSelectedCategoryKeys\(new Set\(categories\.map/);
+  assert.match(management, /setServiceQuery/);
+  assert.match(management, /setServiceCategory/);
+  assert.match(management, /visibleServiceIds\.forEach/);
+  assert.match(management, /name="categoryKeys"/);
+  assert.match(management, /name="serviceIds"/);
+  assert.match(management, /name="customerIds"/);
+  assert.match(management, /action=\{formAction\}/);
 });

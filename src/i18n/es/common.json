@@ -1259,6 +1259,7 @@
       "billingIssuer": {"title": "Datos fiscales y facturación", "description": "Revisa la identidad legal y fiscal utilizada en las facturas."},
       "brandPortal": {"title": "Marca y Portal del Cliente", "description": "Gestiona la marca, el contenido del Portal y los contactos de soporte."},
       "catalog": {"title": "Catálogo cliente", "description": "Controla la visibilidad de servicios y su presentación al cliente."},
+      "customerSegments": {"title": "Segmentos de cliente", "description": "Gestiona catálogos compactos y asignaciones de segmentos."},
       "printers": {"title": "Impresoras", "description": "Configura perfiles de recibos, etiquetas y tickets internos por sede."},
       "staff": {"title": "Personal y accesos", "description": "Invita al personal y gestiona roles y capacidades operativas."}
     }
@@ -1377,6 +1378,8 @@
     "segmentDescription": "Descripción",
     "displayOrder": "Orden de visualización",
     "active": "Activo",
+    "activeSegments": "Segmentos activos",
+    "inactiveSegments": "Segmentos inactivos",
     "inactive": "Inactivo",
     "portalVisible": "Visible en el Portal",
     "visible": "Visible",
@@ -1392,8 +1395,15 @@
     "duplicate": "Ya existe un segmento con este nombre.",
     "migrationRequired": "Los segmentos estarán disponibles tras aplicar la migración CATALOG-SEGMENTS-001 pendiente.",
     "categories": "Categorías rápidas",
+    "categorySearch": "Buscar categorías",
+    "allCategories": "Todas las categorías",
+    "selectAll": "Seleccionar todo",
+    "clearAll": "Borrar selección",
     "categoryHelp": "Las categorías seleccionadas priorizan servicios permitidos y solicitables. Las reglas globales siguen aplicándose.",
     "services": "Servicios rápidos",
+    "serviceSearch": "Buscar por nombre o código de servicio",
+    "selectAllVisible": "Seleccionar todos los visibles",
+    "clearAllVisible": "Borrar todos los visibles",
     "serviceHelp": "Selecciona y ordena referencias a servicios existentes. Los no disponibles nunca aparecen al cliente.",
     "customers": "Clientes asignados",
     "customerHelp": "Cada cliente puede tener un segmento principal. Seleccionarlo aquí lo mueve de su segmento anterior.",
@@ -1402,7 +1412,11 @@
     "linkedServices": "servicios vinculados",
     "assignedCustomers": "clientes asignados",
     "noCustomers": "No hay clientes disponibles.",
-    "noSegments": "Todavía no se ha creado ningún segmento."
+    "noSegments": "Todavía no se ha creado ningún segmento.",
+    "portalVisibility": "Portal / visibilidad",
+    "quickNavigation": "Navegación rápida de segmentos",
+    "expand": "Expandir segmento",
+    "collapse": "Contraer segmento"
   },
   "pricingSegments": {
     "title": "Precios por segmento", "description": "Define precios con vigencia para un segmento. El precio actual del catálogo sigue siendo la alternativa segura.", "overridePrice": "Reglas de precios",
