@@ -2,16 +2,16 @@
 
 Status: Active
 
-Recorded: 2026-09-01
+Recorded: 2026-09-02
 Purpose: Short mutable product baseline for the next Codex task
 
 Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each completed product task.
 
 ## Current Git
 
-- Product baseline before this docs update: `688ecfd` (`CATALOG-PRODUCTIZATION-001`).
-- Latest relevant application commit: `688ecfd` (`CATALOG-PRODUCTIZATION-001`).
-- Previous completed product documentation commit: `36660e3` (`DOCS-TERMINAL-UX-006`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `134b40a` (`SEGMENTS-UX-001`).
+- Latest relevant application commit: `134b40a` (`SEGMENTS-UX-001`).
+- Previous completed product documentation commit: `92aad7b` (`DOCS-CATALOG-PRODUCTIZATION-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260901000100_catalog_productization_001_multilingual_catalog.sql`.
 - Linked migration history is aligned through `20260901000100`.
 - ACCOUNTING-001A status: `READY`.
@@ -24,6 +24,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-UX-005 status: `READY`; no new migration was required.
 - TERMINAL-UX-006 status: `READY`; no new migration was required.
 - CATALOG-PRODUCTIZATION-001 status: `READY`; additive migration `20260901000100_catalog_productization_001_multilingual_catalog.sql` is applied and aligned.
+- SEGMENTS-UX-001 status: `READY`; no migration was required and segment domain semantics are unchanged.
 
 ## Completed Major Modules
 
@@ -33,7 +34,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
 | Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
 | Catalog | Canonical tenant service/category administration is exposed at `/[locale]/app/settings/catalog`. Owner/Manager can manage stable-keyed families and services, optional IT/ES/EN/FR/DE presentation, locale-aware A-Z/Z-A or manual ordering, safe archive/reactivation and preview-confirmed UTF-8 CSV exchange without changing identity, pricing, segment/media relationships or historical snapshots. Terminal and Portal resolve the same localized presentation and canonical media paths. |
-| Catalog Segments | Tenant customer segment catalog visibility/orderability complete. |
+| Catalog Segments | Tenant customer segment catalog visibility/orderability is complete and directly discoverable from Settings. Management uses compact one-at-a-time segment editors, active/inactive quick navigation, on-demand creation and searchable category/service selectors with safe batch selection. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
 | Customer Lifecycle | Safe activation/deactivation lifecycle and dependent-access behavior complete. |
@@ -79,6 +80,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Each tenant service/category keeps one canonical identity with optional IT/ES/EN/FR/DE presentation. Display fallback is requested locale, then EN, then canonical service/category text; no machine translation or duplicate localized service records are created.
 - Existing tenants retain manual catalog ordering. Future organizations default to locale-aware A-Z; tenants can choose A-Z, Z-A or manual order without changing stable service/category identity.
 - Catalog CSV export/import is UTF-8 and Owner/Manager-only. Import requires a non-mutating preview followed by explicit confirmation and atomic server reconciliation by tenant-scoped service UUID/code. Missing rows, blank translations and blank media references are non-destructive; price fields are intentionally excluded.
+- Customer Segments remains at `/[locale]/app/settings/catalog/segments` and is now linked directly from Settings when the existing entitlement permits it. Compact cards summarize category/service counts and active/Portal status; filtering and batch selection preserve the established save action, eligibility, assignment, pricing and tenant-isolation semantics.
 - Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
 - Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
