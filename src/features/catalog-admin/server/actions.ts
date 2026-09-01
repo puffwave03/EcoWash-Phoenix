@@ -5,10 +5,14 @@ import { validateBrandMediaFile } from "@/features/branding/validation";
 import type { CatalogAdminActionState } from "@/features/catalog-admin/types";
 import {
   parseBulkCatalogForm,
+  parseCategoryTranslations,
   parseCatalogCategoryForm,
   parseCatalogServiceForm,
   parseNewCatalogCategoryForm,
+  parseServiceTranslations,
 } from "@/features/catalog-admin/validation";
+import { CATALOG_ORDER_MODES, type CatalogOrderMode } from "@/features/catalog-productization/types";
+import { routing } from "@/i18n/routing";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -26,11 +30,13 @@ function fail(
 }
 
 function revalidateCatalog(locale: string) {
-  revalidatePath(`/${locale}/app/settings/catalog`);
-  revalidatePath(`/${locale}/portal`);
-  revalidatePath(`/${locale}/portal/requests/new`);
-  revalidatePath(`/${locale}/app/services`);
-  revalidatePath(`/${locale}/app/shop`);
+  for (const activeLocale of new Set([locale, ...routing.locales])) {
+    revalidatePath(`/${activeLocale}/app/settings/catalog`);
+    revalidatePath(`/${activeLocale}/portal`);
+    revalidatePath(`/${activeLocale}/portal/requests/new`);
+    revalidatePath(`/${activeLocale}/app/services`);
+    revalidatePath(`/${activeLocale}/app/shop`);
+  }
 }
 
 async function activeCategoryExists(
@@ -101,6 +107,7 @@ export async function saveCatalogServiceAction(
   const { membership, user } = await requireOwnerOrManager(locale);
   const parsed = parseCatalogServiceForm(formData);
   if (!parsed.valid) return fail(parsed.fieldErrors);
+  const translations = parseServiceTranslations(formData);
 
   const image = await validateBrandMediaFile(formData.get("image"));
   if (!image.valid) return fail({ image: "invalid" });
@@ -156,6 +163,19 @@ export async function saveCatalogServiceAction(
     return fail({}, error.code === "42703" ? "migration" : "generic");
   }
 
+  const translationRows = Object.entries(translations).map(([translationLocale, translation]) => ({
+    description: translation.description || null,
+    locale: translationLocale,
+    name: translation.name,
+    organization_id: membership.organization.id,
+    service_id: parsed.input.serviceId,
+  }));
+  if (translationRows.length > 0) {
+    const { error: translationError } = await supabase.from("service_catalog_translations")
+      .upsert(translationRows, { onConflict: "organization_id,service_id,locale" });
+    if (translationError) return fail({}, translationError.code === "42P01" ? "migration" : "generic");
+  }
+
   if (oldManagedPath && oldManagedPath !== nextImagePath) await removeMedia(supabase, oldManagedPath);
   revalidateCatalog(locale);
   return { ...initialState, success: true };
@@ -170,6 +190,7 @@ export async function saveCatalogCategoryAction(
   const { membership } = await requireOwnerOrManager(locale);
   const parsed = parseCatalogCategoryForm(formData);
   if (!parsed.valid) return fail(parsed.fieldErrors);
+  const translations = parseCategoryTranslations(formData);
 
   const image = await validateBrandMediaFile(formData.get("image"));
   if (!image.valid) return fail({ image: "invalid" });
@@ -214,6 +235,18 @@ export async function saveCatalogCategoryAction(
     console.error("Catalog category save failed", error.code);
     await removeMedia(supabase, uploadedPath);
     return fail({}, error.code === "42703" ? "migration" : "generic");
+  }
+
+  const translationRows = Object.entries(translations).map(([translationLocale, title]) => ({
+    category_key: parsed.input.categoryKey,
+    locale: translationLocale,
+    organization_id: membership.organization.id,
+    title,
+  }));
+  if (translationRows.length > 0) {
+    const { error: translationError } = await supabase.from("category_catalog_translations")
+      .upsert(translationRows, { onConflict: "organization_id,category_key,locale" });
+    if (translationError) return fail({}, translationError.code === "42P01" ? "migration" : "generic");
   }
 
   if (oldManagedPath && oldManagedPath !== nextImagePath) await removeMedia(supabase, oldManagedPath);
@@ -297,6 +330,40 @@ export async function archiveCatalogServiceAction(
     .update({ customer_orderable: false, is_active: false, portal_visible: false, updated_by: user.id })
     .eq("organization_id", membership.organization.id).eq("id", serviceId).select("id").maybeSingle();
   if (error || !data) return fail({}, error?.code === "42703" ? "migration" : "generic");
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
+}
+
+export async function reactivateCatalogServiceAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  const { membership, user } = await requireOwnerOrManager(locale);
+  const serviceId = String(formData.get("serviceId") ?? "").trim();
+  if (!/^[0-9a-f-]{36}$/i.test(serviceId)) return fail({ serviceId: "invalid" });
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("services")
+    .update({ is_active: true, updated_by: user.id })
+    .eq("organization_id", membership.organization.id).eq("id", serviceId).select("id").maybeSingle();
+  if (error || !data) return fail({}, error?.code === "42703" ? "migration" : "generic");
+  revalidateCatalog(locale);
+  return { ...initialState, success: true };
+}
+
+export async function setCatalogOrderModeAction(
+  locale: string,
+  _state: CatalogAdminActionState = initialState,
+  formData: FormData,
+): Promise<CatalogAdminActionState> {
+  void _state;
+  await requireOwnerOrManager(locale);
+  const orderMode = String(formData.get("orderMode") ?? "") as CatalogOrderMode;
+  if (!CATALOG_ORDER_MODES.includes(orderMode)) return fail({ orderMode: "invalid" });
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("set_catalog_order_mode", { target_mode: orderMode });
+  if (error) return fail({}, error.code === "42883" ? "migration" : "generic");
   revalidateCatalog(locale);
   return { ...initialState, success: true };
 }

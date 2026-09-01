@@ -1283,6 +1283,28 @@
       "methods": {"bank_transfer": "Überweisung", "card": "Karte", "cash": "Bar", "other": "Andere"}, "paymentStatuses": {"paid": "Bezahlt", "unpaid": "Offen"}, "statuses": {"draft": "Entwurf", "posted": "Gebucht", "void": "Storniert"}
     }
   },
+  "catalogProductization": {
+    "applyImport": "Import anwenden",
+    "cancelHelp": "Das Verlassen dieser Vorschau ändert den Katalog nicht.",
+    "confirmImport": "Import bestätigen",
+    "export": "Katalog exportieren",
+    "exportHelp": "Laden Sie eine tenantbezogene UTF-8-CSV mit stabilen Identitäten und allen Übersetzungen herunter. Preise sind bewusst ausgeschlossen.",
+    "import": "Katalog importieren / aktualisieren",
+    "importError": "Die Katalogdatei konnte nicht validiert oder angewendet werden. Prüfen Sie die Vorschaudetails.",
+    "importHelp": "Verwenden Sie eine Phoenix-Katalog-CSV. Die Vorschau ist Pflicht; fehlende Zeilen löschen oder archivieren keine Services.",
+    "importSuccess": "Katalogimport erfolgreich angewendet.",
+    "modes": { "alphabetical_asc": "Alphabetisch A–Z", "alphabetical_desc": "Alphabetisch Z–A", "manual": "Manuell" },
+    "ordering": "Service-Reihenfolge",
+    "orderingHelp": "Alphabetische Modi verwenden den Namen der aktiven Sprache innerhalb jeder Familie. Manuell verwendet die gespeicherte Reihenfolge.",
+    "preview": "Änderungen prüfen",
+    "previewSummary": "{unchanged} unverändert · {updates} Aktualisierungen · {creates} neu · {errors} Fehler · {archives} archiviert",
+    "reactivate": "Service reaktivieren",
+    "save": "Reihenfolge speichern",
+    "saved": "Reihenfolge gespeichert.",
+    "title": "Katalogwerkzeuge",
+    "translations": "Sprachen / Übersetzungen",
+    "translationsHelp": "Leere Übersetzungsfelder bewahren vorhandene Werte und verwenden den deterministischen Katalog-Fallback."
+  },
   "catalogAdmin": {
     "eyebrow": "Kundenerlebnis",
     "title": "Kundenkatalog",

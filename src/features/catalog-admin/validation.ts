@@ -1,4 +1,6 @@
 import { BRAND_FOCAL_POSITIONS, type BrandFocalPosition } from "@/features/branding/types";
+import { routing } from "@/i18n/routing";
+import type { CatalogTranslations, CategoryTranslations } from "@/features/catalog-productization/types";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -18,6 +20,25 @@ export function isServiceCategoryKey(value: string) {
 export function categoryKeyFromTitle(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 64);
+}
+
+export function parseServiceTranslations(formData: FormData) {
+  const translations: CatalogTranslations = {};
+  for (const locale of routing.locales) {
+    const name = text(formData, `serviceName_${locale}`, 160);
+    const description = text(formData, `serviceDescription_${locale}`, 1000);
+    if (name) translations[locale] = { description, name };
+  }
+  return translations;
+}
+
+export function parseCategoryTranslations(formData: FormData) {
+  const translations: CategoryTranslations = {};
+  for (const locale of routing.locales) {
+    const title = text(formData, `categoryTitle_${locale}`, 120);
+    if (title) translations[locale] = title;
+  }
+  return translations;
 }
 
 export function parseNewCatalogCategoryForm(formData: FormData) {

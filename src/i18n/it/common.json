@@ -1301,6 +1301,28 @@
       "statuses": {"draft": "Bozza", "posted": "Registrata", "void": "Annullata"}
     }
   },
+  "catalogProductization": {
+    "applyImport": "Applica importazione",
+    "cancelHelp": "Uscire da questa anteprima non modifica il catalogo.",
+    "confirmImport": "Conferma importazione",
+    "export": "Esporta catalogo",
+    "exportHelp": "Scarica un CSV UTF-8 del tenant con identità stabili e tutte le traduzioni. I prezzi sono esclusi intenzionalmente.",
+    "import": "Importa / Aggiorna catalogo",
+    "importError": "Impossibile validare o applicare il file catalogo. Controlla i dettagli dell’anteprima.",
+    "importHelp": "Usa un CSV catalogo Phoenix. L’anteprima è obbligatoria; le righe mancanti non eliminano né archiviano servizi.",
+    "importSuccess": "Importazione catalogo applicata correttamente.",
+    "modes": { "alphabetical_asc": "Alfabetico A–Z", "alphabetical_desc": "Alfabetico Z–A", "manual": "Manuale" },
+    "ordering": "Ordine dei servizi",
+    "orderingHelp": "Le modalità alfabetiche usano il nome della lingua attiva in ogni famiglia. Manuale usa l’ordine salvato.",
+    "preview": "Anteprima modifiche",
+    "previewSummary": "{unchanged} invariati · {updates} aggiornamenti · {creates} nuovi · {errors} errori · {archives} archiviati",
+    "reactivate": "Riattiva servizio",
+    "save": "Salva ordine",
+    "saved": "Ordine salvato.",
+    "title": "Strumenti catalogo",
+    "translations": "Lingue / Traduzioni",
+    "translationsHelp": "I campi traduzione vuoti preservano i valori esistenti e usano il fallback deterministico del catalogo."
+  },
   "catalogAdmin": {
     "eyebrow": "Esperienza cliente",
     "title": "Catalogo cliente",

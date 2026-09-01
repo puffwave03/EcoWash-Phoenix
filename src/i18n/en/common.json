@@ -1315,6 +1315,28 @@
       "statuses": {"draft": "Draft", "posted": "Posted", "void": "Void"}
     }
   },
+  "catalogProductization": {
+    "applyImport": "Apply import",
+    "cancelHelp": "Leaving this preview makes no catalog changes.",
+    "confirmImport": "Confirm import",
+    "export": "Export catalog",
+    "exportHelp": "Download a tenant-scoped UTF-8 CSV with stable identities and all translations. Prices are intentionally excluded.",
+    "import": "Import / Update catalog",
+    "importError": "The catalog file could not be validated or applied. Review the preview details.",
+    "importHelp": "Use a Phoenix catalog CSV. Preview is mandatory; missing rows never delete or archive services.",
+    "importSuccess": "Catalog import applied successfully.",
+    "modes": { "alphabetical_asc": "Alphabetical A–Z", "alphabetical_desc": "Alphabetical Z–A", "manual": "Manual" },
+    "ordering": "Service ordering",
+    "orderingHelp": "Alphabetical modes use the active locale name within each family. Manual uses the saved display order.",
+    "preview": "Preview changes",
+    "previewSummary": "{unchanged} unchanged · {updates} updates · {creates} creates · {errors} errors · {archives} archives",
+    "reactivate": "Reactivate service",
+    "save": "Save ordering",
+    "saved": "Ordering saved.",
+    "title": "Catalog tools",
+    "translations": "Languages / Translations",
+    "translationsHelp": "Blank translation fields preserve existing values and use the deterministic catalog fallback."
+  },
   "catalogAdmin": {
     "eyebrow": "Customer experience",
     "title": "Customer catalog",

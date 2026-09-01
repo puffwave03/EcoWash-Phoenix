@@ -1283,6 +1283,28 @@
       "methods": {"bank_transfer": "Virement", "card": "Carte", "cash": "Espèces", "other": "Autre"}, "paymentStatuses": {"paid": "Payée", "unpaid": "À payer"}, "statuses": {"draft": "Brouillon", "posted": "Comptabilisée", "void": "Annulée"}
     }
   },
+  "catalogProductization": {
+    "applyImport": "Appliquer l’import",
+    "cancelHelp": "Quitter cet aperçu ne modifie pas le catalogue.",
+    "confirmImport": "Confirmer l’import",
+    "export": "Exporter le catalogue",
+    "exportHelp": "Téléchargez un CSV UTF-8 du tenant avec les identités stables et toutes les traductions. Les prix sont volontairement exclus.",
+    "import": "Importer / Mettre à jour le catalogue",
+    "importError": "Le fichier catalogue n’a pas pu être validé ou appliqué. Vérifiez les détails de l’aperçu.",
+    "importHelp": "Utilisez un CSV catalogue Phoenix. L’aperçu est obligatoire ; les lignes absentes ne suppriment ni n’archivent aucun service.",
+    "importSuccess": "Import du catalogue appliqué avec succès.",
+    "modes": { "alphabetical_asc": "Alphabétique A–Z", "alphabetical_desc": "Alphabétique Z–A", "manual": "Manuel" },
+    "ordering": "Ordre des services",
+    "orderingHelp": "Les modes alphabétiques utilisent le nom de la langue active dans chaque famille. Manuel utilise l’ordre enregistré.",
+    "preview": "Aperçu des modifications",
+    "previewSummary": "{unchanged} inchangés · {updates} mises à jour · {creates} créations · {errors} erreurs · {archives} archivages",
+    "reactivate": "Réactiver le service",
+    "save": "Enregistrer l’ordre",
+    "saved": "Ordre enregistré.",
+    "title": "Outils du catalogue",
+    "translations": "Langues / Traductions",
+    "translationsHelp": "Les champs de traduction vides conservent les valeurs existantes et utilisent le repli déterministe du catalogue."
+  },
   "catalogAdmin": {
     "eyebrow": "Expérience client",
     "title": "Catalogue client",

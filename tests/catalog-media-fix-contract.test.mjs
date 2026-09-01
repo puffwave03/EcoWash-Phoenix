@@ -42,7 +42,7 @@ test("Terminal retrieves service media with tenant isolation and renders it on s
     source("src/features/shop-terminal/server/queries.ts"),
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
   ]);
-  assert.match(queries, /select\("id, portal_image_path"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*in\("id", services\.map/);
+  assert.match(queries, /select\("id, portal_image_path, portal_sort_order"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*in\("id", services\.map/);
   assert.match(queries, /imageUrl: serviceImageUrl/);
   assert.match(ui, /src=\{service\.imageUrl\}/);
 });

@@ -10,6 +10,8 @@ import type {
 import { listServices } from "@/features/services/server/queries";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { AppLocale } from "@/i18n/routing";
+import type { CatalogOrderMode } from "@/features/catalog-productization/types";
 
 type ServiceRow = {
   customer_orderable: boolean;
@@ -33,6 +35,9 @@ type CategoryRow = {
   portal_visible: boolean;
 };
 
+type ServiceTranslationRow = { description: string | null; locale: AppLocale; name: string; service_id: string };
+type CategoryTranslationRow = { category_key: string; locale: AppLocale; title: string };
+
 function storageUrl(
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
   path: string | null,
@@ -45,7 +50,7 @@ function storageUrl(
 export async function getCatalogAdminSettings(locale: string): Promise<CatalogAdminSettings> {
   const { membership } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
-  const [internalServices, servicesResult, categoriesResult] = await Promise.all([
+  const [internalServices, servicesResult, categoriesResult, serviceTranslationsResult, categoryTranslationsResult, organizationResult] = await Promise.all([
     listServices(locale, "all"),
     supabase
       .from("services")
@@ -60,11 +65,36 @@ export async function getCatalogAdminSettings(locale: string): Promise<CatalogAd
       .eq("organization_id", membership.organization.id)
       .order("portal_sort_order", { ascending: true })
       .returns<CategoryRow[]>(),
+    supabase.from("service_catalog_translations")
+      .select("service_id, locale, name, description")
+      .eq("organization_id", membership.organization.id)
+      .returns<ServiceTranslationRow[]>(),
+    supabase.from("category_catalog_translations")
+      .select("category_key, locale, title")
+      .eq("organization_id", membership.organization.id)
+      .returns<CategoryTranslationRow[]>(),
+    supabase.from("organizations")
+      .select("catalog_order_mode")
+      .eq("id", membership.organization.id)
+      .maybeSingle<{ catalog_order_mode: CatalogOrderMode }>(),
   ]);
 
-  if (servicesResult.error || categoriesResult.error) {
-    console.error("Catalog administration query unavailable", servicesResult.error?.code ?? categoriesResult.error?.code);
-    return { available: false, categories: [], services: [] };
+  if (servicesResult.error || categoriesResult.error || serviceTranslationsResult.error || categoryTranslationsResult.error || organizationResult.error || !organizationResult.data) {
+    console.error("Catalog administration query unavailable", servicesResult.error?.code ?? categoriesResult.error?.code ?? serviceTranslationsResult.error?.code ?? categoryTranslationsResult.error?.code ?? organizationResult.error?.code);
+    return { available: false, categories: [], orderMode: "manual", services: [] };
+  }
+
+  const serviceTranslations = new Map<string, CatalogAdminService["translations"]>();
+  for (const translation of serviceTranslationsResult.data ?? []) {
+    const current = serviceTranslations.get(translation.service_id) ?? {};
+    current[translation.locale] = { description: translation.description ?? "", name: translation.name };
+    serviceTranslations.set(translation.service_id, current);
+  }
+  const categoryTranslations = new Map<string, CatalogAdminCategory["translations"]>();
+  for (const translation of categoryTranslationsResult.data ?? []) {
+    const current = categoryTranslations.get(translation.category_key) ?? {};
+    current[translation.locale] = translation.title;
+    categoryTranslations.set(translation.category_key, current);
   }
 
   const rowsByKey = new Map((categoriesResult.data ?? []).map((row) => [row.category_key, row]));
@@ -87,6 +117,7 @@ export async function getCatalogAdminSettings(locale: string): Promise<CatalogAd
       portalSortOrder: row?.portal_sort_order ?? index,
       portalTitle: row?.portal_title ?? "",
       portalVisible: row?.portal_visible ?? true,
+      translations: categoryTranslations.get(categoryKey) ?? {},
     };
   }).sort((left, right) => left.portalSortOrder - right.portalSortOrder);
 
@@ -113,8 +144,9 @@ export async function getCatalogAdminSettings(locale: string): Promise<CatalogAd
       portalVisible: row.portal_visible,
       priceIsFrom: service.priceIsFrom,
       unitType: service.unitType,
+      translations: serviceTranslations.get(row.id) ?? {},
     };
   });
 
-  return { available: true, categories, services };
+  return { available: true, categories, orderMode: organizationResult.data.catalog_order_mode, services };
 }

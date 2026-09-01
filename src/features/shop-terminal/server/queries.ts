@@ -3,6 +3,8 @@ import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import type { ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
+import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
+import { sortCatalogPresentation } from "@/features/catalog-productization/presentation";
 
 type ServiceRow = {
   amount: number;
@@ -104,28 +106,31 @@ export async function listShopServices(
   const services = (servicesResult.data ?? []) as unknown as ServiceRow[];
   const mediaResult = services.length > 0
     ? await supabase.from("services")
-      .select("id, portal_image_path")
+      .select("id, portal_image_path, portal_sort_order")
       .eq("organization_id", membership.organization.id)
       .in("id", services.map((service) => service.id))
-      .returns<{ id: string; portal_image_path: string | null }[]>()
+      .returns<{ id: string; portal_image_path: string | null; portal_sort_order: number }[]>()
     : { data: [], error: null };
   if (mediaResult.error) console.error("Shop service media query failed", mediaResult.error.code);
 
   const categoryTitles = new Map((categoriesResult.data ?? []).map((category) => [category.category_key, category.portal_title]));
   const imagePaths = new Map((mediaResult.data ?? []).map((service) => [service.id, service.portal_image_path]));
-  return services.map((service) => ({
+  const presentation = await loadCatalogPresentation(supabase, locale, services.map((service) => service.id));
+  const mode = presentation.values().next().value?.orderMode ?? "manual";
+  const mapped = services.map((service) => ({
     amount: Number(service.amount),
-    category: service.category ? categoryTitles.get(service.category) || null : null,
+    category: presentation.get(service.id)?.categoryTitle ?? (service.category ? categoryTitles.get(service.category) || null : null),
     categoryKey: service.category,
     code: service.code,
     currency: service.currency,
-    description: service.description,
+    description: presentation.get(service.id)?.description ?? service.description,
     id: service.id,
     imageUrl: serviceImageUrl(supabase, imagePaths.get(service.id) ?? null),
-    name: service.name,
+    name: presentation.get(service.id)?.name ?? service.name,
     priceIsFrom: service.price_is_from,
     pricingSegmentName: service.pricing_segment_name,
     pricingSource: service.pricing_source,
     unitType: service.unit_type,
   }));
+  return sortCatalogPresentation(mapped, presentation, locale, mode);
 }

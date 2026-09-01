@@ -9,6 +9,7 @@
     "test:catalog-naming": "node --test tests/catalog-naming-contract.test.mjs",
     "test:catalog-structure": "node --test tests/catalog-structure-contract.test.mjs",
     "test:catalog-media": "node --test tests/catalog-media-fix-contract.test.mjs",
+    "test:catalog-productization": "node --test tests/catalog-productization-contract.test.mjs",
     "test:accounting": "node --test tests/accounting-read-model.test.mjs",
     "test:accounting-expenses": "node --test tests/accounting-expenses-contract.test.mjs",
     "test:accounting-workspace": "node --test tests/accounting-workspace-contract.test.mjs",

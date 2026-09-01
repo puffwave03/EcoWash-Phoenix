@@ -1283,6 +1283,28 @@
       "methods": {"bank_transfer": "Transferencia", "card": "Tarjeta", "cash": "Efectivo", "other": "Otro"}, "paymentStatuses": {"paid": "Pagado", "unpaid": "Pendiente"}, "statuses": {"draft": "Borrador", "posted": "Contabilizado", "void": "Anulado"}
     }
   },
+  "catalogProductization": {
+    "applyImport": "Aplicar importación",
+    "cancelHelp": "Salir de esta vista previa no modifica el catálogo.",
+    "confirmImport": "Confirmar importación",
+    "export": "Exportar catálogo",
+    "exportHelp": "Descarga un CSV UTF-8 del tenant con identidades estables y todas las traducciones. Los precios se excluyen intencionadamente.",
+    "import": "Importar / Actualizar catálogo",
+    "importError": "No se pudo validar o aplicar el archivo del catálogo. Revisa los detalles de la vista previa.",
+    "importHelp": "Usa un CSV de catálogo Phoenix. La vista previa es obligatoria; las filas ausentes nunca eliminan ni archivan servicios.",
+    "importSuccess": "Importación del catálogo aplicada correctamente.",
+    "modes": { "alphabetical_asc": "Alfabético A–Z", "alphabetical_desc": "Alfabético Z–A", "manual": "Manual" },
+    "ordering": "Orden de servicios",
+    "orderingHelp": "Los modos alfabéticos usan el nombre del idioma activo dentro de cada familia. Manual usa el orden guardado.",
+    "preview": "Vista previa de cambios",
+    "previewSummary": "{unchanged} sin cambios · {updates} actualizaciones · {creates} nuevos · {errors} errores · {archives} archivados",
+    "reactivate": "Reactivar servicio",
+    "save": "Guardar orden",
+    "saved": "Orden guardado.",
+    "title": "Herramientas del catálogo",
+    "translations": "Idiomas / Traducciones",
+    "translationsHelp": "Los campos de traducción vacíos conservan los valores existentes y usan el fallback determinista del catálogo."
+  },
   "catalogAdmin": {
     "eyebrow": "Experiencia del cliente",
     "title": "Catálogo cliente",

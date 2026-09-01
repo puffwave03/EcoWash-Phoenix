@@ -35,7 +35,7 @@ test("a name-only save keeps identity fields and the active price records untouc
   assert.match(action, /\.eq\("organization_id", membership\.organization\.id\)[\s\S]*\.eq\("id", serviceId\)[\s\S]*\.select\("id"\)/);
 });
 
-test("live catalog consumers read the canonical current service name", async () => {
+test("live catalog consumers use localized presentation with canonical current-name fallback", async () => {
   const [catalog, terminal, portal, orders] = await Promise.all([
     source("src/features/catalog-admin/server/queries.ts"),
     source("src/features/shop-terminal/server/queries.ts"),
@@ -43,8 +43,8 @@ test("live catalog consumers read the canonical current service name", async () 
     source("src/features/services/server/queries.ts"),
   ]);
   assert.match(catalog, /name: service\.name/);
-  assert.match(terminal, /name: service\.name/);
-  assert.match(portal, /name: service\.name/);
+  assert.match(terminal, /name: presentation\.get\(service\.id\)\?\.name \?\? service\.name/);
+  assert.match(portal, /name: presentation\.get\(service\.id\)\?\.name \?\? service\.name/);
   assert.match(orders, /id, code, name, description/);
 });
 

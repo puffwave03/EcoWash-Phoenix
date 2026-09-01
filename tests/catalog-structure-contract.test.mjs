@@ -68,7 +68,8 @@ test("service moves update internal and Portal category together without changin
   assert.match(serviceSave, /portal_category_key: parsed\.input\.portalCategoryKey/);
   assert.match(serviceSave, /\.eq\("organization_id", membership\.organization\.id\)/);
   assert.match(serviceSave, /\.eq\("id", parsed\.input\.serviceId\)/);
-  assert.doesNotMatch(serviceSave, /code:|id:/);
+  const serviceMutation = serviceSave.slice(serviceSave.indexOf(".update({"), serviceSave.indexOf("    })", serviceSave.indexOf(".update({")));
+  assert.doesNotMatch(serviceMutation, /\bcode:|\bid:/);
 });
 
 test("service retirement is archive-only and preserves dependent records", async () => {

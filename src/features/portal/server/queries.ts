@@ -20,6 +20,8 @@ import type {
   CustomerPortalOrderRequestOptions,
 } from "@/features/portal/types";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
+import { sortCatalogPresentation } from "@/features/catalog-productization/presentation";
 
 type PortalAccessRow = {
   access_id: string;
@@ -423,6 +425,12 @@ export async function getCustomerPortalOrderRequestOptions(
 
   const serviceRows = (servicesResult.data ?? []) as PortalOrderServiceRow[];
   const segmentRow = serviceRows.find((service) => service.segment_id && service.segment_name) ?? null;
+  const presentation = await loadCatalogPresentation(supabase, locale, serviceRows.map((service) => service.id));
+  for (const service of serviceRows) {
+    const current = presentation.get(service.id);
+    if (current) presentation.set(service.id, { ...current, manualSortOrder: service.segment_sort_order });
+  }
+  const orderMode = presentation.values().next().value?.orderMode ?? "manual";
 
   return {
     context: contextResult.data
@@ -450,16 +458,16 @@ export async function getCustomerPortalOrderRequestOptions(
           name: segmentRow.segment_name,
         }
       : null,
-    services: serviceRows.map((service) => ({
+    services: sortCatalogPresentation(serviceRows.map((service) => ({
       amount: Number(service.amount),
       category: service.category,
       categoryFeatured: service.category_featured,
-      categoryTitle: service.category_title,
+      categoryTitle: presentation.get(service.id)?.categoryTitle ?? service.category_title,
       currency: service.currency,
       customerOrderable: service.customer_orderable,
-      description: service.description,
+      description: presentation.get(service.id)?.description ?? service.description,
       id: service.id,
-      name: service.name,
+      name: presentation.get(service.id)?.name ?? service.name,
       portalFeatured: service.portal_featured,
       portalImagePath: service.portal_image_path?.startsWith("/")
         ? service.portal_image_path
@@ -472,7 +480,7 @@ export async function getCustomerPortalOrderRequestOptions(
       segmentMatch: service.segment_match,
       segmentSortOrder: service.segment_sort_order,
       unitType: service.unit_type,
-    })),
+    })), presentation, locale, orderMode),
   };
 }
 

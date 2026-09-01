@@ -1,5 +1,6 @@
 import type { BrandFocalPosition } from "@/features/branding/types";
 import type { ServiceUnitType } from "@/features/services/types";
+import type { CatalogOrderMode, CatalogTranslations, CategoryTranslations } from "@/features/catalog-productization/types";
 
 export type CatalogAdminService = {
   amount: number | null;
@@ -20,6 +21,7 @@ export type CatalogAdminService = {
   portalVisible: boolean;
   priceIsFrom: boolean;
   unitType: ServiceUnitType;
+  translations: CatalogTranslations;
 };
 
 export type CatalogAdminCategory = {
@@ -33,11 +35,13 @@ export type CatalogAdminCategory = {
   portalSortOrder: number;
   portalTitle: string;
   portalVisible: boolean;
+  translations: CategoryTranslations;
 };
 
 export type CatalogAdminSettings = {
   available: boolean;
   categories: CatalogAdminCategory[];
+  orderMode: CatalogOrderMode;
   services: CatalogAdminService[];
 };
 
