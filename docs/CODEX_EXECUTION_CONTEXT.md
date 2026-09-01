@@ -39,7 +39,7 @@ Read this file with `docs/CODEX_CURRENT_BASELINE.md` before implementation. The 
 
 Reuse these existing sources of truth:
 
-- Catalog: tenant services, service prices, visibility and orderability rules.
+- Catalog: stable tenant service/category identities, tenant-authored locale presentation, service prices, visibility, orderability and lifecycle rules.
 - Effective pricing: the centralized resolver, including catalog segments, segment overrides and safe base-price fallback.
 - Customers: canonical tenant customer records and established lifecycle state.
 - Orders: canonical orders/items/history and immutable monetary snapshots.
@@ -94,6 +94,8 @@ Never create a parallel domain, pricing, order, payment, POS, invoice, terminal,
 
 - System UI supports IT, EN, ES, FR and DE with matching translation-key structures.
 - Do not auto-translate tenant-entered catalog or service data.
+- Catalog translations remain optional tenant-owned presentation over one canonical service/category identity; fallback must never create duplicate services.
+- Bulk catalog exchange must reconcile by tenant-scoped stable ID/code, require preview before atomic confirmation, preserve blank/missing values non-destructively and exclude unsafe pricing mutation.
 - Use the active organization timezone for business-day and user-facing time behavior.
 - Use canonical locale/currency formatting; do not show raw UTC timestamps in user-facing UI.
 

@@ -2,18 +2,18 @@
 
 Status: Active
 
-Recorded: 2026-08-31
+Recorded: 2026-09-01
 Purpose: Short mutable product baseline for the next Codex task
 
 Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each completed product task.
 
 ## Current Git
 
-- Product baseline before this docs update: `f7798f5` (`TERMINAL-UX-006`).
-- Latest relevant application commit: `f7798f5` (`TERMINAL-UX-006`).
-- Previous completed product documentation commit: `f09d88e` (`DOCS-TERMINAL-UX-005`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260830000200_accounting_001b_expenses_suppliers.sql`.
-- ACCOUNTING-001B linked migration history is aligned through `20260830000200`.
+- Product baseline before this docs update: `688ecfd` (`CATALOG-PRODUCTIZATION-001`).
+- Latest relevant application commit: `688ecfd` (`CATALOG-PRODUCTIZATION-001`).
+- Previous completed product documentation commit: `36660e3` (`DOCS-TERMINAL-UX-006`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260901000100_catalog_productization_001_multilingual_catalog.sql`.
+- Linked migration history is aligned through `20260901000100`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - ACCOUNTING-001C status: `READY`; no new migration was required.
@@ -23,6 +23,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-I18N-FIX-001 status: `READY`; no new migration was required.
 - TERMINAL-UX-005 status: `READY`; no new migration was required.
 - TERMINAL-UX-006 status: `READY`; no new migration was required.
+- CATALOG-PRODUCTIZATION-001 status: `READY`; additive migration `20260901000100_catalog_productization_001_multilingual_catalog.sql` is applied and aligned.
 
 ## Completed Major Modules
 
@@ -31,7 +32,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Public Site | Multilingual IT/EN/ES/FR/DE site is release-ready; deployment/domain decision remains deferred. |
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
 | Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
-| Catalog | Canonical tenant service/category administration complete and exposed at `/[locale]/app/settings/catalog`. Owner/Manager can create, rename, reorder and safely archive stable-keyed service families, move services between them, rename services and archive services without changing identity, pricing, segment/media relationships or historical snapshots. Tenant-scoped service images persist across edits and render from the canonical media path in Catalog admin, Shop Terminal and Customer Portal. Structural family controls remain separate from customer-facing presentation. |
+| Catalog | Canonical tenant service/category administration is exposed at `/[locale]/app/settings/catalog`. Owner/Manager can manage stable-keyed families and services, optional IT/ES/EN/FR/DE presentation, locale-aware A-Z/Z-A or manual ordering, safe archive/reactivation and preview-confirmed UTF-8 CSV exchange without changing identity, pricing, segment/media relationships or historical snapshots. Terminal and Portal resolve the same localized presentation and canonical media paths. |
 | Catalog Segments | Tenant customer segment catalog visibility/orderability complete. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
 | Customer Account | Canonical order/payment-derived financial account complete. |
@@ -75,6 +76,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Regular and walk-in customers are prompted only for fields missing from the current Billing issue model.
 - Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
+- Each tenant service/category keeps one canonical identity with optional IT/ES/EN/FR/DE presentation. Display fallback is requested locale, then EN, then canonical service/category text; no machine translation or duplicate localized service records are created.
+- Existing tenants retain manual catalog ordering. Future organizations default to locale-aware A-Z; tenants can choose A-Z, Z-A or manual order without changing stable service/category identity.
+- Catalog CSV export/import is UTF-8 and Owner/Manager-only. Import requires a non-mutating preview followed by explicit confirmation and atomic server reconciliation by tenant-scoped service UUID/code. Missing rows, blank translations and blank media references are non-destructive; price fields are intentionally excluded.
 - Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
 - Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
@@ -116,4 +120,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - ACCOUNTING-001B rollback proof reconciled EUR 2,100 of posted expenses exactly: Rent 1,200, Energy 500, Laundry products 300 and Maintenance 100; Supplier A totaled 300, Manager access passed, Staff/cross-tenant access was denied and all fixtures rolled back to zero.
 - CATALOG-MEDIA-FIX-001 linked proof uploaded and reloaded a controlled service image, preserved it through an edit without a file, replaced it, retained service UUID/code and pricing, restored the original path and removed both temporary storage objects.
 - ACCOUNTING-001C linked rollback proof reconciled EUR 1,000 net sales, EUR 800 gross collected (EUR 300 cash + EUR 500 card), EUR 50 refunds, EUR 750 net collected, EUR 200 outstanding, EUR 600 posted expenses and EUR 400 operational result. It used canonical POS payment/refund RPCs and left zero fixtures.
+- CATALOG-PRODUCTIZATION-001 linked rollback proof updated a controlled existing service presentation, created and archived a controlled service, exercised non-destructive missing-row behavior, and confirmed unchanged UUID/code/unit/media, pricing, segment relations and order/invoice snapshots. The additive migration aligned locally/remotely and `persisted_fixture_count` returned `0`.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
