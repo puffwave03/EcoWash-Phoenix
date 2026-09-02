@@ -9,8 +9,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `7bcdefa` (`TERMINAL-CUSTOMER-UX-001B`).
-- Latest relevant application commit: `7bcdefa` (`TERMINAL-CUSTOMER-UX-001B shared walk-in customer model`).
+- Product baseline before this docs update: `53631b5` (`PORTAL-UX-MOBILE-CART-001`).
+- Latest relevant application commit: `53631b5` (`PORTAL-UX-MOBILE-CART-001 improve mobile service cart`).
 - Previous completed product documentation commit: `e748b00` (`DOCS-SEGMENTS-I18N-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260902000200_terminal_customer_ux_001b_shared_walk_in.sql`.
 - Linked migration history is aligned through `20260902000200`.
@@ -30,6 +30,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - SEGMENTS-I18N-FIX-001 status: `READY`; system category labels in both Segment selectors now follow the active locale, with custom-category fallback unchanged.
 - TERMINAL-CUSTOMER-UX-001A status: `READY`; UX-only foundation, no migration.
 - TERMINAL-CUSTOMER-UX-001B status: `READY`; new occasional visits reuse one tenant-scoped `WALKIN-SHARED` anchor and keep optional visitor identity on the order. Legacy walk-ins remain unchanged and promotion to a registered customer is deferred.
+- PORTAL-UX-MOBILE-CART-001 status: `READY`; client-side only, no migration. Mobile service cards share quantity controls and the existing cart state now powers a sticky summary and editable bottom sheet without changing Review or server business logic.
 
 ## Completed Major Modules
 
@@ -37,7 +38,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | --- | --- |
 | Public Site | Multilingual IT/EN/ES/FR/DE site is release-ready; deployment/domain decision remains deferred. |
 | Authentication / Context Switching | Auth recovery and protected routing complete; Platform Admin and tenant contexts switch without merging their authorization models. |
-| Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. |
+| Customer Portal | Secure portal, account access, order history and customer order request/pickup foundation complete. On mobile, all orderable cards expose consistent quantity controls and the current selection remains editable through a safe-area-aware sticky mini-cart and bottom sheet. |
 | Catalog | Canonical tenant service/category administration is exposed at `/[locale]/app/settings/catalog`. Owner/Manager can manage stable-keyed families and services, optional IT/ES/EN/FR/DE presentation, locale-aware A-Z/Z-A or manual ordering, safe archive/reactivation and preview-confirmed UTF-8 CSV exchange without changing identity, pricing, segment/media relationships or historical snapshots. Terminal and Portal resolve the same localized presentation and canonical media paths. |
 | Catalog Segments | Tenant customer segment catalog visibility/orderability is complete and directly discoverable from Settings. Management uses compact one-at-a-time segment editors, active/inactive quick navigation, on-demand creation and searchable locale-presented category/service selectors with safe batch selection. The expanded editor keeps its single save action sticky above mobile navigation. |
 | Segment Pricing | Central effective resolver supports segment override with organization/location base fallback and historical snapshots. |
