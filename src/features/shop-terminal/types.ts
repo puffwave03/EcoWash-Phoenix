@@ -25,6 +25,11 @@ export type ShopService = {
   unitType: ServiceUnitType;
 };
 
+export type ShopCatalogSelection = {
+  segmentName: string | null;
+  services: ShopService[];
+};
+
 export type ShopRecentOrder = {
   customerName: string;
   id: string;

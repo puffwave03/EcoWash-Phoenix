@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { listShopServices } from "@/features/shop-terminal/server/queries";
-import type { ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import type { ShopCatalogSelection, ShopCustomerState, ShopSubmitState } from "@/features/shop-terminal/types";
 import type { ShopCodeResolveResult } from "@/features/shop-terminal/types";
 import { parsePhoenixCode } from "@/features/barcode/payload";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
@@ -58,8 +58,8 @@ export async function loadShopServicesAction(
   locale: string,
   customerId: string,
   locationId: string | null,
-): Promise<ShopService[]> {
-  if (!UUID.test(customerId) || (locationId && !UUID.test(locationId))) return [];
+): Promise<ShopCatalogSelection> {
+  if (!UUID.test(customerId) || (locationId && !UUID.test(locationId))) return { segmentName: null, services: [] };
   return listShopServices(locale, customerId, locationId);
 }
 

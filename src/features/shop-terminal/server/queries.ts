@@ -2,7 +2,7 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import type { ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
+import type { ShopCatalogSelection, ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
 import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
 import { sortCatalogPresentation } from "@/features/catalog-productization/presentation";
 
@@ -83,10 +83,10 @@ export async function listShopServices(
   locale: string,
   customerId: string,
   locationId: string | null,
-): Promise<ShopService[]> {
+): Promise<ShopCatalogSelection> {
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const [servicesResult, categoriesResult] = await Promise.all([
+  const [servicesResult, categoriesResult, customerResult] = await Promise.all([
     supabase.rpc("list_shop_terminal_services", {
       target_customer_id: customerId,
       target_location_id: locationId,
@@ -96,12 +96,28 @@ export async function listShopServices(
       .eq("organization_id", membership.organization.id)
       .eq("is_active", true)
       .returns<{ category_key: string; portal_title: string | null }[]>(),
+    supabase.from("customers")
+      .select("catalog_segment_id")
+      .eq("organization_id", membership.organization.id)
+      .eq("id", customerId)
+      .eq("is_active", true)
+      .maybeSingle<{ catalog_segment_id: string | null }>(),
   ]);
 
-  if (servicesResult.error || categoriesResult.error) {
-    console.error("Shop service query failed", servicesResult.error?.code ?? categoriesResult.error?.code);
-    return [];
+  if (servicesResult.error || categoriesResult.error || customerResult.error || !customerResult.data) {
+    console.error("Shop service query failed", servicesResult.error?.code ?? categoriesResult.error?.code ?? customerResult.error?.code);
+    return { segmentName: null, services: [] };
   }
+
+  const segmentResult = customerResult.data.catalog_segment_id
+    ? await supabase.from("catalog_segments")
+      .select("name")
+      .eq("organization_id", membership.organization.id)
+      .eq("id", customerResult.data.catalog_segment_id)
+      .eq("is_active", true)
+      .maybeSingle<{ name: string }>()
+    : { data: null, error: null };
+  if (segmentResult.error) console.error("Shop customer segment query failed", segmentResult.error.code);
 
   const services = (servicesResult.data ?? []) as unknown as ServiceRow[];
   const mediaResult = services.length > 0
@@ -132,5 +148,8 @@ export async function listShopServices(
     pricingSource: service.pricing_source,
     unitType: service.unit_type,
   }));
-  return sortCatalogPresentation(mapped, presentation, locale, mode);
+  return {
+    segmentName: segmentResult.data?.name ?? null,
+    services: sortCatalogPresentation(mapped, presentation, locale, mode),
+  };
 }

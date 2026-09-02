@@ -6,7 +6,7 @@ import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
 import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
-import type { ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import type { ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
 import { QuickDropTerminalPanel, type QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
@@ -28,6 +28,7 @@ export type ShopTerminalText = {
   paymentCard: string; paymentCash: string; paymentSplit: string; priceFrom: string; printerSettings: string;
   quantity: string; recentCustomers: string; regularCustomer: string; regularHelp: string; remove: string;
   saveCustomer: string; saving: string; searchServices: string; segmentPrice: string; selectCustomer: string;
+  segmentCatalog: string;
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
   tillOpen: string; tillRequired: string; title: string; total: string; unitTypes: Record<string, string>;
   scanCode: string; scanPlaceholder: string; scanSubmit: string; scanning: string; scanInvalid: string; scanNotFound: string;
@@ -36,7 +37,7 @@ export type ShopTerminalText = {
 type Props = {
   actions: {
     createCustomer: (state: ShopCustomerState, formData: FormData) => Promise<ShopCustomerState>;
-    loadServices: (customerId: string, locationId: string | null) => Promise<ShopService[]>;
+    loadServices: (customerId: string, locationId: string | null) => Promise<ShopCatalogSelection>;
     createQuickDrop: (formData: FormData) => Promise<QuickDropCreateResult>;
     resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
@@ -71,6 +72,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [serviceQuery, setServiceQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [services, setServices] = useState<ShopService[]>([]);
+  const [segmentName, setSegmentName] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [discount, setDiscount] = useState(0);
   const [splitCash, setSplitCash] = useState(0);
@@ -94,6 +96,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }, initialCustomerState);
   const [submitState, submit, isSubmitting] = useActionState(actions.submit, initialSubmitState);
   const payloadRef = useRef<HTMLInputElement>(null);
+  const catalogRequestRef = useRef(0);
 
   const selectedCustomer = customers.find((customer) => customer.id === customerId) ?? null;
   const currency = services[0]?.currency ?? "EUR";
@@ -123,17 +126,27 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }, [category, categoryLabels, locale, serviceQuery, services]);
 
   function selectCustomer(nextCustomerId: string) {
+    const requestId = catalogRequestRef.current + 1;
+    catalogRequestRef.current = requestId;
     setCustomerId(nextCustomerId);
     setServices([]);
+    setSegmentName(null);
     setCart([]);
     setCategory("all");
     setServiceQuery("");
-    startLoading(async () => setServices(await actions.loadServices(nextCustomerId, session?.locationId ?? null)));
+    startLoading(async () => {
+      const catalog = await actions.loadServices(nextCustomerId, session?.locationId ?? null);
+      if (catalogRequestRef.current !== requestId) return;
+      setServices(catalog.services);
+      setSegmentName(catalog.segmentName);
+    });
   }
 
   function clearCustomer() {
+    catalogRequestRef.current += 1;
     setCustomerId("");
     setServices([]);
+    setSegmentName(null);
     setCart([]);
     setCategory("all");
     setCustomerMode(null);
@@ -254,7 +267,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
           ) : null}
           {selectedCustomer ? (
             <div className="flex min-w-0 items-center justify-between gap-3 rounded-control border border-border bg-[#f8faf8] px-3 py-2">
-              <div className="min-w-0"><p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-muted">{text.currentCustomer}</p><div className="flex min-w-0 items-center gap-2"><strong className="truncate text-base text-primary">{selectedCustomer.name}</strong>{selectedCustomer.isWalkIn ? <span className="shrink-0 rounded-full bg-gold-soft px-2 py-0.5 text-[0.68rem] font-bold text-primary">{text.occasionalCustomer}</span> : null}<span className="hidden truncate text-xs text-muted sm:inline">{selectedCustomer.phone || selectedCustomer.email || "—"}</span></div></div>
+              <div className="min-w-0"><p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-muted">{text.currentCustomer}</p><div className="flex min-w-0 flex-wrap items-center gap-2"><strong className="truncate text-base text-primary">{selectedCustomer.name}</strong>{selectedCustomer.isWalkIn ? <span className="shrink-0 rounded-full bg-gold-soft px-2 py-0.5 text-[0.68rem] font-bold text-primary">{text.occasionalCustomer}</span> : null}{segmentName ? <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-[0.68rem] font-bold text-primary">{text.segmentCatalog}: {segmentName}</span> : null}<span className="hidden truncate text-xs text-muted sm:inline">{selectedCustomer.phone || selectedCustomer.email || "—"}</span></div></div>
               <button className="min-h-10 shrink-0 rounded-control border border-primary/25 px-3 text-sm font-bold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={clearCustomer} type="button">{text.changeCustomer}</button>
             </div>
           ) : (
