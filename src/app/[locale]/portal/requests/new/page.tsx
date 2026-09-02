@@ -90,9 +90,12 @@ export default async function CustomerOrderRequestPage({
               add: catalogT("add"),
               allCategories: catalogT("allCategories"),
               back: t("request.back"),
+              cartTitle: t("request.cartTitle"),
               categoryFilter: catalogT("categoryFilter"),
+              closeCart: t("request.closeCart"),
               collapse: catalogT("collapse"),
               confirm: t("request.confirm"),
+              continueOrder: t("request.continueOrder"),
               customerNotes: t("request.customerNotes"),
               customerNotesPlaceholder: t("request.customerNotesPlaceholder"),
               estimatedTotal: t("request.estimatedTotal"),
@@ -129,6 +132,7 @@ export default async function CustomerOrderRequestPage({
               servicesSelected: catalogT.raw("servicesSelected") as string,
               submitting: t("request.submitting"),
               unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
+              viewOrder: t("request.viewOrder"),
             }}
             timeZone={options.context.timeZone}
           />

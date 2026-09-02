@@ -2,6 +2,7 @@
 
 import {
   useActionState,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -32,8 +33,11 @@ type CustomerOrderRequestText = {
   allCategories: string;
   back: string;
   categoryFilter: string;
+  cartTitle: string;
+  closeCart: string;
   collapse: string;
   confirm: string;
+  continueOrder: string;
   customerNotes: string;
   customerNotesPlaceholder: string;
   estimatedTotal: string;
@@ -70,6 +74,7 @@ type CustomerOrderRequestText = {
   servicesSelected: string;
   submitting: string;
   unitTypes: Record<ServiceUnitType, string>;
+  viewOrder: string;
 };
 
 type CustomerOrderRequestFormProps = {
@@ -130,6 +135,8 @@ export function CustomerOrderRequestForm({
   timeZone,
 }: CustomerOrderRequestFormProps) {
   const actionInFlightRef = useRef(false);
+  const cartCloseRef = useRef<HTMLButtonElement>(null);
+  const [cartOpen, setCartOpen] = useState(false);
   const [isSubmitLocked, setIsSubmitLocked] = useState(false);
   const [reviewing, setReviewing] = useState(false);
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
@@ -178,6 +185,16 @@ export function CustomerOrderRequestForm({
     return groupServicesByCategory(filtered);
   }, [categoryFilter, locale, serviceSearch, services, text.categoryLabels]);
 
+  useEffect(() => {
+    if (!cartOpen) return;
+    cartCloseRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCartOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [cartOpen]);
+
   async function guardedAction(
     currentState: CustomerPortalOrderRequestState,
     formData: FormData,
@@ -191,6 +208,7 @@ export function CustomerOrderRequestForm({
   }
 
   function toggleService(service: CustomerPortalOrderService, selected: boolean) {
+    if (!selected && selectedItems.length === 1 && service.id in quantities) setCartOpen(false);
     setQuantities((current) => {
       const next = { ...current };
 
@@ -202,6 +220,15 @@ export function CustomerOrderRequestForm({
     if (selected && service.category) {
       setOpenCategories((current) => new Set(current).add(service.category as string));
     }
+    setReviewing(false);
+  }
+
+  function setServiceQuantity(service: CustomerPortalOrderService, value: string) {
+    const quantity = Number(value);
+    if ((!Number.isFinite(quantity) || quantity <= 0) && selectedItems.length === 1 && service.id in quantities) {
+      setCartOpen(false);
+    }
+    setQuantities((current) => ({ ...current, [service.id]: value }));
     setReviewing(false);
   }
 
@@ -389,10 +416,14 @@ export function CustomerOrderRequestForm({
                           <button aria-pressed={selected} className={`min-h-10 shrink-0 rounded-control border px-3 text-sm font-semibold ${selected ? "border-primary bg-primary text-white" : "border-primary/25 bg-primary-soft text-primary"}`} onClick={() => toggleService(service, !selected)} type="button">{selected ? text.remove : text.add}</button>
                         </div>
                         {selected ? (
-                          <label className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm font-semibold text-primary">
-                            <span>{text.quantity}</span>
-                            <input className="min-h-10 w-24 rounded-control border border-border px-2 text-center" min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} onChange={(event) => setQuantities((current) => ({ ...current, [service.id]: event.target.value }))} step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} type="number" value={quantities[service.id]} />
-                          </label>
+                          <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
+                            <span className="text-sm font-semibold text-primary">{text.quantity}</span>
+                            <div className="grid grid-cols-[2.75rem_minmax(4.5rem,6rem)_2.75rem] items-center overflow-hidden rounded-control border border-border bg-white">
+                              <button aria-label={`− ${text.quantity}`} className="min-h-11 text-xl font-semibold text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, -1)} type="button">−</button>
+                              <input aria-label={text.quantity} className="min-h-11 w-full border-x border-border px-1 text-center text-base font-semibold outline-none focus:bg-primary-soft/50" inputMode="decimal" min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} onChange={(event) => setServiceQuantity(service, event.target.value)} step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} type="number" value={quantities[service.id]} />
+                              <button aria-label={`+ ${text.quantity}`} className="min-h-11 text-xl font-semibold text-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, 1)} type="button">+</button>
+                            </div>
+                          </div>
                         ) : null}
                       </article>
                     );
@@ -503,10 +534,7 @@ export function CustomerOrderRequestForm({
                                     className="min-h-11 w-full border-x border-border px-1 text-center text-base font-semibold outline-none focus:bg-primary-soft/50"
                                     inputMode="decimal"
                                     min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"}
-                                    onChange={(event) => {
-                                      setQuantities((current) => ({ ...current, [service.id]: event.target.value }));
-                                      setReviewing(false);
-                                    }}
+                                    onChange={(event) => setServiceQuantity(service, event.target.value)}
                                     step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"}
                                     type="number"
                                     value={quantities[service.id]}
@@ -609,7 +637,17 @@ export function CustomerOrderRequestForm({
         {clientErrors.requestedPickupAt ? <p className="text-sm text-red-700" role="alert">{clientErrors.requestedPickupAt}</p> : null}
       </section>
 
-      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-card border border-primary/15 bg-white/96 p-3 shadow-luxury backdrop-blur lg:bottom-3 lg:flex lg:items-center lg:gap-5 lg:p-4">
+      {selectedItems.length > 0 ? (
+        <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 -mx-1 flex items-center gap-3 rounded-card border border-primary/15 bg-white/96 p-3 shadow-luxury backdrop-blur md:hidden">
+          <button aria-haspopup="dialog" className="flex min-h-12 min-w-0 flex-1 items-center justify-between gap-3 rounded-control px-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={() => setCartOpen(true)} type="button">
+            <span className="min-w-0 text-sm font-semibold text-primary">{text.servicesSelected.replace("{count}", String(selectedItems.length))}</span>
+            <span className="shrink-0 font-semibold text-primary">{formatCurrency(estimatedTotal, currency, locale)}</span>
+          </button>
+          <Button className="min-h-12 shrink-0 px-4" onClick={() => setCartOpen(true)} type="button">{text.viewOrder}</Button>
+        </div>
+      ) : null}
+
+      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 hidden rounded-card border border-primary/15 bg-white/96 p-3 shadow-luxury backdrop-blur md:flex md:items-center md:gap-5 lg:bottom-3 lg:p-4">
         <div className="mb-3 flex flex-1 items-center justify-between gap-4 px-1 lg:mb-0">
           <span className="text-sm font-medium text-muted"><strong className="block text-primary">{text.servicesSelected.replace("{count}", String(selectedItems.length))}</strong>{text.estimatedTotal}</span>
           <span className="text-2xl font-semibold tracking-tight text-primary">
@@ -625,6 +663,57 @@ export function CustomerOrderRequestForm({
           {text.review}
         </Button>
       </div>
+
+      {cartOpen && selectedItems.length > 0 ? (
+        <div className="fixed inset-x-0 top-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 md:hidden" role="dialog" aria-modal="true" aria-labelledby="portal-cart-title">
+          <button aria-label={text.closeCart} className="absolute inset-0 bg-slate-950/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white" onClick={() => setCartOpen(false)} type="button" />
+          <section className="absolute inset-x-0 bottom-0 max-h-[min(78vh,44rem)] overflow-y-auto rounded-t-[1.75rem] bg-white p-4 shadow-luxury">
+            <div className="flex items-start justify-between gap-4 border-b border-border pb-3">
+              <div>
+                <h2 className="text-xl font-semibold text-primary" id="portal-cart-title">{text.cartTitle}</h2>
+                <p className="mt-1 text-sm text-muted">{text.servicesSelected.replace("{count}", String(selectedItems.length))}</p>
+              </div>
+              <button ref={cartCloseRef} aria-label={text.closeCart} className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border text-xl text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={() => setCartOpen(false)} type="button">×</button>
+            </div>
+
+            <div className="divide-y divide-border">
+              {selectedItems.map(({ quantity, service }) => (
+                <article className="py-4" key={service.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-primary">{service.name}</h3>
+                      <p className="mt-1 text-sm text-muted">{formatQuantity(quantity, locale)} {text.unitTypes[service.unitType]}</p>
+                    </div>
+                    <strong className="shrink-0 text-primary">{formatCurrency(quantity * service.amount, currency, locale)}</strong>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <button className="min-h-11 rounded-control px-2 text-sm font-semibold text-red-700 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600" onClick={() => toggleService(service, false)} type="button">{text.remove}</button>
+                    <div className="grid grid-cols-[2.75rem_minmax(4.5rem,6rem)_2.75rem] items-center overflow-hidden rounded-control border border-border bg-white">
+                      <button aria-label={`− ${text.quantity} · ${service.name}`} className="min-h-11 text-xl font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, -1)} type="button">−</button>
+                      <input aria-label={`${text.quantity} · ${service.name}`} className="min-h-11 w-full border-x border-border px-1 text-center font-semibold outline-none focus:bg-primary-soft/50" inputMode="decimal" min={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} onChange={(event) => setServiceQuantity(service, event.target.value)} step={isDiscreteServiceUnit(service.unitType) ? "1" : "0.001"} type="number" value={quantities[service.id]} />
+                      <button aria-label={`+ ${text.quantity} · ${service.name}`} className="min-h-11 text-xl font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary" onClick={() => changeQuantity(service, 1)} type="button">+</button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <div className="flex items-end justify-between gap-4">
+                <span className="text-sm font-semibold text-muted">{text.estimatedTotal}</span>
+                <strong className="text-2xl text-primary">{formatCurrency(estimatedTotal, currency, locale)}</strong>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Button className="w-full" onClick={() => setCartOpen(false)} type="button" variant="secondary">{text.continueOrder}</Button>
+                <Button className="w-full" disabled={properties.length === 0} onClick={() => {
+                  setCartOpen(false);
+                  validateReview();
+                }} type="button">{text.review}</Button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
