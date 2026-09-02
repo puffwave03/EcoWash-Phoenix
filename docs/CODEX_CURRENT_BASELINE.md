@@ -9,9 +9,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `5a15099` (`SEGMENTS-UX-002`).
-- Latest relevant application commit: `5a15099` (`SEGMENTS-UX-002`).
-- Previous completed product documentation commit: `af0f32e` (`DOCS-TERMINAL-SEGMENT-CATALOG-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `415665f` (`SEGMENTS-I18N-FIX-001`).
+- Latest relevant application commit: `415665f` (`SEGMENTS-I18N-FIX-001`).
+- Previous completed product documentation commit: `3d9317a` (`DOCS-SEGMENTS-UX-002`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260902000100_terminal_segment_catalog_001.sql`.
 - Linked migration history is aligned through `20260902000100`.
 - ACCOUNTING-001A status: `READY`.
@@ -27,6 +27,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - SEGMENTS-UX-001 status: `READY`; no migration was required and segment domain semantics are unchanged.
 - TERMINAL-SEGMENT-CATALOG-001 status: `READY`; additive RPC migration `20260902000100_terminal_segment_catalog_001.sql` is applied and aligned.
 - SEGMENTS-UX-002 status: `READY`; no migration was required and segment relationships, pricing and customer assignments are unchanged.
+- SEGMENTS-I18N-FIX-001 status: `READY`; system category labels in both Segment selectors now follow the active locale, with custom-category fallback unchanged.
 
 ## Completed Major Modules
 
