@@ -24,6 +24,15 @@ export function BillingCustomerFiscalPanel({
     taxId: text.taxId,
   };
 
+  if (context.isSharedWalkIn) {
+    return (
+      <Card className="border-amber-200 bg-amber-50/60">
+        <p className="text-xs font-bold uppercase tracking-[0.1em] text-amber-800">{text.eyebrow}</p>
+        <h2 className="mt-1 text-xl font-semibold text-primary">{text.registeredCustomerRequired}</h2>
+      </Card>
+    );
+  }
+
   if (context.isFiscalReady) {
     return (
       <Card className="border-emerald-200 bg-emerald-50">

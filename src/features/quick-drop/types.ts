@@ -10,6 +10,8 @@ export type QuickDropOrder = {
   orderCode: string;
   orderNumber: string;
   receivedAt: string;
+  walkInName: string | null;
+  walkInPhone: string | null;
 };
 
 export type PendingQuickDrop = {

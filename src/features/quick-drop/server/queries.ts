@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { createOrderCode } from "@/features/barcode/payload";
 import type { ProductionStatus } from "@/features/orders/types";
@@ -18,6 +19,8 @@ type QuickDropOrderRow = {
   received_at: string | null;
   subtotal: number;
   total: number;
+  walk_in_name: string | null;
+  walk_in_phone: string | null;
 };
 
 export async function getQuickDropOrderOrNull(locale: string, orderId: string): Promise<QuickDropOrder | null> {
@@ -26,7 +29,7 @@ export async function getQuickDropOrderOrNull(locale: string, orderId: string): 
   const organizationId = membership.organization.id;
   const [orderResult, itemResult, sourceResult] = await Promise.all([
     supabase.from("orders")
-      .select("id, order_number, customer_id, production_status, received_at, due_at, subtotal, discount_amount, total")
+      .select("id, order_number, customer_id, production_status, received_at, due_at, subtotal, discount_amount, total, walk_in_name, walk_in_phone")
       .eq("organization_id", organizationId)
       .eq("id", orderId)
       .eq("is_active", true)
@@ -62,6 +65,8 @@ export async function getQuickDropOrderOrNull(locale: string, orderId: string): 
     orderCode: createOrderCode(orderResult.data.id),
     orderNumber: orderResult.data.order_number,
     receivedAt: orderResult.data.received_at,
+    walkInName: orderResult.data.walk_in_name,
+    walkInPhone: orderResult.data.walk_in_phone,
   };
 }
 
@@ -72,10 +77,11 @@ export async function getQuickDropOrder(locale: string, orderId: string): Promis
 }
 
 type PendingOrderRow = {
-  customer: { display_name: string } | { display_name: string }[] | null;
+  customer: { customer_code: string | null; display_name: string } | { customer_code: string | null; display_name: string }[] | null;
   id: string;
   order_number: string;
   received_at: string | null;
+  walk_in_name: string | null;
 };
 
 export async function listPendingQuickDrops(locale: string): Promise<PendingQuickDrop[]> {
@@ -97,7 +103,7 @@ export async function listPendingQuickDrops(locale: string): Promise<PendingQuic
   const orderIds = [...new Set(sources.map((source) => source.order_id))];
   const [ordersResult, itemsResult] = await Promise.all([
     supabase.from("orders")
-      .select("id, order_number, received_at, customer:customers!orders_customer_same_organization!inner(display_name)")
+      .select("id, order_number, received_at, walk_in_name, customer:customers!orders_customer_same_organization!inner(customer_code, display_name)")
       .eq("organization_id", organizationId)
       .eq("is_active", true)
       .eq("production_status", "received")
@@ -117,10 +123,14 @@ export async function listPendingQuickDrops(locale: string): Promise<PendingQuic
   }
 
   const detailedIds = new Set((itemsResult.data ?? []).map((item) => item.order_id));
-  return (ordersResult.data ?? []).filter((order) => order.received_at && !detailedIds.has(order.id)).map((order) => ({
-    customerName: Array.isArray(order.customer) ? order.customer[0]?.display_name ?? "" : order.customer?.display_name ?? "",
-    id: order.id,
-    orderNumber: order.order_number,
-    receivedAt: order.received_at!,
-  }));
+  const t = await getTranslations({ locale, namespace: "common.shopTerminal.labels" });
+  return (ordersResult.data ?? []).filter((order) => order.received_at && !detailedIds.has(order.id)).map((order) => {
+    const customer = Array.isArray(order.customer) ? order.customer[0] : order.customer;
+    return {
+      customerName: order.walk_in_name ?? (customer?.customer_code === "WALKIN-SHARED" ? t("occasionalCustomer") : customer?.display_name ?? ""),
+      id: order.id,
+      orderNumber: order.order_number,
+      receivedAt: order.received_at!,
+    };
+  });
 }

@@ -50,7 +50,7 @@ export async function getPrintOrderContext(locale: string, orderId: string): Pro
     barcodeEnabled,
     branding,
     createdByName: relation(metadata.created_by_profile)?.display_name ?? null,
-    customerPhone: relation(metadata.customer)?.phone ?? null,
+    customerPhone: order.isSharedWalkIn ? order.walkInPhone : relation(metadata.customer)?.phone ?? null,
     items,
     locationName: relation(metadata.location)?.name ?? null,
     logistics,

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import type { ShopCatalogSelection, ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
@@ -36,6 +37,7 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
     .select("id, customer_code, display_name, email, phone, updated_at")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
+    .or("customer_code.is.null,customer_code.not.like.WALKIN-%")
     .order("updated_at", { ascending: false })
     .limit(80)
     .returns<{ customer_code: string | null; display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
@@ -48,7 +50,7 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
   return (data ?? []).map((customer) => ({
     email: customer.email,
     id: customer.id,
-    isWalkIn: customer.customer_code?.startsWith("WALKIN-") ?? false,
+    isWalkIn: false,
     name: customer.display_name,
     phone: customer.phone,
     updatedAt: customer.updated_at,
@@ -58,25 +60,30 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
 export async function listShopRecentOrders(locale: string): Promise<ShopRecentOrder[]> {
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("orders")
-    .select("id, order_number, total, customer:customers!orders_customer_same_organization!inner(display_name)")
+  const [{ data, error }, t] = await Promise.all([supabase.from("orders")
+    .select("id, order_number, total, walk_in_name, customer:customers!orders_customer_same_organization!inner(customer_code, display_name)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(6)
-    .returns<{ customer: { display_name: string } | { display_name: string }[]; id: string; order_number: string; total: number }[]>();
+    .returns<{ customer: { customer_code: string | null; display_name: string } | { customer_code: string | null; display_name: string }[]; id: string; order_number: string; total: number; walk_in_name: string | null }[]>(),
+    getTranslations({ locale, namespace: "common.shopTerminal.labels" }),
+  ]);
 
   if (error) {
     console.error("Shop recent order query failed", error.code);
     return [];
   }
 
-  return (data ?? []).map((order) => ({
-    customerName: (Array.isArray(order.customer) ? order.customer[0] : order.customer)?.display_name ?? "",
-    id: order.id,
-    orderNumber: order.order_number,
-    total: Number(order.total),
-  }));
+  return (data ?? []).map((order) => {
+    const customer = Array.isArray(order.customer) ? order.customer[0] : order.customer;
+    return {
+      customerName: order.walk_in_name ?? (customer?.customer_code === "WALKIN-SHARED" ? t("occasionalCustomer") : customer?.display_name ?? ""),
+      id: order.id,
+      orderNumber: order.order_number,
+      total: Number(order.total),
+    };
+  });
 }
 
 export async function listShopServices(

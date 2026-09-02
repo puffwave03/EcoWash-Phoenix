@@ -130,7 +130,7 @@ test("13 Terminal exposes one secondary Quick Drop entry for the selected canoni
     source("src/components/quick-drop/QuickDropTerminalPanel.tsx"),
   ]);
   assert.match(page, /createQuickDrop: createQuickDropAction\.bind\(null, locale\)/);
-  assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id, name: selectedCustomer\.name \} : null\}/);
+  assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id,[\s\S]*isWalkIn: selectedCustomer\.isWalkIn,[\s\S]*name: selectedCustomerName/);
   assert.match(panel, /text\.action/);
 });
 
@@ -185,7 +185,7 @@ test("17a Quick Drop eligibility stays customer and active-location scoped with 
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/components/quick-drop/QuickDropTerminalPanel.tsx"),
   ]);
-  assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id, name: selectedCustomer\.name \} : null\}/);
+  assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id,[\s\S]*isWalkIn: selectedCustomer\.isWalkIn,[\s\S]*name: selectedCustomerName/);
   assert.match(workspace, /locationId=\{session\?\.locationId \?\? null\}/);
   assert.match(panel, /customer \? <section/);
   assert.match(panel, /disabled=\{!locationId\}/);

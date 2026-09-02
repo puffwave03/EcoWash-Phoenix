@@ -7,6 +7,7 @@ import type { QuickDropCreateResult } from "@/features/quick-drop/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const PHONE = /^[+()\d\s.-]{3,32}$/;
 
 function optionalTimestamp(value: FormDataEntryValue | null) {
   const raw = String(value ?? "").trim();
@@ -20,9 +21,11 @@ export async function createQuickDropAction(locale: string, formData: FormData):
   const idempotencyKey = String(formData.get("idempotencyKey") ?? "").trim();
   const locationId = String(formData.get("locationId") ?? "").trim();
   const note = String(formData.get("note") ?? "").trim();
+  const walkInName = String(formData.get("walkInName") ?? "").trim().slice(0, 160);
+  const walkInPhone = String(formData.get("walkInPhone") ?? "").trim().slice(0, 40);
   const dueAt = optionalTimestamp(formData.get("dueAt"));
   if (!UUID.test(customerId) || !UUID.test(idempotencyKey) || !UUID.test(locationId)
-    || note.length > 600 || dueAt === undefined) {
+    || note.length > 600 || (walkInPhone && !PHONE.test(walkInPhone)) || dueAt === undefined) {
     return { error: "validation", order: null };
   }
 
@@ -34,6 +37,8 @@ export async function createQuickDropAction(locale: string, formData: FormData):
     target_idempotency_key: idempotencyKey,
     target_location_id: locationId,
     target_note: note || null,
+    target_walk_in_name: walkInName || null,
+    target_walk_in_phone: walkInPhone || null,
   }).single<{ order_id: string; order_number: string; received_at: string }>();
 
   if (error || !data) {
@@ -56,6 +61,8 @@ export async function createQuickDropAction(locale: string, formData: FormData):
       orderCode: createOrderCode(data.order_id),
       orderNumber: data.order_number,
       receivedAt: data.received_at,
+      walkInName: walkInName || null,
+      walkInPhone: walkInPhone || null,
     },
   };
 }

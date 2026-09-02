@@ -36,6 +36,7 @@ export type BillingCustomerContext = {
   customerName: string;
   customerType: "individual" | "business";
   isFiscalReady: boolean;
+  isSharedWalkIn: boolean;
   isWalkIn: boolean;
   missingRequiredFields: BillingCustomerFiscalField[];
   taxId: string;

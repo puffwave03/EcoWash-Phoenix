@@ -68,25 +68,44 @@ export async function createShopCustomerAction(
   _state: ShopCustomerState,
   formData: FormData,
 ): Promise<ShopCustomerState> {
+  const isWalkIn = formData.get("customerKind") === "walk_in";
   const name = String(formData.get("displayName") ?? "").trim().slice(0, 160);
   const phone = String(formData.get("phone") ?? "").trim().slice(0, 40);
   const email = String(formData.get("email") ?? "").trim().toLowerCase().slice(0, 160);
-  const isWalkIn = formData.get("customerKind") === "walk_in";
-  if (!name || (phone && !PHONE.test(phone)) || (email && !EMAIL.test(email))) {
+  if ((!isWalkIn && !name) || (phone && !PHONE.test(phone)) || (email && (!EMAIL.test(email) || isWalkIn))) {
     return { customer: null, error: "validation" };
   }
 
   const { membership, user } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
+  if (isWalkIn) {
+    const { data: sharedCustomerId, error } = await supabase.rpc("resolve_shared_walk_in_customer");
+    if (error || typeof sharedCustomerId !== "string") {
+      console.error("Shared walk-in customer resolution failed", error?.code);
+      return { customer: null, error: "generic" };
+    }
+    return {
+      customer: {
+        email: null,
+        id: sharedCustomerId,
+        isWalkIn: true,
+        name,
+        phone: phone || null,
+        updatedAt: new Date().toISOString(),
+      },
+      error: null,
+    };
+  }
+
   const { data, error } = await supabase.from("customers").insert({
     billing_country_code: "ES",
     created_by: user.id,
-    customer_code: isWalkIn ? `WALKIN-${crypto.randomUUID().toUpperCase()}` : null,
+    customer_code: null,
     customer_type: "individual",
     display_name: name,
     email: email || null,
     is_active: true,
-    notes: isWalkIn ? "Occasional customer created at the shop terminal." : null,
+    notes: null,
     organization_id: membership.organization.id,
     phone: phone || null,
     preferred_locale: routing.locales.includes(locale as (typeof routing.locales)[number]) ? locale : "es",
@@ -116,6 +135,9 @@ type SubmitPayload = {
   locationId?: unknown;
   payments?: unknown;
   sessionId?: unknown;
+  isWalkIn?: unknown;
+  walkInName?: unknown;
+  walkInPhone?: unknown;
 };
 
 export async function submitShopOrderAction(
@@ -135,8 +157,11 @@ export async function submitShopOrderAction(
   const locationId = typeof payload.locationId === "string" && payload.locationId ? payload.locationId : null;
   const sessionId = typeof payload.sessionId === "string" && payload.sessionId ? payload.sessionId : null;
   const discountAmount = Number(payload.discountAmount);
+  const walkInName = typeof payload.walkInName === "string" ? payload.walkInName.trim().slice(0, 160) : null;
+  const walkInPhone = typeof payload.walkInPhone === "string" ? payload.walkInPhone.trim().slice(0, 40) : null;
   if (!UUID.test(customerId) || !UUID.test(idempotencyKey) || (locationId && !UUID.test(locationId))
     || (sessionId && !UUID.test(sessionId)) || !Number.isFinite(discountAmount)
+    || (walkInPhone && !PHONE.test(walkInPhone))
     || !Array.isArray(payload.items) || payload.items.length < 1 || !Array.isArray(payload.payments)) {
     return { error: "validation", result: null };
   }
@@ -154,6 +179,8 @@ export async function submitShopOrderAction(
     target_location_id: locationId,
     target_payments: payload.payments,
     target_pos_session_id: sessionId,
+    target_walk_in_name: walkInName || null,
+    target_walk_in_phone: walkInPhone || null,
   }).single<{
     discount_amount: number; order_id: string; order_number: string; outstanding: number; paid: number; subtotal: number; total: number;
   }>();
@@ -176,6 +203,7 @@ export async function submitShopOrderAction(
       customerName: typeof payload.customerName === "string" ? payload.customerName.slice(0, 160) : "",
       discountAmount: Number(data.discount_amount),
       dueAt: typeof payload.dueAt === "string" && payload.dueAt ? payload.dueAt : null,
+      isWalkIn: payload.isWalkIn === true,
       orderId: data.order_id,
       orderNumber: data.order_number,
       outstanding: Number(data.outstanding),

@@ -35,7 +35,7 @@ type Props = {
   action: (formData: FormData) => Promise<QuickDropCreateResult>;
   canPrint: boolean;
   canQr: boolean;
-  customer: { id: string; name: string } | null;
+  customer: { id: string; isWalkIn: boolean; name: string; phone: string | null; walkInName: string | null } | null;
   locale: string;
   locationId: string | null;
   onNewOrder: () => void;
@@ -72,6 +72,10 @@ export function QuickDropTerminalPanel({ action, canPrint, canQr, customer, loca
     formData.set("customerId", customer.id);
     formData.set("idempotencyKey", idempotencyKey.current);
     formData.set("locationId", locationId);
+    if (customer.isWalkIn) {
+      formData.set("walkInName", customer.walkInName ?? "");
+      formData.set("walkInPhone", customer.phone ?? "");
+    }
     startTransition(async () => setResult(await action(formData)));
   }
 

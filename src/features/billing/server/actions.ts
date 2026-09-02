@@ -69,7 +69,7 @@ export async function saveBillingCustomerFiscalAction(
   const supabase = await createSupabaseServerClient();
   const { data: customer, error: customerError } = await supabase
     .from("customers")
-    .select("id, customer_type, tax_id, billing_address_line1, billing_city, billing_postal_code, billing_country_code")
+    .select("id, customer_code, customer_type, tax_id, billing_address_line1, billing_city, billing_postal_code, billing_country_code")
     .eq("organization_id", membership.organization.id)
     .eq("id", customerId)
     .maybeSingle<{
@@ -77,11 +77,15 @@ export async function saveBillingCustomerFiscalAction(
       billing_city: string | null;
       billing_country_code: string | null;
       billing_postal_code: string | null;
+      customer_code: string | null;
       customer_type: "individual" | "business";
       id: string;
       tax_id: string | null;
     }>();
   if (customerError || !customer) redirect(`/${locale}/app/billing/new?error=customer`);
+  if (customer.customer_code === "WALKIN-SHARED") {
+    redirect(`/${locale}/app/billing/new?customerId=${customerId}&orderId=${orderId}&source=shop&error=customer`);
+  }
 
   const updates: Record<string, string> = {};
   const required = [

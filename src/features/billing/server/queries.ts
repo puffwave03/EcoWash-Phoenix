@@ -110,7 +110,7 @@ type BillingCustomerRow = {
 type EligibleOrderRow = {
   created_at: string;
   currency: string;
-  customer: { display_name: string; is_active: boolean } | { display_name: string; is_active: boolean }[] | null;
+  customer: { customer_code: string | null; display_name: string; is_active: boolean } | { customer_code: string | null; display_name: string; is_active: boolean }[] | null;
   customer_id: string;
   id: string;
   order_number: string;
@@ -345,6 +345,7 @@ export async function getBillingCustomerContext(locale: string, customerId: stri
     customerName: data.display_name,
     customerType: data.customer_type,
     isFiscalReady: missingRequiredFields.length === 0,
+    isSharedWalkIn: data.customer_code === "WALKIN-SHARED",
     isWalkIn: data.customer_code?.startsWith("WALKIN-") ?? false,
     missingRequiredFields,
     taxId: present(data.tax_id),
@@ -426,7 +427,7 @@ export async function listEligibleBillingOrders(locale: string, customerId?: str
   const linked = new Set((linksResult.data ?? []).map((row) => row.order_id));
   let query = supabase
     .from("orders")
-    .select("id, order_number, customer_id, created_at, currency, total, customer:customers!orders_customer_same_organization!inner(display_name, is_active)")
+    .select("id, order_number, customer_id, created_at, currency, total, customer:customers!orders_customer_same_organization!inner(customer_code, display_name, is_active)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
     .neq("production_status", "cancelled")
@@ -437,7 +438,7 @@ export async function listEligibleBillingOrders(locale: string, customerId?: str
   const { data, error } = await query.returns<EligibleOrderRow[]>();
   if (error) return [];
 
-  return (data ?? []).filter((row) => !linked.has(row.id)).map((row) => {
+  return (data ?? []).filter((row) => !linked.has(row.id) && relation(row.customer)?.customer_code !== "WALKIN-SHARED").map((row) => {
     const customer = relation(row.customer);
     return {
       createdAt: row.created_at,

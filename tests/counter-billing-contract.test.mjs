@@ -52,7 +52,7 @@ test("5 terminal success opens Billing with canonical order and customer context
   ]);
   assert.match(types, /customerId: string/);
   assert.match(action, /result: \{[\s\S]*customerId,/);
-  assert.match(terminal, /canInvoice \? <Link/);
+  assert.match(terminal, /canInvoice && !result\.isWalkIn \? <Link/);
   assert.match(terminal, /billing\/new\?customerId=\$\{result\.customerId\}&orderId=\$\{result\.orderId\}&source=shop/);
 });
 

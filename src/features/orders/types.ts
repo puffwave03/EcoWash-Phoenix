@@ -36,6 +36,7 @@ export type Order = {
   id: string;
   internalNotes: string | null;
   isActive: boolean;
+  isSharedWalkIn: boolean;
   orderNumber: string;
   priority: OrderPriority;
   productionStatus: ProductionStatus;
@@ -43,6 +44,8 @@ export type Order = {
   propertyName: string | null;
   subtotal: number;
   total: number;
+  walkInName: string | null;
+  walkInPhone: string | null;
 };
 
 export type OrderItem = {

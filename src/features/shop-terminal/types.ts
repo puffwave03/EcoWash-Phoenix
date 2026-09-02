@@ -42,6 +42,7 @@ export type ShopOrderResult = {
   customerName: string;
   discountAmount: number;
   dueAt: string | null;
+  isWalkIn: boolean;
   orderId: string;
   orderNumber: string;
   outstanding: number;
