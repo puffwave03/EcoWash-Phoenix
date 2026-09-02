@@ -207,6 +207,45 @@ test("30 customer modes, cart controls and scanner stay compact and accessible",
   assert.match(ui, /placeholder=\{text\.searchServices\}/);
 });
 
+test("30a customer picker stays reachable without clearing the active order when opened", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const openPicker = ui.slice(ui.indexOf("function openCustomerPicker"), ui.indexOf("function clearCustomer"));
+
+  assert.match(ui, /const \[isCustomerPickerOpen, setIsCustomerPickerOpen\] = useState\(true\)/);
+  assert.match(ui, /onClick=\{openCustomerPicker\}[\s\S]*?\{text\.changeCustomer\}/);
+  assert.match(openPicker, /setCustomerMode\(null\)/);
+  assert.match(openPicker, /setIsCustomerPickerOpen\(true\)/);
+  assert.doesNotMatch(openPicker, /setCustomerId|setCart|setServices|catalogRequestRef/);
+  assert.match(ui, /!selectedCustomer \|\| isCustomerPickerOpen/);
+  assert.match(ui, /!customerQuery \? <span[\s\S]*?\{text\.recentCustomers\}<\/span>/);
+  assert.match(ui, /placeholder=\{text\.customerSearch\}/);
+});
+
+test("30b customer creation modes return to recents and successful creation closes the picker", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+
+  assert.match(ui, /onClick=\{\(\) => setCustomerMode\(null\)\} type="button">← \{text\.recentCustomers\}/);
+  assert.match(ui, /setCustomers\(\(current\) => \[result\.customer!/);
+  assert.match(ui, /selectCustomer\(result\.customer\.id\)/);
+  assert.match(ui, /setIsCustomerPickerOpen\(false\)/);
+});
+
+test("30c only selecting a different customer resets customer-dependent state and stale responses remain rejected", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
+
+  assert.match(select, /if \(nextCustomerId === customerId\)[\s\S]*?return;/);
+  assert.match(select, /catalogRequestRef\.current = requestId/);
+  assert.match(select, /setCustomerId\(nextCustomerId\)/);
+  assert.match(select, /setServices\(\[\]\)/);
+  assert.match(select, /setSegmentName\(null\)/);
+  assert.match(select, /setCart\(\[\]\)/);
+  assert.match(select, /setCategory\("all"\)/);
+  assert.match(select, /setServiceQuery\(""\)/);
+  assert.match(select, /actions\.loadServices\(nextCustomerId, session\?\.locationId \?\? null\)/);
+  assert.match(select, /if \(catalogRequestRef\.current !== requestId\) return/);
+});
+
 test("31 responsive POS structure keeps a dense catalog and persistent one-third cart", async () => {
   const [ui, queries] = await Promise.all([
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),

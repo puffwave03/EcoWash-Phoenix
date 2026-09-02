@@ -67,6 +67,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const router = useRouter();
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
+  const [isCustomerPickerOpen, setIsCustomerPickerOpen] = useState(true);
   const [customerMode, setCustomerMode] = useState<CustomerMode>(null);
   const [customerQuery, setCustomerQuery] = useState("");
   const [serviceQuery, setServiceQuery] = useState("");
@@ -126,9 +127,17 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }, [category, categoryLabels, locale, serviceQuery, services]);
 
   function selectCustomer(nextCustomerId: string) {
+    if (nextCustomerId === customerId) {
+      setCustomerMode(null);
+      setIsCustomerPickerOpen(false);
+      return;
+    }
     const requestId = catalogRequestRef.current + 1;
     catalogRequestRef.current = requestId;
     setCustomerId(nextCustomerId);
+    setCustomerMode(null);
+    setCustomerQuery("");
+    setIsCustomerPickerOpen(false);
     setServices([]);
     setSegmentName(null);
     setCart([]);
@@ -142,6 +151,11 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     });
   }
 
+  function openCustomerPicker() {
+    setCustomerMode(null);
+    setIsCustomerPickerOpen(true);
+  }
+
   function clearCustomer() {
     catalogRequestRef.current += 1;
     setCustomerId("");
@@ -150,6 +164,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setCart([]);
     setCategory("all");
     setCustomerMode(null);
+    setIsCustomerPickerOpen(true);
   }
 
   function addService(service: ShopService) {
@@ -265,21 +280,24 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
               {scanError ? <p aria-live="polite" className="col-span-2 text-xs font-semibold text-red-700">{scanError === "invalid" ? text.scanInvalid : text.scanNotFound}</p> : null}
             </form>
           ) : null}
-          {selectedCustomer ? (
+          <div className="min-w-0 space-y-2">
+            {selectedCustomer ? (
             <div className="flex min-w-0 items-center justify-between gap-3 rounded-control border border-border bg-[#f8faf8] px-3 py-2">
               <div className="min-w-0"><p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-muted">{text.currentCustomer}</p><div className="flex min-w-0 flex-wrap items-center gap-2"><strong className="truncate text-base text-primary">{selectedCustomer.name}</strong>{selectedCustomer.isWalkIn ? <span className="shrink-0 rounded-full bg-gold-soft px-2 py-0.5 text-[0.68rem] font-bold text-primary">{text.occasionalCustomer}</span> : null}{segmentName ? <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-[0.68rem] font-bold text-primary">{text.segmentCatalog}: {segmentName}</span> : null}<span className="hidden truncate text-xs text-muted sm:inline">{selectedCustomer.phone || selectedCustomer.email || "—"}</span></div></div>
-              <button className="min-h-10 shrink-0 rounded-control border border-primary/25 px-3 text-sm font-bold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={clearCustomer} type="button">{text.changeCustomer}</button>
+              <button className="min-h-10 shrink-0 rounded-control border border-primary/25 px-3 text-sm font-bold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={openCustomerPicker} type="button">{text.changeCustomer}</button>
             </div>
-          ) : (
+            ) : null}
+            {!selectedCustomer || isCustomerPickerOpen ? (
             <div className="min-w-0 space-y-1.5">
               <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] gap-1.5">
                 <label><span className="sr-only">{text.customerSearch}</span><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-[#f8faf8] px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" onChange={(event) => setCustomerQuery(event.target.value)} placeholder={text.customerSearch} type="search" value={customerQuery} /></label>
                 <button aria-pressed={customerMode === "regular"} className={`min-h-10 rounded-control border px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "regular" ? "border-primary bg-primary text-white" : "border-primary/25 text-primary"}`} onClick={() => setCustomerMode(customerMode === "regular" ? null : "regular")} type="button">+ {text.regularCustomer}</button>
                 <button aria-pressed={customerMode === "walk_in"} className={`min-h-10 rounded-control px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "walk_in" ? "bg-primary text-white" : "bg-primary-soft text-primary"}`} onClick={() => setCustomerMode(customerMode === "walk_in" ? null : "walk_in")} type="button">{text.occasionalCustomer}</button>
               </div>
-              {!customerMode ? <div className="flex min-w-0 gap-1.5 overflow-x-auto pb-0.5">{filteredCustomers.map((customer) => <button className="min-h-9 shrink-0 rounded-full border border-border bg-white px-3 text-left hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" key={customer.id} onClick={() => selectCustomer(customer.id)} type="button"><strong className="block max-w-44 truncate text-xs text-primary">{customer.name}</strong></button>)}</div> : <form action={createCustomer} className="grid gap-2 border-l-4 border-primary bg-[#f8faf8] p-2 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="displayName" placeholder={text.customerName} required /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="phone" placeholder={text.customerPhone} /></label><label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="email" placeholder={text.customerEmail} type="email" /></label><button className="min-h-10 rounded-control bg-primary px-4 text-sm font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
+              {!customerMode ? <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto pb-0.5">{!customerQuery ? <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-[0.08em] text-muted">{text.recentCustomers}</span> : null}{filteredCustomers.map((customer) => <button className="min-h-9 shrink-0 rounded-full border border-border bg-white px-3 text-left hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" key={customer.id} onClick={() => selectCustomer(customer.id)} type="button"><strong className="block max-w-44 truncate text-xs text-primary">{customer.name}</strong></button>)}</div> : <form action={createCustomer} className="grid gap-2 border-l-4 border-primary bg-[#f8faf8] p-2 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><button className="inline-flex min-h-10 items-center rounded-control px-3 text-sm font-bold text-primary underline underline-offset-4 md:col-span-4 md:justify-self-start" onClick={() => setCustomerMode(null)} type="button">← {text.recentCustomers}</button><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="displayName" placeholder={text.customerName} required /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="phone" placeholder={text.customerPhone} /></label><label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="email" placeholder={text.customerEmail} type="email" /></label><button className="min-h-10 rounded-control bg-primary px-4 text-sm font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
             </div>
-          )}
+            ) : null}
+          </div>
         </div>
         <div className="mt-2"><QuickDropTerminalPanel action={actions.createQuickDrop} canPrint={canPrint} canQr={canScan} customer={selectedCustomer ? { id: selectedCustomer.id, name: selectedCustomer.name } : null} locale={locale} locationId={session?.locationId ?? null} onNewOrder={clearCustomer} pending={pendingQuickDrops} printText={printText} text={quickDropText} /></div>
       </section>
