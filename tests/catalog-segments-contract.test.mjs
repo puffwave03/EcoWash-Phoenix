@@ -168,3 +168,39 @@ test("category and service selectors filter and batch-select without changing sa
   assert.match(management, /name="customerIds"/);
   assert.match(management, /action=\{formAction\}/);
 });
+
+test("segment catalog labels use the shared locale presentation and its existing fallback data", async () => {
+  const queries = await source("src/features/catalog-segments/server/queries.ts");
+
+  assert.match(queries, /loadCatalogPresentation\(supabase, locale, catalog\.services\.map/);
+  assert.match(queries, /presentation\.get\(service\.id\)\?\.name/);
+  assert.match(queries, /service\.translations\[requestedLocale\]\?\.name/);
+  assert.match(queries, /service\.translations\.en\?\.name/);
+  assert.match(queries, /presentation\.get\(service\.id\)\?\.categoryTitle/);
+  assert.match(queries, /category\.translations\[requestedLocale\]/);
+  assert.match(queries, /category\.translations\.en/);
+  assert.match(queries, /\.\.\.service,\s+name:/);
+  assert.match(queries, /\.\.\.category,\s+portalTitle:/);
+});
+
+test("localized visible service names drive rendering, ordering labels and search with code", async () => {
+  const management = await source("src/components/catalog-segments/CatalogSegmentManagement.tsx");
+
+  assert.match(management, /`\$\{service\.name\} \$\{service\.code \?\? ""\}`\.toLocaleLowerCase/);
+  assert.match(management, />\{service\.name\}<\/span>/);
+  assert.match(management, /`\$\{text\.displayOrder\}: \$\{service\.name\}`/);
+  assert.match(management, /categoryLabel\(category\)/);
+});
+
+test("the expanded segment keeps one accessible save action sticky above mobile navigation", async () => {
+  const management = await source("src/components/catalog-segments/CatalogSegmentManagement.tsx");
+  const saveButtons = management.match(/<SubmitButton label=\{text\.save\}/g) ?? [];
+
+  assert.equal(saveButtons.length, 1);
+  assert.match(management, /\{expanded \? <form action=\{formAction\}/);
+  assert.match(management, /sticky bottom-\[calc\(4\.75rem\+env\(safe-area-inset-bottom\)\)\]/);
+  assert.match(management, /lg:bottom-3/);
+  assert.match(management, /const \{ pending \} = useFormStatus\(\)/);
+  assert.match(management, /disabled=\{pending\} type="submit"/);
+  assert.match(management, /focus-visible:ring-2/);
+});

@@ -1,6 +1,8 @@
 import "server-only";
 
 import { getCatalogAdminSettings } from "@/features/catalog-admin/server/queries";
+import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
+import type { AppLocale } from "@/i18n/routing";
 import type {
   CatalogSegment,
   CatalogSegmentAdminSettings,
@@ -42,8 +44,9 @@ type CustomerRow = {
 export async function getCatalogSegmentAdminSettings(locale: string): Promise<CatalogSegmentAdminSettings> {
   const { membership } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
-  const [catalog, segmentsResult, servicesResult, categoriesResult, customersResult] = await Promise.all([
-    getCatalogAdminSettings(locale),
+  const catalog = await getCatalogAdminSettings(locale);
+  const [presentation, segmentsResult, servicesResult, categoriesResult, customersResult] = await Promise.all([
+    loadCatalogPresentation(supabase, locale, catalog.services.map((service) => service.id)),
     supabase
       .from("catalog_segments")
       .select("id, name, description, is_active, portal_visible, display_order")
@@ -103,13 +106,32 @@ export async function getCatalogSegmentAdminSettings(locale: string): Promise<Ca
         serviceId: link.service_id,
       })),
   }));
+  const localizedCategoryTitles = new Map<string, string>();
+  for (const service of catalog.services) {
+    const categoryKey = service.portalCategoryKey ?? service.internalCategory;
+    const categoryTitle = presentation.get(service.id)?.categoryTitle;
+    if (categoryKey && categoryTitle) localizedCategoryTitles.set(categoryKey, categoryTitle);
+  }
+  const requestedLocale = locale as AppLocale;
 
   return {
     available: true,
-    categories: catalog.categories,
+    categories: catalog.categories.map((category) => ({
+      ...category,
+      portalTitle: localizedCategoryTitles.get(category.categoryKey)
+        ?? category.translations[requestedLocale]
+        ?? category.translations.en
+        ?? category.portalTitle,
+    })),
     customers,
     segments,
-    services: catalog.services,
+    services: catalog.services.map((service) => ({
+      ...service,
+      name: presentation.get(service.id)?.name
+        ?? service.translations[requestedLocale]?.name
+        ?? service.translations.en?.name
+        ?? service.name,
+    })),
   };
 }
 

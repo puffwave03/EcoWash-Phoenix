@@ -72,7 +72,7 @@ const initialState: CatalogSegmentActionState = {
 function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
   return (
-    <button className="inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-white disabled:opacity-60" disabled={pending} type="submit">
+    <button className="inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60" disabled={pending} type="submit">
       {pending ? pendingLabel : label}
     </button>
   );
@@ -156,7 +156,7 @@ function SegmentEditor({
   const editorId = `segment-editor-${segment.id}`;
 
   return (
-    <article className="scroll-mt-24 overflow-hidden rounded-card border border-border bg-white shadow-card" id={`segment-${segment.id}`}>
+    <article className="scroll-mt-24 overflow-clip rounded-card border border-border bg-white shadow-card" id={`segment-${segment.id}`}>
       <button
         aria-controls={editorId}
         aria-expanded={expanded}
@@ -265,7 +265,7 @@ function SegmentEditor({
           ) : <p className="mt-4 text-sm text-muted">{text.noCustomers}</p>}
         </details>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 flex min-h-16 flex-wrap items-center justify-between gap-3 rounded-control border border-primary/15 bg-white/95 p-3 shadow-luxury backdrop-blur lg:bottom-3">
           <Result state={state} text={text} />
           <SubmitButton label={text.save} pendingLabel={text.saving} />
         </div>
