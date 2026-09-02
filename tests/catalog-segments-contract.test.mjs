@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { resolveShopCategoryLabel } from "../src/features/shop-terminal/category-label.ts";
 
 const migrationPath = "supabase/migrations/20260824000600_catalog_segments_001_customer_quick_catalogs.sql";
 
@@ -203,4 +204,32 @@ test("the expanded segment keeps one accessible save action sticky above mobile 
   assert.match(management, /const \{ pending \} = useFormStatus\(\)/);
   assert.match(management, /disabled=\{pending\} type="submit"/);
   assert.match(management, /focus-visible:ring-2/);
+});
+
+test("Segment category grid and service filter reuse locale labels for all five routes", async () => {
+  const [page, management] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/settings/catalog/segments/page.tsx"),
+    source("src/components/catalog-segments/CatalogSegmentManagement.tsx"),
+  ]);
+  const expected = {
+    de: "Bügelservice",
+    en: "Ironing",
+    es: "Planchado",
+    fr: "Repassage",
+    it: "Stireria",
+  };
+
+  assert.match(page, /resolveShopCategoryLabel\(category\.categoryKey, category\.portalTitle, categoryLabels\)/);
+  assert.match(page, /namespace: "common\.catalog"/);
+  assert.match(management, />\{categoryLabel\(category\)\}<\/span>/);
+  assert.match(management, />\{categoryLabel\(category\)\}<\/option>/);
+  for (const [locale, label] of Object.entries(expected)) {
+    const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.equal(resolveShopCategoryLabel("ironing", "Ironing", messages.catalog.categories), label);
+  }
+});
+
+test("Segment custom categories keep requested translation and canonical fallback behavior", () => {
+  assert.equal(resolveShopCategoryLabel("custom_family", "Tintorería", {}), "Tintorería");
+  assert.equal(resolveShopCategoryLabel("custom_family", "custom_family", {}), "Custom family");
 });

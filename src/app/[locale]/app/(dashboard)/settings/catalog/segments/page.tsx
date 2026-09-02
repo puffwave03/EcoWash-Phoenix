@@ -9,6 +9,7 @@ import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { hasEntitlement } from "@/features/entitlements/server/resolver";
 import { saveSegmentPriceAction } from "@/features/pricing-segments/server/actions";
 import { getSegmentPricingSettings } from "@/features/pricing-segments/server/queries";
+import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
 import { Link } from "@/i18n/navigation";
 
 type CatalogSegmentsPageProps = { params: Promise<{ locale: string }> };
@@ -16,13 +17,15 @@ type CatalogSegmentsPageProps = { params: Promise<{ locale: string }> };
 export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPageProps) {
   const { locale } = await params;
   const pricingEnabled = await hasEntitlement(locale, FEATURES.segmentPriceOverrides);
-  const [settings, pricing, t, pricingT, unavailableT] = await Promise.all([
+  const [settings, pricing, t, pricingT, unavailableT, catalogT] = await Promise.all([
     getCatalogSegmentAdminSettings(locale),
     pricingEnabled ? getSegmentPricingSettings(locale) : null,
     getTranslations({ locale, namespace: "common.catalogSegments" }),
     getTranslations({ locale, namespace: "common.pricingSegments" }),
     getTranslations({ locale, namespace: "common.entitlements.unavailable" }),
+    getTranslations({ locale, namespace: "common.catalog" }),
   ]);
+  const categoryLabels = catalogT.raw("categories") as Record<string, string>;
 
   return (
     <div className="space-y-6">
@@ -35,7 +38,10 @@ export default async function CatalogSegmentsPage({ params }: CatalogSegmentsPag
       {settings.available ? (
         <CatalogSegmentManagement
           action={saveCatalogSegmentAction.bind(null, locale)}
-          categories={settings.categories}
+          categories={settings.categories.map((category) => ({
+            ...category,
+            portalTitle: resolveShopCategoryLabel(category.categoryKey, category.portalTitle, categoryLabels),
+          }))}
           customers={settings.customers}
           segments={settings.segments}
           services={settings.services}
