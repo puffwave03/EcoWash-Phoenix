@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `134b40a` (`SEGMENTS-UX-001`).
-- Latest relevant application commit: `134b40a` (`SEGMENTS-UX-001`).
-- Previous completed product documentation commit: `92aad7b` (`DOCS-CATALOG-PRODUCTIZATION-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260901000100_catalog_productization_001_multilingual_catalog.sql`.
-- Linked migration history is aligned through `20260901000100`.
+- Product baseline before this docs update: `3a6d413` (`TERMINAL-SEGMENT-CATALOG-001`).
+- Latest relevant application commit: `3a6d413` (`TERMINAL-SEGMENT-CATALOG-001`).
+- Previous completed product documentation commit: `b2987a1` (`DOCS-SEGMENTS-UX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Latest migration: `20260902000100_terminal_segment_catalog_001.sql`.
+- Linked migration history is aligned through `20260902000100`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - ACCOUNTING-001C status: `READY`; no new migration was required.
@@ -25,6 +25,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-UX-006 status: `READY`; no new migration was required.
 - CATALOG-PRODUCTIZATION-001 status: `READY`; additive migration `20260901000100_catalog_productization_001_multilingual_catalog.sql` is applied and aligned.
 - SEGMENTS-UX-001 status: `READY`; no migration was required and segment domain semantics are unchanged.
+- TERMINAL-SEGMENT-CATALOG-001 status: `READY`; additive RPC migration `20260902000100_terminal_segment_catalog_001.sql` is applied and aligned.
 
 ## Completed Major Modules
 
@@ -43,7 +44,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Platform Admin | Separate SaaS administration context with audited controls complete. |
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
-| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments. The counter workspace uses a compact customer/scanner band, dense family chips, responsive visual service cards with canonical images and neutral fallback, plus a persistent readable cart; its success state exposes PRINT actions and an entitled Owner/Manager full-invoice action using the completed order/customer context. |
+| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments. Selecting a customer with an active catalog segment restricts the Terminal to its explicit service set and optional category intersection, while unsegmented/inactive-segment customers retain the general catalog. The compact register shows the active list name and keeps canonical pricing, cart, PRINT and invoice behavior. |
 | Quick Drop | Canonical received-order intake supports regular and distinct walk-in customers without initial items or financial rows. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
@@ -81,6 +82,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Existing tenants retain manual catalog ordering. Future organizations default to locale-aware A-Z; tenants can choose A-Z, Z-A or manual order without changing stable service/category identity.
 - Catalog CSV export/import is UTF-8 and Owner/Manager-only. Import requires a non-mutating preview followed by explicit confirmation and atomic server reconciliation by tenant-scoped service UUID/code. Missing rows, blank translations and blank media references are non-destructive; price fields are intentionally excluded.
 - Customer Segments remains at `/[locale]/app/settings/catalog/segments` and is now linked directly from Settings when the existing entitlement permits it. Compact cards summarize category/service counts and active/Portal status; filtering and batch selection preserve the established save action, eligibility, assignment, pricing and tenant-isolation semantics.
+- Shop Terminal resolves catalog eligibility from the selected tenant customer server-side. Active segments can only restrict explicit segment-service links and optional selected categories; they cannot revive inactive/location-ineligible services. Submission reuses the same predicate, so manipulated out-of-segment items are rejected, while segment/base/location price precedence remains unchanged.
 - Service display names remain canonical in `services.name`. Renames propagate to live Catalog, Terminal, Portal and new-order selection; new order lines snapshot the renamed value while existing order and invoice descriptions remain unchanged.
 - Category keys remain stable identities while editable titles drive current Catalog, Terminal and Portal presentation. Category order uses the existing `portal_sort_order`; archiving is blocked while active services remain assigned.
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
@@ -123,4 +125,5 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - CATALOG-MEDIA-FIX-001 linked proof uploaded and reloaded a controlled service image, preserved it through an edit without a file, replaced it, retained service UUID/code and pricing, restored the original path and removed both temporary storage objects.
 - ACCOUNTING-001C linked rollback proof reconciled EUR 1,000 net sales, EUR 800 gross collected (EUR 300 cash + EUR 500 card), EUR 50 refunds, EUR 750 net collected, EUR 200 outstanding, EUR 600 posted expenses and EUR 400 operational result. It used canonical POS payment/refund RPCs and left zero fixtures.
 - CATALOG-PRODUCTIZATION-001 linked rollback proof updated a controlled existing service presentation, created and archived a controlled service, exercised non-destructive missing-row behavior, and confirmed unchanged UUID/code/unit/media, pricing, segment relations and order/invoice snapshots. The additive migration aligned locally/remotely and `persisted_fixture_count` returned `0`.
+- TERMINAL-SEGMENT-CATALOG-001 linked rollback proof confirmed explicit service/category restriction, unchanged effective pricing, general-catalog fallback for no/inactive segment and rejection of manipulated out-of-segment submission; `persisted_fixture_count` returned `0`.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
