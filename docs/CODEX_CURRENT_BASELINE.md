@@ -9,9 +9,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `415665f` (`SEGMENTS-I18N-FIX-001`).
-- Latest relevant application commit: `415665f` (`SEGMENTS-I18N-FIX-001`).
-- Previous completed product documentation commit: `3d9317a` (`DOCS-SEGMENTS-UX-002`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
+- Product baseline before this docs update: `a9ae2ce` (`TERMINAL-CUSTOMER-UX-001A`).
+- Latest relevant application commit: `a9ae2ce` (`TERMINAL-CUSTOMER-UX-001A`).
+- Previous completed product documentation commit: `e748b00` (`DOCS-SEGMENTS-I18N-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260902000100_terminal_segment_catalog_001.sql`.
 - Linked migration history is aligned through `20260902000100`.
 - ACCOUNTING-001A status: `READY`.
@@ -28,6 +28,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-SEGMENT-CATALOG-001 status: `READY`; additive RPC migration `20260902000100_terminal_segment_catalog_001.sql` is applied and aligned.
 - SEGMENTS-UX-002 status: `READY`; no migration was required and segment relationships, pricing and customer assignments are unchanged.
 - SEGMENTS-I18N-FIX-001 status: `READY`; system category labels in both Segment selectors now follow the active locale, with custom-category fallback unchanged.
+- TERMINAL-CUSTOMER-UX-001A status: `READY`; UX-only, no migration. WALKIN persistence is intentionally unchanged and deferred to a separately approved TERMINAL-CUSTOMER-UX-001B.
 
 ## Completed Major Modules
 
@@ -90,7 +91,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Service retirement is archive-only V1: `is_active`, Portal visibility and customer orderability are disabled together, while UUID, code, prices, segment/media links and historical order/invoice snapshots remain intact.
 - Catalog family management uses explicit create/rename, accessible up/down ordering, safe archive blocking and an archived-family toggle. It reuses `20260830000100_catalog_structure_001_category_lifecycle.sql`; CATALOG-STRUCTURE-001.1 adds no migration.
 - Service images accept signature-validated JPEG, PNG and WebP files up to 2 MB in tenant-scoped `brand-media` paths. Editing without a file preserves the current path; replacement cleans the previous managed object after a successful save, while explicit removal alone clears it. Catalog admin, Shop Terminal and Customer Portal resolve and render the same canonical path with safe visual fallbacks.
-- Shop Terminal keeps customer/walk-in switching and scanner/search access in a compact responsive band. Service families use touch-friendly scrollable chips; service cards use a dense 2/3/4-column responsive grid with unchanged `h-28 / sm:h-32` canonical media previews or the shared neutral fallback. Terminal previews conservatively contain and center both icon-style assets and photos without cropping. Compact text spacing keeps names two-line bounded and prices/actions aligned while fitting more services vertically. Desktop retains the established approximately two-thirds catalog and one-third sticky cart split.
+- Shop Terminal keeps customer/walk-in switching and scanner/search access in a compact responsive band. The customer picker opens directly for a new order, keeps recent/search/occasional/regular paths reachable and can reopen over the selected customer without clearing the active cart or catalog; only selecting a different customer triggers the established protected reset/reload. Service families use touch-friendly scrollable chips; service cards use a dense 2/3/4-column responsive grid with unchanged `h-28 / sm:h-32` canonical media previews or the shared neutral fallback. Terminal previews conservatively contain and center both icon-style assets and photos without cropping. Compact text spacing keeps names two-line bounded and prices/actions aligned while fitting more services vertically. Desktop retains the established approximately two-thirds catalog and one-third sticky cart split.
 - Shop Terminal family labels at `/[locale]/app/shop` follow the active route locale for known system keys. Stable category keys remain the filtering identity; custom tenant-entered titles remain canonical and are never auto-translated, with a human-readable fallback when neither localized nor canonical display text is available.
 - Accounting sales and collection summaries read canonical orders, payments and POS sessions only; invoices remain documents and provider attempts remain non-canonical until confirmed payment settlement.
 - Expenses are a separate tenant/location-scoped domain. Gross amount is authoritative; tax is optional metadata, supplier payment state is metadata rather than a customer-ledger entry, posted expenses are immutable and voiding preserves history.
