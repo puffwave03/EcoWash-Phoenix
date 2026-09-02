@@ -9,11 +9,11 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `a9ae2ce` (`TERMINAL-CUSTOMER-UX-001A`).
-- Latest relevant application commit: `a9ae2ce` (`TERMINAL-CUSTOMER-UX-001A`).
+- Product baseline before this docs update: `7bcdefa` (`TERMINAL-CUSTOMER-UX-001B`).
+- Latest relevant application commit: `7bcdefa` (`TERMINAL-CUSTOMER-UX-001B shared walk-in customer model`).
 - Previous completed product documentation commit: `e748b00` (`DOCS-SEGMENTS-I18N-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260902000100_terminal_segment_catalog_001.sql`.
-- Linked migration history is aligned through `20260902000100`.
+- Latest migration: `20260902000200_terminal_customer_ux_001b_shared_walk_in.sql`.
+- Linked migration history is aligned through `20260902000200`.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - ACCOUNTING-001C status: `READY`; no new migration was required.
@@ -28,7 +28,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-SEGMENT-CATALOG-001 status: `READY`; additive RPC migration `20260902000100_terminal_segment_catalog_001.sql` is applied and aligned.
 - SEGMENTS-UX-002 status: `READY`; no migration was required and segment relationships, pricing and customer assignments are unchanged.
 - SEGMENTS-I18N-FIX-001 status: `READY`; system category labels in both Segment selectors now follow the active locale, with custom-category fallback unchanged.
-- TERMINAL-CUSTOMER-UX-001A status: `READY`; UX-only, no migration. WALKIN persistence is intentionally unchanged and deferred to a separately approved TERMINAL-CUSTOMER-UX-001B.
+- TERMINAL-CUSTOMER-UX-001A status: `READY`; UX-only foundation, no migration.
+- TERMINAL-CUSTOMER-UX-001B status: `READY`; new occasional visits reuse one tenant-scoped `WALKIN-SHARED` anchor and keep optional visitor identity on the order. Legacy walk-ins remain unchanged and promotion to a registered customer is deferred.
 
 ## Completed Major Modules
 
@@ -48,7 +49,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
 | Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments. Selecting a customer with an active catalog segment restricts the Terminal to its explicit service set and optional category intersection, while unsegmented/inactive-segment customers retain the general catalog. The compact register shows the active list name and keeps canonical pricing, cart, PRINT and invoice behavior. |
-| Quick Drop | Canonical received-order intake supports regular and distinct walk-in customers without initial items or financial rows. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
+| Quick Drop | Canonical received-order intake supports registered customers and the tenant-scoped shared walk-in anchor without initial items or financial rows. Optional walk-in name/phone remain order-local. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
@@ -61,7 +62,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - EcoWash Shop Terminal is enabled by the applied `20260829000200_shop_terminal_001_counter_experience.sql` reference bootstrap.
 - EcoWash Printing is enabled by the applied `20260829000300_print_001_output_entitlement.sql` bootstrap.
 - EcoWash Barcode is enabled by the additive `20260829000500_barcode_001_reference_entitlement.sql` reference bootstrap; it adds no barcode tables or historical data mutations.
-- Walk-ins use distinct canonical tenant-scoped customer records with `WALKIN-<UUID>` codes; no shared anonymous history exists.
+- New occasional visits reuse one concurrency-safe tenant-scoped technical customer with code `WALKIN-SHARED`; optional `walk_in_name` and `walk_in_phone` are stored only on each order. Legacy `WALKIN-<UUID>` customers and their history remain untouched.
 - Quick Drop creates a canonical `received` order with `order_status_history.metadata.source = "quick_drop"`. Zero active items means explicit `pending_detail` / unpriced state; no fake line, price, payment or invoice is created.
 - Quick Drop returns the stable `PHX1:O:<order UUID>` reference immediately and permits the internal order ticket only. Item labels remain unavailable until canonical items exist.
 - Quick Drop remains available only for a selected canonical customer with a location from the active Terminal session. A missing location keeps the action safely disabled and now exposes a concise localized accessible explanation; intake semantics are unchanged.
@@ -78,8 +79,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - Configured issuer identity is compact/collapsible. Incomplete configuration identifies the exact persisted legal fields still requiring Owner confirmation.
 - Brand/Portal, Customer catalog, printer profiles and Staff & Access keep their existing guarded routes but are discovered through Settings instead of separate daily-navigation entries.
 - Customer Account order/payment/property histories and order status/payment histories reuse one accessible disclosure control. Lists longer than three entries collapse by default; current balances, statuses, actions and short histories remain visible.
-- Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Regular and walk-in customers are prompted only for fields missing from the current Billing issue model.
-- Walk-in operational receipts require no fiscal identity. Requesting a full invoice updates the same canonical customer and reuses the same order; PAY LATER outstanding value remains unchanged.
+- Full invoices reuse canonical counter orders, line snapshots, discounts and payment truth. Registered customers are prompted only for fields missing from the current Billing issue model.
+- `WALKIN-SHARED` cannot receive fiscal identity or be invoiced; the operator must create or select a registered customer when an invoice is required. Promotion/conversion from an order-local walk-in snapshot remains deferred.
 - System UI locales are IT, EN, ES, FR and DE; tenant-entered catalog/service text is not auto-translated.
 - Each tenant service/category keeps one canonical identity with optional IT/ES/EN/FR/DE presentation. Display fallback is requested locale, then EN, then canonical service/category text; no machine translation or duplicate localized service records are created.
 - Existing tenants retain manual catalog ordering. Future organizations default to locale-aware A-Z; tenants can choose A-Z, Z-A or manual order without changing stable service/category identity.
