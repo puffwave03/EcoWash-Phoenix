@@ -9,8 +9,8 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 
 ## Current Git
 
-- Product baseline before this docs update: `53631b5` (`PORTAL-UX-MOBILE-CART-001`).
-- Latest relevant application commit: `53631b5` (`PORTAL-UX-MOBILE-CART-001 improve mobile service cart`).
+- Product baseline before this docs update: `6017dff` (`TERMINAL-UX-MOBILE-001`).
+- Latest relevant application commit: `6017dff` (`TERMINAL-UX-MOBILE-001 optimize smartphone terminal workflow`).
 - Previous completed product documentation commit: `e748b00` (`DOCS-SEGMENTS-I18N-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
 - Latest migration: `20260902000200_terminal_customer_ux_001b_shared_walk_in.sql`.
 - Linked migration history is aligned through `20260902000200`.
@@ -31,6 +31,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - TERMINAL-CUSTOMER-UX-001A status: `READY`; UX-only foundation, no migration.
 - TERMINAL-CUSTOMER-UX-001B status: `READY`; new occasional visits reuse one tenant-scoped `WALKIN-SHARED` anchor and keep optional visitor identity on the order. Legacy walk-ins remain unchanged and promotion to a registered customer is deferred.
 - PORTAL-UX-MOBILE-CART-001 status: `READY`; client-side only, no migration. Mobile service cards share quantity controls and the existing cart state now powers a sticky summary and editable bottom sheet without changing Review or server business logic.
+- TERMINAL-UX-MOBILE-001 status: `READY`; client-side only, no migration. Smartphones use compact one-column service cards with direct quantity controls, a persistent mini-cart and editable bottom sheet, while the established tablet/desktop register and all business logic remain unchanged.
 
 ## Completed Major Modules
 
@@ -49,7 +50,7 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Platform Admin | Separate SaaS administration context with audited controls complete. |
 | POS | Till sessions, cash/manual-card payments, refunds and reconciliation complete on the canonical ledger. |
 | Online Payments Foundation | Provider-neutral attempts, checkout/webhook boundary and reconciliation protection complete; real provider configuration is still required. |
-| Shop Terminal / COUNTER-BILLING-001 | Professional tablet/desktop register complete over canonical customers, catalog, pricing, orders, POS and payments. Selecting a customer with an active catalog segment restricts the Terminal to its explicit service set and optional category intersection, while unsegmented/inactive-segment customers retain the general catalog. The compact register shows the active list name and keeps canonical pricing, cart, PRINT and invoice behavior. |
+| Shop Terminal / COUNTER-BILLING-001 | Professional responsive register complete over canonical customers, catalog, pricing, orders, POS and payments. Smartphones use readable one-column service cards, direct quantity controls and a safe-area-aware editable cart sheet; tablet/desktop retain the dense catalog and established checkout. Selecting a customer with an active catalog segment restricts the Terminal to its explicit service set and optional category intersection, while unsegmented/inactive-segment customers retain the general catalog. |
 | Quick Drop | Canonical received-order intake supports registered customers and the tenant-scoped shared walk-in anchor without initial items or financial rows. Optional walk-in name/phone remain order-local. Pending-detail orders expose the stable order QR and internal ticket immediately, remain blocked from production, and reuse the same order plus canonical pricing when detailed later. |
 | Printing / Printer Configuration | Receipt, internal ticket and label-ready browser previews complete behind printing entitlement and POS capability; Owner/Manager printer profiles and per-location purpose defaults configure the existing PRINT renderer. Entitled tickets and labels now include stable scannable Phoenix QR references. |
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
