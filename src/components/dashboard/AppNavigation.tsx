@@ -371,7 +371,7 @@ export function AppNavigation({
             return (
               <Link
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-1 text-center text-xs font-semibold leading-none transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
+                className={`relative flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-0.5 text-center text-[0.68rem] font-semibold leading-tight transition-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
                   isActive
                     ? "bg-primary-soft !text-primary"
                     : "!text-muted hover:bg-[#f5f7f5] hover:!text-primary"
@@ -381,7 +381,7 @@ export function AppNavigation({
                 locale={locale}
               >
                 <NavigationIcon href={item.href} />
-                <span className="block max-w-full truncate px-0.5">{item.label}</span>
+                <span className="line-clamp-2 max-w-full px-0.5">{item.label}</span>
                 {item.alertBadge && alertCount > 0 ? (
                   <span className="absolute right-[calc(50%_-_1.45rem)] top-0.5 min-w-4 rounded-full bg-gold px-1 py-0.5 text-center text-[0.625rem] font-bold leading-none text-primary shadow-sm">
                     {alertCount}

@@ -202,7 +202,7 @@ test("30 customer modes, cart controls and scanner stay compact and accessible",
   assert.match(ui, /function clearCustomer/);
   assert.match(ui, /function addService/);
   assert.match(ui, /function updateQuantity/);
-  assert.match(ui, /current\.filter\(\(item\) => item\.service\.id !== line\.service\.id\)/);
+  assert.match(ui, /current\.filter\(\(item\) => item\.service\.id !== serviceId\)/);
   assert.match(ui, /onSubmit=\{resolveCode\}/);
   assert.match(ui, /placeholder=\{text\.searchServices\}/);
 });
@@ -251,7 +251,7 @@ test("31 responsive POS structure keeps a dense catalog and persistent one-third
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/features/shop-terminal/server/queries.ts"),
   ]);
-  assert.match(ui, /grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
+  assert.match(ui, /grid-cols-1 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
   assert.match(ui, /lg:grid-cols-\[minmax\(0,2\.1fr\)_minmax\(20rem,1fr\)\]/);
   assert.match(ui, /lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto/);
   assert.match(queries, /rpc\("list_shop_terminal_services"/);
@@ -298,7 +298,7 @@ test("35 compact cards preserve normalized previews and Terminal behavior", asyn
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/features/shop-terminal/server/queries.ts"),
   ]);
-  assert.match(ui, /flex h-full min-w-0 flex-col/);
+  assert.match(ui, /hidden h-full min-w-0 flex-col[\s\S]*md:flex/);
   assert.match(ui, /h-28 w-full shrink-0 border-b border-border sm:h-32/);
   assert.match(ui, /flex w-full flex-1 flex-col px-2\.5 py-1\.5/);
   assert.match(ui, /line-clamp-2 min-h-8 text-sm leading-4/);
@@ -307,6 +307,6 @@ test("35 compact cards preserve normalized previews and Terminal behavior", asyn
   assert.match(ui, /flex h-8 w-8 shrink-0/);
   assert.match(ui, /onClick=\{\(\) => addService\(service\)\}/);
   assert.match(ui, /service\.categoryKey === category/);
-  assert.match(ui, /grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
+  assert.match(ui, /grid-cols-1 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
   assert.match(queries, /imageUrl: serviceImageUrl/);
 });
