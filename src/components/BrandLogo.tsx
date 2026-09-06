@@ -25,10 +25,10 @@ export function BrandLogo({
     <Image
       alt={alt}
       className={`${sizeClasses[size]} object-contain ${className}`}
-      height={240}
+      height={670}
       priority={priority}
-      src="/brand/phoenix-by-ecowash-approved.svg"
-      width={960}
+      src="/brand/Phoenix_by_EcoWash_APPROVED.png"
+      width={1709}
     />
   );
 }
