@@ -38,13 +38,13 @@ export function Footer() {
       <Container className="py-10 sm:py-12">
         <div className="grid gap-10 lg:grid-cols-[0.95fr_2.05fr] lg:gap-14">
           <div>
-            <Link className="inline-flex items-center gap-3 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" href="/">
-              <span className="flex h-14 w-36 items-center justify-start overflow-hidden">
-                <BrandLogo alt="" size="footer" />
-              </span>
-              <span id="footer-title" className="hidden text-sm font-semibold text-text sm:block">
-                {brand("name")}
-              </span>
+            <Link
+              aria-label={brand("logoLabel")}
+              className="inline-flex items-center rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              href="/"
+            >
+              <span id="footer-title" className="sr-only">{brand("name")}</span>
+              <BrandLogo alt="" size="footer" />
             </Link>
             <div className="mt-5 h-px w-20 bg-gold" aria-hidden="true" />
           </div>
