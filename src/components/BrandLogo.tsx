@@ -4,6 +4,7 @@ type BrandLogoSize = "header" | "footer" | "dashboard";
 
 type BrandLogoProps = {
   alt: string;
+  className?: string;
   priority?: boolean;
   size?: BrandLogoSize;
 };
@@ -16,13 +17,14 @@ const sizeClasses: Record<BrandLogoSize, string> = {
 
 export function BrandLogo({
   alt,
+  className = "",
   priority = false,
   size = "header",
 }: BrandLogoProps) {
   return (
     <Image
       alt={alt}
-      className={`${sizeClasses[size]} object-contain`}
+      className={`${sizeClasses[size]} object-contain ${className}`}
       height={351}
       priority={priority}
       src="/brand/ecowash-logo.png"
