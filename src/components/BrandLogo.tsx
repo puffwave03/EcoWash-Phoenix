@@ -10,7 +10,7 @@ type BrandLogoProps = {
 };
 
 const sizeClasses: Record<BrandLogoSize, string> = {
-  header: "h-11 w-[6.625rem] sm:h-12 sm:w-[7.25rem]",
+  header: "h-14 w-auto sm:h-16",
   footer: "h-11 w-[6.625rem]",
   dashboard: "h-7 w-[4.25rem]",
 };
