@@ -46,6 +46,13 @@ export const siteConfig = {
     fr: "fr_FR",
     de: "de_DE",
   },
+  socialImage: {
+    alt: "Phoenix by EcoWash laundry operations platform",
+    height: 670,
+    path: "/brand/Phoenix_by_EcoWash_APPROVED.png",
+    type: "image/png",
+    width: 1709,
+  },
 } as const;
 
 export type SiteLocale = (typeof siteConfig.locales)[number];
