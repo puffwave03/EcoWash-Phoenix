@@ -27,7 +27,7 @@ export function BrandLogo({
       className={`${sizeClasses[size]} object-contain ${className}`}
       height={240}
       priority={priority}
-      src="/brand/ecowash-phoenix-logo.svg"
+      src="/brand/phoenix-by-ecowash-approved.svg"
       width={960}
     />
   );
