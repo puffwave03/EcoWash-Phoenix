@@ -36,24 +36,24 @@ export function Header() {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/92 backdrop-blur-xl">
       <Container>
-        <div className="flex min-h-20 items-center justify-between gap-6">
+        <div className="flex min-h-[4.5rem] items-center justify-between gap-4 sm:gap-6">
           <Link
-            className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="flex min-w-0 items-center gap-3 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             href="/"
             aria-label={brand("logoLabel")}
           >
-            <span className="flex items-center justify-center rounded-logo border border-border bg-surface px-2 py-1 shadow-card">
+            <span className="flex h-12 w-[7.8rem] shrink-0 items-center justify-start overflow-hidden sm:h-14 sm:w-[9rem]">
               <BrandLogo alt="" priority />
             </span>
-            <span className="text-sm font-semibold tracking-wide text-text">
+            <span className="hidden truncate text-sm font-semibold tracking-wide text-text sm:block lg:text-base">
               {brand("name")}
             </span>
           </Link>
 
           <nav
-            className="hidden items-center gap-7 lg:flex"
+            className="hidden items-center gap-6 xl:gap-7 lg:flex"
             aria-label={navigation("primaryLabel")}
           >
             {navigationItems.map((item) => (
@@ -91,7 +91,7 @@ export function Header() {
               aria-controls="mobile-navigation"
               aria-expanded={isOpen}
               aria-label={navigation("toggleMenu")}
-              className="inline-flex size-11 touch-manipulation items-center justify-center rounded-control border border-border bg-surface text-primary transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex size-11 touch-manipulation items-center justify-center rounded-control border border-border bg-background/85 text-primary shadow-sm transition-standard hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               onClick={() => setIsOpen((current) => !current)}
               type="button"
             >
@@ -107,7 +107,7 @@ export function Header() {
         {isOpen ? (
           <nav
             id="mobile-navigation"
-            className="absolute inset-x-0 top-full z-50 border-t border-border bg-background px-4 py-5 shadow-card lg:hidden"
+            className="absolute inset-x-0 top-full z-50 border-t border-border bg-background/98 px-4 py-5 shadow-card backdrop-blur-xl lg:hidden"
             aria-label={navigation("mobileLabel")}
           >
             <div className="flex flex-col gap-1">
