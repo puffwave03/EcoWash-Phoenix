@@ -11,8 +11,8 @@ type BrandLogoProps = {
 
 const sizeClasses: Record<BrandLogoSize, string> = {
   header: "h-14 w-auto sm:h-16",
-  footer: "h-11 w-[6.625rem]",
-  dashboard: "h-7 w-[4.25rem]",
+  footer: "h-12 w-auto",
+  dashboard: "h-8 w-auto",
 };
 
 export function BrandLogo({
@@ -25,10 +25,10 @@ export function BrandLogo({
     <Image
       alt={alt}
       className={`${sizeClasses[size]} object-contain ${className}`}
-      height={351}
+      height={240}
       priority={priority}
-      src="/brand/ecowash-logo.png"
-      width={528}
+      src="/brand/ecowash-phoenix-logo.svg"
+      width={960}
     />
   );
 }
