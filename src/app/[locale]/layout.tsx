@@ -22,7 +22,6 @@ export async function generateMetadata({
 }: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common.metadata" });
-  const socialImageUrl = new URL(siteConfig.socialImage.path, siteConfig.url).toString();
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -32,36 +31,8 @@ export async function generateMetadata({
     },
     description: t("description"),
     applicationName: siteConfig.name,
-    icons: {
-      apple: [
-        {
-          sizes: "180x180",
-          type: "image/png",
-          url: "/apple-icon.png",
-        },
-      ],
-      icon: [
-        {
-          url: "/favicon.ico",
-        },
-        {
-          sizes: "512x512",
-          type: "image/png",
-          url: "/icon.png",
-        },
-      ],
-    },
     openGraph: {
       description: t("description"),
-      images: [
-        {
-          alt: siteConfig.socialImage.alt,
-          height: siteConfig.socialImage.height,
-          type: siteConfig.socialImage.type,
-          url: socialImageUrl,
-          width: siteConfig.socialImage.width,
-        },
-      ],
       locale: siteConfig.openGraphLocales[locale as SiteLocale],
       siteName: siteConfig.name,
       title: t("title"),
@@ -70,12 +41,6 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       description: t("description"),
-      images: [
-        {
-          alt: siteConfig.socialImage.alt,
-          url: socialImageUrl,
-        },
-      ],
       title: t("title"),
     },
   };
