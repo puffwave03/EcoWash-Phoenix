@@ -40,16 +40,11 @@ export function Header() {
       <Container>
         <div className="flex min-h-[4.5rem] items-center justify-between gap-3 sm:gap-6">
           <Link
-            className="flex min-w-0 items-center gap-3 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="flex min-w-0 items-center rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             href="/"
             aria-label={brand("logoLabel")}
           >
-            <span className="flex shrink-0 items-center justify-start">
-              <BrandLogo alt="" className="mix-blend-multiply" priority />
-            </span>
-            <span className="block max-w-[8rem] truncate text-[0.82rem] font-semibold tracking-wide text-text sm:max-w-none sm:text-sm lg:text-base">
-              {brand("name")}
-            </span>
+            <BrandLogo alt="" priority />
           </Link>
 
           <nav
