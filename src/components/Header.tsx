@@ -38,16 +38,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/92 backdrop-blur-xl">
       <Container>
-        <div className="flex min-h-[4.5rem] items-center justify-between gap-4 sm:gap-6">
+        <div className="flex min-h-[4.5rem] items-center justify-between gap-3 sm:gap-6">
           <Link
             className="flex min-w-0 items-center gap-3 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             href="/"
             aria-label={brand("logoLabel")}
           >
-            <span className="flex h-12 w-[7.8rem] shrink-0 items-center justify-start overflow-hidden sm:h-14 sm:w-[9rem]">
-              <BrandLogo alt="" priority />
+            <span className="flex shrink-0 items-center justify-start">
+              <BrandLogo alt="" className="mix-blend-multiply" priority />
             </span>
-            <span className="hidden truncate text-sm font-semibold tracking-wide text-text sm:block lg:text-base">
+            <span className="block max-w-[8rem] truncate text-[0.82rem] font-semibold tracking-wide text-text sm:max-w-none sm:text-sm lg:text-base">
               {brand("name")}
             </span>
           </Link>
@@ -86,7 +86,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center lg:hidden">
+          <div className="flex shrink-0 items-center lg:hidden">
             <button
               aria-controls="mobile-navigation"
               aria-expanded={isOpen}
