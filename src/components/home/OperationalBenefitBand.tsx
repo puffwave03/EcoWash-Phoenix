@@ -12,26 +12,17 @@ export function OperationalBenefitBand() {
   const t = useTranslations("home.benefits");
 
   return (
-    <section className="bg-forest-deep py-8 text-white">
+    <section className="bg-forest-deep py-7 text-white sm:py-8">
       <Container>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {benefitItems.map((item) => (
-            <article
-              className="rounded-card border border-white/12 bg-white/[0.04] p-5"
-              key={item.key}
-            >
-              <span
-                aria-hidden="true"
-                className="text-small font-semibold text-gold"
-              >
-                {item.marker}
-              </span>
-              <h2 className="mt-3 text-lg font-semibold leading-tight text-white">
-                {t(`items.${item.key}.title`)}
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-white/70">
-                {t(`items.${item.key}.description`)}
-              </p>
+            <article className="rounded-[1.25rem] border border-white/12 bg-white/[0.045] p-5 backdrop-blur-sm" key={item.key}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-small font-semibold tracking-[0.15em] text-gold">{item.marker}</span>
+                <span className="h-px w-10 bg-gold/55" aria-hidden="true" />
+              </div>
+              <h2 className="mt-3 text-lg font-semibold leading-tight text-white">{t(`items.${item.key}.title`)}</h2>
+              <p className="mt-3 text-sm leading-6 text-white/68">{t(`items.${item.key}.description`)}</p>
             </article>
           ))}
         </div>
