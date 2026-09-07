@@ -1700,6 +1700,9 @@
       "voidReason": "Motif d'annulation",
       "refund": "Rembourser",
       "refundReason": "Motif du remboursement",
+      "refundSuccess": "Remboursement enregistré.",
+      "cashRefundRequiresTill": "Ouvrez une caisse pour rembourser un paiement en espèces.",
+      "cancelledPaidWarning": "Commande annulée — {amount} encore encaissés",
       "methods": {
         "cash": "Espèces",
         "card": "Carte",

@@ -1700,6 +1700,9 @@
       "voidReason": "Stornierungsgrund",
       "refund": "Erstatten",
       "refundReason": "Erstattungsgrund",
+      "refundSuccess": "Erstattung erfasst.",
+      "cashRefundRequiresTill": "Öffnen Sie eine Kasse, um eine Barzahlung zu erstatten.",
+      "cancelledPaidWarning": "Stornierter Auftrag — {amount} noch vereinnahmt",
       "methods": {
         "cash": "Bar",
         "card": "Karte",

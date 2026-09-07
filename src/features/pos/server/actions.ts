@@ -54,7 +54,7 @@ export async function refundPosPaymentAction(locale: string, _state: PosActionSt
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("record_pos_refund", { target_amount: parsed.input.amount, target_idempotency_key: parsed.input.idempotencyKey, target_payment_id: parsed.input.paymentId, target_pos_session_id: parsed.input.sessionId, target_reason: parsed.input.reason });
   if (error) { console.error("POS refund failed", error.code); return fail({}, "refund"); }
-  refresh(locale);
+  refresh(locale, parsed.input.orderId ?? undefined);
   return { ...initialState, success: true };
 }
 

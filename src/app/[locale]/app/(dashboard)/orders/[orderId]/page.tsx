@@ -39,14 +39,11 @@ import {
   listOrderItems,
 } from "@/features/orders/server/queries";
 import {
-  recordPaymentAction,
-  refundPaymentAction,
-  voidPaymentAction,
-} from "@/features/payments/server/actions";
-import {
   getOrderPaymentSummary,
   getOrderPayments,
 } from "@/features/payments/server/queries";
+import { refundPosPaymentAction } from "@/features/pos/server/actions";
+import { getCurrentPosSession } from "@/features/pos/server/queries";
 import { listEffectiveServicesForOrder } from "@/features/pricing-segments/server/order-services";
 import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
 import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
@@ -107,6 +104,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
   const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
     && hasOperationalCapability(access.membership, "pos");
+  const posSession = canUsePos ? await getCurrentPosSession(locale) : null;
   const canPrint = entitlementEnabled(entitlements, FEATURES.printing)
     && hasOperationalCapability(access.membership, "pos");
   const sectionLinks = [
@@ -374,21 +372,24 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <SectionShell id="payments" title={t("payments.title")}>
         {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
           actions={{
-            record: recordPaymentAction.bind(null, locale, order.id),
-            refund: refundPaymentAction.bind(null, locale, order.id),
-            void: voidPaymentAction.bind(null, locale, order.id),
+            refund: refundPosPaymentAction.bind(null, locale),
           }}
-          canManageCorrections={false}
+          canManageCorrections={canUsePos}
           canRecord={canUsePos}
           currency={order.currency}
+          isOrderCancelled={order.productionStatus === "cancelled"}
           locale={locale}
+          orderId={order.id}
           payments={payments}
           posHref={`/app/pos?q=${encodeURIComponent(order.orderNumber)}`}
+          posSessionId={posSession?.id ?? null}
           summary={paymentSummary}
           text={{
             actor: t("payments.actor"),
             amount: t("payments.amount"),
             balanceDue: t("payments.balanceDue"),
+            cancelledPaidWarning: t("payments.cancelledPaidWarning"),
+            cashRefundRequiresTill: t("payments.cashRefundRequiresTill"),
             date: t("payments.date"),
             empty: t("payments.empty"),
             error: t("payments.error"),
@@ -403,13 +404,12 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             reference: t("payments.reference"),
             refund: t("payments.refund"),
             refundReason: t("payments.refundReason"),
+            refundSuccess: t("payments.refundSuccess"),
             saving: t("payments.saving"),
             statuses: t.raw("payments.statuses"),
             title: t("payments.title"),
             totalDue: t("payments.totalDue"),
             totalPaid: t("payments.totalPaid"),
-            void: t("payments.void"),
-            voidReason: t("payments.voidReason"),
           }}
         />}
       </SectionShell>

@@ -1700,6 +1700,9 @@
       "voidReason": "Motivo de anulación",
       "refund": "Reembolsar",
       "refundReason": "Motivo de reembolso",
+      "refundSuccess": "Reembolso registrado.",
+      "cashRefundRequiresTill": "Abre una caja para reembolsar un pago en efectivo.",
+      "cancelledPaidWarning": "Pedido cancelado — aún hay {amount} cobrados",
       "methods": {
         "cash": "Efectivo",
         "card": "Tarjeta",

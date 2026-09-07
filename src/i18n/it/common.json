@@ -1720,6 +1720,9 @@
       "voidReason": "Motivo annullamento",
       "refund": "Rimborsa",
       "refundReason": "Motivo rimborso",
+      "refundSuccess": "Rimborso registrato.",
+      "cashRefundRequiresTill": "Apri una cassa per rimborsare un pagamento in contanti.",
+      "cancelledPaidWarning": "Ordine annullato — {amount} ancora incassati",
       "methods": {
         "cash": "Contanti",
         "card": "Carta",

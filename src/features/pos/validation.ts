@@ -45,16 +45,18 @@ export function parsePosPayment(formData: FormData) {
 
 export function parsePosRefund(formData: FormData) {
   const amount = money(formData, "amount");
+  const orderId = value(formData, "orderId", 80);
   const paymentId = value(formData, "paymentId", 80);
   const sessionId = value(formData, "sessionId", 80);
   const idempotencyKey = value(formData, "idempotencyKey", 80);
   const reason = value(formData, "reason");
   const fieldErrors: Record<string, string> = {};
   if (!Number.isFinite(amount) || amount <= 0) fieldErrors.amount = "invalid";
+  if (orderId && !UUID.test(orderId)) fieldErrors.orderId = "invalid";
   if (![paymentId, idempotencyKey].every((item) => UUID.test(item))) fieldErrors.paymentId = "invalid";
   if (sessionId && !UUID.test(sessionId)) fieldErrors.sessionId = "invalid";
   if (!reason) fieldErrors.reason = "required";
-  return { fieldErrors, input: { amount, idempotencyKey, paymentId, reason, sessionId: sessionId || null }, valid: Object.keys(fieldErrors).length === 0 };
+  return { fieldErrors, input: { amount, idempotencyKey, orderId: orderId || null, paymentId, reason, sessionId: sessionId || null }, valid: Object.keys(fieldErrors).length === 0 };
 }
 
 export function parseCloseSession(formData: FormData) {
