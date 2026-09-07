@@ -6,12 +6,13 @@ import { getCurrentEntitlements } from "@/features/entitlements/server/resolver"
 import { getCurrentPosSession } from "@/features/pos/server/queries";
 import {
   createShopCustomerAction,
+  loadShopDeliveryOptionsAction,
   loadShopServicesAction,
   resolveShopCodeAction,
   submitShopOrderAction,
 } from "@/features/shop-terminal/server/actions";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import { listShopCustomers } from "@/features/shop-terminal/server/queries";
+import { listShopCustomers, listShopOperationalOptions } from "@/features/shop-terminal/server/queries";
 import { createQuickDropAction } from "@/features/quick-drop/server/actions";
 import { listPendingQuickDrops } from "@/features/quick-drop/server/queries";
 import type { QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
@@ -20,9 +21,10 @@ type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT] = await Promise.all([
+  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
+    listShopOperationalOptions(locale),
     getCurrentPosSession(locale),
     listPendingQuickDrops(locale),
     getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
@@ -48,6 +50,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
       actions={{
         createCustomer: createShopCustomerAction.bind(null, locale),
         createQuickDrop: createQuickDropAction.bind(null, locale),
+        loadDeliveryOptions: loadShopDeliveryOptionsAction.bind(null, locale),
         loadServices: loadShopServicesAction.bind(null, locale),
         resolveCode: resolveShopCodeAction.bind(null, locale),
         submit: submitShopOrderAction.bind(null, locale),
@@ -63,6 +66,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
       organizationName={access.membership.organization.name}
       operatorName={access.profile.displayName || access.user.email || access.membership.role}
       pendingQuickDrops={pendingQuickDrops}
+      deliveryAssignments={operationalOptions.deliveryAssignments}
+      productionAssignments={operationalOptions.productionAssignments}
       printText={printT.raw("actions") as PrintActionText}
       quickDropText={{
         action: quickDropT("action"),

@@ -5,7 +5,7 @@ import { resolveShopCategoryLabel } from "../src/features/shop-terminal/category
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migrationPath = "supabase/migrations/20260829000200_shop_terminal_001_counter_experience.sql";
-const defaultsMigrationPath = "supabase/migrations/20260907000100_terminal_order_defaults_001.sql";
+const operationalMigrationPath = "supabase/migrations/20260907000200_terminal_operational_checkout_001.sql";
 
 test("1 terminal has a dedicated additive entitlement", async () => {
   const [sql, catalog] = await Promise.all([source(migrationPath), source("src/features/entitlements/feature-catalog.ts")]);
@@ -173,7 +173,7 @@ test("28 five locales expose complete terminal vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.auth.dashboard.shop, "string");
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 69);
+    assert.equal(Object.keys(messages.shopTerminal.labels).length, 85);
     assert.equal(typeof messages.shopTerminal.labels.segmentCatalog, "string");
     assert.equal(Object.keys(messages.barcode.terminal).length, 6);
   }
@@ -275,7 +275,7 @@ test("30e active changes persist without replacing a draft during temporary cata
   assert.match(activePersistence, /customerDraftsRef\.current\.set\(customerId/);
   assert.match(activePersistence, /items: cart\.map/);
   assert.match(activePersistence, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
-  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, discount, draftStorageKey, dueAt, internalNotes, showSplitPayment, splitCard, splitCash\]/);
+  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, productionAssigneeId, showSplitPayment, splitCard, splitCash\]/);
   assert.match(select, /catalogCustomerRef\.current = null[\s\S]*setCart\(\[\]\)/);
 });
 
@@ -329,6 +329,8 @@ test("30h session persistence contains draft scalars and service ids, never serv
   assert.match(draftType, /splitCash: number/);
   assert.match(draftType, /splitCard: number/);
   assert.match(draftType, /showSplitPayment: boolean/);
+  assert.match(draftType, /productionAssigneeId: string/);
+  assert.match(draftType, /delivery: DeliveryDraft/);
   assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|orderId|paymentId/);
   assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|invoice|supabase/i);
 });
@@ -410,35 +412,42 @@ test("36 production assignment options require active staff production capabilit
 });
 
 test("37 single-location Terminal submit atomically assigns the first production-eligible staff member", async () => {
-  const sql = await source(defaultsMigrationPath);
+  const [sql, ui, queries] = await Promise.all([
+    source(operationalMigrationPath),
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/server/queries.ts"),
+  ]);
 
-  assert.match(sql, /create or replace function public\.submit_shop_terminal_order\(/);
+  assert.match(sql, /create function public\.submit_shop_terminal_order\(/);
   assert.match(sql, /select count\(\*\) into active_location_count[\s\S]*from public\.locations location[\s\S]*location\.organization_id = org_id[\s\S]*location\.is_active[\s\S]*location\.deleted_at is null/);
-  assert.match(sql, /if active_location_count = 1 then[\s\S]*membership\.organization_id = org_id[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'production' = any\(membership\.operational_capabilities::text\[\]\)[\s\S]*order by membership\.profile_id asc[\s\S]*limit 1/);
+  assert.match(sql, /elsif active_location_count = 1 then[\s\S]*membership\.organization_id = org_id[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'production' = any\(membership\.operational_capabilities::text\[\]\)[\s\S]*order by membership\.profile_id asc[\s\S]*limit 1/);
   assert.match(sql, /update public\.orders orders[\s\S]*assigned_to = production_assignee/);
+  assert.match(ui, /productionAssignments\[0\]\?\.id \?\? ""/);
+  assert.match(ui, /setProductionAssigneeId\(event\.target\.value\)/);
+  assert.match(queries, /productionAssignments: !locations\.error && locations\.count === 1 \? assignments\.all : \[\]/);
 });
 
 test("38 no eligible staff and multi-location tenants safely retain an unassigned order", async () => {
-  const sql = await source(defaultsMigrationPath);
+  const sql = await source(operationalMigrationPath);
   const assignment = sql.slice(sql.indexOf("select count(*) into active_location_count"), sql.indexOf("select created.id, created.order_number"));
 
   assert.match(sql, /production_assignee uuid;/);
-  assert.match(assignment, /if active_location_count = 1 then/);
-  assert.doesNotMatch(assignment, /else/);
-  assert.doesNotMatch(assignment, /raise exception/);
+  assert.match(assignment, /elsif active_location_count = 1 then/);
+  assert.match(assignment, /active_location_count <> 1 or not exists[\s\S]*shop_terminal_production_assignee_invalid/);
 });
 
 test("39 missing pickup and delivery render as not requested without creating logistics rows", async () => {
   const [page, sql, logisticsActions] = await Promise.all([
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"),
-    source(defaultsMigrationPath),
+    source(operationalMigrationPath),
     source("src/features/logistics/server/actions.ts"),
   ]);
 
   assert.match(page, /logistics\.pickup \? logisticsStatusLabels\[logistics\.pickup\.status\] : logisticsStatusLabels\.not_required/);
   assert.match(page, /logistics\.delivery \? logisticsStatusLabels\[logistics\.delivery\.status\] : logisticsStatusLabels\.not_required/);
   assert.match(page, /empty: logisticsStatusLabels\.not_required/);
-  assert.doesNotMatch(sql, /insert into public\.(pickups|deliveries)/i);
+  assert.match(sql, /if target_delivery_requested then[\s\S]*public\.create_or_update_delivery\(/);
+  assert.doesNotMatch(sql, /create_or_update_pickup/);
   assert.match(logisticsActions, /rpc\("create_or_update_pickup"/);
   assert.match(logisticsActions, /rpc\("create_or_update_delivery"/);
 });
@@ -449,4 +458,69 @@ test("40 Terminal operational defaults leave multi-draft session persistence int
   assert.match(ui, /window\.sessionStorage\.setItem\(storageKey/);
   assert.match(ui, /customerDraftsRef\.current\.get\(nextCustomerId\)/);
   assert.match(ui, /setCart\(reconcileDraftCart\(nextDraft, catalog\.services\)\)/);
+});
+
+test("41 dueAt is prominent, collection-specific, required in UI and RPC", async () => {
+  const [ui, sql] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source(operationalMigrationPath),
+  ]);
+  assert.match(ui, /border-2 border-primary\/30[\s\S]*name="dueAt"[\s\S]*required type="datetime-local"/);
+  assert.match(sql, /or target_due_at is null/);
+  for (const locale of ["it", "en", "es", "fr", "de"]) {
+    const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.doesNotMatch(messages.shopTerminal.labels.dueAt, /delivery|entrega|consegna/i);
+  }
+});
+
+test("42 delivery options are lazy, tenant-scoped and apply the approved address fallback", async () => {
+  const [ui, queries, actions, page] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/server/queries.ts"),
+    source("src/features/shop-terminal/server/actions.ts"),
+    source("src/app/[locale]/app/(dashboard)/shop/page.tsx"),
+  ]);
+  assert.match(page, /loadDeliveryOptions: loadShopDeliveryOptionsAction\.bind\(null, locale\)/);
+  assert.match(actions, /loadShopDeliveryOptions as queryShopDeliveryOptions/);
+  assert.match(actions, /return queryShopDeliveryOptions\(locale, customerId\)/);
+  assert.match(ui, /if \(requested && customerId\) loadDeliveryOptionsForCustomer\(customerId, true\)/);
+  assert.match(ui, /options\.properties\.length === 1 \? options\.properties\[0\] : null/);
+  assert.match(ui, /options\.properties\.length === 0 \? options\.billing : null/);
+  assert.match(queries, /customerResult\.data\.customer_code === "WALKIN-SHARED"[\s\S]*billing: null, properties: \[\]/);
+  assert.match(queries, /from\("properties"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*eq\("customer_id", customerId\)[\s\S]*eq\("is_active", true\)/);
+  assert.doesNotMatch(queries, /from\("properties"\)\.update|from\("customers"\)\.update/);
+});
+
+test("43 operational fields survive A-B-A switching and session remount without serializing entities", async () => {
+  const [ui, types] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/features/shop-terminal/types.ts"),
+  ]);
+  const draftType = ui.slice(ui.indexOf("type DeliveryDraft"), ui.indexOf("export type ShopTerminalText"));
+  const saveDraft = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function restoreCheckoutDraft"));
+  assert.match(saveDraft, /delivery,[\s\S]*productionAssigneeId/);
+  assert.match(ui, /const restoredProductionAssigneeId = draft\?\.productionAssigneeId/);
+  assert.match(ui, /productionAssignments\.some\(\(assignment\) => assignment\.id === restoredProductionAssigneeId\)/);
+  assert.match(ui, /const restoredDelivery = draft\?\.delivery/);
+  assert.match(ui, /deliveryAssignments\.some\(\(assignment\) => assignment\.id === restoredDelivery\.assignedTo\)/);
+  for (const field of ["requested", "propertyId", "scheduledAt", "assignedTo", "notes"]) {
+    assert.match(draftType, new RegExp(`${field}:`));
+  }
+  for (const field of ["addressLine1", "contactName", "contactPhone"]) assert.match(types, new RegExp(`${field}:`));
+  assert.match(draftType, /type DeliveryDraft = ShopDeliveryAddress/);
+  assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|payment/);
+  assert.match(ui, /parseDeliveryDraft\(draft\.delivery\)/);
+});
+
+test("44 delivery OFF creates no row; ON validates and creates the scheduled row in the order transaction", async () => {
+  const [sql, action] = await Promise.all([
+    source(operationalMigrationPath),
+    source("src/features/shop-terminal/server/actions.ts"),
+  ]);
+  assert.match(action, /target_delivery_requested: deliveryRequested/);
+  assert.match(action, /deliveryRequested && \(!delivery \|\| !deliveryScheduledAt[\s\S]*!deliveryAddressLine1\)/);
+  assert.match(sql, /target_delivery_requested and \([\s\S]*target_delivery_scheduled_at is null[\s\S]*target_delivery_address_line1/);
+  assert.match(sql, /target_delivery_assigned_to[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'delivery' = any\(membership\.operational_capabilities::text\[\]\)/);
+  assert.match(sql, /select created\.id, created\.order_number into created_order[\s\S]*if target_delivery_requested then[\s\S]*public\.create_or_update_delivery\([\s\S]*created_order\.id/);
+  assert.doesNotMatch(sql, /commit;|exception when/i);
 });

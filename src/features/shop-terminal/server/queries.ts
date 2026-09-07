@@ -3,9 +3,10 @@ import "server-only";
 import { getTranslations } from "next-intl/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import type { ShopCatalogSelection, ShopCustomer, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
+import type { ShopCatalogSelection, ShopCustomer, ShopDeliveryAddress, ShopDeliveryOptions, ShopOperationalOptions, ShopRecentOrder, ShopService } from "@/features/shop-terminal/types";
 import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
 import { sortCatalogPresentation } from "@/features/catalog-productization/presentation";
+import { listAssignableStaff } from "@/features/logistics/server/queries";
 
 type ServiceRow = {
   amount: number;
@@ -28,6 +29,110 @@ function serviceImageUrl(
   if (!path) return null;
   if (path.startsWith("/")) return path;
   return supabase.storage.from("brand-media").getPublicUrl(path).data.publicUrl;
+}
+
+type DeliveryCustomerRow = {
+  billing_address_line1: string | null;
+  billing_address_line2: string | null;
+  billing_city: string | null;
+  billing_country_code: string | null;
+  billing_postal_code: string | null;
+  customer_code: string | null;
+  display_name: string;
+  phone: string | null;
+};
+
+type DeliveryPropertyRow = {
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  country_code: string | null;
+  id: string;
+  name: string;
+  postal_code: string | null;
+};
+
+function deliveryAddress(row: {
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  country_code: string | null;
+  postal_code: string | null;
+}): ShopDeliveryAddress {
+  return {
+    addressLine1: row.address_line1 ?? "",
+    addressLine2: row.address_line2 ?? "",
+    city: row.city ?? "",
+    contactName: row.contact_name ?? "",
+    contactPhone: row.contact_phone ?? "",
+    countryCode: row.country_code ?? "ES",
+    postalCode: row.postal_code ?? "",
+  };
+}
+
+export async function listShopOperationalOptions(locale: string): Promise<ShopOperationalOptions> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const [assignments, locations] = await Promise.all([
+    listAssignableStaff(locale),
+    supabase.from("locations")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", membership.organization.id)
+      .eq("is_active", true)
+      .is("deleted_at", null),
+  ]);
+  if (locations.error) console.error("Shop active location count failed", locations.error.code);
+  return {
+    deliveryAssignments: assignments.delivery,
+    productionAssignments: !locations.error && locations.count === 1 ? assignments.all : [],
+  };
+}
+
+export async function loadShopDeliveryOptions(locale: string, customerId: string): Promise<ShopDeliveryOptions> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const customerResult = await supabase.from("customers")
+    .select("customer_code, display_name, phone, billing_address_line1, billing_address_line2, billing_city, billing_postal_code, billing_country_code")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", customerId)
+    .eq("is_active", true)
+    .maybeSingle<DeliveryCustomerRow>();
+  if (customerResult.error || !customerResult.data) {
+    if (customerResult.error) console.error("Shop delivery customer query failed", customerResult.error.code);
+    return { billing: null, properties: [] };
+  }
+  if (customerResult.data.customer_code === "WALKIN-SHARED") return { billing: null, properties: [] };
+
+  const propertiesResult = await supabase.from("properties")
+    .select("id, name, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone")
+    .eq("organization_id", membership.organization.id)
+    .eq("customer_id", customerId)
+    .eq("is_active", true)
+    .order("name", { ascending: true })
+    .returns<DeliveryPropertyRow[]>();
+  if (propertiesResult.error) console.error("Shop delivery properties query failed", propertiesResult.error.code);
+  const customer = customerResult.data;
+  const billing = customer.billing_address_line1 ? deliveryAddress({
+    address_line1: customer.billing_address_line1,
+    address_line2: customer.billing_address_line2,
+    city: customer.billing_city,
+    contact_name: customer.display_name,
+    contact_phone: customer.phone,
+    country_code: customer.billing_country_code,
+    postal_code: customer.billing_postal_code,
+  }) : null;
+  return {
+    billing,
+    properties: (propertiesResult.data ?? []).map((property) => ({
+      ...deliveryAddress(property),
+      id: property.id,
+      name: property.name,
+    })),
+  };
 }
 
 export async function listShopCustomers(locale: string): Promise<ShopCustomer[]> {

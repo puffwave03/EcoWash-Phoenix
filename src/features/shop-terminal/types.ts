@@ -30,6 +30,36 @@ export type ShopCatalogSelection = {
   services: ShopService[];
 };
 
+export type ShopAssignmentOption = {
+  id: string;
+  label: string;
+};
+
+export type ShopDeliveryAddress = {
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  contactName: string;
+  contactPhone: string;
+  countryCode: string;
+  postalCode: string;
+};
+
+export type ShopDeliveryProperty = ShopDeliveryAddress & {
+  id: string;
+  name: string;
+};
+
+export type ShopDeliveryOptions = {
+  billing: ShopDeliveryAddress | null;
+  properties: ShopDeliveryProperty[];
+};
+
+export type ShopOperationalOptions = {
+  deliveryAssignments: ShopAssignmentOption[];
+  productionAssignments: ShopAssignmentOption[];
+};
+
 export type ShopRecentOrder = {
   customerName: string;
   id: string;

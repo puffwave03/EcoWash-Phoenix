@@ -6,7 +6,7 @@ import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
 import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
-import type { ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import type { ShopAssignmentOption, ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopDeliveryAddress, ShopDeliveryOptions, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
 import { QuickDropTerminalPanel, type QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
@@ -14,6 +14,13 @@ import type { PendingQuickDrop, QuickDropCreateResult } from "@/features/quick-d
 
 type CartLine = { quantity: number; service: ShopService };
 type CustomerMode = "regular" | "walk_in" | null;
+type DeliveryDraft = ShopDeliveryAddress & {
+  assignedTo: string;
+  notes: string;
+  propertyId: string;
+  requested: boolean;
+  scheduledAt: string;
+};
 type ShopTerminalDraft = {
   cardReference: string;
   customerNotes: string;
@@ -21,6 +28,8 @@ type ShopTerminalDraft = {
   dueAt: string;
   internalNotes: string;
   items: Array<{ quantity: number; serviceId: string }>;
+  delivery: DeliveryDraft;
+  productionAssigneeId: string;
   showSplitPayment: boolean;
   splitCard: number;
   splitCash: number;
@@ -43,11 +52,16 @@ export type ShopTerminalText = {
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
   tillOpen: string; tillRequired: string; title: string; total: string; unitTypes: Record<string, string>;
   scanCode: string; scanPlaceholder: string; scanSubmit: string; scanning: string; scanInvalid: string; scanNotFound: string;
+  addressLine1: string; addressLine2: string; city: string; contactName: string; contactPhone: string;
+  countryCode: string; delivery: string; deliveryAssignee: string; deliveryNotes: string;
+  deliveryProperty: string; deliveryScheduledAt: string; loadingDelivery: string; manualAddress: string;
+  noAssignee: string; postalCode: string; productionAssignee: string;
 };
 
 type Props = {
   actions: {
     createCustomer: (state: ShopCustomerState, formData: FormData) => Promise<ShopCustomerState>;
+    loadDeliveryOptions: (customerId: string) => Promise<ShopDeliveryOptions>;
     loadServices: (customerId: string, locationId: string | null) => Promise<ShopCatalogSelection>;
     createQuickDrop: (formData: FormData) => Promise<QuickDropCreateResult>;
     resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
@@ -59,12 +73,14 @@ type Props = {
   canScan: boolean;
   categoryLabels: Record<string, string>;
   customers: ShopCustomer[];
+  deliveryAssignments: ShopAssignmentOption[];
   locale: string;
   operatorName: string;
   organizationId: string;
   organizationName: string;
   pendingQuickDrops: PendingQuickDrop[];
   printText: PrintActionText;
+  productionAssignments: ShopAssignmentOption[];
   quickDropText: QuickDropText;
   role: string;
   session: PosSession | null;
@@ -75,6 +91,34 @@ const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const terminalDraftStoragePrefix = "ecowash:shop-terminal-drafts:v1";
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
+
+function emptyDeliveryDraft(defaultAssignee = ""): DeliveryDraft {
+  return {
+    addressLine1: "",
+    addressLine2: "",
+    assignedTo: defaultAssignee,
+    city: "",
+    contactName: "",
+    contactPhone: "",
+    countryCode: "ES",
+    notes: "",
+    postalCode: "",
+    propertyId: "",
+    requested: false,
+    scheduledAt: "",
+  };
+}
+
+function parseDeliveryDraft(value: unknown): DeliveryDraft {
+  if (!value || typeof value !== "object") return emptyDeliveryDraft();
+  const draft = value as Record<string, unknown>;
+  const parsed = emptyDeliveryDraft();
+  for (const field of ["addressLine1", "addressLine2", "assignedTo", "city", "contactName", "contactPhone", "countryCode", "notes", "postalCode", "propertyId", "scheduledAt"] as const) {
+    if (typeof draft[field] === "string") parsed[field] = draft[field];
+  }
+  parsed.requested = draft.requested === true;
+  return parsed;
+}
 
 function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
   if (!value || typeof value !== "object") return null;
@@ -105,6 +149,8 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
     dueAt: draft.dueAt,
     internalNotes: draft.internalNotes,
     items,
+    delivery: parseDeliveryDraft(draft.delivery),
+    productionAssigneeId: typeof draft.productionAssigneeId === "string" ? draft.productionAssigneeId : "",
     showSplitPayment: draft.showSplitPayment,
     splitCard: draft.splitCard,
     splitCash: draft.splitCash,
@@ -141,7 +187,7 @@ function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTermi
   }
 }
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
@@ -163,9 +209,13 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [dueAt, setDueAt] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
+  const [productionAssigneeId, setProductionAssigneeId] = useState(productionAssignments[0]?.id ?? "");
+  const [delivery, setDelivery] = useState<DeliveryDraft>(() => emptyDeliveryDraft(deliveryAssignments[0]?.id));
+  const [deliveryOptions, setDeliveryOptions] = useState<ShopDeliveryOptions | null>(null);
   const [dismissedOrderId, setDismissedOrderId] = useState<string | null>(null);
   const [isLoading, startLoading] = useTransition();
   const [isResolving, startResolving] = useTransition();
+  const [isLoadingDelivery, startLoadingDelivery] = useTransition();
   const [scanError, setScanError] = useState<ShopCodeResolveResult["error"]>(null);
   const [scanValue, setScanValue] = useState("");
   const [customerState, createCustomer, isCreatingCustomer] = useActionState(async (state: ShopCustomerState, formData: FormData) => {
@@ -182,6 +232,8 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const payloadRef = useRef<HTMLInputElement>(null);
   const catalogRequestRef = useRef(0);
   const catalogCustomerRef = useRef<string | null>(null);
+  const selectedCustomerIdRef = useRef("");
+  const deliveryRequestRef = useRef(0);
   const customerDraftsRef = useRef(new Map<string, ShopTerminalDraft>());
   const hydratedDraftStorageKeyRef = useRef<string | null>(null);
   const mobileCartCloseRef = useRef<HTMLButtonElement>(null);
@@ -227,16 +279,18 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
+      delivery,
       discount,
       dueAt,
       internalNotes,
       items: cart.map((line) => ({ quantity: line.quantity, serviceId: line.service.id })),
+      productionAssigneeId,
       showSplitPayment,
       splitCard,
       splitCash,
     });
     persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
-  }, [cardReference, cart, customerId, customerNotes, discount, draftStorageKey, dueAt, internalNotes, showSplitPayment, splitCard, splitCash]);
+  }, [cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, productionAssigneeId, showSplitPayment, splitCard, splitCash]);
 
   useEffect(() => {
     const submittedCustomerId = submitState.result?.customerId;
@@ -260,10 +314,12 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
+      delivery,
       discount,
       dueAt,
       internalNotes,
       items: cart.map((line) => ({ quantity: line.quantity, serviceId: line.service.id })),
+      productionAssigneeId,
       showSplitPayment,
       splitCard,
       splitCash,
@@ -280,6 +336,49 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setDueAt(draft?.dueAt ?? "");
     setCustomerNotes(draft?.customerNotes ?? "");
     setInternalNotes(draft?.internalNotes ?? "");
+    const restoredProductionAssigneeId = draft?.productionAssigneeId ?? "";
+    setProductionAssigneeId(productionAssignments.some((assignment) => assignment.id === restoredProductionAssigneeId)
+      ? restoredProductionAssigneeId
+      : productionAssignments[0]?.id ?? "");
+    const restoredDelivery = draft?.delivery ?? emptyDeliveryDraft(deliveryAssignments[0]?.id);
+    setDelivery({
+      ...restoredDelivery,
+      assignedTo: deliveryAssignments.some((assignment) => assignment.id === restoredDelivery.assignedTo)
+        ? restoredDelivery.assignedTo
+        : deliveryAssignments[0]?.id ?? "",
+    });
+  }
+
+  function applyDeliveryAddress(address: ShopDeliveryAddress, propertyId = "") {
+    setDelivery((current) => ({ ...current, ...address, propertyId }));
+  }
+
+  function loadDeliveryOptionsForCustomer(nextCustomerId: string, prefill: boolean) {
+    const requestId = deliveryRequestRef.current + 1;
+    deliveryRequestRef.current = requestId;
+    startLoadingDelivery(async () => {
+      const options = await actions.loadDeliveryOptions(nextCustomerId);
+      if (deliveryRequestRef.current !== requestId || selectedCustomerIdRef.current !== nextCustomerId) return;
+      setDeliveryOptions(options);
+      if (!prefill) return;
+      const property = options.properties.length === 1 ? options.properties[0] : null;
+      const address = property ?? (options.properties.length === 0 ? options.billing : null);
+      if (address) setDelivery((current) => current.requested && !current.addressLine1
+        ? { ...current, ...address, propertyId: property?.id ?? "" }
+        : current);
+    });
+  }
+
+  function setDeliveryRequested(requested: boolean) {
+    setDelivery((current) => ({ ...current, requested }));
+    if (requested && customerId) loadDeliveryOptionsForCustomer(customerId, true);
+  }
+
+  function selectDeliveryProperty(propertyId: string) {
+    const property = deliveryOptions?.properties.find((option) => option.id === propertyId);
+    if (property) applyDeliveryAddress(property, property.id);
+    else if (!propertyId && deliveryOptions?.properties.length === 0 && deliveryOptions.billing) applyDeliveryAddress(deliveryOptions.billing);
+    else setDelivery((current) => ({ ...current, propertyId }));
   }
 
   function reconcileDraftCart(draft: ShopTerminalDraft | undefined, freshServices: ShopService[]) {
@@ -302,6 +401,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     const requestId = catalogRequestRef.current + 1;
     catalogRequestRef.current = requestId;
     catalogCustomerRef.current = null;
+    selectedCustomerIdRef.current = nextCustomerId;
     setCustomerId(nextCustomerId);
     setCustomerMode(null);
     setCustomerQuery("");
@@ -312,7 +412,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setIsMobileCartOpen(false);
     setCategory("all");
     setServiceQuery("");
+    setDeliveryOptions(null);
     restoreCheckoutDraft(nextDraft);
+    if (nextDraft?.delivery.requested) loadDeliveryOptionsForCustomer(nextCustomerId, false);
     startLoading(async () => {
       const catalog = await actions.loadServices(nextCustomerId, session?.locationId ?? null);
       if (catalogRequestRef.current !== requestId) return;
@@ -334,7 +436,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
     }
     catalogRequestRef.current += 1;
+    deliveryRequestRef.current += 1;
     catalogCustomerRef.current = null;
+    selectedCustomerIdRef.current = "";
     setCustomerId("");
     setServices([]);
     setSegmentName(null);
@@ -351,6 +455,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setDueAt("");
     setCustomerNotes("");
     setInternalNotes("");
+    setProductionAssigneeId(productionAssignments[0]?.id ?? "");
+    setDelivery(emptyDeliveryDraft(deliveryAssignments[0]?.id));
+    setDeliveryOptions(null);
   }
 
   function addService(service: ShopService) {
@@ -411,6 +518,20 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       customerNotes: formData.get("customerNotes"),
       discountAmount: safeDiscount,
       dueAt: formData.get("dueAt"),
+      productionAssigneeId: productionAssigneeId || null,
+      deliveryRequested: delivery.requested,
+      delivery: delivery.requested ? {
+        addressLine1: delivery.addressLine1,
+        addressLine2: delivery.addressLine2,
+        assignedTo: delivery.assignedTo || null,
+        city: delivery.city,
+        contactName: delivery.contactName,
+        contactPhone: delivery.contactPhone,
+        countryCode: delivery.countryCode,
+        notes: delivery.notes,
+        postalCode: delivery.postalCode,
+        scheduledAt: delivery.scheduledAt,
+      } : null,
       idempotencyKey: crypto.randomUUID(),
       internalNotes: formData.get("internalNotes"),
       items: cart.map((line) => ({ quantity: line.quantity, serviceId: line.service.id })),
@@ -543,7 +664,36 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
         <aside className="scroll-mt-4 min-w-0 border-t border-border bg-white shadow-[-12px_0_30px_rgb(15_59_46_/_0.06)] lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0" id="terminal-checkout">
           <div className="p-4 sm:p-5"><div className="flex items-center justify-between border-b-2 border-primary pb-3"><div><p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-muted">{selectedCustomerName ?? text.customer}</p><h2 className="text-xl font-black text-primary">{text.cart}</h2></div>{cart.length ? <button className="min-h-10 px-2 text-sm font-bold text-red-700" onClick={clearCart} type="button">{text.clear}</button> : null}</div>
             <div className="max-h-[32vh] overflow-y-auto lg:max-h-[30vh]">{cart.length ? cart.map((line) => <div className="border-b border-border py-3" key={line.service.id}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="font-bold leading-tight text-primary">{line.service.name}</p><p className="mt-1 text-xs text-muted">{formatCurrency(line.service.amount, line.service.currency, locale)} / {text.unitTypes[line.service.unitType]}</p></div><strong className="whitespace-nowrap text-lg text-primary">{formatCurrency(line.quantity * line.service.amount, line.service.currency, locale)}</strong></div><div className="mt-2 flex items-center justify-between gap-3"><div className="flex items-center rounded-control border border-border bg-[#f7f8f5]"><button aria-label={`− ${text.quantity}`} className="min-h-11 min-w-11 text-xl font-black text-primary" onClick={() => adjustQuantity(line, -1)} type="button">−</button><input aria-label={text.quantity} className="h-11 w-16 border-x border-border bg-white text-center text-base font-black text-primary" min={isDiscreteServiceUnit(line.service.unitType) ? 1 : 0.001} onChange={(event) => updateQuantity(line.service.id, Number(event.target.value))} step={isDiscreteServiceUnit(line.service.unitType) ? 1 : 0.1} type="number" value={line.quantity} /><button aria-label={`+ ${text.quantity}`} className="min-h-11 min-w-11 text-xl font-black text-primary" onClick={() => adjustQuantity(line, 1)} type="button">+</button></div><button className="min-h-11 px-2 text-sm font-bold text-red-700" onClick={() => removeCartLine(line.service.id)} type="button">{text.remove}</button></div></div>) : <p className="py-10 text-center text-muted">{text.emptyCart}</p>}</div>
-            <form action={submit} className="mt-4 space-y-3" onSubmit={prepareSubmission}><input name="payload" ref={payloadRef} type="hidden" /><label className="flex items-center justify-between gap-3 text-sm font-bold text-primary"><span>{text.discount}</span><input className="min-h-10 w-28 rounded-control border border-border px-3 text-right text-lg" disabled={!canDiscount} max={subtotal} min="0" onChange={(event) => setDiscount(Number(event.target.value))} step="0.01" type="number" value={discount} /></label><dl className="space-y-1.5 border-t border-border pt-3"><div className="flex justify-between text-sm"><dt className="text-muted">{text.subtotal}</dt><dd className="font-bold text-primary">{formatCurrency(subtotal, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.discount}</dt><dd className="font-bold text-primary">− {formatCurrency(safeDiscount, currency, locale)}</dd></div><div className="mt-2 flex items-end justify-between rounded-control bg-primary p-4 text-white"><dt className="text-sm font-black uppercase tracking-[0.12em]">{text.total}</dt><dd className="text-4xl font-black">{formatCurrency(total, currency, locale)}</dd></div><div className="flex justify-between pt-1 text-sm"><dt className="text-muted">{text.paid}</dt><dd className="font-bold text-primary">{formatCurrency(0, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.outstanding}</dt><dd className="font-black text-primary">{formatCurrency(total, currency, locale)}</dd></div></dl><details className="border-b border-border pb-3"><summary className="cursor-pointer text-sm font-bold text-primary">{text.notes}</summary><div className="mt-3 space-y-2"><label className="block text-xs font-bold text-muted">{text.dueAt}<input className="mt-1 min-h-11 w-full rounded-control border border-border px-3" name="dueAt" onChange={(event) => setDueAt(event.target.value)} type="datetime-local" value={dueAt} /></label><textarea className="min-h-16 w-full rounded-control border border-border p-3" name="customerNotes" onChange={(event) => setCustomerNotes(event.target.value)} placeholder={text.notes} value={customerNotes} /><textarea className="min-h-16 w-full rounded-control border border-border p-3" name="internalNotes" onChange={(event) => setInternalNotes(event.target.value)} placeholder={text.notes} value={internalNotes} /></div></details>{submitState.error ? <p className="rounded-control bg-red-50 p-3 text-sm font-semibold text-red-700">{submitState.error === "validation" ? text.errorValidation : submitState.error === "till" ? text.errorTill : submitState.error === "discount" ? text.errorDiscount : text.errorGeneric}</p> : null}<fieldset><legend className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-muted">{text.payment}</legend><div className="grid grid-cols-3 gap-2"><button className="min-h-16 rounded-control bg-primary px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="cash">{isSubmitting ? text.saving : text.paymentCash}</button><button className="min-h-16 rounded-control bg-primary-strong px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="card">{isSubmitting ? text.saving : text.paymentCard}</button><button className="min-h-16 rounded-control border-2 border-primary bg-white px-2 text-sm font-black uppercase text-primary disabled:opacity-40" disabled={isSubmitting || !customerId || !cart.length || total < 0} name="intent" type="submit" value="later">{isSubmitting ? text.saving : text.payLater}</button></div></fieldset><input className="min-h-10 w-full rounded-control border border-border px-3 text-sm" onChange={(event) => setCardReference(event.target.value)} placeholder={text.cardReference} value={cardReference} /><button className="min-h-10 w-full text-sm font-bold text-primary underline underline-offset-4" onClick={() => setShowSplitPayment((current) => !current)} type="button">{text.splitPayment}</button>{showSplitPayment ? <div className="grid grid-cols-2 gap-2 border-l-4 border-primary bg-primary-soft p-3"><label className="text-xs font-bold text-muted">{text.splitCash}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCash(Number(event.target.value))} step="0.01" type="number" value={splitCash} /></label><label className="text-xs font-bold text-muted">{text.splitCard}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCard(Number(event.target.value))} step="0.01" type="number" value={splitCard} /></label><button className="col-span-2 min-h-12 rounded-control bg-primary px-4 font-bold text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0 || roundMoney(splitCash + splitCard) !== total} name="intent" type="submit" value="split">{text.confirmSplit}</button></div> : null}{!session ? <Link className="flex min-h-12 items-center justify-center rounded-control bg-amber-50 px-3 text-sm font-bold !text-amber-800" href="/app/pos" locale={locale}>{text.openTill} →</Link> : null}</form>
+            <form action={submit} className="mt-4 space-y-3" onSubmit={prepareSubmission}>
+              <input name="payload" ref={payloadRef} type="hidden" />
+              <div className="rounded-control border-2 border-primary/30 bg-primary-soft p-3">
+                <label className="block text-sm font-black text-primary">{text.dueAt}<input className="mt-1 min-h-12 w-full rounded-control border border-border bg-white px-3 text-base" name="dueAt" onChange={(event) => setDueAt(event.target.value)} required type="datetime-local" value={dueAt} /></label>
+              </div>
+              <label className="block text-sm font-bold text-primary">{text.productionAssignee}<select className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setProductionAssigneeId(event.target.value)} value={productionAssigneeId}><option value="">{text.noAssignee}</option>{productionAssignments.map((assignment) => <option key={assignment.id} value={assignment.id}>{assignment.label}</option>)}</select></label>
+              <div className="rounded-control border border-border p-3">
+                <label className="flex min-h-10 cursor-pointer items-center justify-between gap-3 text-sm font-black text-primary"><span>{text.delivery}</span><input checked={delivery.requested} className="h-5 w-5 accent-primary" onChange={(event) => setDeliveryRequested(event.target.checked)} type="checkbox" /></label>
+                {delivery.requested ? <div className="mt-3 grid gap-2 border-t border-border pt-3 sm:grid-cols-2">
+                  {isLoadingDelivery ? <p className="text-xs font-semibold text-muted sm:col-span-2">{text.loadingDelivery}</p> : null}
+                  {deliveryOptions && deliveryOptions.properties.length > 1 ? <label className="text-xs font-bold text-muted sm:col-span-2">{text.deliveryProperty}<select className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm" onChange={(event) => selectDeliveryProperty(event.target.value)} value={delivery.propertyId}><option value="">{text.manualAddress}</option>{deliveryOptions.properties.map((property) => <option key={property.id} value={property.id}>{property.name}</option>)}</select></label> : null}
+                  <label className="text-xs font-bold text-muted sm:col-span-2">{text.deliveryScheduledAt}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, scheduledAt: event.target.value }))} required type="datetime-local" value={delivery.scheduledAt} /></label>
+                  <label className="text-xs font-bold text-muted sm:col-span-2">{text.addressLine1}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, addressLine1: event.target.value }))} required value={delivery.addressLine1} /></label>
+                  <label className="text-xs font-bold text-muted sm:col-span-2">{text.addressLine2}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, addressLine2: event.target.value }))} value={delivery.addressLine2} /></label>
+                  <label className="text-xs font-bold text-muted">{text.city}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, city: event.target.value }))} value={delivery.city} /></label>
+                  <label className="text-xs font-bold text-muted">{text.postalCode}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, postalCode: event.target.value }))} value={delivery.postalCode} /></label>
+                  <label className="text-xs font-bold text-muted">{text.countryCode}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 uppercase" maxLength={2} onChange={(event) => setDelivery((current) => ({ ...current, countryCode: event.target.value.toUpperCase() }))} value={delivery.countryCode} /></label>
+                  <label className="text-xs font-bold text-muted">{text.contactName}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, contactName: event.target.value }))} value={delivery.contactName} /></label>
+                  <label className="text-xs font-bold text-muted">{text.contactPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, contactPhone: event.target.value }))} value={delivery.contactPhone} /></label>
+                  <label className="text-xs font-bold text-muted">{text.deliveryAssignee}<select className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3" onChange={(event) => setDelivery((current) => ({ ...current, assignedTo: event.target.value }))} value={delivery.assignedTo}><option value="">{text.noAssignee}</option>{deliveryAssignments.map((assignment) => <option key={assignment.id} value={assignment.id}>{assignment.label}</option>)}</select></label>
+                  <label className="text-xs font-bold text-muted sm:col-span-2">{text.deliveryNotes}<textarea className="mt-1 min-h-16 w-full rounded-control border border-border bg-white p-3" onChange={(event) => setDelivery((current) => ({ ...current, notes: event.target.value }))} value={delivery.notes} /></label>
+                </div> : null}
+              </div>
+              <label className="flex items-center justify-between gap-3 text-sm font-bold text-primary"><span>{text.discount}</span><input className="min-h-10 w-28 rounded-control border border-border px-3 text-right text-lg" disabled={!canDiscount} max={subtotal} min="0" onChange={(event) => setDiscount(Number(event.target.value))} step="0.01" type="number" value={discount} /></label>
+              <dl className="space-y-1.5 border-t border-border pt-3"><div className="flex justify-between text-sm"><dt className="text-muted">{text.subtotal}</dt><dd className="font-bold text-primary">{formatCurrency(subtotal, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.discount}</dt><dd className="font-bold text-primary">− {formatCurrency(safeDiscount, currency, locale)}</dd></div><div className="mt-2 flex items-end justify-between rounded-control bg-primary p-4 text-white"><dt className="text-sm font-black uppercase tracking-[0.12em]">{text.total}</dt><dd className="text-4xl font-black">{formatCurrency(total, currency, locale)}</dd></div><div className="flex justify-between pt-1 text-sm"><dt className="text-muted">{text.paid}</dt><dd className="font-bold text-primary">{formatCurrency(0, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.outstanding}</dt><dd className="font-black text-primary">{formatCurrency(total, currency, locale)}</dd></div></dl>
+              <details className="border-b border-border pb-3"><summary className="cursor-pointer text-sm font-bold text-primary">{text.notes}</summary><div className="mt-3 space-y-2"><textarea className="min-h-16 w-full rounded-control border border-border p-3" name="customerNotes" onChange={(event) => setCustomerNotes(event.target.value)} placeholder={text.notes} value={customerNotes} /><textarea className="min-h-16 w-full rounded-control border border-border p-3" name="internalNotes" onChange={(event) => setInternalNotes(event.target.value)} placeholder={text.notes} value={internalNotes} /></div></details>
+              {submitState.error ? <p className="rounded-control bg-red-50 p-3 text-sm font-semibold text-red-700">{submitState.error === "validation" ? text.errorValidation : submitState.error === "till" ? text.errorTill : submitState.error === "discount" ? text.errorDiscount : text.errorGeneric}</p> : null}
+              <fieldset><legend className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-muted">{text.payment}</legend><div className="grid grid-cols-3 gap-2"><button className="min-h-16 rounded-control bg-primary px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="cash">{isSubmitting ? text.saving : text.paymentCash}</button><button className="min-h-16 rounded-control bg-primary-strong px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="card">{isSubmitting ? text.saving : text.paymentCard}</button><button className="min-h-16 rounded-control border-2 border-primary bg-white px-2 text-sm font-black uppercase text-primary disabled:opacity-40" disabled={isSubmitting || !customerId || !cart.length || total < 0} name="intent" type="submit" value="later">{isSubmitting ? text.saving : text.payLater}</button></div></fieldset>
+              <input className="min-h-10 w-full rounded-control border border-border px-3 text-sm" onChange={(event) => setCardReference(event.target.value)} placeholder={text.cardReference} value={cardReference} /><button className="min-h-10 w-full text-sm font-bold text-primary underline underline-offset-4" onClick={() => setShowSplitPayment((current) => !current)} type="button">{text.splitPayment}</button>{showSplitPayment ? <div className="grid grid-cols-2 gap-2 border-l-4 border-primary bg-primary-soft p-3"><label className="text-xs font-bold text-muted">{text.splitCash}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCash(Number(event.target.value))} step="0.01" type="number" value={splitCash} /></label><label className="text-xs font-bold text-muted">{text.splitCard}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCard(Number(event.target.value))} step="0.01" type="number" value={splitCard} /></label><button className="col-span-2 min-h-12 rounded-control bg-primary px-4 font-bold text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0 || roundMoney(splitCash + splitCard) !== total} name="intent" type="submit" value="split">{text.confirmSplit}</button></div> : null}{!session ? <Link className="flex min-h-12 items-center justify-center rounded-control bg-amber-50 px-3 text-sm font-bold !text-amber-800" href="/app/pos" locale={locale}>{text.openTill} →</Link> : null}
+            </form>
           </div>
         </aside>
       </div>

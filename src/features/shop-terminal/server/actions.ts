@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import { listShopServices } from "@/features/shop-terminal/server/queries";
-import type { ShopCatalogSelection, ShopCustomerState, ShopSubmitState } from "@/features/shop-terminal/types";
+import { loadShopDeliveryOptions as queryShopDeliveryOptions, listShopServices } from "@/features/shop-terminal/server/queries";
+import type { ShopCatalogSelection, ShopCustomerState, ShopDeliveryOptions, ShopSubmitState } from "@/features/shop-terminal/types";
 import type { ShopCodeResolveResult } from "@/features/shop-terminal/types";
 import { parsePhoenixCode } from "@/features/barcode/payload";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
@@ -61,6 +61,11 @@ export async function loadShopServicesAction(
 ): Promise<ShopCatalogSelection> {
   if (!UUID.test(customerId) || (locationId && !UUID.test(locationId))) return { segmentName: null, services: [] };
   return listShopServices(locale, customerId, locationId);
+}
+
+export async function loadShopDeliveryOptionsAction(locale: string, customerId: string): Promise<ShopDeliveryOptions> {
+  if (!UUID.test(customerId)) return { billing: null, properties: [] };
+  return queryShopDeliveryOptions(locale, customerId);
 }
 
 export async function createShopCustomerAction(
@@ -138,6 +143,20 @@ type SubmitPayload = {
   isWalkIn?: unknown;
   walkInName?: unknown;
   walkInPhone?: unknown;
+  productionAssigneeId?: unknown;
+  deliveryRequested?: unknown;
+  delivery?: {
+    addressLine1?: unknown;
+    addressLine2?: unknown;
+    assignedTo?: unknown;
+    city?: unknown;
+    contactName?: unknown;
+    contactPhone?: unknown;
+    countryCode?: unknown;
+    notes?: unknown;
+    postalCode?: unknown;
+    scheduledAt?: unknown;
+  };
 };
 
 export async function submitShopOrderAction(
@@ -159,8 +178,20 @@ export async function submitShopOrderAction(
   const discountAmount = Number(payload.discountAmount);
   const walkInName = typeof payload.walkInName === "string" ? payload.walkInName.trim().slice(0, 160) : null;
   const walkInPhone = typeof payload.walkInPhone === "string" ? payload.walkInPhone.trim().slice(0, 40) : null;
+  const dueAt = typeof payload.dueAt === "string" ? payload.dueAt : "";
+  const productionAssigneeId = typeof payload.productionAssigneeId === "string" && payload.productionAssigneeId ? payload.productionAssigneeId : null;
+  const deliveryRequested = payload.deliveryRequested === true;
+  const delivery = payload.delivery && typeof payload.delivery === "object" ? payload.delivery : null;
+  const deliveryAssignedTo = typeof delivery?.assignedTo === "string" && delivery.assignedTo ? delivery.assignedTo : null;
+  const deliveryScheduledAt = typeof delivery?.scheduledAt === "string" ? delivery.scheduledAt : "";
+  const deliveryAddressLine1 = typeof delivery?.addressLine1 === "string" ? delivery.addressLine1.trim().slice(0, 240) : "";
+  const deliveryContactPhone = typeof delivery?.contactPhone === "string" ? delivery.contactPhone.trim().slice(0, 40) : "";
   if (!UUID.test(customerId) || !UUID.test(idempotencyKey) || (locationId && !UUID.test(locationId))
     || (sessionId && !UUID.test(sessionId)) || !Number.isFinite(discountAmount)
+    || !dueAt || Number.isNaN(Date.parse(dueAt)) || (productionAssigneeId && !UUID.test(productionAssigneeId))
+    || (deliveryAssignedTo && !UUID.test(deliveryAssignedTo))
+    || (deliveryRequested && (!delivery || !deliveryScheduledAt || Number.isNaN(Date.parse(deliveryScheduledAt)) || !deliveryAddressLine1))
+    || (deliveryRequested && deliveryContactPhone && !PHONE.test(deliveryContactPhone))
     || (walkInPhone && !PHONE.test(walkInPhone))
     || !Array.isArray(payload.items) || payload.items.length < 1 || !Array.isArray(payload.payments)) {
     return { error: "validation", result: null };
@@ -172,7 +203,7 @@ export async function submitShopOrderAction(
     target_customer_id: customerId,
     target_customer_notes: typeof payload.customerNotes === "string" ? payload.customerNotes.slice(0, 600) : null,
     target_discount_amount: Math.round(discountAmount * 100) / 100,
-    target_due_at: typeof payload.dueAt === "string" && payload.dueAt ? payload.dueAt : null,
+    target_due_at: dueAt,
     target_idempotency_key: idempotencyKey,
     target_internal_notes: typeof payload.internalNotes === "string" ? payload.internalNotes.slice(0, 600) : null,
     target_items: payload.items,
@@ -181,6 +212,18 @@ export async function submitShopOrderAction(
     target_pos_session_id: sessionId,
     target_walk_in_name: walkInName || null,
     target_walk_in_phone: walkInPhone || null,
+    target_production_assignee_id: productionAssigneeId,
+    target_delivery_requested: deliveryRequested,
+    target_delivery_scheduled_at: deliveryRequested ? deliveryScheduledAt : null,
+    target_delivery_assigned_to: deliveryRequested ? deliveryAssignedTo : null,
+    target_delivery_address_line1: deliveryRequested ? deliveryAddressLine1 : null,
+    target_delivery_address_line2: deliveryRequested && typeof delivery?.addressLine2 === "string" ? delivery.addressLine2.slice(0, 240) : null,
+    target_delivery_city: deliveryRequested && typeof delivery?.city === "string" ? delivery.city.slice(0, 120) : null,
+    target_delivery_postal_code: deliveryRequested && typeof delivery?.postalCode === "string" ? delivery.postalCode.slice(0, 40) : null,
+    target_delivery_country_code: deliveryRequested && typeof delivery?.countryCode === "string" ? delivery.countryCode.slice(0, 2) : null,
+    target_delivery_contact_name: deliveryRequested && typeof delivery?.contactName === "string" ? delivery.contactName.slice(0, 160) : null,
+    target_delivery_contact_phone: deliveryRequested ? deliveryContactPhone || null : null,
+    target_delivery_notes: deliveryRequested && typeof delivery?.notes === "string" ? delivery.notes.slice(0, 600) : null,
   }).single<{
     discount_amount: number; order_id: string; order_number: string; outstanding: number; paid: number; subtotal: number; total: number;
   }>();
@@ -202,7 +245,7 @@ export async function submitShopOrderAction(
       customerId,
       customerName: typeof payload.customerName === "string" ? payload.customerName.slice(0, 160) : "",
       discountAmount: Number(data.discount_amount),
-      dueAt: typeof payload.dueAt === "string" && payload.dueAt ? payload.dueAt : null,
+      dueAt,
       isWalkIn: payload.isWalkIn === true,
       orderId: data.order_id,
       orderNumber: data.order_number,
