@@ -524,3 +524,24 @@ test("44 delivery OFF creates no row; ON validates and creates the scheduled row
   assert.match(sql, /select created\.id, created\.order_number into created_order[\s\S]*if target_delivery_requested then[\s\S]*public\.create_or_update_delivery\([\s\S]*created_order\.id/);
   assert.doesNotMatch(sql, /commit;|exception when/i);
 });
+
+test("45 Terminal lookup accepts order numbers and UUIDs without weakening Phoenix code validation", async () => {
+  const actions = await source("src/features/shop-terminal/server/actions.ts");
+  const resolve = actions.slice(actions.indexOf("export async function resolveShopCodeAction"), actions.indexOf("export async function loadShopServicesAction"));
+  const orderLookup = resolve.slice(resolve.indexOf("const orderQuery"), resolve.indexOf("if (parsed?.kind"));
+
+  assert.match(actions, /const ORDER_NUMBER = \/\^\[a-z\]\{2,12\}-\\d\{1,12\}\$\/i/);
+  assert.match("EW-000068", /^[a-z]{2,12}-\d{1,12}$/i);
+  assert.match(actions, /const ORDER_ID = \/\^\[0-9a-f\]\{8\}-/);
+  assert.match(resolve, /const input = raw\.trim\(\)/);
+  assert.match(resolve, /ORDER_NUMBER\.test\(input\) \? input\.toUpperCase\(\) : null/);
+  assert.match(resolve, /ORDER_ID\.test\(input\) \? input : null/);
+  assert.match(resolve, /eq\("organization_id", membership\.organization\.id\)/);
+  assert.match(resolve, /orderQuery\.eq\("order_number", orderNumber\)/);
+  assert.match(resolve, /orderQuery\.eq\("id", orderId \?\? parsed!\.orderId\)/);
+  assert.doesNotMatch(orderLookup, /eq\("(?:status|is_active)"/);
+  assert.match(resolve, /orderNumber \|\| orderId \? null : parsePhoenixCode\(input\)/);
+  assert.match(resolve, /if \(!orderNumber && !orderId && !parsed\) return \{ error: "invalid"/);
+  assert.match(resolve, /if \(orderError \|\| !order\)[\s\S]*error: "not_found"/);
+  assert.match(resolve, /if \(parsed\?\.kind === "label"\)[\s\S]*from\("order_items"\)/);
+});

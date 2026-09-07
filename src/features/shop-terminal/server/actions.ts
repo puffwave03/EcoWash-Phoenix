@@ -13,27 +13,34 @@ import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ORDER_NUMBER = /^[a-z]{2,12}-\d{1,12}$/i;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[+()\d\s.-]{3,32}$/;
 
 export async function resolveShopCodeAction(locale: string, raw: string): Promise<ShopCodeResolveResult> {
   const { membership } = await requireShopTerminalAccess(locale);
   await requireEntitlement(locale, FEATURES.barcode);
-  const parsed = parsePhoenixCode(raw);
-  if (!parsed) return { error: "invalid", orderId: null, orderNumber: null };
+  const input = raw.trim();
+  const orderNumber = ORDER_NUMBER.test(input) ? input.toUpperCase() : null;
+  const orderId = ORDER_ID.test(input) ? input : null;
+  const parsed = orderNumber || orderId ? null : parsePhoenixCode(input);
+  if (!orderNumber && !orderId && !parsed) return { error: "invalid", orderId: null, orderNumber: null };
 
   const supabase = await createSupabaseServerClient();
-  const { data: order, error: orderError } = await supabase.from("orders")
+  const orderQuery = supabase.from("orders")
     .select("id, order_number")
-    .eq("organization_id", membership.organization.id)
-    .eq("id", parsed.orderId)
+    .eq("organization_id", membership.organization.id);
+  const { data: order, error: orderError } = await (orderNumber
+    ? orderQuery.eq("order_number", orderNumber)
+    : orderQuery.eq("id", orderId ?? parsed!.orderId))
     .maybeSingle<{ id: string; order_number: string }>();
   if (orderError || !order) {
     if (orderError) console.error("Shop code order resolution failed", orderError.code);
     return { error: "not_found", orderId: null, orderNumber: null };
   }
 
-  if (parsed.kind === "label") {
+  if (parsed?.kind === "label") {
     const { data: item, error: itemError } = await supabase.from("order_items")
       .select("id, quantity, unit_type")
       .eq("organization_id", membership.organization.id)
