@@ -59,6 +59,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
       categoryLabels={catalogT.raw("categories") as Record<string, string>}
       customers={customers}
       locale={locale}
+      organizationId={access.membership.organization.id}
       organizationName={access.membership.organization.name}
       operatorName={access.profile.displayName || access.user.email || access.membership.role}
       pendingQuickDrops={pendingQuickDrops}

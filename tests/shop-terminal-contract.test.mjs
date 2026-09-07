@@ -247,7 +247,38 @@ test("30c switching customers saves independent drafts while same-customer picke
   assert.match(select, /setCart\(reconcileDraftCart\(nextDraft, catalog\.services\)\)/);
 });
 
-test("30d customer catalog reload remains stale-safe and restored carts use only fresh eligible services", async () => {
+test("30d terminal drafts persist across remounts in tenant and location scoped session storage", async () => {
+  const [ui, page] = await Promise.all([
+    source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
+    source("src/app/[locale]/app/(dashboard)/shop/page.tsx"),
+  ]);
+  const load = ui.slice(ui.indexOf("function loadCustomerDrafts"), ui.indexOf("function persistCustomerDrafts"));
+  const persist = ui.slice(ui.indexOf("function persistCustomerDrafts"), ui.indexOf("export function ShopTerminalWorkspace"));
+
+  assert.match(page, /organizationId=\{access\.membership\.organization\.id\}/);
+  assert.match(ui, /`\$\{terminalDraftStoragePrefix\}:\$\{organizationId\}:\$\{session\?\.locationId \?\? "no-location"\}`/);
+  assert.match(load, /window\.sessionStorage\.getItem\(storageKey\)/);
+  assert.match(persist, /window\.sessionStorage\.setItem\(storageKey, JSON\.stringify\(Array\.from\(drafts\.entries\(\)\)\)\)/);
+  assert.match(ui, /customerDraftsRef\.current = loadCustomerDrafts\(draftStorageKey\)/);
+  assert.match(ui, /hydratedDraftStorageKeyRef\.current = draftStorageKey/);
+});
+
+test("30e active changes persist without replacing a draft during temporary catalog loading", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const activePersistence = ui.slice(
+    ui.indexOf("if (!customerId || catalogCustomerRef.current !== customerId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;"),
+    ui.indexOf("useEffect(() => {\n    const submittedCustomerId"),
+  );
+  const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
+
+  assert.match(activePersistence, /customerDraftsRef\.current\.set\(customerId/);
+  assert.match(activePersistence, /items: cart\.map/);
+  assert.match(activePersistence, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
+  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, discount, draftStorageKey, dueAt, internalNotes, showSplitPayment, splitCard, splitCash\]/);
+  assert.match(select, /catalogCustomerRef\.current = null[\s\S]*setCart\(\[\]\)/);
+});
+
+test("30f customer catalog reload remains stale-safe and restored carts use only fresh eligible services", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
   const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
   const reconcile = ui.slice(ui.indexOf("function reconcileDraftCart"), ui.indexOf("function selectCustomer"));
@@ -267,20 +298,37 @@ test("30d customer catalog reload remains stale-safe and restored carts use only
   assert.doesNotMatch(reconcile, /item\.service\b/);
 });
 
-test("30e successful reset removes only the submitted customer draft", async () => {
+test("30g successful A order removes only A and persists the remaining B drafts", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const successEffect = ui.slice(ui.indexOf("const submittedCustomerId = submitState.result?.customerId"), ui.indexOf("useEffect(() => {\n    if (!isMobileCartOpen)"));
   const reset = ui.slice(ui.indexOf("function resetOrder"), ui.indexOf("function resolveCode"));
 
+  assert.match(successEffect, /customerDraftsRef\.current\.delete\(submittedCustomerId\)/);
+  assert.match(successEffect, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
+  assert.doesNotMatch(successEffect, /customerDraftsRef\.current\.clear/);
   assert.match(reset, /customerDraftsRef\.current\.delete\(submitState\.result\.customerId\)/);
+  assert.match(reset, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
   assert.match(reset, /clearCustomer\(\{ preserveDraft: true \}\)/);
   assert.doesNotMatch(reset, /customerDraftsRef\.current\.clear/);
 });
 
-test("30f draft switching stays client-only and never creates persisted order state", async () => {
+test("30h session persistence contains draft scalars and service ids, never services or prices", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const draftType = ui.slice(ui.indexOf("type ShopTerminalDraft"), ui.indexOf("export type ShopTerminalText"));
   const drafts = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function openCustomerPicker"));
 
   assert.match(ui, /useRef\(new Map<string, ShopTerminalDraft>\(\)\)/);
+  assert.match(draftType, /serviceId: string/);
+  assert.match(draftType, /quantity: number/);
+  assert.match(draftType, /discount: number/);
+  assert.match(draftType, /dueAt: string/);
+  assert.match(draftType, /customerNotes: string/);
+  assert.match(draftType, /internalNotes: string/);
+  assert.match(draftType, /cardReference: string/);
+  assert.match(draftType, /splitCash: number/);
+  assert.match(draftType, /splitCard: number/);
+  assert.match(draftType, /showSplitPayment: boolean/);
+  assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|orderId|paymentId/);
   assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|invoice|supabase/i);
 });
 

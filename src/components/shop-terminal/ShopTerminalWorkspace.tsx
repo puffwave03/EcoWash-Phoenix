@@ -61,6 +61,7 @@ type Props = {
   customers: ShopCustomer[];
   locale: string;
   operatorName: string;
+  organizationId: string;
   organizationName: string;
   pendingQuickDrops: PendingQuickDrop[];
   printText: PrintActionText;
@@ -72,10 +73,77 @@ type Props = {
 
 const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
+const terminalDraftStoragePrefix = "ecowash:shop-terminal-drafts:v1";
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, locale, operatorName, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
+function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
+  if (!value || typeof value !== "object") return null;
+  const draft = value as Record<string, unknown>;
+  if (
+    typeof draft.cardReference !== "string"
+    || typeof draft.customerNotes !== "string"
+    || typeof draft.discount !== "number" || !Number.isFinite(draft.discount) || draft.discount < 0
+    || typeof draft.dueAt !== "string"
+    || typeof draft.internalNotes !== "string"
+    || !Array.isArray(draft.items)
+    || typeof draft.showSplitPayment !== "boolean"
+    || typeof draft.splitCard !== "number" || !Number.isFinite(draft.splitCard) || draft.splitCard < 0
+    || typeof draft.splitCash !== "number" || !Number.isFinite(draft.splitCash) || draft.splitCash < 0
+  ) return null;
+  const items = draft.items.flatMap((value) => {
+    if (!value || typeof value !== "object") return [];
+    const item = value as Record<string, unknown>;
+    return typeof item.serviceId === "string" && item.serviceId
+      && typeof item.quantity === "number" && Number.isFinite(item.quantity) && item.quantity > 0
+      ? [{ quantity: item.quantity, serviceId: item.serviceId }]
+      : [];
+  });
+  return {
+    cardReference: draft.cardReference,
+    customerNotes: draft.customerNotes,
+    discount: draft.discount,
+    dueAt: draft.dueAt,
+    internalNotes: draft.internalNotes,
+    items,
+    showSplitPayment: draft.showSplitPayment,
+    splitCard: draft.splitCard,
+    splitCash: draft.splitCash,
+  };
+}
+
+function loadCustomerDrafts(storageKey: string) {
+  try {
+    const stored = window.sessionStorage.getItem(storageKey);
+    if (!stored) return new Map<string, ShopTerminalDraft>();
+    const entries = JSON.parse(stored) as unknown;
+    if (!Array.isArray(entries)) return new Map<string, ShopTerminalDraft>();
+    const drafts = new Map<string, ShopTerminalDraft>();
+    for (const entry of entries) {
+      if (!Array.isArray(entry) || entry.length !== 2 || typeof entry[0] !== "string") continue;
+      const draft = parseStoredDraft(entry[1]);
+      if (draft) drafts.set(entry[0], draft);
+    }
+    return drafts;
+  } catch {
+    return new Map<string, ShopTerminalDraft>();
+  }
+}
+
+function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTerminalDraft>) {
+  try {
+    if (!drafts.size) {
+      window.sessionStorage.removeItem(storageKey);
+      return;
+    }
+    window.sessionStorage.setItem(storageKey, JSON.stringify(Array.from(drafts.entries())));
+  } catch {
+    // The in-memory drafts remain usable if browser storage is unavailable or full.
+  }
+}
+
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, quickDropText, role, session, text }: Props) {
   const router = useRouter();
+  const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
   const [customerId, setCustomerId] = useState("");
   const [isCustomerPickerOpen, setIsCustomerPickerOpen] = useState(true);
@@ -115,6 +183,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const catalogRequestRef = useRef(0);
   const catalogCustomerRef = useRef<string | null>(null);
   const customerDraftsRef = useRef(new Map<string, ShopTerminalDraft>());
+  const hydratedDraftStorageKeyRef = useRef<string | null>(null);
   const mobileCartCloseRef = useRef<HTMLButtonElement>(null);
 
   const selectedCustomer = customers.find((customer) => customer.id === customerId) ?? null;
@@ -149,17 +218,12 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }, [category, categoryLabels, locale, serviceQuery, services]);
 
   useEffect(() => {
-    if (!isMobileCartOpen) return;
-    mobileCartCloseRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsMobileCartOpen(false);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [isMobileCartOpen]);
+    customerDraftsRef.current = loadCustomerDrafts(draftStorageKey);
+    hydratedDraftStorageKeyRef.current = draftStorageKey;
+  }, [draftStorageKey]);
 
-  function saveCurrentCustomerDraft() {
-    if (!customerId || catalogCustomerRef.current !== customerId) return;
+  useEffect(() => {
+    if (!customerId || catalogCustomerRef.current !== customerId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
@@ -171,6 +235,40 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       splitCard,
       splitCash,
     });
+    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+  }, [cardReference, cart, customerId, customerNotes, discount, draftStorageKey, dueAt, internalNotes, showSplitPayment, splitCard, splitCash]);
+
+  useEffect(() => {
+    const submittedCustomerId = submitState.result?.customerId;
+    if (!submittedCustomerId || !submitState.result?.orderId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
+    customerDraftsRef.current.delete(submittedCustomerId);
+    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+  }, [draftStorageKey, submitState.result?.customerId, submitState.result?.orderId]);
+
+  useEffect(() => {
+    if (!isMobileCartOpen) return;
+    mobileCartCloseRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileCartOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isMobileCartOpen]);
+
+  function saveCurrentCustomerDraft() {
+    if (!customerId || catalogCustomerRef.current !== customerId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
+    customerDraftsRef.current.set(customerId, {
+      cardReference,
+      customerNotes,
+      discount,
+      dueAt,
+      internalNotes,
+      items: cart.map((line) => ({ quantity: line.quantity, serviceId: line.service.id })),
+      showSplitPayment,
+      splitCard,
+      splitCash,
+    });
+    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
   }
 
   function restoreCheckoutDraft(draft: ShopTerminalDraft | undefined) {
@@ -231,7 +329,10 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }
 
   function clearCustomer(options: { preserveDraft?: boolean } = {}) {
-    if (customerId && !options.preserveDraft) customerDraftsRef.current.delete(customerId);
+    if (customerId && !options.preserveDraft) {
+      customerDraftsRef.current.delete(customerId);
+      persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+    }
     catalogRequestRef.current += 1;
     catalogCustomerRef.current = null;
     setCustomerId("");
@@ -325,7 +426,10 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
 
   function resetOrder() {
     setDismissedOrderId(submitState.result?.orderId ?? null);
-    if (submitState.result?.customerId) customerDraftsRef.current.delete(submitState.result.customerId);
+    if (submitState.result?.customerId) {
+      customerDraftsRef.current.delete(submitState.result.customerId);
+      persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+    }
     clearCustomer({ preserveDraft: true });
   }
 
