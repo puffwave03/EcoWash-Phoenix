@@ -278,7 +278,9 @@ export async function listAssignableStaff(locale: string): Promise<AssignableSta
   });
 
   return {
-    all: staff.map(({ option }) => option),
+    all: staff
+      .filter(({ capabilities, role }) => hasOperationalCapability({ capabilities, role }, "production"))
+      .map(({ option }) => option),
     delivery: staff
       .filter(({ capabilities, role }) => hasOperationalCapability({ capabilities, role }, "delivery"))
       .map(({ option }) => option),

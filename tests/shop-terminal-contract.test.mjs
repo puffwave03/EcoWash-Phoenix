@@ -5,6 +5,7 @@ import { resolveShopCategoryLabel } from "../src/features/shop-terminal/category
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migrationPath = "supabase/migrations/20260829000200_shop_terminal_001_counter_experience.sql";
+const defaultsMigrationPath = "supabase/migrations/20260907000100_terminal_order_defaults_001.sql";
 
 test("1 terminal has a dedicated additive entitlement", async () => {
   const [sql, catalog] = await Promise.all([source(migrationPath), source("src/features/entitlements/feature-catalog.ts")]);
@@ -395,4 +396,57 @@ test("35 compact cards preserve normalized previews and Terminal behavior", asyn
   assert.match(ui, /service\.categoryKey === category/);
   assert.match(ui, /grid-cols-1 gap-2 md:grid-cols-3 2xl:grid-cols-4/);
   assert.match(queries, /imageUrl: serviceImageUrl/);
+});
+
+test("36 production assignment options require active staff production capability in deterministic order", async () => {
+  const queries = await source("src/features/logistics/server/queries.ts");
+  const assignable = queries.slice(queries.indexOf("export async function listAssignableStaff"), queries.indexOf("export async function isAssignableStaffForCapability"));
+
+  assert.match(assignable, /eq\("organization_id", membership\.organization\.id\)/);
+  assert.match(assignable, /eq\("is_active", true\)/);
+  assert.match(assignable, /eq\("role", "staff"\)/);
+  assert.match(assignable, /order\("profile_id", \{ ascending: true \}\)/);
+  assert.match(assignable, /all: staff[\s\S]*hasOperationalCapability\(\{ capabilities, role \}, "production"\)[\s\S]*map\(\(\{ option \}\) => option\)/);
+});
+
+test("37 single-location Terminal submit atomically assigns the first production-eligible staff member", async () => {
+  const sql = await source(defaultsMigrationPath);
+
+  assert.match(sql, /create or replace function public\.submit_shop_terminal_order\(/);
+  assert.match(sql, /select count\(\*\) into active_location_count[\s\S]*from public\.locations location[\s\S]*location\.organization_id = org_id[\s\S]*location\.is_active[\s\S]*location\.deleted_at is null/);
+  assert.match(sql, /if active_location_count = 1 then[\s\S]*membership\.organization_id = org_id[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'production' = any\(membership\.operational_capabilities::text\[\]\)[\s\S]*order by membership\.profile_id asc[\s\S]*limit 1/);
+  assert.match(sql, /update public\.orders orders[\s\S]*assigned_to = production_assignee/);
+});
+
+test("38 no eligible staff and multi-location tenants safely retain an unassigned order", async () => {
+  const sql = await source(defaultsMigrationPath);
+  const assignment = sql.slice(sql.indexOf("select count(*) into active_location_count"), sql.indexOf("select created.id, created.order_number"));
+
+  assert.match(sql, /production_assignee uuid;/);
+  assert.match(assignment, /if active_location_count = 1 then/);
+  assert.doesNotMatch(assignment, /else/);
+  assert.doesNotMatch(assignment, /raise exception/);
+});
+
+test("39 missing pickup and delivery render as not requested without creating logistics rows", async () => {
+  const [page, sql, logisticsActions] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"),
+    source(defaultsMigrationPath),
+    source("src/features/logistics/server/actions.ts"),
+  ]);
+
+  assert.match(page, /logistics\.pickup \? logisticsStatusLabels\[logistics\.pickup\.status\] : logisticsStatusLabels\.not_required/);
+  assert.match(page, /logistics\.delivery \? logisticsStatusLabels\[logistics\.delivery\.status\] : logisticsStatusLabels\.not_required/);
+  assert.match(page, /empty: logisticsStatusLabels\.not_required/);
+  assert.doesNotMatch(sql, /insert into public\.(pickups|deliveries)/i);
+  assert.match(logisticsActions, /rpc\("create_or_update_pickup"/);
+  assert.match(logisticsActions, /rpc\("create_or_update_delivery"/);
+});
+
+test("40 Terminal operational defaults leave multi-draft session persistence intact", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+
+  assert.match(ui, /window\.sessionStorage\.setItem\(storageKey/);
+  assert.match(ui, /customerDraftsRef\.current\.get\(nextCustomerId\)/);
+  assert.match(ui, /setCart\(reconcileDraftCart\(nextDraft, catalog\.services\)\)/);
 });

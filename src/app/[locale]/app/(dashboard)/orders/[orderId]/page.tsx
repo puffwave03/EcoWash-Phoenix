@@ -190,7 +190,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <div>
               <dt className="text-sm text-muted">{t("logistics.pickup")}</dt>
               <dd className="font-semibold text-primary">
-                {logistics.pickup ? logisticsStatusLabels[logistics.pickup.status] : t("logistics.empty")}
+                {logistics.pickup ? logisticsStatusLabels[logistics.pickup.status] : logisticsStatusLabels.not_required}
               </dd>
               {logistics.pickup ? (
                 <dd className="mt-1 text-sm text-muted">
@@ -201,7 +201,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <div>
               <dt className="text-sm text-muted">{t("logistics.delivery")}</dt>
               <dd className="font-semibold text-primary">
-                {logistics.delivery ? logisticsStatusLabels[logistics.delivery.status] : t("logistics.empty")}
+                {logistics.delivery ? logisticsStatusLabels[logistics.delivery.status] : logisticsStatusLabels.not_required}
               </dd>
               {logistics.delivery ? (
                 <dd className="mt-1 text-sm text-muted">
@@ -354,7 +354,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             contactPhone: t("logistics.contactPhone"),
             countryCode: t("logistics.countryCode"),
             delivery: t("logistics.delivery"),
-            empty: t("logistics.empty"),
+            empty: logisticsStatusLabels.not_required,
             error: t("logistics.error"),
             fee: t("logistics.fee"),
             inProgress: t("logistics.title"),
