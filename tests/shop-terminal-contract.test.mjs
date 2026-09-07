@@ -230,11 +230,28 @@ test("30b customer creation modes return to recents and successful creation clos
   assert.match(ui, /setIsCustomerPickerOpen\(false\)/);
 });
 
-test("30c only selecting a different customer resets customer-dependent state and stale responses remain rejected", async () => {
+test("30c switching customers saves independent drafts while same-customer picker selection preserves work", async () => {
   const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
   const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
+  const saveDraft = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function restoreCheckoutDraft"));
 
   assert.match(select, /if \(nextCustomerId === customerId\)[\s\S]*?return;/);
+  assert.match(select, /saveCurrentCustomerDraft\(\)/);
+  assert.match(select, /customerDraftsRef\.current\.get\(nextCustomerId\)/);
+  assert.match(saveDraft, /customerDraftsRef\.current\.set\(customerId/);
+  assert.match(saveDraft, /items: cart\.map/);
+  assert.match(saveDraft, /discount,/);
+  assert.match(saveDraft, /customerNotes,[\s\S]*dueAt,[\s\S]*internalNotes,/);
+  assert.match(saveDraft, /showSplitPayment,[\s\S]*splitCard,[\s\S]*splitCash,/);
+  assert.match(select, /restoreCheckoutDraft\(nextDraft\)/);
+  assert.match(select, /setCart\(reconcileDraftCart\(nextDraft, catalog\.services\)\)/);
+});
+
+test("30d customer catalog reload remains stale-safe and restored carts use only fresh eligible services", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
+  const reconcile = ui.slice(ui.indexOf("function reconcileDraftCart"), ui.indexOf("function selectCustomer"));
+
   assert.match(select, /catalogRequestRef\.current = requestId/);
   assert.match(select, /setCustomerId\(nextCustomerId\)/);
   assert.match(select, /setServices\(\[\]\)/);
@@ -244,6 +261,27 @@ test("30c only selecting a different customer resets customer-dependent state an
   assert.match(select, /setServiceQuery\(""\)/);
   assert.match(select, /actions\.loadServices\(nextCustomerId, session\?\.locationId \?\? null\)/);
   assert.match(select, /if \(catalogRequestRef\.current !== requestId\) return/);
+  assert.match(reconcile, /freshServiceById = new Map\(freshServices\.map/);
+  assert.match(reconcile, /freshServiceById\.get\(item\.serviceId\)/);
+  assert.match(reconcile, /service \? \[\{ quantity: item\.quantity, service \}\] : \[\]/);
+  assert.doesNotMatch(reconcile, /item\.service\b/);
+});
+
+test("30e successful reset removes only the submitted customer draft", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const reset = ui.slice(ui.indexOf("function resetOrder"), ui.indexOf("function resolveCode"));
+
+  assert.match(reset, /customerDraftsRef\.current\.delete\(submitState\.result\.customerId\)/);
+  assert.match(reset, /clearCustomer\(\{ preserveDraft: true \}\)/);
+  assert.doesNotMatch(reset, /customerDraftsRef\.current\.clear/);
+});
+
+test("30f draft switching stays client-only and never creates persisted order state", async () => {
+  const ui = await source("src/components/shop-terminal/ShopTerminalWorkspace.tsx");
+  const drafts = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function openCustomerPicker"));
+
+  assert.match(ui, /useRef\(new Map<string, ShopTerminalDraft>\(\)\)/);
+  assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|invoice|supabase/i);
 });
 
 test("31 responsive POS structure keeps a dense catalog and persistent one-third cart", async () => {
