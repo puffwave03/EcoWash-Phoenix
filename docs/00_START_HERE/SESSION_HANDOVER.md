@@ -2,23 +2,33 @@
 
 Status: Active
 
-Date: 2026-08-29
+Date: 2026-09-08
 
-Approximate closeout time: after COUNTER-UX-002 professional counter register redesign
+Approximate closeout time: after ACCOUNTING-SALES-DOCUMENTS-001 final Product Owner acceptance
 
-Session checkpoint: COUNTER-UX-002 completed; BARCODE-001 is next and not started
+Session checkpoint: ACCOUNTING-SALES-DOCUMENTS-001 COMPLETE / STABLE; ORDER-FULFILLMENT-LIFECYCLE-001 is next and not started
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `18e0f3d DOCS-PRINT-001 docs: record counter printing foundation`
+Approved baseline before this mission: `8b6d02928685b555355a04bc8ac37bd7a8aed570`
 
-Origin/main status: local `main` and `origin/main` include `6691e95 COUNTER-UX-002 feat: redesign shop terminal for dry cleaning counter`.
+Origin/main status before this closeout: local `main` and `origin/main` are aligned at `8b6d02928685b555355a04bc8ac37bd7a8aed570`.
 
-Working tree status before documentation closeout: application commit pushed; only the minimum handover and project-status documents are being updated.
+Working tree status before documentation closeout: the approved ACCOUNTING-SALES-DOCUMENTS-001 application, migration and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
 
-Application closeout commit: `6691e95 COUNTER-UX-002 feat: redesign shop terminal for dry cleaning counter`; working tree expected clean after documentation push.
+Working tree expected clean after the approved ACCOUNTING-SALES-DOCUMENTS-001 commit and push.
+
+---
+
+## ACCOUNTING-SALES-DOCUMENTS-001 Closeout
+
+- `ACCOUNTING-SALES-DOCUMENTS-001` is COMPLETE / STABLE. Phoenix now has persistent operational receipts with annual progressive numbering, at most one issued receipt per order, preserved cancelled history and cancel-then-reissue support without reusing numbers.
+- Reprints use the immutable persisted receipt snapshot. The Accounting sales-document registry unifies operational receipts with canonical Billing invoices and records authenticated `viewed` and explicit `print_requested` document events.
+- Accounting calculations and the existing payment/refund ledger boundaries remain unchanged.
+- Staging migrations `20260908000100_accounting_sales_documents_001` and `20260908000200_accounting_sales_documents_001_receipt_select_policy` are applied and aligned. Focused validation, preview deployment and Product Owner E2E passed; receipt reopen/reprint, historical cancellation/reissue, registry state, ticket/label regressions and unchanged financial values were confirmed.
+- Next approved finding only: `ORDER-FULFILLMENT-LIFECYCLE-001`. Draft logistics remain configurable but not operational for staff; logistics becomes operational from `received`; production completion means ready rather than fulfilled/closed; open pickup/delivery remains visible after production completion; and the order remains in operational custody/stock until real pickup or delivery completion.
 
 ---
 
@@ -106,6 +116,7 @@ Application closeout commit: `6691e95 COUNTER-UX-002 feat: redesign shop termina
 - SHOP-TERMINAL-001 — Dry Cleaning / Laundry Counter Terminal
 - PRINT-001 — Customer receipt, internal ticket and label-ready browser printing
 - COUNTER-UX-002 — Professional Dry Cleaning / Laundry Counter Register redesign
+- ACCOUNTING-SALES-DOCUMENTS-001 — Persistent operational receipts and unified sales-document registry
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -206,7 +217,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260829000300`; SHOP-TERMINAL-001 and the additive PRINT-001 entitlement bootstrap are applied to staging.
+Supabase migration history is aligned through `20260908000200`; the ACCOUNTING-SALES-DOCUMENTS-001 registry migration and its corrective receipt SELECT policy are applied to staging.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
@@ -608,17 +619,13 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-COUNTER-UX-002 is completed on top of PRINT-001. The terminal now behaves as a professional touch-first counter register while retaining browser-native receipt, ticket and label previews. Resume with `BARCODE-001`; do not reopen accepted foundations unless a reproducible defect is found:
+ACCOUNTING-SALES-DOCUMENTS-001 is COMPLETE / STABLE. Resume with the approved `ORDER-FULFILLMENT-LIFECYCLE-001` finding; do not reopen accepted sales-document, Billing, Accounting or payment/refund foundations unless a reproducible defect is found. The next task must preserve these approved requirements:
 
-1. Perform the separate authenticated desktop/mobile Product Owner visual check when practical; it was unavailable during automated QA.
-2. If the external-PC loading observation recurs, capture exact URL, timestamp, browser and visible error before classifying it.
-3. Preserve `EW-000005` as the successful PORTAL-002.1 E2E record.
-4. Scope customer address flexibility and delivery preferences as separate future Portal increments.
-5. Keep clearer Customers access in owner/manager navigation as a separate known UX backlog item.
-6. Do not start PORTAL-002.2 until explicitly approved.
-7. Record only real functional or visual defects and keep one task per logical commit.
-8. Preserve the order discount as an absolute monetary amount; it is not a stored fraction or percentage.
-9. Do not enable `payments.online` until an official provider adapter, tenant merchant configuration and real sandbox credentials pass signed-webhook E2E. Phoenix stores no raw card data and never trusts a redirect as confirmation.
+1. Draft logistics may be configured but are not yet operational work for staff.
+2. Logistics becomes operational from `received` onward.
+3. Production `completed` means ready, not fulfilled or closed.
+4. Open pickup/delivery remains visible after production completion.
+5. The order remains in operational custody/stock until real customer pickup or delivery completion.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

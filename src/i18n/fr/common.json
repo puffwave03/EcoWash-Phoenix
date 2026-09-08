@@ -1269,7 +1269,7 @@
     }
   },
   "accountingWorkspace": {
-    "eyebrow": "Contrôle financier opérationnel", "title": "Comptabilité", "description": "Consultez ventes, encaissements, créances et dépenses depuis les sources opérationnelles canoniques.",
+    "eyebrow": "Contrôle financier opérationnel", "title": "Comptabilité", "description": "Consultez ventes, encaissements, créances et dépenses depuis les sources opérationnelles canoniques.", "documentsLink": "Documents de vente",
     "filters": {"period": "Période", "start": "Du", "end": "Au", "location": "Site", "allLocations": "Tous les sites", "apply": "Appliquer"},
     "presets": {"today": "Aujourd’hui", "week": "Cette semaine", "month": "Ce mois", "previousMonth": "Mois précédent", "custom": "Personnalisé"},
     "summary": {"netSales": "Ventes nettes", "collected": "Encaissé", "outstanding": "À encaisser", "refunds": "Remboursements", "expenses": "Dépenses", "operationalResult": "Résultat opérationnel", "netCollected": "Encaissement net", "online": "En ligne"},
@@ -1287,6 +1287,12 @@
       "categories": {"title": "Catégories de dépense", "new": "Nouvelle catégorie", "empty": "Aucune catégorie de dépense.", "name": "Nom", "description": "Description", "displayOrder": "Ordre"},
       "methods": {"bank_transfer": "Virement", "card": "Carte", "cash": "Espèces", "other": "Autre"}, "paymentStatuses": {"paid": "Payée", "unpaid": "À payer"}, "statuses": {"draft": "Brouillon", "posted": "Comptabilisée", "void": "Annulée"}
     }
+  },
+  "salesDocuments": {
+    "eyebrow": "Contrôle documentaire", "title": "Documents de vente", "description": "Reçus opérationnels persistants et factures canoniques émises ou annulées.",
+    "back": "Retour aux documents", "print": "Imprimer / Enregistrer PDF", "receipt": "Reçu opérationnel", "customer": "Client", "order": "Commande", "descriptionLabel": "Description", "quantity": "Quantité", "unitPrice": "Prix unitaire", "subtotal": "Sous-total", "discount": "Remise", "total": "Total", "paid": "Payé", "outstanding": "Restant", "paymentMethods": "Modes de paiement", "notes": "Notes client", "thanks": "Merci", "notFiscal": "Document opérationnel de commande/paiement. Ce n’est ni une facture ni un reçu fiscal.",
+    "methods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement", "other": "Autre"},
+    "registry": {"amount": "Montant", "cancel": "Annuler le reçu", "cancelReason": "Motif d’annulation", "customer": "Client", "empty": "Aucun document de vente émis.", "issuedAt": "Émis", "open": "Ouvrir / réimprimer", "orders": "Commandes", "kinds": {"receipt": "Reçu", "invoice": "Facture"}, "statuses": {"issued": "Émis", "cancelled": "Annulé"}}
   },
   "catalogProductization": {
     "applyImport": "Appliquer l’import",

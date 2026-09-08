@@ -29,16 +29,20 @@ test("3 bootstrap is scoped to the EcoWash reference tenant", async () => {
 test("4 all three dedicated print routes exist", async () => {
   for (const route of routes) {
     const page = await source(`src/app/[locale]/app/(dashboard)/orders/[orderId]/print/${route}/page.tsx`);
-    assert.match(page, /getPrintOrderContext\(locale, orderId\)/);
+    if (route === "receipt") assert.match(page, /issueOperationalReceipt\(locale, orderId\)/);
+    else assert.match(page, /getPrintOrderContext\(locale, orderId\)/);
   }
 });
 
-test("5 every route uses the shared print document", async () => {
-  for (const route of routes) {
+test("5 ticket and label routes use the live shared document while receipts use persisted snapshots", async () => {
+  for (const route of ["ticket", "labels"]) {
     const page = await source(`src/app/[locale]/app/(dashboard)/orders/[orderId]/print/${route}/page.tsx`);
     assert.match(page, /OrderPrintDocument/);
     assert.match(page, new RegExp(`mode="${route}"`));
   }
+  const receipt = await source("src/app/[locale]/app/(dashboard)/accounting/documents/receipts/[receiptId]/print/page.tsx");
+  assert.match(receipt, /OperationalReceiptDocument/);
+  assert.match(receipt, /getOperationalReceipt\(locale, receiptId\)/);
 });
 
 test("6 access requires printing entitlement server-side", async () => {
@@ -131,7 +135,8 @@ test("18 ticket and labels render real Phoenix QR codes when barcode is entitled
 
 test("19 print is explicit and never automatic", async () => {
   const button = await source("src/components/printing/PrintButton.tsx");
-  assert.match(button, /onClick=\{\(\) => window\.print\(\)\}/);
+  assert.match(button, /onClick=\{print\}/);
+  assert.match(button, /async function print\(\)[\s\S]*window\.print\(\)/);
   assert.doesNotMatch(button, /useEffect|setTimeout/);
 });
 

@@ -23,9 +23,10 @@ function address(parts: Array<string | null>) {
   return parts.filter(Boolean).join(", ");
 }
 
-export async function BillingInvoiceView({ detail, locale, printMode = false }: {
+export async function BillingInvoiceView({ detail, locale, printRequestedAction, printMode = false }: {
   detail: BillingInvoiceDetail;
   locale: string;
+  printRequestedAction?: () => Promise<void>;
   printMode?: boolean;
 }) {
   const t = await getTranslations({ locale, namespace: "common.billing" });
@@ -49,7 +50,7 @@ export async function BillingInvoiceView({ detail, locale, printMode = false }: 
           </div>
         </div>
       ) : (
-        <div className="mb-6 flex justify-end print:hidden"><PrintInvoiceButton label={t("actions.print")} /></div>
+        <div className="mb-6 flex justify-end print:hidden"><PrintInvoiceButton label={t("actions.print")} printRequestedAction={printRequestedAction} /></div>
       )}
 
       <article className="overflow-hidden rounded-[1.25rem] border border-border bg-white shadow-card print:rounded-none print:border-0 print:shadow-none">

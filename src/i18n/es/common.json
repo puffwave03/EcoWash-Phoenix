@@ -1269,7 +1269,7 @@
     }
   },
   "accountingWorkspace": {
-    "eyebrow": "Control financiero operativo", "title": "Contabilidad", "description": "Consulta ventas, cobros, saldos pendientes y gastos desde fuentes operativas canónicas.",
+    "eyebrow": "Control financiero operativo", "title": "Contabilidad", "description": "Consulta ventas, cobros, saldos pendientes y gastos desde fuentes operativas canónicas.", "documentsLink": "Documentos de venta",
     "filters": {"period": "Periodo", "start": "Desde", "end": "Hasta", "location": "Sede", "allLocations": "Todas las sedes", "apply": "Aplicar"},
     "presets": {"today": "Hoy", "week": "Esta semana", "month": "Este mes", "previousMonth": "Mes anterior", "custom": "Personalizado"},
     "summary": {"netSales": "Ventas netas", "collected": "Cobrado", "outstanding": "Pendiente", "refunds": "Reembolsos", "expenses": "Gastos", "operationalResult": "Resultado operativo", "netCollected": "Cobro neto", "online": "Online"},
@@ -1287,6 +1287,12 @@
       "categories": {"title": "Categorías de gasto", "new": "Nueva categoría", "empty": "No hay categorías de gasto.", "name": "Nombre", "description": "Descripción", "displayOrder": "Orden"},
       "methods": {"bank_transfer": "Transferencia", "card": "Tarjeta", "cash": "Efectivo", "other": "Otro"}, "paymentStatuses": {"paid": "Pagado", "unpaid": "Pendiente"}, "statuses": {"draft": "Borrador", "posted": "Contabilizado", "void": "Anulado"}
     }
+  },
+  "salesDocuments": {
+    "eyebrow": "Control documental", "title": "Documentos de venta", "description": "Recibos operativos persistentes y facturas canónicas emitidas o canceladas.",
+    "back": "Volver a documentos", "print": "Imprimir / Guardar PDF", "receipt": "Recibo operativo", "customer": "Cliente", "order": "Pedido", "descriptionLabel": "Descripción", "quantity": "Cantidad", "unitPrice": "Precio unitario", "subtotal": "Subtotal", "discount": "Descuento", "total": "Total", "paid": "Pagado", "outstanding": "Pendiente", "paymentMethods": "Métodos de pago", "notes": "Notas del cliente", "thanks": "Gracias", "notFiscal": "Documento operativo de pedido/pago. No es una factura ni un recibo fiscal.",
+    "methods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia", "other": "Otro"},
+    "registry": {"amount": "Importe", "cancel": "Cancelar recibo", "cancelReason": "Motivo de cancelación", "customer": "Cliente", "empty": "No hay documentos de venta emitidos.", "issuedAt": "Emitido", "open": "Abrir / reimprimir", "orders": "Pedidos", "kinds": {"receipt": "Recibo", "invoice": "Factura"}, "statuses": {"issued": "Emitido", "cancelled": "Cancelado"}}
   },
   "catalogProductization": {
     "applyImport": "Aplicar importación",

@@ -1269,7 +1269,7 @@
     }
   },
   "accountingWorkspace": {
-    "eyebrow": "Operative Finanzkontrolle", "title": "Buchhaltung", "description": "Verkäufe, Einnahmen, offene Beträge und Ausgaben aus kanonischen operativen Quellen prüfen.",
+    "eyebrow": "Operative Finanzkontrolle", "title": "Buchhaltung", "description": "Verkäufe, Einnahmen, offene Beträge und Ausgaben aus kanonischen operativen Quellen prüfen.", "documentsLink": "Verkaufsdokumente",
     "filters": {"period": "Zeitraum", "start": "Von", "end": "Bis", "location": "Standort", "allLocations": "Alle Standorte", "apply": "Anwenden"},
     "presets": {"today": "Heute", "week": "Diese Woche", "month": "Dieser Monat", "previousMonth": "Vorheriger Monat", "custom": "Benutzerdefiniert"},
     "summary": {"netSales": "Nettoumsatz", "collected": "Eingenommen", "outstanding": "Offen", "refunds": "Erstattungen", "expenses": "Ausgaben", "operationalResult": "Operatives Ergebnis", "netCollected": "Nettoeinnahmen", "online": "Online"},
@@ -1287,6 +1287,12 @@
       "categories": {"title": "Ausgabenkategorien", "new": "Neue Kategorie", "empty": "Keine Ausgabenkategorien.", "name": "Name", "description": "Beschreibung", "displayOrder": "Reihenfolge"},
       "methods": {"bank_transfer": "Überweisung", "card": "Karte", "cash": "Bar", "other": "Andere"}, "paymentStatuses": {"paid": "Bezahlt", "unpaid": "Offen"}, "statuses": {"draft": "Entwurf", "posted": "Gebucht", "void": "Storniert"}
     }
+  },
+  "salesDocuments": {
+    "eyebrow": "Dokumentenkontrolle", "title": "Verkaufsdokumente", "description": "Dauerhafte operative Belege und kanonische ausgestellte oder stornierte Rechnungen.",
+    "back": "Zurück zu Dokumenten", "print": "Drucken / PDF speichern", "receipt": "Operativer Beleg", "customer": "Kunde", "order": "Auftrag", "descriptionLabel": "Beschreibung", "quantity": "Menge", "unitPrice": "Einzelpreis", "subtotal": "Zwischensumme", "discount": "Rabatt", "total": "Gesamt", "paid": "Bezahlt", "outstanding": "Offen", "paymentMethods": "Zahlungsarten", "notes": "Kundennotizen", "thanks": "Vielen Dank", "notFiscal": "Operatives Auftrags-/Zahlungsdokument. Es ist keine Rechnung oder Steuerquittung.",
+    "methods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Überweisung", "other": "Andere"},
+    "registry": {"amount": "Betrag", "cancel": "Beleg stornieren", "cancelReason": "Stornierungsgrund", "customer": "Kunde", "empty": "Keine ausgestellten Verkaufsdokumente.", "issuedAt": "Ausgestellt", "open": "Öffnen / erneut drucken", "orders": "Aufträge", "kinds": {"receipt": "Beleg", "invoice": "Rechnung"}, "statuses": {"issued": "Ausgestellt", "cancelled": "Storniert"}}
   },
   "catalogProductization": {
     "applyImport": "Import anwenden",

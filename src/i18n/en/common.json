@@ -1297,6 +1297,7 @@
     "eyebrow": "Operational financial control",
     "title": "Accounting",
     "description": "Review sales, collections, receivables and expenses from canonical operational sources.",
+    "documentsLink": "Sales documents",
     "filters": {"period": "Period", "start": "From", "end": "To", "location": "Location", "allLocations": "All locations", "apply": "Apply"},
     "presets": {"today": "Today", "week": "This week", "month": "This month", "previousMonth": "Previous month", "custom": "Custom"},
     "summary": {"netSales": "Net sales", "collected": "Collected", "outstanding": "Outstanding", "refunds": "Refunds", "expenses": "Expenses", "operationalResult": "Operational result", "netCollected": "Net collected", "online": "Online"},
@@ -1319,6 +1320,12 @@
       "paymentStatuses": {"paid": "Paid", "unpaid": "Unpaid"},
       "statuses": {"draft": "Draft", "posted": "Posted", "void": "Void"}
     }
+  },
+  "salesDocuments": {
+    "eyebrow": "Document control", "title": "Sales documents", "description": "Persistent operational receipts and canonical issued or cancelled invoices.",
+    "back": "Back to documents", "print": "Print / Save PDF", "receipt": "Operational receipt", "customer": "Customer", "order": "Order", "descriptionLabel": "Description", "quantity": "Quantity", "unitPrice": "Unit price", "subtotal": "Subtotal", "discount": "Discount", "total": "Total", "paid": "Paid", "outstanding": "Outstanding", "paymentMethods": "Payment methods", "notes": "Customer notes", "thanks": "Thank you", "notFiscal": "Operational order/payment document. This is not an invoice or fiscal receipt.",
+    "methods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"},
+    "registry": {"amount": "Amount", "cancel": "Cancel receipt", "cancelReason": "Cancellation reason", "customer": "Customer", "empty": "No issued sales documents.", "issuedAt": "Issued", "open": "Open / reprint", "orders": "Orders", "kinds": {"receipt": "Receipt", "invoice": "Invoice"}, "statuses": {"issued": "Issued", "cancelled": "Cancelled"}}
   },
   "catalogProductization": {
     "applyImport": "Apply import",

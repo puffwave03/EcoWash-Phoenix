@@ -1283,6 +1283,7 @@
     "eyebrow": "Controllo finanziario operativo",
     "title": "Contabilità",
     "description": "Consulta vendite, incassi, crediti e spese dalle fonti operative canoniche.",
+    "documentsLink": "Documenti di vendita",
     "filters": {"period": "Periodo", "start": "Dal", "end": "Al", "location": "Sede", "allLocations": "Tutte le sedi", "apply": "Applica"},
     "presets": {"today": "Oggi", "week": "Questa settimana", "month": "Questo mese", "previousMonth": "Mese precedente", "custom": "Personalizzato"},
     "summary": {"netSales": "Vendite nette", "collected": "Incassato", "outstanding": "Da incassare", "refunds": "Rimborsi", "expenses": "Spese", "operationalResult": "Risultato operativo", "netCollected": "Incasso netto", "online": "Online"},
@@ -1305,6 +1306,12 @@
       "paymentStatuses": {"paid": "Pagata", "unpaid": "Da pagare"},
       "statuses": {"draft": "Bozza", "posted": "Registrata", "void": "Annullata"}
     }
+  },
+  "salesDocuments": {
+    "eyebrow": "Controllo documenti", "title": "Documenti di vendita", "description": "Ricevute operative persistenti e fatture canoniche emesse o annullate.",
+    "back": "Torna ai documenti", "print": "Stampa / Salva PDF", "receipt": "Ricevuta operativa", "customer": "Cliente", "order": "Ordine", "descriptionLabel": "Descrizione", "quantity": "Quantità", "unitPrice": "Prezzo unitario", "subtotal": "Subtotale", "discount": "Sconto", "total": "Totale", "paid": "Pagato", "outstanding": "Residuo", "paymentMethods": "Metodi di pagamento", "notes": "Note cliente", "thanks": "Grazie", "notFiscal": "Documento operativo di ordine/pagamento. Non è una fattura né una ricevuta fiscale.",
+    "methods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"},
+    "registry": {"amount": "Importo", "cancel": "Annulla ricevuta", "cancelReason": "Motivo annullamento", "customer": "Cliente", "empty": "Nessun documento di vendita emesso.", "issuedAt": "Emesso", "open": "Apri / ristampa", "orders": "Ordini", "kinds": {"receipt": "Ricevuta", "invoice": "Fattura"}, "statuses": {"issued": "Emesso", "cancelled": "Annullato"}}
   },
   "catalogProductization": {
     "applyImport": "Applica importazione",

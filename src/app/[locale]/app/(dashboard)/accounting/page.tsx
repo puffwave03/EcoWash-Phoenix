@@ -4,6 +4,7 @@ import { Card } from "@/components/Card";
 import { EmptyState, PageHeader, SummaryCard } from "@/components/operational/OperationalUi";
 import { getAccountingPeriodContext, getAccountingWorkspace } from "@/features/accounting/server/workspace-queries";
 import { resolveAccountingPeriod } from "@/features/accounting/workspace";
+import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
 
 type SearchValue = string | string[] | undefined;
@@ -74,6 +75,7 @@ export default async function AccountingPage({ params, searchParams }: {
 
     {!data ? <Card className="border-red-200 bg-red-50"><p className="text-sm text-red-800" role="alert">{t("queryError")}</p></Card> : <>
       <div className="flex flex-wrap gap-3">
+        <Link className="inline-flex min-h-11 items-center rounded-control bg-primary px-4 text-sm font-semibold text-white" href="/app/accounting/documents" locale={locale}>{t("documentsLink")}</Link>
         <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/sales?${exportQuery}`}>{t("exports.sales")}</a>
         <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/expenses?${exportQuery}`}>{t("exports.expenses")}</a>
         <p className="self-center text-xs text-muted">{t("exports.disclaimer")}</p>

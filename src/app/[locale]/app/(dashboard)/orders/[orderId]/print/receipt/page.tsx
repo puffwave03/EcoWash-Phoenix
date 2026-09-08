@@ -1,8 +1,8 @@
-import { OrderPrintDocument } from "@/components/printing/OrderPrintDocument";
-import { getPrintOrderContext } from "@/features/printing/server/queries";
+import { redirect } from "next/navigation";
+import { issueOperationalReceipt } from "@/features/sales-documents/server/actions";
 
 export default async function OrderReceiptPrintPage({ params }: { params: Promise<{ locale: string; orderId: string }> }) {
   const { locale, orderId } = await params;
-  const context = await getPrintOrderContext(locale, orderId);
-  return <OrderPrintDocument context={context} locale={locale} mode="receipt" />;
+  const receipt = await issueOperationalReceipt(locale, orderId);
+  redirect(`/${locale}/app/accounting/documents/receipts/${receipt.id}/print`);
 }
