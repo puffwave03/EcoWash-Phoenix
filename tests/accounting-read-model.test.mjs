@@ -99,3 +99,38 @@ test("14 canonical rows, not provider events, are the only payment input", async
   assert.doesNotMatch(query, /online_payment_attempts|online_payment_provider_events/);
   assert.match(query, /\.eq\("status", "confirmed"\)/);
 });
+
+test("15 cancelled orders stay out of sales while their confirmed collections remain", () => {
+  const confirmed = payment({ amount: 70 });
+  const value = summary({ periodPayments: [confirmed] });
+  assert.equal(value.salesNet, 0);
+  assert.equal(value.collectedGross, 70);
+  assert.equal(value.collectedNet, 70);
+});
+
+test("16 full and partial refunds on cancelled orders remain ledger movements", () => {
+  const confirmed = payment({ amount: 70 });
+  const full = summary({ periodPayments: [confirmed, payment({ amount: 70, id: "full-refund", status: "refunded" })] });
+  assert.equal(full.salesNet, 0);
+  assert.equal(full.collectedGross, 70);
+  assert.equal(full.refunds, 70);
+  assert.equal(full.collectedNet, 0);
+
+  const partial = summary({ periodPayments: [confirmed, payment({ amount: 20, id: "partial-refund", status: "refunded" })] });
+  assert.equal(partial.collectedGross, 70);
+  assert.equal(partial.refunds, 20);
+  assert.equal(partial.collectedNet, 50);
+});
+
+test("17 sales cancellation filter remains separate from tenant-scoped payment and activity queries", async () => {
+  const [query, workspace] = await Promise.all([
+    readFile(new URL("../src/features/accounting/server/queries.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/features/accounting/server/workspace-queries.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(query, /from\("orders"\)[\s\S]*\.neq\("production_status", "cancelled"\)/);
+  assert.doesNotMatch(query, /neq\("order\.production_status", "cancelled"\)/);
+  assert.match(query, /from\("payments"\)[\s\S]*\.eq\("organization_id", organizationId\)/);
+  assert.match(query, /query = query\.eq\("order\.location_id", locationId\)/);
+  assert.match(workspace, /value\.paymentIds, \.\.\.value\.refundIds/);
+  assert.match(workspace, /from\("payments"\)[\s\S]*\.eq\("organization_id", organizationId\)\.in\("id", ids\)/);
+});

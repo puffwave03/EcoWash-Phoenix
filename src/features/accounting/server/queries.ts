@@ -143,7 +143,7 @@ export async function getAccountingSummary(locale: string, filter: AccountingSum
     let query = supabase.from("payments")
       .select("id, order_id, amount, method, status, paid_at, channel, pos_session_id, order:orders!payments_order_same_org!inner(currency, location_id, is_active, production_status)")
       .eq("organization_id", organizationId).gte("paid_at", paymentBounds.start).lt("paid_at", paymentBounds.end)
-      .eq("order.is_active", true).neq("order.production_status", "cancelled")
+      .eq("order.is_active", true)
       .order("paid_at").order("id").range(from, to);
     if (locationId) query = query.eq("order.location_id", locationId);
     return query;
