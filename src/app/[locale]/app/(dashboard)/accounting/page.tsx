@@ -23,13 +23,14 @@ export default async function AccountingPage({ params, searchParams }: {
     searchParams,
     params.then(({ locale: activeLocale }) => getTranslations({ locale: activeLocale, namespace: "common.accountingWorkspace" })),
   ]);
+  const documentsAction = <Link className="inline-flex min-h-11 items-center rounded-control bg-primary px-4 text-sm font-semibold !text-white" href="/app/accounting/documents" locale={locale}>{t("documentsLink")}</Link>;
   let context: Awaited<ReturnType<typeof getAccountingPeriodContext>> | null = null;
   try {
     context = await getAccountingPeriodContext(locale);
   } catch (error) {
     console.error("Accounting workspace context failed", error instanceof Error ? error.message : "unknown");
   }
-  if (!context) return <div className="space-y-6"><PageHeader description={t("description")} eyebrow={t("eyebrow")} title={t("title")} /><Card className="border-red-200 bg-red-50"><p className="text-sm text-red-800" role="alert">{t("queryError")}</p></Card></div>;
+  if (!context) return <div className="space-y-6"><PageHeader action={documentsAction} description={t("description")} eyebrow={t("eyebrow")} title={t("title")} /><Card className="border-red-200 bg-red-50"><p className="text-sm text-red-800" role="alert">{t("queryError")}</p></Card></div>;
   let invalidPeriod = false;
   let selection;
   try {
@@ -59,7 +60,7 @@ export default async function AccountingPage({ params, searchParams }: {
   const methodText = t.raw("management.methods") as Record<string, string>;
 
   return <div className="space-y-6">
-    <PageHeader description={t("description")} eyebrow={t("eyebrow")} title={t("title")} />
+    <PageHeader action={documentsAction} description={t("description")} eyebrow={t("eyebrow")} title={t("title")} />
 
     <form className="rounded-card border border-border bg-white p-4 shadow-sm" method="get">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.3fr_1fr_1fr_1fr_auto] xl:items-end">
@@ -75,7 +76,6 @@ export default async function AccountingPage({ params, searchParams }: {
 
     {!data ? <Card className="border-red-200 bg-red-50"><p className="text-sm text-red-800" role="alert">{t("queryError")}</p></Card> : <>
       <div className="flex flex-wrap gap-3">
-        <Link className="inline-flex min-h-11 items-center rounded-control bg-primary px-4 text-sm font-semibold text-white" href="/app/accounting/documents" locale={locale}>{t("documentsLink")}</Link>
         <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/sales?${exportQuery}`}>{t("exports.sales")}</a>
         <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/expenses?${exportQuery}`}>{t("exports.expenses")}</a>
         <p className="self-center text-xs text-muted">{t("exports.disclaimer")}</p>

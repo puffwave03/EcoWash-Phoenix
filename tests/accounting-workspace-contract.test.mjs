@@ -84,6 +84,8 @@ test("6 navigation and UI preserve Owner, Manager and Staff boundaries", async (
   ]);
   assert.match(navigation, /isControlRole[\s\S]*href: "\/app\/accounting"/);
   assert.match(page, /getAccountingPeriodContext/);
+  assert.match(page, /const documentsAction = <Link[\s\S]*href="\/app\/accounting\/documents" locale=\{locale\}/);
+  assert.equal(page.match(/<PageHeader action=\{documentsAction\}/g)?.length, 2);
   assert.match(management, /const owner = role === "owner"/);
   assert.match(management, /expense\.status === "draft"/);
   assert.match(management, /expense\.status === "posted"/);

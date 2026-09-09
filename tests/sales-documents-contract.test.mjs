@@ -71,12 +71,13 @@ test("11b cancelled receipts remain historical and allow a newly numbered issued
   assert.doesNotMatch(issue, /document_status = 'cancelled'/);
 });
 
-test("12-14 receipt issue redirects to persisted snapshot reprint while ticket and labels stay live", async () => {
-  const [actions, issuePage, receiptPage, receiptDocument, ticketPage, labelsPage] = await Promise.all([
+test("12-14 receipt issue redirects to a readable persisted snapshot reprint while ticket and labels stay live", async () => {
+  const [actions, issuePage, receiptPage, receiptDocument, printCss, ticketPage, labelsPage] = await Promise.all([
     source("src/features/sales-documents/server/actions.ts"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/print/receipt/page.tsx"),
     source("src/app/[locale]/app/(dashboard)/accounting/documents/receipts/[receiptId]/print/page.tsx"),
     source("src/components/sales-documents/OperationalReceiptDocument.tsx"),
+    source("src/styles/globals.css"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/print/ticket/page.tsx"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/print/labels/page.tsx"),
   ]);
@@ -91,6 +92,15 @@ test("12-14 receipt issue redirects to persisted snapshot reprint while ticket a
   assert.ok(issuePage.indexOf("issueOperationalReceipt(locale, orderId)") < issuePage.indexOf("redirect("));
   assert.match(receiptPage, /getOperationalReceipt\(locale, receiptId\)/);
   assert.match(receiptDocument, /receipt\.snapshot/);
+  assert.match(receiptDocument, /print-preview-toolbar operational-receipt-toolbar print:hidden/);
+  assert.match(receiptDocument, /print-items-table operational-receipt-items/);
+  for (const key of ["descriptionCompact", "quantityCompact", "unitPriceCompact", "totalCompact"]) {
+    assert.match(receiptDocument, new RegExp(`t\\("${key}"\\)`));
+  }
+  assert.match(printCss, /grid-template-columns: minmax\(0, 1fr\) 15mm 20mm 16mm/);
+  assert.match(printCss, /\.operational-receipt-items th \+ th, \.operational-receipt-items td \+ td \{ border-left:/);
+  assert.match(printCss, /\.operational-receipt-items th \{[^}]*white-space: normal;/);
+  assert.match(printCss, /\.operational-receipt-actions \{ flex-direction: column; \}/);
   assert.doesNotMatch(receiptDocument, /getPrintOrderContext|getOrderById|listOrderItems/);
   for (const page of [ticketPage, labelsPage]) {
     assert.match(page, /getPrintOrderContext\(locale, orderId\)/);
@@ -164,11 +174,24 @@ test("20-23 accounting, payments, Billing model and fiscal scope remain untouche
 });
 
 test("24 all five locales expose the sales-document registry and receipt vocabulary", async () => {
+  const compactLabels = {
+    de: ["BESCHR.", "MENGE", "STK.", "GES."],
+    en: ["DESC.", "QTY.", "UNIT", "TOT."],
+    es: ["DESC.", "CANT.", "P.UNIT.", "TOT."],
+    fr: ["DESC.", "QTÉ", "P.UNIT.", "TOT."],
+    it: ["DESC.", "Q.TÀ", "P.UNIT.", "TOT."],
+  };
   for (const locale of ["en", "it", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.accountingWorkspace.documentsLink, "string");
     assert.equal(typeof messages.salesDocuments.registry.kinds.receipt, "string");
     assert.equal(typeof messages.salesDocuments.registry.kinds.invoice, "string");
+    assert.deepEqual([
+      messages.salesDocuments.descriptionCompact,
+      messages.salesDocuments.quantityCompact,
+      messages.salesDocuments.unitPriceCompact,
+      messages.salesDocuments.totalCompact,
+    ], compactLabels[locale]);
     assert.equal(typeof messages.salesDocuments.notFiscal, "string");
   }
 });

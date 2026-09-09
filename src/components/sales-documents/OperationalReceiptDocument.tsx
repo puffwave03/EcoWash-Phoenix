@@ -15,8 +15,8 @@ export async function OperationalReceiptDocument({ locale, printRequestedAction,
   const methods = Object.entries(payment.methodTotals).filter(([, amount]) => Number(amount) > 0);
 
   return <div className="order-print-document order-print-receipt order-print-receipt-80mm">
-    <div className="print-preview-toolbar print:hidden">
-      <div className="print-preview-actions">
+    <div className="print-preview-toolbar operational-receipt-toolbar print:hidden">
+      <div className="print-preview-actions operational-receipt-actions">
         <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href="/app/accounting/documents" locale={locale}>← {t("back")}</Link>
         <PrintButton label={t("print")} printRequestedAction={printRequestedAction} />
       </div>
@@ -35,8 +35,8 @@ export async function OperationalReceiptDocument({ locale, printRequestedAction,
         <div><dt>{t("customer")}</dt><dd>{receipt.snapshot.customer.displayName}</dd></div>
         <div><dt>{t("order")}</dt><dd>{order.orderNumber}</dd></div>
       </dl>
-      <table className="print-items-table">
-        <thead><tr><th>{t("descriptionLabel")}</th><th>{t("quantity")}</th><th>{t("unitPrice")}</th><th>{t("total")}</th></tr></thead>
+      <table className="print-items-table operational-receipt-items">
+        <thead><tr><th>{t("descriptionCompact")}</th><th>{t("quantityCompact")}</th><th>{t("unitPriceCompact")}</th><th>{t("totalCompact")}</th></tr></thead>
         <tbody>{items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{formatQuantity(item.quantity, locale)}</td><td>{formatCurrency(item.unitPrice, order.currency, locale)}</td><td>{formatCurrency(item.lineTotal, order.currency, locale)}</td></tr>)}</tbody>
       </table>
       <dl className="print-totals">
