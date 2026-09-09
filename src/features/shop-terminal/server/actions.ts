@@ -11,12 +11,14 @@ import { parsePhoenixCode } from "@/features/barcode/payload";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
+import { organizationDateTimeLocalToIso } from "@/lib/organization-timezone";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ORDER_NUMBER = /^[a-z]{2,12}-\d{1,12}$/i;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[+()\d\s.-]{3,32}$/;
+const DATE_TIME_LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
 export async function resolveShopCodeAction(locale: string, raw: string): Promise<ShopCodeResolveResult> {
   const { membership } = await requireShopTerminalAccess(locale);
@@ -197,14 +199,20 @@ export async function submitShopOrderAction(
     || (sessionId && !UUID.test(sessionId)) || !Number.isFinite(discountAmount)
     || !dueAt || Number.isNaN(Date.parse(dueAt)) || (productionAssigneeId && !UUID.test(productionAssigneeId))
     || (deliveryAssignedTo && !UUID.test(deliveryAssignedTo))
-    || (deliveryRequested && (!delivery || !deliveryScheduledAt || Number.isNaN(Date.parse(deliveryScheduledAt)) || !deliveryAddressLine1))
+    || (deliveryRequested && (!delivery || !DATE_TIME_LOCAL.test(deliveryScheduledAt) || !deliveryAddressLine1))
     || (deliveryRequested && deliveryContactPhone && !PHONE.test(deliveryContactPhone))
     || (walkInPhone && !PHONE.test(walkInPhone))
     || !Array.isArray(payload.items) || payload.items.length < 1 || !Array.isArray(payload.payments)) {
     return { error: "validation", result: null };
   }
 
-  await requireShopTerminalAccess(locale);
+  const { membership } = await requireShopTerminalAccess(locale);
+  const normalizedDeliveryScheduledAt = deliveryRequested
+    ? organizationDateTimeLocalToIso(deliveryScheduledAt, membership.organization.timezone)
+    : null;
+  if (deliveryRequested && !normalizedDeliveryScheduledAt) {
+    return { error: "validation", result: null };
+  }
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("submit_shop_terminal_order", {
     target_customer_id: customerId,
@@ -221,7 +229,7 @@ export async function submitShopOrderAction(
     target_walk_in_phone: walkInPhone || null,
     target_production_assignee_id: productionAssigneeId,
     target_delivery_requested: deliveryRequested,
-    target_delivery_scheduled_at: deliveryRequested ? deliveryScheduledAt : null,
+    target_delivery_scheduled_at: normalizedDeliveryScheduledAt,
     target_delivery_assigned_to: deliveryRequested ? deliveryAssignedTo : null,
     target_delivery_address_line1: deliveryRequested ? deliveryAddressLine1 : null,
     target_delivery_address_line2: deliveryRequested && typeof delivery?.addressLine2 === "string" ? delivery.addressLine2.slice(0, 240) : null,

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { organizationDateTimeLocalToIso } from "@/lib/organization-timezone";
 import { isAssignableStaffForCapability } from "@/features/logistics/server/queries";
 import type {
   FulfillmentStatus,
@@ -109,6 +110,10 @@ export async function savePickupAction(
   if (!valid) return fail(fieldErrors, null);
 
   const { membership } = await requireOperationalCapability(locale, "pickup");
+  const scheduledAt = input.scheduledAt
+    ? organizationDateTimeLocalToIso(input.scheduledAt, membership.organization.timezone)
+    : null;
+  if (input.scheduledAt && !scheduledAt) return fail({ scheduledAt: "invalid" }, null);
   const assignment = await assignmentForRole({
     capability: "pickup",
     inputAssignedTo: input.assignedTo,
@@ -135,7 +140,7 @@ export async function savePickupAction(
     target_order_id: orderId,
     target_pickup_id: optionalDbValue(input.recordId),
     target_postal_code: optionalDbValue(input.postalCode),
-    target_scheduled_at: optionalDbValue(input.scheduledAt),
+    target_scheduled_at: scheduledAt,
   });
 
   if (error) {
@@ -159,6 +164,10 @@ export async function saveDeliveryAction(
   if (!valid) return fail(fieldErrors, null);
 
   const { membership } = await requireOperationalCapability(locale, "delivery");
+  const scheduledAt = input.scheduledAt
+    ? organizationDateTimeLocalToIso(input.scheduledAt, membership.organization.timezone)
+    : null;
+  if (input.scheduledAt && !scheduledAt) return fail({ scheduledAt: "invalid" }, null);
   const assignment = await assignmentForRole({
     capability: "delivery",
     inputAssignedTo: input.assignedTo,
@@ -185,7 +194,7 @@ export async function saveDeliveryAction(
     target_order_id: orderId,
     target_delivery_id: optionalDbValue(input.recordId),
     target_postal_code: optionalDbValue(input.postalCode),
-    target_scheduled_at: optionalDbValue(input.scheduledAt),
+    target_scheduled_at: scheduledAt,
   });
 
   if (error) {

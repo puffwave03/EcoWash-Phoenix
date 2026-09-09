@@ -4,21 +4,31 @@ Status: Active
 
 Date: 2026-09-09
 
-Approximate closeout time: after ACCOUNTING-DOCUMENTS-NAV-001 final Product Owner acceptance
+Approximate closeout time: after LOGISTICS-TIMEZONE-001 final Product Owner acceptance
 
-Session checkpoint: ACCOUNTING-DOCUMENTS-NAV-001 COMPLETE / STABLE; LOGISTICS-TIMEZONE-001 is next proposed
+Session checkpoint: LOGISTICS-TIMEZONE-001 COMPLETE / STABLE; LOGISTICS-COMPLETED-HISTORY-001 is next proposed
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `b946358e26b1cf59ecbe363519b28ecc68eeee0f`
+Approved baseline before this mission: `476dbec38a8080ede704bfd62bce0e50cfc67b9e`
 
-Origin/main status before this closeout: local `main` and `origin/main` are aligned at `b946358e26b1cf59ecbe363519b28ecc68eeee0f`.
+Origin/main status before this closeout: local `main` and `origin/main` are aligned at `476dbec38a8080ede704bfd62bce0e50cfc67b9e`.
 
-Working tree status before documentation closeout: the approved ACCOUNTING-DOCUMENTS-NAV-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
+Working tree status before documentation closeout: the approved LOGISTICS-TIMEZONE-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
 
-Working tree expected clean after the approved ACCOUNTING-DOCUMENTS-NAV-001 commit and push.
+Working tree expected clean after the approved LOGISTICS-TIMEZONE-001 commit and push.
+
+---
+
+## LOGISTICS-TIMEZONE-001 Closeout
+
+- `LOGISTICS-TIMEZONE-001` is COMPLETE / STABLE. Tenant wall-clock `datetime-local` values are interpreted with server-derived `organizations.timezone`, stored as absolute `timestamptz` instants, and rendered for managers and staff in that same tenant timezone.
+- The shared conversion is DST-aware; language continues to follow user locale and never determines timezone. Shop Terminal delivery scheduling and dashboard logistics rendering use the same canonical boundary.
+- No migration or automatic rewrite of previously shifted rows was made; affected historical rows may be corrected manually through normal rescheduling.
+- Focused validation, staging deployment and Product Owner E2E passed with manager, My Day and delivery workspace all showing `21:00`.
+- Next proposed task: `LOGISTICS-COMPLETED-HISTORY-001`.
 
 ---
 
@@ -33,7 +43,6 @@ Working tree expected clean after the approved ACCOUNTING-DOCUMENTS-NAV-001 comm
 
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
 - `LOGISTICS-COMPLETED-HISTORY-001` — consider completed-today/history views for delivery/pickup staff while keeping completed tasks outside open My Day work.
-- `LOGISTICS-TIMEZONE-001` — investigate the observed manager-scheduled versus staff-displayed time shift; UAT example: manager `11:00` displayed to staff as `12:00`.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.
 
 ---
@@ -644,7 +653,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-ACCOUNTING-DOCUMENTS-NAV-001 is COMPLETE / STABLE. Resume with the proposed `LOGISTICS-TIMEZONE-001` finding; do not reopen accepted receipt layout, sales-document, Billing, Accounting or payment/refund foundations unless a reproducible defect is found.
+LOGISTICS-TIMEZONE-001 is COMPLETE / STABLE. Resume with the proposed `LOGISTICS-COMPLETED-HISTORY-001` finding; do not reopen accepted tenant-timezone, fulfillment, receipt, Accounting or payment/refund foundations unless a reproducible defect is found.
 
 1. Draft logistics may be configured but are not yet operational work for staff.
 2. Logistics becomes operational from `received` onward.
@@ -654,9 +663,8 @@ ACCOUNTING-DOCUMENTS-NAV-001 is COMPLETE / STABLE. Resume with the proposed `LOG
 
 Open findings only, not yet implemented:
 
-1. `LOGISTICS-TIMEZONE-001` — investigate the UAT time discrepancy (`11:00` manager schedule displayed as `12:00` to staff).
-2. `LOGISTICS-COMPLETED-HISTORY-001` — possible completed-today/history view without returning completed work to open My Day.
-3. `RECEIPT-COMPACT-LINES-UX` — non-blocking future vertical-space optimization for long descriptions, preserving readability and print safety.
+1. `LOGISTICS-COMPLETED-HISTORY-001` — possible completed-today/history view without returning completed work to open My Day.
+2. `RECEIPT-COMPACT-LINES-UX` — non-blocking future vertical-space optimization for long descriptions, preserving readability and print safety.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

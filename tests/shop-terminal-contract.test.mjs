@@ -518,7 +518,9 @@ test("44 delivery OFF creates no row; ON validates and creates the scheduled row
     source("src/features/shop-terminal/server/actions.ts"),
   ]);
   assert.match(action, /target_delivery_requested: deliveryRequested/);
-  assert.match(action, /deliveryRequested && \(!delivery \|\| !deliveryScheduledAt[\s\S]*!deliveryAddressLine1\)/);
+  assert.match(action, /deliveryRequested && \(!delivery \|\| !DATE_TIME_LOCAL\.test\(deliveryScheduledAt\)[\s\S]*!deliveryAddressLine1\)/);
+  assert.match(action, /organizationDateTimeLocalToIso\(deliveryScheduledAt, membership\.organization\.timezone\)/);
+  assert.match(action, /target_delivery_scheduled_at: normalizedDeliveryScheduledAt/);
   assert.match(sql, /target_delivery_requested and \([\s\S]*target_delivery_scheduled_at is null[\s\S]*target_delivery_address_line1/);
   assert.match(sql, /target_delivery_assigned_to[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'delivery' = any\(membership\.operational_capabilities::text\[\]\)/);
   assert.match(sql, /select created\.id, created\.order_number into created_order[\s\S]*if target_delivery_requested then[\s\S]*public\.create_or_update_delivery\([\s\S]*created_order\.id/);

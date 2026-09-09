@@ -197,7 +197,7 @@ function nowWindow(timeZone: string) {
     zonedLocalDateTimeToUtc(resolvedTimeZone, tomorrow.year, tomorrow.month, tomorrow.day).getTime() - 1,
   );
 
-  return { end, now, start };
+  return { end, now, start, timeZone: resolvedTimeZone };
 }
 
 function isOpen(order: OrderRow) {
@@ -308,7 +308,7 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
   }
 
   const supabase = await createSupabaseServerClient();
-  const { end, now, start } = nowWindow(membership.organization.timezone);
+  const { end, now, start, timeZone } = nowWindow(membership.organization.timezone);
   const includeFinancialAggregates = canViewFinancialAggregates(membership.role);
   const paymentsTodayQuery = includeFinancialAggregates
     ? supabase
@@ -555,6 +555,7 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
     },
     todayDeliveries: (deliveriesTodayResult.data ?? []).map((row) => logisticsItem(row, "delivery")),
     todayPickups: (pickupsTodayResult.data ?? []).map((row) => logisticsItem(row, "pickup")),
+    timeZone,
     onHoldQueue,
   };
 }

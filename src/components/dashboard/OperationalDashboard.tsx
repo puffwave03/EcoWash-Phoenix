@@ -116,8 +116,8 @@ function formatDateTime(value: string | null, locale: string) {
   return value ? new Date(value).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" }) : "-";
 }
 
-function formatTime(value: string | null, locale: string) {
-  return value ? new Date(value).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" }) : "-";
+function formatTime(value: string | null, locale: string, timeZone: string) {
+  return value ? new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", timeZone }).format(new Date(value)) : "-";
 }
 
 function OrderLink({ id, locale, text }: { id: string; locale: string; text: string }) {
@@ -210,10 +210,12 @@ function LogisticsList({
   items,
   locale,
   text,
+  timeZone,
 }: {
   items: DashboardLogisticsItem[];
   locale: string;
   text: DashboardText;
+  timeZone: string;
 }) {
   if (items.length === 0) return <p className="text-sm text-muted">{text.logistics.empty}</p>;
 
@@ -221,7 +223,7 @@ function LogisticsList({
     <div className="divide-y divide-border">
       {items.map((item) => (
         <div className="grid gap-3 py-3 md:grid-cols-[5rem_1fr_1fr_auto] md:items-center" key={`${item.kind}-${item.id}`}>
-          <p className="text-sm font-semibold text-primary">{formatTime(item.scheduledAt, locale)}</p>
+          <p className="text-sm font-semibold text-primary">{formatTime(item.scheduledAt, locale, timeZone)}</p>
           <div>
             <p className="font-semibold text-primary">{item.orderNumber}</p>
             <p className="text-sm text-muted">{item.customerName}</p>
@@ -442,17 +444,17 @@ export function OperationalDashboard({ data, locale, text }: OperationalDashboar
       <div className="grid gap-6 xl:grid-cols-2">
         <Card className="space-y-3">
           <h3 className="text-lg font-semibold text-primary">{text.logistics.todayPickups}</h3>
-          <LogisticsList items={data.todayPickups} locale={locale} text={text} />
+          <LogisticsList items={data.todayPickups} locale={locale} text={text} timeZone={data.timeZone} />
         </Card>
         <Card className="space-y-3">
           <h3 className="text-lg font-semibold text-primary">{text.logistics.todayDeliveries}</h3>
-          <LogisticsList items={data.todayDeliveries} locale={locale} text={text} />
+          <LogisticsList items={data.todayDeliveries} locale={locale} text={text} timeZone={data.timeZone} />
         </Card>
       </div>
 
       <Card className="space-y-3">
         <h3 className="text-lg font-semibold text-primary">{text.logistics.attention}</h3>
-        <LogisticsList items={data.logisticsAttention} locale={locale} text={text} />
+        <LogisticsList items={data.logisticsAttention} locale={locale} text={text} timeZone={data.timeZone} />
       </Card>
 
       <Card className="space-y-3">

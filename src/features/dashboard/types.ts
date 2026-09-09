@@ -90,5 +90,6 @@ export type DashboardOverview = {
   summary: DashboardSummary;
   todayDeliveries: DashboardLogisticsItem[];
   todayPickups: DashboardLogisticsItem[];
+  timeZone: string;
   onHoldQueue: DashboardHoldItem[];
 };

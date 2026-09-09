@@ -347,6 +347,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             isActive: order.isActive,
             productionStatus: order.productionStatus,
           })}
+          timeZone={access.membership.organization.timezone}
           text={{
             addressLine1: t("logistics.addressLine1"),
             addressLine2: t("logistics.addressLine2"),

@@ -10,6 +10,7 @@ import type {
   OrderLogistics,
 } from "@/features/logistics/types";
 import { formatNumberInput } from "@/lib/number-format";
+import { isoToOrganizationDateTimeLocal } from "@/lib/organization-timezone";
 import type { AssignmentOption } from "@/features/orders/server/queries";
 
 type LogisticsPanelText = {
@@ -52,6 +53,7 @@ type LogisticsPanelProps = {
   logistics: OrderLogistics;
   operationalTransitionsEnabled: boolean;
   text: LogisticsPanelText;
+  timeZone: string;
 };
 
 const initialState: LogisticsActionState = { fieldErrors: {}, formError: null, success: false };
@@ -62,8 +64,8 @@ function fieldClass(hasError = false) {
   }`;
 }
 
-function toInputDate(value: string | null) {
-  return value ? value.slice(0, 16) : "";
+function toInputDate(value: string | null, timeZone: string) {
+  return value ? isoToOrganizationDateTimeLocal(value, timeZone) ?? "" : "";
 }
 
 function nextStatuses(status: FulfillmentStatus | null) {
@@ -78,6 +80,7 @@ function LogisticsForm({
   canAssign,
   record,
   text,
+  timeZone,
   title,
 }: {
   action: (state: LogisticsActionState, formData: FormData) => Promise<LogisticsActionState>;
@@ -85,6 +88,7 @@ function LogisticsForm({
   canAssign: boolean;
   record: LogisticsRecord | null;
   text: LogisticsPanelText;
+  timeZone: string;
   title: string;
 }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -104,7 +108,7 @@ function LogisticsForm({
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="min-w-0 space-y-2 text-sm font-semibold text-primary">
           <span>{text.scheduledAt}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.scheduledAt))} defaultValue={toInputDate(record?.scheduledAt ?? null)} name="scheduledAt" type="datetime-local" />
+          <input className={fieldClass(Boolean(state.fieldErrors.scheduledAt))} defaultValue={toInputDate(record?.scheduledAt ?? null, timeZone)} name="scheduledAt" type="datetime-local" />
         </label>
         {canAssign ? (
           <label className="min-w-0 space-y-2 text-sm font-semibold text-primary">
@@ -215,17 +219,18 @@ export function LogisticsPanel({
   logistics,
   operationalTransitionsEnabled,
   text,
+  timeZone,
 }: LogisticsPanelProps) {
   return (
     <Card className="space-y-5 !p-4 sm:!p-6">
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
       <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
-          <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} title={text.pickup} />
+          <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} timeZone={timeZone} title={text.pickup} />
           <TransitionButtons action={actions.transitionPickup} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} />
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
-          <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} title={text.delivery} />
+          <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />
           <TransitionButtons action={actions.transitionDelivery} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} />
         </section>
       </div>
