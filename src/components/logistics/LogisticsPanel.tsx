@@ -50,6 +50,7 @@ type LogisticsPanelProps = {
   };
   canAssign: boolean;
   logistics: OrderLogistics;
+  operationalTransitionsEnabled: boolean;
   text: LogisticsPanelText;
 };
 
@@ -173,14 +174,20 @@ function LogisticsForm({
 
 function TransitionButtons({
   action,
+  operationalTransitionsEnabled,
   record,
   text,
 }: {
   action: (formData: FormData) => Promise<void>;
+  operationalTransitionsEnabled: boolean;
   record: LogisticsRecord | null;
   text: LogisticsPanelText;
 }) {
-  const statuses = nextStatuses(record?.status ?? null);
+  const statuses = nextStatuses(record?.status ?? null).filter(
+    (status) =>
+      operationalTransitionsEnabled ||
+      !["in_progress", "completed"].includes(status),
+  );
   if (!record || statuses.length === 0) return null;
 
   return (
@@ -201,18 +208,25 @@ function TransitionButtons({
   );
 }
 
-export function LogisticsPanel({ actions, assignments, canAssign, logistics, text }: LogisticsPanelProps) {
+export function LogisticsPanel({
+  actions,
+  assignments,
+  canAssign,
+  logistics,
+  operationalTransitionsEnabled,
+  text,
+}: LogisticsPanelProps) {
   return (
     <Card className="space-y-5 !p-4 sm:!p-6">
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
       <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
           <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} title={text.pickup} />
-          <TransitionButtons action={actions.transitionPickup} record={logistics.pickup} text={text} />
+          <TransitionButtons action={actions.transitionPickup} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} />
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
           <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} title={text.delivery} />
-          <TransitionButtons action={actions.transitionDelivery} record={logistics.delivery} text={text} />
+          <TransitionButtons action={actions.transitionDelivery} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} />
         </section>
       </div>
     </Card>

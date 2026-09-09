@@ -6,6 +6,7 @@ import type {
   DeliveryTask,
   DeliveryWorkspaceData,
 } from "@/features/deliveries/types";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import {
@@ -59,14 +60,6 @@ function deliveryPriority(row: DeliveryRow, now: Date): DeliveryPriority {
   if (row.scheduled_at) return "scheduled";
 
   return "assigned";
-}
-
-function isOperationalOrder(order: DeliveryOrderRelation | null) {
-  return Boolean(
-    order &&
-      order.is_active &&
-      !["completed", "cancelled"].includes(order.production_status),
-  );
 }
 
 function mapDelivery(row: DeliveryRow, now: Date): DeliveryTask | null {
@@ -145,7 +138,17 @@ export async function getDeliveryWorkspaceData(
 
   const tasks = (data ?? [])
     .filter((row) => {
-      if (!isOperationalOrder(relationOne(row.order))) return false;
+      const order = relationOne(row.order);
+
+      if (
+        !order ||
+        !isOperationalLogisticsParent({
+          isActive: order.is_active,
+          productionStatus: order.production_status,
+        })
+      ) {
+        return false;
+      }
       if (row.status === "in_progress" || !row.scheduled_at) return true;
 
       return new Date(row.scheduled_at) <= end;
@@ -188,7 +191,17 @@ export async function getDeliveryWorkspaceTask(locale: string, deliveryId: strin
   const { data, error } = await query.maybeSingle<DeliveryRow>();
 
   if (error || !data) notFound();
-  if (!isOperationalOrder(relationOne(data.order))) notFound();
+  const order = relationOne(data.order);
+
+  if (
+    !order ||
+    !isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    })
+  ) {
+    notFound();
+  }
 
   const task = mapDelivery(data, new Date());
 

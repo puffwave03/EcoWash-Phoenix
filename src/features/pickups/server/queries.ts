@@ -1,6 +1,7 @@
 import "server-only";
 
 import { notFound } from "next/navigation";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import {
   relationName,
@@ -60,14 +61,6 @@ function pickupPriority(row: PickupRow, now: Date): PickupPriority {
   if (row.scheduled_at) return "scheduled";
 
   return "assigned";
-}
-
-function isOperationalOrder(order: PickupOrderRelation | null) {
-  return Boolean(
-    order &&
-      order.is_active &&
-      !["completed", "cancelled"].includes(order.production_status),
-  );
 }
 
 function mapPickup(row: PickupRow, now: Date): PickupTask | null {
@@ -159,7 +152,16 @@ export async function getPickupWorkspaceData(
     .filter((row) => {
       const order = relationOne(row.order);
 
-      if (!isOperationalOrder(order) || row.status === "completed") return false;
+      if (
+        !order ||
+        !isOperationalLogisticsParent({
+          isActive: order.is_active,
+          productionStatus: order.production_status,
+        }) ||
+        row.status === "completed"
+      ) {
+        return false;
+      }
       if (row.status === "in_progress" || !row.scheduled_at) return true;
 
       return new Date(row.scheduled_at) <= end;
@@ -204,7 +206,17 @@ export async function getPickupWorkspaceTask(locale: string, pickupId: string) {
 
   if (error || !data) notFound();
 
-  if (!isOperationalOrder(relationOne(data.order))) notFound();
+  const order = relationOne(data.order);
+
+  if (
+    !order ||
+    !isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    })
+  ) {
+    notFound();
+  }
 
   const task = mapPickup(data, new Date());
 

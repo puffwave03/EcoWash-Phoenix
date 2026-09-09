@@ -3,6 +3,7 @@ import "server-only";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import {
@@ -108,7 +109,13 @@ function logisticsActivity(
 ): MyDayActivity | null {
   const order = relationOne(row.order);
 
-  if (!order || !order.is_active || ["completed", "cancelled"].includes(order.production_status)) {
+  if (
+    !order ||
+    !isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    })
+  ) {
     return null;
   }
 

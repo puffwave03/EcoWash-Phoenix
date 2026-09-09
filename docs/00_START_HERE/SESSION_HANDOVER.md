@@ -2,23 +2,40 @@
 
 Status: Active
 
-Date: 2026-09-08
+Date: 2026-09-09
 
-Approximate closeout time: after ACCOUNTING-SALES-DOCUMENTS-001 final Product Owner acceptance
+Approximate closeout time: after ORDER-FULFILLMENT-LIFECYCLE-001 final Product Owner acceptance
 
-Session checkpoint: ACCOUNTING-SALES-DOCUMENTS-001 COMPLETE / STABLE; ORDER-FULFILLMENT-LIFECYCLE-001 is next and not started
+Session checkpoint: ORDER-FULFILLMENT-LIFECYCLE-001 COMPLETE / STABLE; ACCOUNTING-DOCUMENTS-NAV-001 is next and not started
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `8b6d02928685b555355a04bc8ac37bd7a8aed570`
+Approved baseline before this mission: `4a118c9e6ce41638d803c28bfa97b935a0eb453e`
 
-Origin/main status before this closeout: local `main` and `origin/main` are aligned at `8b6d02928685b555355a04bc8ac37bd7a8aed570`.
+Origin/main status before this closeout: local `main` and `origin/main` are aligned at `4a118c9e6ce41638d803c28bfa97b935a0eb453e`.
 
-Working tree status before documentation closeout: the approved ACCOUNTING-SALES-DOCUMENTS-001 application, migration and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
+Working tree status before documentation closeout: the approved ORDER-FULFILLMENT-LIFECYCLE-001 application, migration and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
 
-Working tree expected clean after the approved ACCOUNTING-SALES-DOCUMENTS-001 commit and push.
+Working tree expected clean after the approved ORDER-FULFILLMENT-LIFECYCLE-001 commit and push.
+
+---
+
+## ORDER-FULFILLMENT-LIFECYCLE-001 Closeout
+
+- `ORDER-FULFILLMENT-LIFECYCLE-001` is COMPLETE / STABLE. Draft pickup/delivery remains configurable for manager planning but is excluded from operational staff work until the parent order reaches an accepted state; `received`, active production, `ready`, `completed` and accepted-order `on_hold` remain logistics-eligible.
+- Production `completed` no longer suppresses open pickup/delivery. The logistics record's own `scheduled`, `in_progress`, `completed` or `cancelled` lifecycle governs operational visibility and provides the existing customer-handoff evidence through `status` and `completed_at`.
+- No fulfilled, handed-off, custody, inventory or stock field/table was added. The shared typed application predicate and authoritative pickup/delivery transition RPC checks preserve tenant, capability and assignment boundaries while rejecting draft operational advancement.
+- Staging migration `20260908000300_order_fulfillment_lifecycle_001` is applied and aligned. Focused validation, preview deployment and Product Owner E2E passed: draft assignment stayed hidden from staff, `received` activated the work, production completion preserved the open delivery, and delivery completion removed it from open work.
+- Next proposed task: `ACCOUNTING-DOCUMENTS-NAV-001`.
+
+## Open Findings
+
+- `ACCOUNTING-DOCUMENTS-NAV-001` — expose visible access to sales documents from Accounting, correct receipt print/PDF action positioning, and fix overlapping receipt-table headings.
+- `LOGISTICS-COMPLETED-HISTORY-001` — consider completed-today/history views for delivery/pickup staff while keeping completed tasks outside open My Day work.
+- `LOGISTICS-TIMEZONE-001` — investigate the observed manager-scheduled versus staff-displayed time shift; UAT example: manager `11:00` displayed to staff as `12:00`.
+- The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.
 
 ---
 
@@ -117,6 +134,7 @@ Working tree expected clean after the approved ACCOUNTING-SALES-DOCUMENTS-001 co
 - PRINT-001 — Customer receipt, internal ticket and label-ready browser printing
 - COUNTER-UX-002 — Professional Dry Cleaning / Laundry Counter Register redesign
 - ACCOUNTING-SALES-DOCUMENTS-001 — Persistent operational receipts and unified sales-document registry
+- ORDER-FULFILLMENT-LIFECYCLE-001 — Separate production completion from customer fulfillment
 - OPS-001.5 — Daily Close MVP
 - OPS-001.6 — Operational Alerts MVP
 - UI-001 — Operational Dashboard Visual Refinement
@@ -619,13 +637,19 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-ACCOUNTING-SALES-DOCUMENTS-001 is COMPLETE / STABLE. Resume with the approved `ORDER-FULFILLMENT-LIFECYCLE-001` finding; do not reopen accepted sales-document, Billing, Accounting or payment/refund foundations unless a reproducible defect is found. The next task must preserve these approved requirements:
+ORDER-FULFILLMENT-LIFECYCLE-001 is COMPLETE / STABLE. Resume with the proposed `ACCOUNTING-DOCUMENTS-NAV-001` finding; do not reopen accepted production/fulfillment, sales-document, Billing, Accounting or payment/refund foundations unless a reproducible defect is found. Preserve these approved lifecycle requirements:
 
 1. Draft logistics may be configured but are not yet operational work for staff.
 2. Logistics becomes operational from `received` onward.
 3. Production `completed` means ready, not fulfilled or closed.
 4. Open pickup/delivery remains visible after production completion.
 5. The order remains in operational custody/stock until real customer pickup or delivery completion.
+
+Open findings only, not yet implemented:
+
+1. `ACCOUNTING-DOCUMENTS-NAV-001` — visible Accounting access to sales documents plus receipt print/PDF action and table-heading layout corrections.
+2. `LOGISTICS-COMPLETED-HISTORY-001` — possible completed-today/history view without returning completed work to open My Day.
+3. `LOGISTICS-TIMEZONE-001` — investigate the UAT time discrepancy (`11:00` manager schedule displayed as `12:00` to staff).
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

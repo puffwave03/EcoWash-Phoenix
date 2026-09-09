@@ -6,12 +6,14 @@ import {
 } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type {
   FulfillmentStatus,
   LogisticsRecord,
   OrderLogistics,
 } from "@/features/logistics/types";
 import type { AssignmentOption } from "@/features/orders/server/queries";
+import type { ProductionStatus } from "@/features/orders/types";
 import type { AppRole } from "@/lib/auth/types";
 
 export type AssignableStaffOptions = {
@@ -52,7 +54,9 @@ type DeliveryTaskKind = "delivery" | "pickup";
 type DeliveryTaskOrderRelation = {
   customer: { display_name: string } | { display_name: string }[] | null;
   id: string;
+  is_active: boolean;
   order_number: string;
+  production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
 };
 
@@ -133,14 +137,22 @@ const PICKUP_SELECT =
 const DELIVERY_SELECT =
   "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, cancellation_reason, fee, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name)";
 const PICKUP_TASK_SELECT =
-  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_phone, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_phone, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
 const DELIVERY_TASK_SELECT =
-  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_phone, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_phone, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
 
 function mapDeliveryTask(row: DeliveryTaskRow, kind: DeliveryTaskKind): DeliveryQueueTask | null {
   const order = taskOrderRelation(row.order);
 
-  if (!order) return null;
+  if (
+    !order ||
+    !isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    })
+  ) {
+    return null;
+  }
 
   return {
     addressLine1: row.address_line1,

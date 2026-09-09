@@ -20,6 +20,7 @@ import {
   getOrderLogistics,
   listAssignableStaff,
 } from "@/features/logistics/server/queries";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import {
   deactivateOrderPhotoAction,
   uploadOrderPhotoAction,
@@ -342,6 +343,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           }}
           canAssign={canManageAssignments}
           logistics={logistics}
+          operationalTransitionsEnabled={isOperationalLogisticsParent({
+            isActive: order.isActive,
+            productionStatus: order.productionStatus,
+          })}
           text={{
             addressLine1: t("logistics.addressLine1"),
             addressLine2: t("logistics.addressLine2"),

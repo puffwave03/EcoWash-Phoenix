@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-08
+Last Updated: 2026-09-09
 
-Current Mission: ACCOUNTING-SALES-DOCUMENTS-001 COMPLETE / STABLE
+Current Mission: ORDER-FULFILLMENT-LIFECYCLE-001 COMPLETE / STABLE
 
-Next Action: ORDER-FULFILLMENT-LIFECYCLE-001
+Next Action: ACCOUNTING-DOCUMENTS-NAV-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | ACCOUNTING-SALES-DOCUMENTS-001 COMPLETE / STABLE; ORDER-FULFILLMENT-LIFECYCLE-001 next and not started |
-| Last completed implementation mission | ACCOUNTING-SALES-DOCUMENTS-001 — persistent operational receipts and unified sales-document registry |
-| Approved baseline before current closeout | 8b6d02928685b555355a04bc8ac37bd7a8aed570 |
+| Current mission | ORDER-FULFILLMENT-LIFECYCLE-001 COMPLETE / STABLE; ACCOUNTING-DOCUMENTS-NAV-001 next and not started |
+| Last completed implementation mission | ORDER-FULFILLMENT-LIFECYCLE-001 — separate production completion from customer fulfillment |
+| Approved baseline before current closeout | 4a118c9e6ce41638d803c28bfa97b935a0eb453e |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -87,6 +87,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | PRINT-001 status | Completed and pushed; migration 20260829000300 aligned; PRINT 25/25, Shop Terminal 28/28, POS 31/31 and exact receipt/payment/label rollback E2E passed with zero fixtures |
 | COUNTER-UX-002 status | Completed and pushed in 6691e95; no migration required; COUNTER 30/30 plus Shop/POS/pricing/Customer Account/PRINT regressions, exact EUR 18.00 split payment and distinct EUR 10.00 walk-in PAY LATER rollback E2E passed with zero fixtures |
 | ACCOUNTING-SALES-DOCUMENTS-001 status | COMPLETE / STABLE; persistent numbered operational receipts, issued/cancelled history, snapshot reprint, unified receipt/Billing invoice registry and view/print-request history; staging migrations aligned and Product Owner E2E passed; Accounting/payment/refund boundaries unchanged |
+| ORDER-FULFILLMENT-LIFECYCLE-001 status | COMPLETE / STABLE; draft logistics remains configurable but non-operational, accepted-order states including production completed remain logistics-eligible, authoritative transition RPC enforcement is applied to staging, and Product Owner E2E passed |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -102,8 +103,23 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260908000200; persistent operational receipts and their SELECT policy are applied, with canonical Billing invoices and financial ledger boundaries preserved |
-| Commercial readiness | ACCOUNTING-SALES-DOCUMENTS-001 is complete and stable after preview and Product Owner E2E. Next is ORDER-FULFILLMENT-LIFECYCLE-001. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+| Backend/SaaS implementation | Supabase Staging aligned through 20260908000300; authoritative logistics-parent transition enforcement is applied, with production, fulfillment and financial boundaries preserved |
+| Commercial readiness | ORDER-FULFILLMENT-LIFECYCLE-001 is complete and stable after preview and Product Owner E2E. Next proposed task is ACCOUNTING-DOCUMENTS-NAV-001. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+
+## ORDER-FULFILLMENT-LIFECYCLE-001 Closeout
+
+- Draft logistics remains configurable for owner/manager planning but is not operational staff work. Operational eligibility begins with accepted order states and excludes inactive, `draft` and `cancelled` parents.
+- Production `completed` remains eligible for open `scheduled`/`in_progress` pickup or delivery; the logistics lifecycle and `completed_at` provide the existing real-handoff evidence.
+- No fulfilled, handed-off, custody, inventory or stock field/table was introduced.
+- Corrective migration `20260908000300_order_fulfillment_lifecycle_001` adds authoritative parent-state checks to pickup/delivery operational transitions without weakening tenant, capability or assignment enforcement.
+- Focused validation, staging migration/deployment and Product Owner E2E passed.
+
+## Open Findings
+
+- `ACCOUNTING-DOCUMENTS-NAV-001` — expose visible Accounting access to sales documents, correct receipt print/PDF action positioning, and fix overlapping receipt-table headings. This is the next proposed task.
+- `LOGISTICS-COMPLETED-HISTORY-001` — consider completed-today/history views for delivery/pickup staff; completed tasks must remain outside open My Day work.
+- `LOGISTICS-TIMEZONE-001` — investigate the manager-scheduled versus staff-displayed time discrepancy observed in UAT (`11:00` → `12:00`).
+- Duplicate “Próxima actividad / Mis actividades” presentation remains non-blocking UX polish unless reprioritized.
 
 ## Operational Access Testing Checkpoint
 
@@ -939,15 +955,15 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 
 Restart phrase:
 
-“Buongiorno, riprendiamo EcoWash Phoenix da ACCOUNTING-SALES-DOCUMENTS-001 stabile e avviamo ORDER-FULFILLMENT-LIFECYCLE-001.”
+“Buongiorno, riprendiamo EcoWash Phoenix da ORDER-FULFILLMENT-LIFECYCLE-001 stabile e avviamo ACCOUNTING-DOCUMENTS-NAV-001.”
 
 Exact starting state:
 
 - Branch `main`
 - Working tree expected clean
-- ACCOUNTING-SALES-DOCUMENTS-001 is COMPLETE / STABLE: operational receipts are persistent and progressively numbered, issued/cancelled history and snapshot reprint are preserved, the registry unifies receipts with canonical Billing invoices, and view/print-request history is recorded without changing Accounting/payment/refund boundaries
-- Staging migrations `20260908000100` and `20260908000200` are applied and aligned; preview deployment and Product Owner E2E passed
-- ORDER-FULFILLMENT-LIFECYCLE-001 is the next approved finding: draft logistics is configurable but not operational for staff; operations begin at `received`; production completion means ready; open logistics remains visible; custody/stock ends only on real pickup or delivery completion
+- ORDER-FULFILLMENT-LIFECYCLE-001 is COMPLETE / STABLE: draft logistics remains manager-configurable but non-operational, accepted-order states activate logistics, production completion preserves open logistics, and pickup/delivery completion governs real handoff without a new custody/stock model
+- Staging migration `20260908000300` is applied and aligned; preview deployment and Product Owner E2E passed
+- ACCOUNTING-DOCUMENTS-NAV-001 is the next proposed task; LOGISTICS-COMPLETED-HISTORY-001 and LOGISTICS-TIMEZONE-001 remain recorded open findings
 - MANUAL-QA-FIX-001 is completed in `b7ac1e5`; Portal support stays under `/[locale]/portal/support`, POS appears once, and the active till query names `pos_sessions_location_same_org`
 - PAYMENTS-ONLINE-001 application foundation is completed in `a0f88c5`; migrations `20260828000200` and `20260829000100` are aligned, EcoWash remains OFF/unconfigured, and real-provider status is `PROVIDER CONFIGURATION REQUIRED`
 - The order discount is a monetary `discount_amount`, not a percentage; no historical financial data was changed
