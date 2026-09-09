@@ -19,10 +19,13 @@ export default async function DeliveryWorkspacePage({ params }: DeliveryWorkspac
       locale={locale}
       text={{
         assignedTo: t("assignedTo"),
+        completedAt: t("completedAt"),
+        completedToday: t("completedToday"),
         empty: t("empty"),
         inProgress: t("summary.inProgress"),
         nextDelivery: t("nextDelivery"),
         nextEmpty: t("nextEmpty"),
+        noCompletedToday: t("noCompletedToday"),
         noTime: t("noTime"),
         openDelivery: t("openDelivery"),
         order: t("order"),

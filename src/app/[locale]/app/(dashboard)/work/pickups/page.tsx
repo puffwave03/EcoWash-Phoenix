@@ -20,10 +20,13 @@ export default async function PickupWorkspacePage({ params }: PickupWorkspacePag
       text={{
         allCompleted: t("allCompleted"),
         assignedTo: t("assignedTo"),
+        completedAt: t("completedAt"),
+        completedToday: t("completedToday"),
         empty: t("empty"),
         inProgress: t("summary.inProgress"),
         nextEmpty: t("nextEmpty"),
         nextPickup: t("nextPickup"),
+        noCompletedToday: t("noCompletedToday"),
         noTime: t("noTime"),
         openPickup: t("openPickup"),
         order: t("order"),

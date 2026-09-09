@@ -2,6 +2,7 @@ import "server-only";
 
 import { notFound } from "next/navigation";
 import type {
+  CompletedDeliveryTask,
   DeliveryPriority,
   DeliveryTask,
   DeliveryWorkspaceData,
@@ -32,6 +33,7 @@ type DeliveryRow = {
   assigned_to: string | null;
   assigned_to_profile: { display_name: string } | { display_name: string }[] | null;
   city: string | null;
+  completed_at: string | null;
   contact_name: string | null;
   contact_phone: string | null;
   country_code: string | null;
@@ -45,7 +47,7 @@ type DeliveryRow = {
 };
 
 const DELIVERY_WORKSPACE_SELECT =
-  "id, status, scheduled_at, started_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
 const UPCOMING_WINDOW_MS = 2 * 60 * 60 * 1000;
 
 function deliveryPriority(row: DeliveryRow, now: Date): DeliveryPriority {
@@ -60,6 +62,25 @@ function deliveryPriority(row: DeliveryRow, now: Date): DeliveryPriority {
   if (row.scheduled_at) return "scheduled";
 
   return "assigned";
+}
+
+function mapCompletedDelivery(row: DeliveryRow): CompletedDeliveryTask | null {
+  const order = relationOne(row.order);
+
+  if (!order || row.status !== "completed" || !row.completed_at) return null;
+
+  return {
+    addressLine1: row.address_line1,
+    assignedTo: row.assigned_to,
+    assignedToName: relationName(row.assigned_to_profile),
+    city: row.city,
+    completedAt: row.completed_at,
+    customerName: relationName(order.customer) ?? "",
+    id: row.id,
+    orderNumber: order.order_number,
+    propertyName: relationName(order.property),
+    status: "completed",
+  };
 }
 
 function mapDelivery(row: DeliveryRow, now: Date): DeliveryTask | null {
@@ -119,9 +140,11 @@ export async function getDeliveryWorkspaceData(
 ): Promise<DeliveryWorkspaceData> {
   const { membership, profile } = await requireOperationalCapability(locale, "delivery");
   const supabase = await createSupabaseServerClient();
-  const { end, now, timeZone } = todayWindow(membership.organization.timezone);
+  const { end, now, start, timeZone } = todayWindow(
+    membership.organization.timezone,
+  );
   const isSupervision = membership.role === "owner" || membership.role === "manager";
-  let query = supabase
+  let activeQuery = supabase
     .from("deliveries")
     .select(DELIVERY_WORKSPACE_SELECT)
     .eq("organization_id", membership.organization.id)
@@ -129,14 +152,38 @@ export async function getDeliveryWorkspaceData(
     .not("assigned_to", "is", null)
     .order("scheduled_at", { ascending: true, nullsFirst: false })
     .limit(150);
+  let completedQuery = supabase
+    .from("deliveries")
+    .select(DELIVERY_WORKSPACE_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .eq("status", "completed")
+    .gte("completed_at", start.toISOString())
+    .lte("completed_at", end.toISOString())
+    .order("completed_at", { ascending: false });
 
-  if (!isSupervision) query = query.eq("assigned_to", profile.id);
+  if (!isSupervision) {
+    activeQuery = activeQuery.eq("assigned_to", profile.id);
+    completedQuery = completedQuery.eq("assigned_to", profile.id);
+  }
 
-  const { data, error } = await query.returns<DeliveryRow[]>();
+  const [activeResult, completedResult] = await Promise.all([
+    activeQuery.returns<DeliveryRow[]>(),
+    completedQuery.returns<DeliveryRow[]>(),
+  ]);
 
-  if (error) console.error("Delivery workspace query failed", error.code);
+  if (activeResult.error) {
+    console.error("Delivery workspace query failed", activeResult.error.code);
+  }
+  if (completedResult.error) {
+    console.error("Delivery completed-today query failed", completedResult.error.code);
+  }
 
-  const tasks = (data ?? [])
+  const completedToday = (completedResult.data ?? []).flatMap((row) => {
+    const delivery = mapCompletedDelivery(row);
+
+    return delivery ? [delivery] : [];
+  });
+  const tasks = (activeResult.data ?? [])
     .filter((row) => {
       const order = relationOne(row.order);
 
@@ -161,6 +208,7 @@ export async function getDeliveryWorkspaceData(
     .sort(deliverySort);
 
   return {
+    completedToday,
     generatedAt: now.toISOString(),
     isSupervision,
     nextDelivery: tasks[0] ?? null,

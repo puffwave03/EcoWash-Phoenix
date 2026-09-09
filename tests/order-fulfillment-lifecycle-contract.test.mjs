@@ -32,14 +32,16 @@ test("2 assigned draft deliveries are absent from the staff delivery workspace",
   assert.doesNotMatch(deliveries, /function isOperationalOrder/);
 });
 
-test("3 assigned draft pickups are absent while completedToday stays intact", async () => {
+test("3 assigned draft pickups are absent while completed history stays separate", async () => {
   const pickups = await source("src/features/pickups/server/queries.ts");
 
-  assert.match(pickups, /\.in\("status", \["scheduled", "in_progress", "completed"\]\)/);
-  assert.match(pickups, /query = query\.eq\("assigned_to", profile\.id\)/);
+  assert.match(pickups, /\.in\("status", \["scheduled", "in_progress"\]\)/);
+  assert.match(pickups, /completedQuery[\s\S]*\.eq\("status", "completed"\)/);
+  assert.match(pickups, /activeQuery = activeQuery\.eq\("assigned_to", profile\.id\)/);
+  assert.match(pickups, /completedQuery = completedQuery\.eq\("assigned_to", profile\.id\)/);
   assert.match(pickups, /isOperationalLogisticsParent\(\{[\s\S]*productionStatus: order\.production_status/);
-  assert.match(pickups, /const completedToday = rows\.filter[\s\S]*row\.status !== "completed"[\s\S]*completedAt >= start && completedAt <= end/);
-  assert.match(pickups, /row\.status === "completed"[\s\S]*return false/);
+  assert.match(pickups, /const completedToday = \(completedResult\.data \?\? \[\]\)\.flatMap/);
+  assert.match(pickups, /const tasks = \(activeResult\.data \?\? \[\]\)/);
 });
 
 test("4 draft logistics are absent from My Day without changing production cards", async () => {

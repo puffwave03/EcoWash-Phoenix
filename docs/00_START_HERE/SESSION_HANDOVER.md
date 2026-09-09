@@ -4,21 +4,31 @@ Status: Active
 
 Date: 2026-09-09
 
-Approximate closeout time: after LOGISTICS-TIMEZONE-001 final Product Owner acceptance
+Approximate closeout time: after LOGISTICS-COMPLETED-HISTORY-001 final Product Owner acceptance
 
-Session checkpoint: LOGISTICS-TIMEZONE-001 COMPLETE / STABLE; LOGISTICS-COMPLETED-HISTORY-001 is next proposed
+Session checkpoint: LOGISTICS-COMPLETED-HISTORY-001 COMPLETE / STABLE
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `476dbec38a8080ede704bfd62bce0e50cfc67b9e`
+Approved baseline before this mission: `66a20af89fe1b84b46e842efd73c81c60cb1a7c1`
 
-Origin/main status before this closeout: local `main` and `origin/main` are aligned at `476dbec38a8080ede704bfd62bce0e50cfc67b9e`.
+Origin/main status before this closeout: local `main` and `origin/main` are aligned at `66a20af89fe1b84b46e842efd73c81c60cb1a7c1`.
 
-Working tree status before documentation closeout: the approved LOGISTICS-TIMEZONE-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
+Working tree status before documentation closeout: the approved LOGISTICS-COMPLETED-HISTORY-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
 
-Working tree expected clean after the approved LOGISTICS-TIMEZONE-001 commit and push.
+Working tree expected clean after the approved LOGISTICS-COMPLETED-HISTORY-001 commit and push.
+
+---
+
+## LOGISTICS-COMPLETED-HISTORY-001 Closeout
+
+- `LOGISTICS-COMPLETED-HISTORY-001` is COMPLETE / STABLE. Pickup and delivery completed-today history reads existing canonical rows with `status = completed` and uses `completed_at` as the authoritative completion timestamp.
+- Staff see only their own assigned completed-today tasks; owner/manager roles see organization team completions and assigned staff identity where available. Existing tenant, capability and RLS boundaries remain unchanged.
+- The current-day boundary and displayed completion time use `organizations.timezone`. Mi día and active pickup/delivery queues remain open/current work only.
+- No history table, schema change or migration was required. Focused validation, staging deployment and Product Owner E2E passed.
+- No next product task is approved; `RECEIPT-COMPACT-LINES-UX` remains recorded as non-blocking UX polish.
 
 ---
 
@@ -42,7 +52,6 @@ Working tree expected clean after the approved LOGISTICS-TIMEZONE-001 commit and
 ## Open Findings
 
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
-- `LOGISTICS-COMPLETED-HISTORY-001` — consider completed-today/history views for delivery/pickup staff while keeping completed tasks outside open My Day work.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.
 
 ---
@@ -653,7 +662,7 @@ Out of scope confirmed:
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 
-LOGISTICS-TIMEZONE-001 is COMPLETE / STABLE. Resume with the proposed `LOGISTICS-COMPLETED-HISTORY-001` finding; do not reopen accepted tenant-timezone, fulfillment, receipt, Accounting or payment/refund foundations unless a reproducible defect is found.
+LOGISTICS-COMPLETED-HISTORY-001 is COMPLETE / STABLE. Completed pickup/delivery history stays separate from open queues and Mi día; do not reopen accepted history, tenant-timezone, fulfillment, receipt, Accounting or payment/refund foundations unless a reproducible defect is found.
 
 1. Draft logistics may be configured but are not yet operational work for staff.
 2. Logistics becomes operational from `received` onward.
@@ -661,10 +670,9 @@ LOGISTICS-TIMEZONE-001 is COMPLETE / STABLE. Resume with the proposed `LOGISTICS
 4. Open pickup/delivery remains visible after production completion.
 5. The order remains in operational custody/stock until real customer pickup or delivery completion.
 
-Open findings only, not yet implemented:
+Open finding only, not yet implemented:
 
-1. `LOGISTICS-COMPLETED-HISTORY-001` — possible completed-today/history view without returning completed work to open My Day.
-2. `RECEIPT-COMPACT-LINES-UX` — non-blocking future vertical-space optimization for long descriptions, preserving readability and print safety.
+1. `RECEIPT-COMPACT-LINES-UX` — non-blocking future vertical-space optimization for long descriptions, preserving readability and print safety.
 
 Production remains deferred until the pilot product is functionally complete. The real operational pilot must not use the `PILOT-001` identifier; track that later as `PILOT-002` or as the M1 First Laundry Operational Pilot.
 

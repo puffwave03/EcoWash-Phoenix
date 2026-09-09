@@ -29,7 +29,21 @@ export type DeliveryTask = {
   status: FulfillmentStatus;
 };
 
+export type CompletedDeliveryTask = {
+  addressLine1: string | null;
+  assignedTo: string | null;
+  assignedToName: string | null;
+  city: string | null;
+  completedAt: string;
+  customerName: string;
+  id: string;
+  orderNumber: string;
+  propertyName: string | null;
+  status: "completed";
+};
+
 export type DeliveryWorkspaceData = {
+  completedToday: CompletedDeliveryTask[];
   generatedAt: string;
   isSupervision: boolean;
   nextDelivery: DeliveryTask | null;

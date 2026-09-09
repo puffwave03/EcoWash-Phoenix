@@ -29,8 +29,21 @@ export type PickupTask = {
   status: FulfillmentStatus;
 };
 
+export type CompletedPickupTask = {
+  addressLine1: string | null;
+  assignedTo: string | null;
+  assignedToName: string | null;
+  city: string | null;
+  completedAt: string;
+  customerName: string;
+  id: string;
+  orderNumber: string;
+  propertyName: string | null;
+  status: "completed";
+};
+
 export type PickupWorkspaceData = {
-  completedToday: number;
+  completedToday: CompletedPickupTask[];
   generatedAt: string;
   isSupervision: boolean;
   nextPickup: PickupTask | null;

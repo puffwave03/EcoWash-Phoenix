@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type {
+  CompletedDeliveryTask,
   DeliveryPriority,
   DeliveryTask,
   DeliveryWorkspaceData,
@@ -8,10 +9,13 @@ import type {
 
 export type DeliveryWorkspaceText = {
   assignedTo: string;
+  completedAt: string;
+  completedToday: string;
   empty: string;
   inProgress: string;
   nextDelivery: string;
   nextEmpty: string;
+  noCompletedToday: string;
   noTime: string;
   openDelivery: string;
   order: string;
@@ -79,11 +83,16 @@ function formatTime(
   }).format(date);
 }
 
-function shortAddress(task: DeliveryTask) {
+type DeliveryContextTask = Pick<
+  DeliveryTask,
+  "addressLine1" | "city" | "customerName" | "orderNumber" | "propertyName"
+>;
+
+function shortAddress(task: DeliveryContextTask) {
   return [task.addressLine1, task.city].filter(Boolean).join(", ");
 }
 
-function DeliveryContext({ delivery, prominent = false }: { delivery: DeliveryTask; prominent?: boolean }) {
+function DeliveryContext({ delivery, prominent = false }: { delivery: DeliveryContextTask; prominent?: boolean }) {
   const address = shortAddress(delivery);
 
   return (
@@ -98,6 +107,36 @@ function DeliveryContext({ delivery, prominent = false }: { delivery: DeliveryTa
         <p className="mt-1.5 break-words text-sm font-medium leading-5 text-foreground">{address}</p>
       ) : null}
     </div>
+  );
+}
+
+function CompletedDeliveryCard({
+  data,
+  delivery,
+  locale,
+  text,
+}: DeliveryWorkspaceProps & { delivery: CompletedDeliveryTask }) {
+  return (
+    <article className="rounded-card border border-border/80 bg-[#f8faf8] p-4 sm:p-5">
+      <div className="grid gap-3 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-4">
+        <div>
+          <p className="text-xs font-medium text-muted">{text.completedAt}</p>
+          <p className="mt-1 text-lg font-semibold leading-none text-primary">
+            {formatTime(delivery.completedAt, data.generatedAt, locale, data.timeZone, text.noTime)}
+          </p>
+        </div>
+        <div className="min-w-0 space-y-2.5">
+          <DeliveryContext delivery={delivery} />
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-muted">
+            <span>{text.order} {delivery.orderNumber}</span>
+            <span>{text.statuses[delivery.status]}</span>
+            {data.isSupervision && delivery.assignedToName ? (
+              <span>{text.assignedTo}: {delivery.assignedToName}</span>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -251,6 +290,32 @@ export function DeliveryWorkspace({ data, locale, text }: DeliveryWorkspaceProps
           )}
         </section>
       </div>
+
+      <section className="space-y-2.5" aria-labelledby="completed-deliveries-heading">
+        <h3
+          className="text-xs font-semibold uppercase tracking-[0.14em] text-muted"
+          id="completed-deliveries-heading"
+        >
+          {text.completedToday}
+        </h3>
+        {data.completedToday.length === 0 ? (
+          <div className="rounded-card border border-dashed border-border bg-[#f8faf8] p-5 text-sm text-muted">
+            {text.noCompletedToday}
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {data.completedToday.map((delivery) => (
+              <CompletedDeliveryCard
+                data={data}
+                delivery={delivery}
+                key={delivery.id}
+                locale={locale}
+                text={text}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

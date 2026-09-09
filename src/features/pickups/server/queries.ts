@@ -9,6 +9,7 @@ import {
   todayWindow,
 } from "@/features/operations/server/helpers";
 import type {
+  CompletedPickupTask,
   PickupPriority,
   PickupTask,
   PickupWorkspaceData,
@@ -61,6 +62,25 @@ function pickupPriority(row: PickupRow, now: Date): PickupPriority {
   if (row.scheduled_at) return "scheduled";
 
   return "assigned";
+}
+
+function mapCompletedPickup(row: PickupRow): CompletedPickupTask | null {
+  const order = relationOne(row.order);
+
+  if (!order || row.status !== "completed" || !row.completed_at) return null;
+
+  return {
+    addressLine1: row.address_line1,
+    assignedTo: row.assigned_to,
+    assignedToName: relationName(row.assigned_to_profile),
+    city: row.city,
+    completedAt: row.completed_at,
+    customerName: relationName(order.customer) ?? "",
+    id: row.id,
+    orderNumber: order.order_number,
+    propertyName: relationName(order.property),
+    status: "completed",
+  };
 }
 
 function mapPickup(row: PickupRow, now: Date): PickupTask | null {
@@ -124,31 +144,46 @@ export async function getPickupWorkspaceData(
     membership.organization.timezone,
   );
   const isSupervision = membership.role === "owner" || membership.role === "manager";
-  let query = supabase
+  let activeQuery = supabase
     .from("pickups")
     .select(PICKUP_WORKSPACE_SELECT)
     .eq("organization_id", membership.organization.id)
-    .in("status", ["scheduled", "in_progress", "completed"])
+    .in("status", ["scheduled", "in_progress"])
     .not("assigned_to", "is", null)
     .order("scheduled_at", { ascending: true, nullsFirst: false })
     .limit(150);
+  let completedQuery = supabase
+    .from("pickups")
+    .select(PICKUP_WORKSPACE_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .eq("status", "completed")
+    .gte("completed_at", start.toISOString())
+    .lte("completed_at", end.toISOString())
+    .order("completed_at", { ascending: false });
 
-  if (!isSupervision) query = query.eq("assigned_to", profile.id);
-
-  const { data, error } = await query.returns<PickupRow[]>();
-
-  if (error) {
-    console.error("Pickup workspace query failed", error.code);
+  if (!isSupervision) {
+    activeQuery = activeQuery.eq("assigned_to", profile.id);
+    completedQuery = completedQuery.eq("assigned_to", profile.id);
   }
 
-  const rows = data ?? [];
-  const completedToday = rows.filter((row) => {
-    if (row.status !== "completed" || !row.completed_at) return false;
-    const completedAt = new Date(row.completed_at);
+  const [activeResult, completedResult] = await Promise.all([
+    activeQuery.returns<PickupRow[]>(),
+    completedQuery.returns<PickupRow[]>(),
+  ]);
 
-    return completedAt >= start && completedAt <= end;
-  }).length;
-  const tasks = rows
+  if (activeResult.error) {
+    console.error("Pickup workspace query failed", activeResult.error.code);
+  }
+  if (completedResult.error) {
+    console.error("Pickup completed-today query failed", completedResult.error.code);
+  }
+
+  const completedToday = (completedResult.data ?? []).flatMap((row) => {
+    const pickup = mapCompletedPickup(row);
+
+    return pickup ? [pickup] : [];
+  });
+  const tasks = (activeResult.data ?? [])
     .filter((row) => {
       const order = relationOne(row.order);
 
@@ -157,8 +192,7 @@ export async function getPickupWorkspaceData(
         !isOperationalLogisticsParent({
           isActive: order.is_active,
           productionStatus: order.production_status,
-        }) ||
-        row.status === "completed"
+        })
       ) {
         return false;
       }

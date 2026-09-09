@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type {
+  CompletedPickupTask,
   PickupPriority,
   PickupTask,
   PickupWorkspaceData,
@@ -9,10 +10,13 @@ import type {
 export type PickupWorkspaceText = {
   allCompleted: string;
   assignedTo: string;
+  completedAt: string;
+  completedToday: string;
   empty: string;
   inProgress: string;
   nextEmpty: string;
   nextPickup: string;
+  noCompletedToday: string;
   noTime: string;
   openPickup: string;
   order: string;
@@ -81,11 +85,16 @@ function formatTime(
   }).format(date);
 }
 
-function shortAddress(task: PickupTask) {
+type PickupContextTask = Pick<
+  PickupTask,
+  "addressLine1" | "city" | "customerName" | "orderNumber" | "propertyName"
+>;
+
+function shortAddress(task: PickupContextTask) {
   return [task.addressLine1, task.city].filter(Boolean).join(", ");
 }
 
-function PickupContext({ pickup, prominent = false }: { pickup: PickupTask; prominent?: boolean }) {
+function PickupContext({ pickup, prominent = false }: { pickup: PickupContextTask; prominent?: boolean }) {
   const address = shortAddress(pickup);
 
   return (
@@ -100,6 +109,36 @@ function PickupContext({ pickup, prominent = false }: { pickup: PickupTask; prom
         <p className="mt-1.5 text-sm font-medium leading-5 text-foreground">{address}</p>
       ) : null}
     </div>
+  );
+}
+
+function CompletedPickupCard({
+  data,
+  locale,
+  pickup,
+  text,
+}: PickupWorkspaceProps & { pickup: CompletedPickupTask }) {
+  return (
+    <article className="rounded-card border border-border/80 bg-[#f8faf8] p-4 sm:p-5">
+      <div className="grid gap-3 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-4">
+        <div>
+          <p className="text-xs font-medium text-muted">{text.completedAt}</p>
+          <p className="mt-1 text-lg font-semibold leading-none text-primary">
+            {formatTime(pickup.completedAt, data.generatedAt, locale, data.timeZone, text.noTime)}
+          </p>
+        </div>
+        <div className="min-w-0 space-y-2.5">
+          <PickupContext pickup={pickup} />
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-muted">
+            <span>{text.order} {pickup.orderNumber}</span>
+            <span>{text.statuses[pickup.status]}</span>
+            {data.isSupervision && pickup.assignedToName ? (
+              <span>{text.assignedTo}: {pickup.assignedToName}</span>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -193,7 +232,7 @@ function PickupCard({ data, locale, pickup, text }: PickupWorkspaceProps & { pic
 }
 
 export function PickupWorkspace({ data, locale, text }: PickupWorkspaceProps) {
-  const emptyMessage = data.completedToday > 0 ? text.allCompleted : text.empty;
+  const emptyMessage = data.completedToday.length > 0 ? text.allCompleted : text.empty;
   const queueTitle = data.isSupervision ? text.queueTeam : text.queueMine;
 
   return (
@@ -253,6 +292,32 @@ export function PickupWorkspace({ data, locale, text }: PickupWorkspaceProps) {
           )}
         </section>
       </div>
+
+      <section className="space-y-2.5" aria-labelledby="completed-pickups-heading">
+        <h3
+          className="text-xs font-semibold uppercase tracking-[0.14em] text-muted"
+          id="completed-pickups-heading"
+        >
+          {text.completedToday}
+        </h3>
+        {data.completedToday.length === 0 ? (
+          <div className="rounded-card border border-dashed border-border bg-[#f8faf8] p-5 text-sm text-muted">
+            {text.noCompletedToday}
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {data.completedToday.map((pickup) => (
+              <CompletedPickupCard
+                data={data}
+                key={pickup.id}
+                locale={locale}
+                pickup={pickup}
+                text={text}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
