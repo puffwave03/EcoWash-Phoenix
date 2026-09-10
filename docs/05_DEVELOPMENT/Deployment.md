@@ -236,6 +236,26 @@ This is not a complete Supabase project backup. It does not cover managed Auth d
 
 Treat every output artifact as sensitive. Keep it outside Git, restrict access to the designated operator, and verify later with `shasum -a 256 -c SHA256SUMS` from inside its backup directory. Retention, scheduling, Storage backup and automatic deletion are intentionally not implemented here.
 
+## Staging Storage Backup
+
+`BACKUP-DR-001B` provides a separate read-only backup for the actual object bytes in the staging `brand-media` and `order-media` buckets:
+
+```bash
+node --env-file=.env.local scripts/backup-staging-storage.mjs /absolute/path/to/secure-backup-root
+```
+
+The command requires the staging service-role credential in the process environment but never writes or prints it. It fails unless both the linked Supabase ref and `NEXT_PUBLIC_SUPABASE_URL` identify the approved staging project `exthnplfokcucaqydney`. The destination must be an absolute path outside the repository.
+
+Artifacts:
+
+- `objects/brand-media/` and `objects/order-media/`: downloaded object bytes preserving bucket-relative paths;
+- `objects-manifest.json`: bucket, path, byte size, content type, timestamps and SHA-256 for every object;
+- `backup-metadata.txt`: target, timing, Git state, bucket visibility, object counts, byte totals and explicit exclusions;
+- `SHA256SUMS`: checksums for every downloaded object plus the manifest and metadata;
+- `backup-status.txt`: `COMPLETE` only after every checksum has been recomputed successfully.
+
+This command only reads staging Storage. It does not mutate either bucket, perform a restore, export managed Auth, copy environment secrets, delete older backups or define a retention policy. Storage restoration remains part of the separately approved isolated restore rehearsal.
+
 ## Deployment Checklist
 
 Use this checklist first for staging rehearsal. Production deployment is not authorized until RELEASE-001.7 reaches a go decision.
