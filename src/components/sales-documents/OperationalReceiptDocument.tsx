@@ -13,6 +13,10 @@ export async function OperationalReceiptDocument({ locale, printRequestedAction,
   const t = await getTranslations({ locale, namespace: "common.salesDocuments" });
   const { document, items, location, order, organization, payment } = receipt.snapshot;
   const methods = Object.entries(payment.methodTotals).filter(([, amount]) => Number(amount) > 0);
+  const locality = [location?.postalCode, location?.city].filter(Boolean).join(" ");
+  const locationAddress = [location?.addressLine1, location?.addressLine2, locality, location?.countryCode].filter(Boolean).join(", ");
+  const storeAddress = locationAddress || organization.address;
+  const organizationContact = [organization.phone, organization.email].filter(Boolean).join(" · ");
 
   return <div className="order-print-document order-print-receipt order-print-receipt-80mm">
     <div className="print-preview-toolbar operational-receipt-toolbar print:hidden">
@@ -24,7 +28,12 @@ export async function OperationalReceiptDocument({ locale, printRequestedAction,
     <article className="print-sheet print-receipt-sheet print-receipt-sheet-80mm">
       <header className="print-brand-header">
         {organization.logoUrl ? <Image alt={organization.logoAlt ?? organization.displayName} className="print-brand-logo" height={64} src={organization.logoUrl} unoptimized width={160} /> : null}
-        <div><h1>{organization.displayName}</h1>{location?.name ? <p>{location.name}</p> : null}<p>{[organization.address, organization.phone, organization.email].filter(Boolean).join(" · ")}</p></div>
+        <div>
+          <h1>{organization.displayName}</h1>
+          {location?.name ? <p>{location.name}</p> : null}
+          {storeAddress ? <p>{storeAddress}</p> : null}
+          {organizationContact ? <p>{organizationContact}</p> : null}
+        </div>
       </header>
       <section className="print-title-block">
         <p className="print-document-kind">{t("receipt")}</p>

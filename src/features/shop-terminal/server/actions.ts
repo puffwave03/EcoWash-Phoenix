@@ -214,6 +214,24 @@ export async function submitShopOrderAction(
     return { error: "validation", result: null };
   }
   const supabase = await createSupabaseServerClient();
+  const activeLocationQuery = supabase.from("locations")
+    .select("id")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .is("deleted_at", null);
+  const { data: activeLocations, error: locationError } = await (locationId
+    ? activeLocationQuery.eq("id", locationId).limit(1)
+    : activeLocationQuery.limit(2))
+    .returns<{ id: string }[]>();
+  if (locationError) {
+    console.error("Shop order location resolution failed", locationError.code);
+    return { error: "generic", result: null };
+  }
+  const resolvedLocationId = locationId
+    ? activeLocations?.some((location) => location.id === locationId) ? locationId : null
+    : activeLocations?.length === 1 ? activeLocations[0].id : null;
+  if (!resolvedLocationId) return { error: "validation", result: null };
+
   const { data, error } = await supabase.rpc("submit_shop_terminal_order", {
     target_customer_id: customerId,
     target_customer_notes: typeof payload.customerNotes === "string" ? payload.customerNotes.slice(0, 600) : null,
@@ -222,7 +240,7 @@ export async function submitShopOrderAction(
     target_idempotency_key: idempotencyKey,
     target_internal_notes: typeof payload.internalNotes === "string" ? payload.internalNotes.slice(0, 600) : null,
     target_items: payload.items,
-    target_location_id: locationId,
+    target_location_id: resolvedLocationId,
     target_payments: payload.payments,
     target_pos_session_id: sessionId,
     target_walk_in_name: walkInName || null,

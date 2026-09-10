@@ -94,6 +94,10 @@ test("12-14 receipt issue redirects to a readable persisted snapshot reprint whi
   assert.match(receiptDocument, /receipt\.snapshot/);
   assert.match(receiptDocument, /print-preview-toolbar operational-receipt-toolbar print:hidden/);
   assert.match(receiptDocument, /print-items-table operational-receipt-items/);
+  for (const field of ["addressLine1", "addressLine2", "postalCode", "city", "countryCode"]) {
+    assert.match(receiptDocument, new RegExp(`location\\?\\.${field}`));
+  }
+  assert.match(receiptDocument, /locationAddress \|\| organization\.address/);
   for (const key of ["descriptionCompact", "quantityCompact", "unitPriceCompact", "totalCompact"]) {
     assert.match(receiptDocument, new RegExp(`t\\("${key}"\\)`));
   }

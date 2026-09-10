@@ -547,3 +547,24 @@ test("45 Terminal lookup accepts order numbers and UUIDs without weakening Phoen
   assert.match(resolve, /if \(orderError \|\| !order\)[\s\S]*error: "not_found"/);
   assert.match(resolve, /if \(parsed\?\.kind === "label"\)[\s\S]*from\("order_items"\)/);
 });
+
+test("46 Terminal resolves the canonical order location server-side without ambiguous selection", async () => {
+  const [actions, receiptSql] = await Promise.all([
+    source("src/features/shop-terminal/server/actions.ts"),
+    source("supabase/migrations/20260908000100_accounting_sales_documents_001.sql"),
+  ]);
+  const submit = actions.slice(actions.indexOf("export async function submitShopOrderAction"));
+  const resolution = submit.slice(submit.indexOf("const activeLocationQuery"), submit.indexOf("const { data, error }"));
+
+  assert.match(resolution, /from\("locations"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*eq\("is_active", true\)[\s\S]*is\("deleted_at", null\)/);
+  assert.match(resolution, /locationId[\s\S]*eq\("id", locationId\)\.limit\(1\)[\s\S]*activeLocationQuery\.limit\(2\)/);
+  assert.match(resolution, /activeLocations\?\.length === 1 \? activeLocations\[0\]\.id : null/);
+  assert.match(resolution, /if \(!resolvedLocationId\) return \{ error: "validation", result: null \}/);
+  assert.match(submit, /target_location_id: resolvedLocationId/);
+  assert.doesNotMatch(resolution, /order\(|\.first\(|activeLocations\?\.\[0\]/);
+
+  assert.match(receiptSql, /order_row\.location_id is not null[\s\S]*location\.organization_id = org_id and location\.id = order_row\.location_id/);
+  for (const field of ["addressLine1", "addressLine2", "city", "postalCode", "countryCode"]) {
+    assert.match(receiptSql, new RegExp(`'${field}'`));
+  }
+});
