@@ -214,6 +214,28 @@ Forbidden without explicit approval:
 - destructive DDL
 - direct data mutation
 
+## Staging Logical Database Backup
+
+`BACKUP-DR-001A` provides a staging-only logical backup command:
+
+```bash
+./scripts/backup-staging-database.sh /absolute/path/to/secure-backup-root
+```
+
+The script fails unless `supabase/.temp/project-ref` is exactly the approved staging ref `exthnplfokcucaqydney`, Docker is available, and the destination is an absolute path outside the repository. It creates a permission-restricted timestamped directory and never deletes older backups automatically.
+
+Artifacts:
+
+- `roles.sql`: logical role definitions emitted by the supported Supabase CLI workflow.
+- `schema.sql`: the `public` application schema, including grants/ACL statements.
+- `data.sql`: `public` application-table data using COPY sections.
+- `backup-metadata.txt`: UTC timing, target ref, Git state, tool versions and byte sizes; it contains no credentials or customer rows.
+- `SHA256SUMS`: SHA-256 checksums for the four backup artifacts, verified before success is reported.
+
+This is not a complete Supabase project backup. It does not cover managed Auth data, Storage schema metadata or stored files, environment variables, secrets, platform configuration, logs, or provider backup/PITR state. Database backup is not Storage backup. The data-only dump can warn about circular foreign keys such as `payments`; any restore ordering, trigger handling and restore test require a separate explicitly approved restore task and an isolated target. Never restore into staging or production from this runbook section.
+
+Treat every output artifact as sensitive. Keep it outside Git, restrict access to the designated operator, and verify later with `shasum -a 256 -c SHA256SUMS` from inside its backup directory. Retention, scheduling, Storage backup and automatic deletion are intentionally not implemented here.
+
 ## Deployment Checklist
 
 Use this checklist first for staging rehearsal. Production deployment is not authorized until RELEASE-001.7 reaches a go decision.
