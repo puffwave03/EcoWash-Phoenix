@@ -12,6 +12,7 @@ import type {
   DashboardOverview,
   CurrencyAmount,
 } from "@/features/dashboard/types";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { DerivedPaymentStatus, PaymentRecordStatus } from "@/features/payments/types";
@@ -50,16 +51,28 @@ type HistoryRow = {
   to_status: ProductionStatus;
 };
 
-type LogisticsRow = {
+type LogisticsOrderRelation = {
+  customer: { display_name: string } | { display_name: string }[] | null;
+  order_number: string;
+};
+
+type OperationalLogisticsOrderRelation = LogisticsOrderRelation & {
+  is_active: boolean;
+  production_status: ProductionStatus;
+};
+
+type LogisticsRow<TOrder extends LogisticsOrderRelation = LogisticsOrderRelation> = {
   assigned_to_profile: { display_name: string } | { display_name: string }[] | null;
   city: string | null;
   completed_at: string | null;
   id: string;
-  order: { customer: { display_name: string } | { display_name: string }[] | null; order_number: string } | { customer: { display_name: string } | { display_name: string }[] | null; order_number: string }[] | null;
+  order: TOrder | TOrder[] | null;
   order_id: string;
   scheduled_at: string | null;
   status: FulfillmentStatus;
 };
+
+type OperationalLogisticsRow = LogisticsRow<OperationalLogisticsOrderRelation>;
 
 type PhotoRow = {
   created_at: string;
@@ -276,6 +289,17 @@ function logisticsItem(row: LogisticsRow, kind: "pickup" | "delivery"): Dashboar
   };
 }
 
+function operationalLogisticsRows(rows: OperationalLogisticsRow[]) {
+  return rows.filter((row) => {
+    const order = relationOne(row.order);
+
+    return Boolean(order && isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    }));
+  });
+}
+
 function sortOperational(a: DashboardOrderQueueItem, b: DashboardOrderQueueItem) {
   if (a.isLate !== b.isLate) return a.isLate ? -1 : 1;
   if (a.priority !== b.priority) return a.priority === "express" ? -1 : 1;
@@ -358,42 +382,42 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
     paymentsTodayQuery,
     supabase
       .from("pickups")
-      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
+      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, production_status, is_active, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .gte("scheduled_at", start.toISOString())
       .lte("scheduled_at", end.toISOString())
       .order("scheduled_at", { ascending: true })
       .limit(12)
-      .returns<LogisticsRow[]>(),
+      .returns<OperationalLogisticsRow[]>(),
     supabase
       .from("deliveries")
-      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
+      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, production_status, is_active, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .gte("scheduled_at", start.toISOString())
       .lte("scheduled_at", end.toISOString())
       .order("scheduled_at", { ascending: true })
       .limit(12)
-      .returns<LogisticsRow[]>(),
+      .returns<OperationalLogisticsRow[]>(),
     supabase
       .from("pickups")
-      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
+      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, production_status, is_active, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .lt("scheduled_at", now.toISOString())
       .order("scheduled_at", { ascending: true })
       .limit(8)
-      .returns<LogisticsRow[]>(),
+      .returns<OperationalLogisticsRow[]>(),
     supabase
       .from("deliveries")
-      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
+      .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, production_status, is_active, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .lt("scheduled_at", now.toISOString())
       .order("scheduled_at", { ascending: true })
       .limit(8)
-      .returns<LogisticsRow[]>(),
+      .returns<OperationalLogisticsRow[]>(),
     supabase
       .from("pickups")
       .select("id, order_id, status, scheduled_at, completed_at, city, order:orders(order_number, customer:customers(display_name)), assigned_to_profile:profiles(display_name)")
@@ -539,8 +563,8 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
     activity,
     financialSummary,
     logisticsAttention: [
-      ...(latePickupsResult.data ?? []).map((row) => logisticsItem(row, "pickup")),
-      ...(lateDeliveriesResult.data ?? []).map((row) => logisticsItem(row, "delivery")),
+      ...operationalLogisticsRows(latePickupsResult.data ?? []).map((row) => logisticsItem(row, "pickup")),
+      ...operationalLogisticsRows(lateDeliveriesResult.data ?? []).map((row) => logisticsItem(row, "delivery")),
     ].slice(0, 8),
     paymentBalances: balances,
     productionQueue,
@@ -553,8 +577,8 @@ export async function getDashboardOverview(locale: string): Promise<DashboardOve
       openOrders: openOrders.length,
       readyOrders: openOrders.filter((order) => order.production_status === "ready").length,
     },
-    todayDeliveries: (deliveriesTodayResult.data ?? []).map((row) => logisticsItem(row, "delivery")),
-    todayPickups: (pickupsTodayResult.data ?? []).map((row) => logisticsItem(row, "pickup")),
+    todayDeliveries: operationalLogisticsRows(deliveriesTodayResult.data ?? []).map((row) => logisticsItem(row, "delivery")),
+    todayPickups: operationalLogisticsRows(pickupsTodayResult.data ?? []).map((row) => logisticsItem(row, "pickup")),
     timeZone,
     onHoldQueue,
   };

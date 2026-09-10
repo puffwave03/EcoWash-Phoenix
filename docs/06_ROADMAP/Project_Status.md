@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-09
+Last Updated: 2026-09-10
 
-Current Mission: LOGISTICS-COMPLETED-HISTORY-001 COMPLETE / STABLE
+Current Mission: DASHBOARD-LOGISTICS-LIFECYCLE-001 COMPLETE / STABLE
 
-Next Action: Product Owner / CTO prioritization; RECEIPT-COMPACT-LINES-UX remains open UX polish
+Next Action: BACKUP-DR-001
 
 ---
 
@@ -27,9 +27,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | LOGISTICS-COMPLETED-HISTORY-001 COMPLETE / STABLE |
-| Last completed implementation mission | LOGISTICS-COMPLETED-HISTORY-001 — add completed-today logistics history |
-| Approved baseline before current closeout | 66a20af89fe1b84b46e842efd73c81c60cb1a7c1 |
+| Current mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 COMPLETE / STABLE |
+| Last completed implementation mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 — align dashboard logistics with parent lifecycle |
+| Approved baseline before current closeout | 1e040536a784c0845127ab59ce436bfa64cb8ce5 |
 | Remote status | main synchronized with origin/main after approved closeout |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
@@ -91,6 +91,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | ACCOUNTING-DOCUMENTS-NAV-001 status | COMPLETE / STABLE; visible locale-aware Accounting access to sales documents, corrected receipt print/PDF actions and compact localized headers; browser and print/PDF Product Owner validation passed; no semantic or database change |
 | LOGISTICS-TIMEZONE-001 status | COMPLETE / STABLE; tenant wall-clock input and manager/staff rendering use `organizations.timezone`, absolute instants remain `timestamptz`, Shop Terminal and dashboard are aligned, and staging Product Owner E2E passed without migration or historical rewrite |
 | LOGISTICS-COMPLETED-HISTORY-001 status | COMPLETE / STABLE; canonical pickup/delivery rows and `completed_at` provide tenant-local completed-today history, staff scope is own assignments, owner/manager scope is the organization team, Mi día remains open work only, and staging Product Owner E2E passed without migration |
+| DASHBOARD-LOGISTICS-LIFECYCLE-001 status | COMPLETE / STABLE; dashboard today, overdue and workload signals plus operational alerts reuse the canonical logistics parent lifecycle, exclude draft/cancelled/inactive parents, and preserve received+ and production-completed eligibility; staging Product Owner E2E passed without migration |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -107,7 +108,14 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging aligned through 20260908000300; authoritative logistics-parent transition enforcement is applied, with production, fulfillment and financial boundaries preserved |
-| Commercial readiness | LOGISTICS-COMPLETED-HISTORY-001 is complete and stable after preview and Product Owner E2E. No next product task is approved; RECEIPT-COMPACT-LINES-UX remains non-blocking polish. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+| Commercial readiness | DASHBOARD-LOGISTICS-LIFECYCLE-001 is complete and stable after preview and Product Owner E2E. BACKUP-DR-001 is the next proposed task; NETWORK-FAILURE-UX-001 and RECEIPT-COMPACT-LINES-UX remain open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+
+## DASHBOARD-LOGISTICS-LIFECYCLE-001 Closeout
+
+- Dashboard today, overdue and workload signals plus operational alerts reuse `isOperationalLogisticsParent`.
+- Draft, cancelled and inactive parents are excluded. Accepted states from `received` onward remain eligible, including production `completed` while logistics remains open.
+- Tenant filtering, organization timezone behavior, completed history and manager planning are preserved. No schema change or migration was required.
+- Focused validation, staging deployment and Product Owner E2E passed.
 
 ## LOGISTICS-COMPLETED-HISTORY-001 Closeout
 
@@ -138,6 +146,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 
 ## Open Findings
 
+- `BACKUP-DR-001` — establish database/storage backup retention, restore procedure and restore testing before pilot operations.
+- `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; not a blocker.
 - Duplicate “Próxima actividad / Mis actividades” presentation remains non-blocking UX polish unless reprioritized.
 

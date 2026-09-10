@@ -9,6 +9,7 @@ import type {
   OperationalAlertSeverity,
   OperationalAlertType,
 } from "@/features/alerts/types";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { PaymentRecordStatus } from "@/features/payments/types";
@@ -44,7 +45,9 @@ type PaymentRow = {
 type LogisticsOrderRelation = {
   customer: { display_name: string } | { display_name: string }[] | null;
   id: string;
+  is_active: boolean;
   order_number: string;
+  production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
 };
 
@@ -107,6 +110,15 @@ function logisticsAlert(
     timestamp: row.scheduled_at,
     type,
   };
+}
+
+function isOperationalLogisticsRow(row: LogisticsRow) {
+  const order = relationOne(row.order);
+
+  return Boolean(order && isOperationalLogisticsParent({
+    isActive: order.is_active,
+    productionStatus: order.production_status,
+  }));
 }
 
 function alertSort(a: OperationalAlert, b: OperationalAlert) {
@@ -175,7 +187,7 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
       .returns<PaymentRow[]>(),
     supabase
       .from("pickups")
-      .select("id, status, scheduled_at, assigned_to, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
+      .select("id, status, scheduled_at, assigned_to, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .order("scheduled_at", { ascending: true, nullsFirst: false })
@@ -183,7 +195,7 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
       .returns<LogisticsRow[]>(),
     supabase
       .from("deliveries")
-      .select("id, status, scheduled_at, assigned_to, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
+      .select("id, status, scheduled_at, assigned_to, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .order("scheduled_at", { ascending: true, nullsFirst: false })
@@ -198,8 +210,8 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
 
   const orders = ordersResult.data ?? [];
   const payments = paymentsResult.data ?? [];
-  const pickups = pickupsResult.data ?? [];
-  const deliveries = deliveriesResult.data ?? [];
+  const pickups = (pickupsResult.data ?? []).filter(isOperationalLogisticsRow);
+  const deliveries = (deliveriesResult.data ?? []).filter(isOperationalLogisticsRow);
   const alerts: OperationalAlert[] = [];
 
   for (const order of orders.filter(isOpenOrder)) {

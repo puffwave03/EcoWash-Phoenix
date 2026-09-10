@@ -2,23 +2,33 @@
 
 Status: Active
 
-Date: 2026-09-09
+Date: 2026-09-10
 
-Approximate closeout time: after LOGISTICS-COMPLETED-HISTORY-001 final Product Owner acceptance
+Approximate closeout time: after DASHBOARD-LOGISTICS-LIFECYCLE-001 final Product Owner acceptance
 
-Session checkpoint: LOGISTICS-COMPLETED-HISTORY-001 COMPLETE / STABLE
+Session checkpoint: DASHBOARD-LOGISTICS-LIFECYCLE-001 COMPLETE / STABLE
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this mission: `66a20af89fe1b84b46e842efd73c81c60cb1a7c1`
+Approved baseline before this mission: `1e040536a784c0845127ab59ce436bfa64cb8ce5`
 
-Origin/main status before this closeout: local `main` and `origin/main` are aligned at `66a20af89fe1b84b46e842efd73c81c60cb1a7c1`.
+Origin/main status before this closeout: local `main` and `origin/main` are aligned at `1e040536a784c0845127ab59ce436bfa64cb8ce5`.
 
-Working tree status before documentation closeout: the approved LOGISTICS-COMPLETED-HISTORY-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
+Working tree status before documentation closeout: the approved DASHBOARD-LOGISTICS-LIFECYCLE-001 application and test changes are intentionally uncommitted; only the minimum handover and project-status documents are being added to the same coherent task commit.
 
-Working tree expected clean after the approved LOGISTICS-COMPLETED-HISTORY-001 commit and push.
+Working tree expected clean after the approved DASHBOARD-LOGISTICS-LIFECYCLE-001 commit and push.
+
+---
+
+## DASHBOARD-LOGISTICS-LIFECYCLE-001 Closeout
+
+- `DASHBOARD-LOGISTICS-LIFECYCLE-001` is COMPLETE / STABLE. Dashboard today, overdue and workload signals plus operational alerts now reuse the canonical logistics parent lifecycle.
+- Draft, cancelled and inactive parents are excluded. Accepted states from `received` onward remain eligible, including production `completed` while pickup/delivery is still open.
+- Tenant filtering, organization timezone behavior, completed history and manager planning remain unchanged. No schema change or migration was required.
+- Focused validation, staging deployment and Product Owner E2E passed.
+- Next proposed task: `BACKUP-DR-001`.
 
 ---
 
@@ -51,6 +61,8 @@ Working tree expected clean after the approved LOGISTICS-COMPLETED-HISTORY-001 c
 
 ## Open Findings
 
+- `BACKUP-DR-001` — establish database/storage backup retention, restore procedure and restore testing before pilot operations.
+- `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.
 
