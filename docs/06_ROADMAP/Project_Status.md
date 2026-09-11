@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-10
+Last Updated: 2026-09-12
 
-Current Mission: DASHBOARD-LOGISTICS-LIFECYCLE-001 COMPLETE / STABLE
+Current Mission: BACKUP-DR-001D DATABASE RECOVERY VERIFIED THROUGH PHASE 2D
 
-Next Action: BACKUP-DR-001
+Next Action: BACKUP-DR-001D STORAGE RESTORE REHEARSAL — CTO APPROVAL REQUIRED
 
 ---
 
@@ -27,10 +27,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 COMPLETE / STABLE |
+| Current mission | BACKUP-DR-001D database recovery verified through Phase 2D; Storage and Auth recovery remain incomplete |
 | Last completed implementation mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 — align dashboard logistics with parent lifecycle |
-| Approved baseline before current closeout | 1e040536a784c0845127ab59ce436bfa64cb8ce5 |
-| Remote status | main synchronized with origin/main after approved closeout |
+| Approved baseline before this documentation update | 0ad333224fcc77884e9486796e98c58f20851a55 |
+| Remote status | local `main` synchronized with `origin/main` at `0ad333224fcc77884e9486796e98c58f20851a55` before this uncommitted documentation update |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
@@ -92,6 +92,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | LOGISTICS-TIMEZONE-001 status | COMPLETE / STABLE; tenant wall-clock input and manager/staff rendering use `organizations.timezone`, absolute instants remain `timestamptz`, Shop Terminal and dashboard are aligned, and staging Product Owner E2E passed without migration or historical rewrite |
 | LOGISTICS-COMPLETED-HISTORY-001 status | COMPLETE / STABLE; canonical pickup/delivery rows and `completed_at` provide tenant-local completed-today history, staff scope is own assignments, owner/manager scope is the organization team, Mi día remains open work only, and staging Product Owner E2E passed without migration |
 | DASHBOARD-LOGISTICS-LIFECYCLE-001 status | COMPLETE / STABLE; dashboard today, overdue and workload signals plus operational alerts reuse the canonical logistics parent lifecycle, exclude draft/cancelled/inactive parents, and preserve received+ and production-completed eligibility; staging Product Owner E2E passed without migration |
+| BACKUP-DR-001D status | Phase 2A–2D approved; isolated PostgreSQL 17 target created, 49/49 canonical migrations and 1,528/1,528 application rows restored, relevant safe roles/settings validated; Storage bytes and managed Auth not restored |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -108,7 +109,16 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
 | Backend/SaaS implementation | Supabase Staging aligned through 20260908000300; authoritative logistics-parent transition enforcement is applied, with production, fulfillment and financial boundaries preserved |
-| Commercial readiness | DASHBOARD-LOGISTICS-LIFECYCLE-001 is complete and stable after preview and Product Owner E2E. BACKUP-DR-001 is the next proposed task; NETWORK-FAILURE-UX-001 and RECEIPT-COMPACT-LINES-UX remain open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+| Commercial readiness | BACKUP-DR-001D verifies the public database recovery path through roles/settings, but full DR is incomplete. Storage-byte restore is the next planned rehearsal phase; managed Auth recovery remains a known gap. NETWORK-FAILURE-UX-001 and RECEIPT-COMPACT-LINES-UX remain open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+
+## BACKUP-DR-001D Phase 2A–2D Checkpoint
+
+- `VERIFIED`: isolated recovery target creation, all 49 canonical migrations, exact schema baseline, all 45 COPY sections and 1,528 application rows, canonical counts, public-FK integrity, uniqueness, sequence safety, tenant consistency and relevant database role/grant state.
+- The accepted managed-role exception is the reserved `supabase_admin` timeout override; it was not forced and application-facing role/grant validation passed.
+- `NOT YET VERIFIED`: BACKUP-DR-001B Storage object bytes, authenticated application/RLS flows, final end-to-end recovery, final RTO and production recovery.
+- `KNOWN LIMITATION`: managed Supabase Auth users were not captured or restored. Auth recovery remains unsolved.
+- The disposable target remains `RETAIN_UNTIL_CTO_APPROVAL`; staging and production were untouched. FitIQtracker was temporarily paused, not deleted, and has not yet been resumed.
+- Next action requires a separate CTO-approved Storage restore rehearsal. The detailed non-secret evidence is maintained in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
 
 ## DASHBOARD-LOGISTICS-LIFECYCLE-001 Closeout
 
@@ -146,7 +156,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 
 ## Open Findings
 
-- `BACKUP-DR-001` — establish database/storage backup retention, restore procedure and restore testing before pilot operations.
+- `BACKUP-DR-001D` — public database recovery is verified through Phase 2D; rehearse Storage-byte restore next and retain managed Auth recovery as an explicit gap.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; not a blocker.
 - Duplicate “Próxima actividad / Mis actividades” presentation remains non-blocking UX polish unless reprioritized.

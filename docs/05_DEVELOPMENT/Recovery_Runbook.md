@@ -1,8 +1,8 @@
 # Staging Recovery Inventory and Runbook
 
-Status: BACKUP-DR-001C recovery inventory complete; recovery rehearsal pending
+Status: BACKUP-DR-001D database recovery rehearsal verified through Phase 2D; Storage and Auth recovery pending
 
-Last verified: 2026-09-10
+Last verified: 2026-09-12
 
 Scope: EcoWash Phoenix staging only. Production does not exist and is not authorized by this document.
 
@@ -48,18 +48,18 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Supabase Auth | Site URL and redirect allowlist | No | Supabase Auth settings | Yes | Recreate only the approved local and active staging HTTPS redirect patterns, then test login and password recovery. | No | `DOCUMENTED_NOT_VERIFIED` | Current staging redirect behavior was previously E2E validated; settings are not in 001A or 001B. |
 | Supabase Auth | Email provider, signup control, email confirmation, JWT/session/refresh settings, rate limits and templates | Mixed | Supabase Auth settings | Yes | Capture approved names/policy, configure a replacement project, and test invite, reset and session refresh. | No | `MISSING` | Remote settings report sign-up enabled while the repository config/documentation says email sign-up is disabled. CTO must select the canonical recovery state. |
 | Supabase Auth | Managed users, identities, password hashes, sessions and MFA factors | Yes | Supabase managed Auth schema/platform | Yes | Define and rehearse a Supabase-supported Auth export/restore or identity reconstruction plan in an isolated project. | No | `MISSING` | 001A excludes managed Auth. Recreating users with different IDs can break public profile/membership/history references and must not be improvised. |
-| Supabase Storage | `brand-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Recreate as public, 2 MiB maximum, JPEG/PNG/WebP allowlist, and reapply approved policies before importing bytes. | No | `DOCUMENTED_NOT_VERIFIED` | Current remote definition was read-only verified. Bucket bytes are covered by 001B; restore is not. |
-| Supabase Storage | `order-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Recreate as private, 1 MiB maximum, JPEG/PNG/WebP allowlist, and reapply approved tenant/metadata policies before importing bytes. | No | `DOCUMENTED_NOT_VERIFIED` | Current remote definition was read-only verified. Keep private. |
+| Supabase Storage | `brand-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as public, with a 2 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the empty definition through canonical migrations. Bucket bytes are covered by 001B but have not been restored. |
+| Supabase Storage | `order-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as private, with a 1 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the empty definition through canonical migrations. Keep private; bucket bytes have not been restored. |
 | Supabase Storage | Object restore/import tooling | Uses a secret credential | No implemented system of record | Yes | Implement and rehearse a fail-safe importer in a separately approved isolated restore task. | No | `MISSING` | 001B downloads and verifies bytes; it does not restore them. |
-| Database backup | Latest 001A roles/public schema/public data backup | Backup contains sensitive application data | Local Mac directory | Yes | Verify `SHA256SUMS`, decrypt/mount the approved recovery destination if introduced, and restore only into an explicitly approved isolated target. | Backup capture only | `VERIFIED` | Checksums passed on 2026-09-10. Restore ordering and compatibility are not verified. |
+| Database backup | Latest 001A roles/public schema/public data backup | Backup contains sensitive application data | Local Mac directory | Yes | Verify `SHA256SUMS`, apply the canonical migrations, load `data.sql`, and apply only safe role/settings operations to an explicitly approved isolated target. | Yes | `VERIFIED` | BACKUP-DR-001D verified schema, application-data and relevant role/settings recovery on PostgreSQL 17. Managed Auth remains excluded. |
 | Storage backup | Latest 001B `brand-media` and `order-media` object bytes and manifest | Yes: customer/tenant content | Local Mac directory | Yes | Verify `backup-status.txt` and `SHA256SUMS`, then use an approved importer against an isolated target. | Backup capture only | `VERIFIED` | `COMPLETE`; all 225 checksummed files passed on 2026-09-10. |
-| Backup custody | Encrypted off-device copy, retention schedule and recovery owner | Yes | Not established | Yes | Select protected off-device storage, assign an owner, copy encrypted backup sets, define retention, and rehearse retrieval. | No | `MISSING` | Both verified backup sets currently exist only under `/Users/cristianomegale/EcoWash-Backups` on this Mac. Mac loss would remove them. |
+| Backup custody | Encrypted off-device copy, retention schedule and recovery owner | Yes | Protected off-device archive; custody details must remain outside this repository | Yes | Retrieve and checksum-verify the encrypted archive, assign a recovery owner, define retention, and rehearse retrieval after simulated Mac loss. | Checksum only | `DOCUMENTED_NOT_VERIFIED` | BACKUP-DR-001D reverified archive SHA-256 `77144554493edd08f4cd48dddcf31ed3fa3f19bc4e03e5617abf09d63f818180`; custody recovery, owner, retention and retrieval rehearsal remain unverified. |
 | SMTP | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_SENDER_EMAIL`, `SMTP_SENDER_NAME` | Mixed; password/username may be secret | Supabase Custom SMTP plus Resend account | Yes | Recover the Resend account, reset/regenerate SMTP credentials if retrieval is unavailable, enter them in Supabase, and send a real Auth test email. | No | `DOCUMENTED_NOT_VERIFIED` | Provider is Resend; approved sender identity is `access@ecowashlatejita.com`. A real delivery previously passed, but credential recovery was not tested. |
 | Email domain | `ecowashlatejita.com` sending-domain verification | No for domain name; verification records may be sensitive operational data | Resend plus authoritative DNS host | Yes | Recover both accounts, obtain the current required records from Resend, recreate them at the DNS host, wait for verification, and retest delivery. | No | `DOCUMENTED_NOT_VERIFIED` | Authoritative nameservers currently identify `hostingnovapyme34.com`; the exact account owner/registrar and account recovery path are not recorded. |
 | DNS | Delegation/nameservers, Resend DKIM, SPF, DMARC and mail-routing categories | No, but do not paste record tokens into Git | Registrar/DNS provider | Yes for Auth mail | Recover the registrar and DNS-host accounts. Reconstruct provider-required records from Resend rather than from memory. | No | `MISSING` | Public nameserver/MX resolution was checked. Registrar identity, DNS account custody, record export and recovery rehearsal are missing. |
 | Staging hostname | Vercel-assigned `ecowash-phoenix-staging.vercel.app` | No | Vercel | Yes while the existing project survives | Recover the project or accept a new assigned hostname and update dependent Site URL/Auth redirects. | No | `DOCUMENTED_NOT_VERIFIED` | No custom staging domain is required. |
 | Production domain/DNS | Not selected or purchased | Not applicable | Not established | No | Do not create or configure during staging recovery. | Not applicable | `NOT_APPLICABLE` | The unrelated Vercel-team domain inventory is not a Phoenix production-domain decision. |
-| Tenant/application configuration | Public-schema organization, location, profile, membership, capability/entitlement, branding metadata, catalog, segment, pricing, printer, Billing and numbering configuration | Contains sensitive tenant/business data | Supabase `public` database | Yes | Restore from 001A with the rest of public schema/data, subject to an isolated restore rehearsal and Auth identity plan. | No | `DOCUMENTED_NOT_VERIFIED` | Protected by 001A capture, not by Vercel/Supabase platform configuration recovery. Branding object bytes are separately in 001B. |
+| Tenant/application configuration | Public-schema organization, location, profile, membership, capability/entitlement, branding metadata, catalog, segment, pricing, printer, Billing and numbering configuration | Contains sensitive tenant/business data | Supabase `public` database | Yes | Restore from 001A with the verified canonical-migration and `data.sql` sequence; validate tenant consistency and keep Auth-linked UUIDs unchanged until managed Auth recovery is solved. | Yes | `VERIFIED` | BACKUP-DR-001D restored and validated the public application data. Branding object bytes are separately in 001B and remain pending. |
 | Online payment provider | Real provider credentials/configuration | Would be secret | Not configured | No for current staging recovery | Do not invent or provision during this task. | Not applicable | `NOT_APPLICABLE` | Only test-provider boundaries exist; real online-provider configuration remains deferred. |
 
 ## Recovery Ownership Matrix
@@ -71,7 +71,7 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Supabase | Organization containing `EcoWash Phoenix` | Supabase organization owner | Organization account recovery, project ref, database backup, Storage backup and platform settings | `DOCUMENTED_NOT_VERIFIED`; managed Auth recovery `MISSING` |
 | SMTP | Resend account for `ecowashlatejita.com` | Resend account/domain administrator | Account recovery and regenerated SMTP credential | `DOCUMENTED_NOT_VERIFIED` |
 | DNS/domain | Registrar plus host identified by `hostingnovapyme34.com` nameservers | Domain registrant/DNS account administrator | Registrar recovery, DNS-host recovery and provider-generated mail records | Exact owner/registrar/recovery evidence `MISSING` |
-| Tenant/application config | Supabase `public` database | Phoenix Product Owner for business acceptance; approved technical recovery operator for restore | 001A plus Auth identity mapping and 001B for branding/media bytes | Backup capture verified; full restore `DOCUMENTED_NOT_VERIFIED` |
+| Tenant/application config | Supabase `public` database | Phoenix Product Owner for business acceptance; approved technical recovery operator for restore | 001A plus an Auth recovery plan and 001B for branding/media bytes | Public database restore `VERIFIED`; managed Auth and Storage bytes pending |
 
 Account recovery material must live in an approved password manager or provider-controlled recovery mechanism, never in this repository.
 
@@ -79,13 +79,55 @@ Account recovery material must live in an approved password manager or provider-
 
 The verified 001A set was captured from staging on 2026-09-10 and its checksums pass. It contains logical role output, the `public` schema and grants, `public` application data, metadata and checksums. This includes tenant-critical database configuration such as organizations, locations, profiles, memberships, entitlements, branding metadata, catalog/segment/pricing configuration, printer profiles, Billing settings and numbering counters.
 
-001A does **not** cover managed Auth users/identities/passwords/sessions/MFA, Storage schema or object bytes, Auth/Site URL/SMTP settings, Vercel variables, secrets, DNS, logs, Supabase provider backups/PITR, scheduling, retention or a proven restore sequence. The capture is verified; restoration is not.
+001A does **not** cover managed Auth users/identities/passwords/sessions/MFA, Storage schema or object bytes, Auth/Site URL/SMTP settings, Vercel variables, secrets, DNS, logs, Supabase provider backups/PITR, scheduling or retention. BACKUP-DR-001D verified restoration of its public database content and the relevant safe role/settings state; it did not solve any excluded area.
 
 ## What BACKUP-DR-001B Covers
 
 The verified 001B set was captured from staging on 2026-09-10. It contains actual object bytes for `brand-media` and `order-media`, a metadata manifest, checksums and a `COMPLETE` status. The set contains 221 `brand-media` objects and 2 `order-media` objects; every downloaded object and metadata artifact passed checksum verification.
 
-001B does **not** recreate bucket definitions, policies, Auth identities, database metadata, provider settings or secrets, and it does not include upload/restore tooling. Bucket definitions are recorded above and in migrations, but their restoration has not been rehearsed.
+001B does **not** recreate bucket definitions, policies, Auth identities, database metadata, provider settings or secrets, and it does not include upload/restore tooling. BACKUP-DR-001D verified that canonical migrations recreate the two empty bucket definitions and policies, but 001B object-byte restoration has not been rehearsed.
+
+## BACKUP-DR-001D Recovery Rehearsal
+
+The following evidence is `VERIFIED`. It applies only to the isolated disposable project `EcoWash Phoenix Recovery Rehearsal 001D` (`xsjmhjmhaftieokuwssf`) in `eu-west-1`, using PostgreSQL 17. The protected staging project remained `exthnplfokcucaqydney`; staging and production were not mutated, and the repository remained unchanged throughout the rehearsal. The disposable target is retained under `RETAIN_UNTIL_CTO_APPROVAL`.
+
+FitIQtracker's Supabase project was temporarily paused only to free a Supabase Free project slot for this rehearsal. It was not deleted and has not yet been resumed.
+
+### Phase 2A — isolated target (`VERIFIED`)
+
+- The new disposable project was created with the required name, region and PostgreSQL major version, and its ref was confirmed different from staging.
+- The Phoenix repository link and staging inventory remained unchanged. No restore work started during this phase.
+- The encrypted off-device archive checksum remained valid; retrieval after simulated local-machine loss was not rehearsed.
+
+### Phase 2B — canonical schema (`VERIFIED`)
+
+- All 49 canonical migrations through `20260908000300` applied successfully with zero migration failures. `schema.sql` was comparison material only and was not restored after the migrations.
+- Schema validation matched the expected baseline: 45 tables, 22 enum/types, 1 sequence, 148 functions, 95 indexes, 66 public triggers, 74 public policies, 45 RLS-enabled tables, 212 constraints, 147 foreign keys and the 370-statement grant/revoke baseline.
+- Migrations created the expected 20 `platform_feature_catalog` seed rows and two empty Storage bucket definitions. `storage.objects` remained 0.
+
+### Phase 2C — application data (`VERIFIED`)
+
+- The 20 migration-created catalog seed rows were exactly verified and handled before the checked 001A `data.sql` import. The import completed with zero COPY/import failures: 45/45 COPY sections and 1,528/1,528 dump rows matched.
+- Canonical row counts, expected zero-row domains, all critical public foreign-key anti-joins, duplicate/unique constraints, tenant/organization consistency and the final `platform_feature_catalog` state passed validation. No unexpected public-data orphans were found.
+- The order-number sequence was safe at 86 with 87 as the next value. `storage.objects` remained 0.
+- Expected Auth-side orphans were identified without repair or UUID remapping: 13 `profiles`, 2 `customer_portal_access` rows and 0 `online_payment_attempts`. Managed Auth was not restored.
+
+### Phase 2D — database roles/settings (`VERIFIED` with managed-role exception)
+
+- The 001A `roles.sql` checksum passed. Across the safe restore workflow, 9 statements were attempted, 8 applied, 1 was skipped and 1 was rejected.
+- The rejected `supabase_admin` timeout override targets a reserved Supabase-managed role and was not forced. The Supabase Realtime parameter grant was already correct and was safely skipped. Required application-facing role/grant state passed validation.
+- Phase 2C data remained intact: `organizations` 1/1, `orders` 52/52, `payments` 47/47 and `sales_events` 61/61. `storage.objects` remained 0.
+
+### Not yet verified and known limitations
+
+- `NOT YET VERIFIED`: restoration of BACKUP-DR-001B Storage object bytes. This is the next planned recovery-rehearsal phase.
+- `KNOWN LIMITATION`: managed Supabase Auth users were not captured or restored. Auth backup and identity-preserving recovery remain an unresolved recovery gap.
+- `NOT YET VERIFIED`: authenticated application flows, authenticated RLS behavior, final end-to-end application recovery, final RTO and production recovery.
+- Therefore, the rehearsal verifies the canonical database schema/migrations, public application data and relevant database role/settings state only. It does **not** establish complete Phoenix disaster recovery.
+
+### Local PostgreSQL tooling guardrail
+
+Client-side PostgreSQL tooling was verified with the existing `postgres:17` image on `linux/amd64` using `psql` 17.11. No additional Docker image was pulled during Phase 2D. Where applicable, use `--platform=linux/amd64` and `--pull=never`. Avoid commands that start or pull a Supabase local Postgres image because those images consume significant local disk space.
 
 ## What Still Depends on Platform or Account Recovery
 
@@ -96,8 +138,8 @@ The verified 001B set was captured from staging on 2026-09-10. It contains actua
 - Supabase Auth URLs, signup/confirmation policy, session policy, templates, rate limits and Custom SMTP configuration.
 - Resend account recovery and SMTP credential regeneration.
 - Registrar/DNS-host account recovery and reconstruction of mail-verification records.
-- An encrypted off-device backup destination, retrieval rehearsal, retention schedule and named operator.
-- A tested database restore sequence and Storage importer in an isolated non-production target.
+- Off-device archive retrieval rehearsal, a retention schedule and a named recovery operator.
+- A tested Storage importer in an isolated non-production target. The public database restore sequence is verified by BACKUP-DR-001D.
 
 ## Local-Machine-Loss Scenario
 
@@ -106,7 +148,7 @@ The verified 001B set was captured from staging on 2026-09-10. It contains actua
 3. Install the repository's supported Node.js version, dependencies, Supabase CLI and Docker requirements. Do not run linked reset, migration or restore commands.
 4. Re-link Vercel to team `puffwaves-projects` and project `ecowash-phoenix-staging`; re-link Supabase to the verified staging ref only if the original project still exists.
 5. Recreate `.env.local` from provider systems of record. Never recover it from Git or paste its contents into tickets/logs. Regenerate the transient Vercel OIDC token rather than preserving it.
-6. Retrieve and checksum-verify the encrypted off-device 001A/001B copies. **Current blocker:** no off-device copy is established, so loss of this Mac also loses the only verified backup sets.
+6. Retrieve and checksum-verify the encrypted off-device archive. **Current blocker:** recovery of that archive after simulated Mac loss has not been rehearsed, and custody ownership and retention remain unresolved.
 7. Run read-only identity, migration-alignment, bucket-definition and application health checks before authorizing any mutation.
 
 ## Vercel-Loss Scenario
@@ -124,14 +166,14 @@ This scenario is documented but has not been rehearsed.
 
 1. Stop normal deployment and preserve the failed project's evidence. Do not point staging or production at an unverified replacement.
 2. Recover the Supabase organization or create an approved replacement staging project in the intended region with PostgreSQL major-version compatibility. Record the new ref; never reuse the old ref as an assumption.
-3. Verify both backup sets and repository migrations. Choose a single CTO-approved restore strategy in an isolated target; do not blindly combine migrations with `schema.sql` because duplicate objects, managed schemas, policies and restore ordering have not been rehearsed.
-4. Resolve managed Auth recovery before restoring identity-linked public rows. 001A does not contain Auth users or password material, and ad-hoc UUID remapping could corrupt membership and history semantics.
+3. Verify both backup sets and repository migrations. In an isolated target, follow the BACKUP-DR-001D sequence: apply the 49 canonical migrations, verify and handle only the known migration-created catalog seed rows, import the checked `data.sql`, and apply only safe `roles.sql` operations. Do not restore `schema.sql` after migrations.
+4. Preserve identity-linked public UUIDs and explicitly classify the expected Auth-side orphans. 001A does not contain Auth users or password material; do not improvise UUID remapping. Managed Auth recovery remains a separate unresolved gate.
 5. Recreate the Storage bucket definitions and approved policies, then restore 001B bytes with separately reviewed tooling.
 6. Recreate Auth URL, email/signup/confirmation, session, rate-limit, template and SMTP configuration. Resolve the current signup-control discrepancy with the CTO before choosing the restored value.
 7. Obtain/regenerate the replacement public identifiers and service-role credential, then update only the staging Vercel project and secured local environment.
 8. Validate schema/data counts, RLS and tenant isolation, Auth flows, Storage privacy, representative tenant configuration, numbering/financial history and application health before cutover.
 
-Full Supabase recovery is currently blocked by the missing Auth identity plan, untested logical restore sequence and missing Storage importer.
+Full Supabase recovery is currently blocked by the missing Auth identity plan, untested Storage-byte restore/import and the remaining authenticated end-to-end validation. The logical public database restore sequence itself is verified.
 
 ## SMTP/DNS-Credential-Loss Scenario
 
@@ -145,7 +187,7 @@ The current provider/domain/sender are known, but DNS account custody, registrar
 
 ## Recovery Acceptance Gate
 
-Phoenix staging is not fully DR-ready until all `MISSING` items are resolved and the following is rehearsed in an isolated target:
+Phoenix staging is not fully DR-ready until all `MISSING` items are resolved and the following is rehearsed in an isolated target. Item 3 is verified by BACKUP-DR-001D; the remaining items are not thereby complete:
 
 1. recover the repository and provider accounts from a clean machine;
 2. retrieve backup copies after simulated Mac loss;
