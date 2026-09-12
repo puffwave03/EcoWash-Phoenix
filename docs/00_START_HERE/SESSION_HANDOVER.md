@@ -4,17 +4,17 @@ Status: Active
 
 Date: 2026-09-12
 
-Approximate closeout time: after BACKUP-DR-001D Phase 2A–2D CTO approval
+Approximate closeout time: after BACKUP-DR-001D Phase 3A Storage recovery rehearsal
 
-Session checkpoint: BACKUP-DR-001D DATABASE RECOVERY VERIFIED THROUGH PHASE 2D / STORAGE PENDING
+Session checkpoint: BACKUP-DR-001D DATABASE AND STORAGE RECOVERY VERIFIED THROUGH PHASE 3A / AUTH PENDING
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this documentation update: `0ad333224fcc77884e9486796e98c58f20851a55`
+Approved baseline before this documentation update: `8c38f690b128f70c0146b3a863667eeabf7140f4`
 
-Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `0ad333224fcc77884e9486796e98c58f20851a55`.
+Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `8c38f690b128f70c0146b3a863667eeabf7140f4`.
 
 Working tree status before this documentation update: clean.
 
@@ -22,15 +22,16 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ---
 
-## BACKUP-DR-001D Phase 2A–2D Checkpoint
+## BACKUP-DR-001D Phase 2A–3A Checkpoint
 
 - `VERIFIED`: a new isolated PostgreSQL 17 Supabase recovery project was created in `eu-west-1`; the protected staging ref remained unchanged and staging/production were untouched.
 - `VERIFIED`: 49/49 canonical migrations, the complete 1,528-row `data.sql` payload and the relevant safe `roles.sql` state were restored and validated. Schema, row-count, public-FK, uniqueness, sequence and tenant consistency checks passed.
 - `VERIFIED WITH MANAGED-ROLE EXCEPTION`: the reserved `supabase_admin` timeout override was rejected and not forced; required application-facing role/grant state passed.
-- `NOT YET VERIFIED`: BACKUP-DR-001B Storage object bytes, authenticated application flows/RLS, final end-to-end recovery and final RTO.
+- `VERIFIED`: BACKUP-DR-001B was exercised end to end through the supported Storage API. All 223 objects and 22,451,620 bytes were restored and re-downloaded; 223/223 SHA-256 checks matched with no failures, missing objects or extras.
+- `NOT YET VERIFIED`: authenticated application flows/RLS, final end-to-end recovery and final RTO.
 - `KNOWN LIMITATION`: managed Supabase Auth was not backed up or restored; identity-preserving Auth recovery remains an open recovery gap.
 - The recovery target remains retained under `RETAIN_UNTIL_CTO_APPROVAL`. FitIQtracker was paused, not deleted, to free the rehearsal slot and has not yet been resumed.
-- Next operational task: separately approved Storage restore rehearsal. Full Phoenix disaster recovery must not yet be claimed. Detailed evidence is canonical in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
+- No further recovery phase is authorized. Full Phoenix disaster recovery must not yet be claimed; Auth and authenticated application recovery remain pending. Detailed evidence is canonical in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
 
 ---
 
@@ -73,7 +74,7 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ## Open Findings
 
-- `BACKUP-DR-001D` — database recovery is verified through Phase 2D; Storage-byte restore is next, while managed Auth recovery remains a known gap.
+- `BACKUP-DR-001D` — database and Storage-byte recovery are verified through Phase 3A; managed Auth and authenticated application recovery remain open.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.

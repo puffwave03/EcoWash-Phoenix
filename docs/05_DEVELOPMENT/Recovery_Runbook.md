@@ -1,6 +1,6 @@
 # Staging Recovery Inventory and Runbook
 
-Status: BACKUP-DR-001D database recovery rehearsal verified through Phase 2D; Storage and Auth recovery pending
+Status: BACKUP-DR-001D database and Storage recovery verified through Phase 3A; Auth and authenticated application recovery pending
 
 Last verified: 2026-09-12
 
@@ -48,11 +48,11 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Supabase Auth | Site URL and redirect allowlist | No | Supabase Auth settings | Yes | Recreate only the approved local and active staging HTTPS redirect patterns, then test login and password recovery. | No | `DOCUMENTED_NOT_VERIFIED` | Current staging redirect behavior was previously E2E validated; settings are not in 001A or 001B. |
 | Supabase Auth | Email provider, signup control, email confirmation, JWT/session/refresh settings, rate limits and templates | Mixed | Supabase Auth settings | Yes | Capture approved names/policy, configure a replacement project, and test invite, reset and session refresh. | No | `MISSING` | Remote settings report sign-up enabled while the repository config/documentation says email sign-up is disabled. CTO must select the canonical recovery state. |
 | Supabase Auth | Managed users, identities, password hashes, sessions and MFA factors | Yes | Supabase managed Auth schema/platform | Yes | Define and rehearse a Supabase-supported Auth export/restore or identity reconstruction plan in an isolated project. | No | `MISSING` | 001A excludes managed Auth. Recreating users with different IDs can break public profile/membership/history references and must not be improvised. |
-| Supabase Storage | `brand-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as public, with a 2 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the empty definition through canonical migrations. Bucket bytes are covered by 001B but have not been restored. |
-| Supabase Storage | `order-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as private, with a 1 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the empty definition through canonical migrations. Keep private; bucket bytes have not been restored. |
-| Supabase Storage | Object restore/import tooling | Uses a secret credential | No implemented system of record | Yes | Implement and rehearse a fail-safe importer in a separately approved isolated restore task. | No | `MISSING` | 001B downloads and verifies bytes; it does not restore them. |
+| Supabase Storage | `brand-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as public, with a 2 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the definition and restored all 221 backed-up objects through the supported Storage API. |
+| Supabase Storage | `order-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as private, with a 1 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the definition and restored both backed-up objects through the supported Storage API. Keep private. |
+| Supabase Storage | Object restore/import procedure | Uses a secret credential | BACKUP-DR-001B manifest/checksums plus the supported Supabase Storage API; no repository restore script | Yes | Verify the backup, require an empty approved target, upload without upsert, then re-download and hash-check every object. | Yes | `VERIFIED` | BACKUP-DR-001D Phase 3A exercised all 223 objects and 22,451,620 bytes end to end with zero failures, missing objects or extras. |
 | Database backup | Latest 001A roles/public schema/public data backup | Backup contains sensitive application data | Local Mac directory | Yes | Verify `SHA256SUMS`, apply the canonical migrations, load `data.sql`, and apply only safe role/settings operations to an explicitly approved isolated target. | Yes | `VERIFIED` | BACKUP-DR-001D verified schema, application-data and relevant role/settings recovery on PostgreSQL 17. Managed Auth remains excluded. |
-| Storage backup | Latest 001B `brand-media` and `order-media` object bytes and manifest | Yes: customer/tenant content | Local Mac directory | Yes | Verify `backup-status.txt` and `SHA256SUMS`, then use an approved importer against an isolated target. | Backup capture only | `VERIFIED` | `COMPLETE`; all 225 checksummed files passed on 2026-09-10. |
+| Storage backup | Latest 001B `brand-media` and `order-media` object bytes and manifest | Yes: customer/tenant content | Local Mac directory | Yes | Verify `backup-status.txt` and `SHA256SUMS`, then use the verified Storage API restore procedure against an approved isolated empty target. | Yes | `VERIFIED` | Capture was `COMPLETE`; all 225 checksummed files passed, and Phase 3A restored and reverified all 223 object bytes end to end. |
 | Backup custody | Encrypted off-device copy, retention schedule and recovery owner | Yes | Protected off-device archive; custody details must remain outside this repository | Yes | Retrieve and checksum-verify the encrypted archive, assign a recovery owner, define retention, and rehearse retrieval after simulated Mac loss. | Checksum only | `DOCUMENTED_NOT_VERIFIED` | BACKUP-DR-001D reverified archive SHA-256 `77144554493edd08f4cd48dddcf31ed3fa3f19bc4e03e5617abf09d63f818180`; custody recovery, owner, retention and retrieval rehearsal remain unverified. |
 | SMTP | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_SENDER_EMAIL`, `SMTP_SENDER_NAME` | Mixed; password/username may be secret | Supabase Custom SMTP plus Resend account | Yes | Recover the Resend account, reset/regenerate SMTP credentials if retrieval is unavailable, enter them in Supabase, and send a real Auth test email. | No | `DOCUMENTED_NOT_VERIFIED` | Provider is Resend; approved sender identity is `access@ecowashlatejita.com`. A real delivery previously passed, but credential recovery was not tested. |
 | Email domain | `ecowashlatejita.com` sending-domain verification | No for domain name; verification records may be sensitive operational data | Resend plus authoritative DNS host | Yes | Recover both accounts, obtain the current required records from Resend, recreate them at the DNS host, wait for verification, and retest delivery. | No | `DOCUMENTED_NOT_VERIFIED` | Authoritative nameservers currently identify `hostingnovapyme34.com`; the exact account owner/registrar and account recovery path are not recorded. |
@@ -71,7 +71,7 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Supabase | Organization containing `EcoWash Phoenix` | Supabase organization owner | Organization account recovery, project ref, database backup, Storage backup and platform settings | `DOCUMENTED_NOT_VERIFIED`; managed Auth recovery `MISSING` |
 | SMTP | Resend account for `ecowashlatejita.com` | Resend account/domain administrator | Account recovery and regenerated SMTP credential | `DOCUMENTED_NOT_VERIFIED` |
 | DNS/domain | Registrar plus host identified by `hostingnovapyme34.com` nameservers | Domain registrant/DNS account administrator | Registrar recovery, DNS-host recovery and provider-generated mail records | Exact owner/registrar/recovery evidence `MISSING` |
-| Tenant/application config | Supabase `public` database | Phoenix Product Owner for business acceptance; approved technical recovery operator for restore | 001A plus an Auth recovery plan and 001B for branding/media bytes | Public database restore `VERIFIED`; managed Auth and Storage bytes pending |
+| Tenant/application config | Supabase `public` database | Phoenix Product Owner for business acceptance; approved technical recovery operator for restore | 001A plus an Auth recovery plan and 001B for branding/media bytes | Public database and Storage-byte restore `VERIFIED`; managed Auth pending |
 
 Account recovery material must live in an approved password manager or provider-controlled recovery mechanism, never in this repository.
 
@@ -85,7 +85,7 @@ The verified 001A set was captured from staging on 2026-09-10 and its checksums 
 
 The verified 001B set was captured from staging on 2026-09-10. It contains actual object bytes for `brand-media` and `order-media`, a metadata manifest, checksums and a `COMPLETE` status. The set contains 221 `brand-media` objects and 2 `order-media` objects; every downloaded object and metadata artifact passed checksum verification.
 
-001B does **not** recreate bucket definitions, policies, Auth identities, database metadata, provider settings or secrets, and it does not include upload/restore tooling. BACKUP-DR-001D verified that canonical migrations recreate the two empty bucket definitions and policies, but 001B object-byte restoration has not been rehearsed.
+001B does **not** recreate bucket definitions, policies, Auth identities, database metadata, provider settings or secrets, and it does not include a repository upload/restore script. BACKUP-DR-001D verified that canonical migrations recreate the two bucket definitions and policies, then successfully exercised all 001B object bytes end to end through the supported Storage API.
 
 ## BACKUP-DR-001D Recovery Rehearsal
 
@@ -118,12 +118,18 @@ FitIQtracker's Supabase project was temporarily paused only to free a Supabase F
 - The rejected `supabase_admin` timeout override targets a reserved Supabase-managed role and was not forced. The Supabase Realtime parameter grant was already correct and was safely skipped. Required application-facing role/grant state passed validation.
 - Phase 2C data remained intact: `organizations` 1/1, `orders` 52/52, `payments` 47/47 and `sales_events` 61/61. `storage.objects` remained 0.
 
+### Phase 3A — Storage object bytes (`VERIFIED`)
+
+- BACKUP-DR-001B checksums passed. Its manifest contained the expected 223 objects and 22,451,620 bytes: 221 `brand-media` objects (21,528,210 bytes) and 2 `order-media` objects (923,410 bytes).
+- Using only the supported Supabase Storage API and no overwrite/upsert, all 223 objects were uploaded to the isolated recovery target with their exact bucket, path, bytes and available content type. Upload failures were 0.
+- All 223 restored objects were re-downloaded. SHA-256 matched 223/223, with 0 mismatches, 0 missing objects and 0 unexpected extras. Final `storage.objects` count was 223 and restored bytes were 22,451,620/22,451,620.
+- Phase 2C application data remained intact: `organizations` 1/1, `orders` 52/52, `payments` 47/47 and `sales_events` 61/61. Auth was not restored; staging and production remained untouched.
+
 ### Not yet verified and known limitations
 
-- `NOT YET VERIFIED`: restoration of BACKUP-DR-001B Storage object bytes. This is the next planned recovery-rehearsal phase.
 - `KNOWN LIMITATION`: managed Supabase Auth users were not captured or restored. Auth backup and identity-preserving recovery remain an unresolved recovery gap.
 - `NOT YET VERIFIED`: authenticated application flows, authenticated RLS behavior, final end-to-end application recovery, final RTO and production recovery.
-- Therefore, the rehearsal verifies the canonical database schema/migrations, public application data and relevant database role/settings state only. It does **not** establish complete Phoenix disaster recovery.
+- The rehearsal verifies the canonical database schema/migrations, public application data, relevant database role/settings state and BACKUP-DR-001B Storage object-byte recovery. It does **not** establish complete Phoenix disaster recovery.
 
 ### Local PostgreSQL tooling guardrail
 
@@ -139,7 +145,6 @@ Client-side PostgreSQL tooling was verified with the existing `postgres:17` imag
 - Resend account recovery and SMTP credential regeneration.
 - Registrar/DNS-host account recovery and reconstruction of mail-verification records.
 - Off-device archive retrieval rehearsal, a retention schedule and a named recovery operator.
-- A tested Storage importer in an isolated non-production target. The public database restore sequence is verified by BACKUP-DR-001D.
 
 ## Local-Machine-Loss Scenario
 
@@ -168,12 +173,12 @@ This scenario is documented but has not been rehearsed.
 2. Recover the Supabase organization or create an approved replacement staging project in the intended region with PostgreSQL major-version compatibility. Record the new ref; never reuse the old ref as an assumption.
 3. Verify both backup sets and repository migrations. In an isolated target, follow the BACKUP-DR-001D sequence: apply the 49 canonical migrations, verify and handle only the known migration-created catalog seed rows, import the checked `data.sql`, and apply only safe `roles.sql` operations. Do not restore `schema.sql` after migrations.
 4. Preserve identity-linked public UUIDs and explicitly classify the expected Auth-side orphans. 001A does not contain Auth users or password material; do not improvise UUID remapping. Managed Auth recovery remains a separate unresolved gate.
-5. Recreate the Storage bucket definitions and approved policies, then restore 001B bytes with separately reviewed tooling.
+5. Recreate the Storage bucket definitions and approved policies, then restore 001B bytes through the verified supported-API procedure: require an empty target, do not upsert, and re-download/hash-check every object.
 6. Recreate Auth URL, email/signup/confirmation, session, rate-limit, template and SMTP configuration. Resolve the current signup-control discrepancy with the CTO before choosing the restored value.
 7. Obtain/regenerate the replacement public identifiers and service-role credential, then update only the staging Vercel project and secured local environment.
 8. Validate schema/data counts, RLS and tenant isolation, Auth flows, Storage privacy, representative tenant configuration, numbering/financial history and application health before cutover.
 
-Full Supabase recovery is currently blocked by the missing Auth identity plan, untested Storage-byte restore/import and the remaining authenticated end-to-end validation. The logical public database restore sequence itself is verified.
+Full Supabase recovery is currently blocked by the missing Auth identity plan and the remaining authenticated end-to-end validation. The logical public database and Storage-byte restore sequences are verified.
 
 ## SMTP/DNS-Credential-Loss Scenario
 
@@ -187,7 +192,7 @@ The current provider/domain/sender are known, but DNS account custody, registrar
 
 ## Recovery Acceptance Gate
 
-Phoenix staging is not fully DR-ready until all `MISSING` items are resolved and the following is rehearsed in an isolated target. Item 3 is verified by BACKUP-DR-001D; the remaining items are not thereby complete:
+Phoenix staging is not fully DR-ready until all `MISSING` items are resolved and the following is rehearsed in an isolated target. Items 3 and 5 are verified by BACKUP-DR-001D; authenticated Storage authorization behavior remains part of item 7:
 
 1. recover the repository and provider accounts from a clean machine;
 2. retrieve backup copies after simulated Mac loss;
