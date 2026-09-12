@@ -13,6 +13,24 @@ Capture only confirmed Product Owner findings from real staging use, keep implem
 
 For each item: CTO triage -> smallest safe implementation -> focused regression checks -> build when relevant -> staging deployment -> Product Owner validation -> closeout/docs. One task at a time. Do not combine fiscal, accounting, pricing, authentication or tenant-isolation changes unless the task explicitly requires them.
 
+## 2026-09-12 UAT implementation checkpoint
+
+The following isolated fixes are complete and stable on repository `main`:
+
+- `TERMINAL-ORDER-STATE-AND-TIME-001` (`5346a0eee08ebf32bf0bf9801a58fded99a68cfe`) — tenant-timezone-safe receipt/operator rendering and a derived operational status that separates production completion from final fulfillment.
+- `CONTROL-CENTER-ALERTS-COVERAGE-001` (`43966be8ac6adea7521a803e895e50aff6ced5a7`) — completed-production unpaid/partial orders are included in canonical Operational Alerts; Alerts page and navigation badge parity is preserved; no migration.
+- `ORDER-CANCEL-LOGISTICS-CONSISTENCY-001` (`0a90a401abddf9f947fa9722e165afc1503b7ea6`) — cancelled/inactive parents reject actionable logistics, cancellation consistency is strengthened, and Daily Close excludes correctly scheduled future work. Repository migration `20260912000100_order_cancel_logistics_consistency_001.sql` narrowly reconciles open legacy logistics under cancelled parents and uses authoritative cancellation history for the actor.
+
+This checkpoint records repository implementation completion only. Staging application of migration `20260912000100` and Product Owner staging UAT are not recorded as complete.
+
+Open UAT work includes:
+
+- `PORTAL-ORDER-VALIDATION-SUMMARY-001` — visible order-level feedback when required Portal order data is missing.
+- `POS-DAILY-CLOSE-001` — remaining refinements, subject to a focused approved scope and without changing financial canon.
+- `NETWORK-FAILURE-UX-001` — clear failure feedback and safe retry/recovery behavior.
+- `AUTH-CONFIG-DRIFT-001` — separately verify and resolve the signup-configuration mismatch. Auth DR and authenticated recovery remain a mandatory pre-production blocker.
+- The P1–P3 findings below, Portal/Terminal mobile visual regression, locale/menu consistency and other already-recorded pilot polish remain open unless separately closed.
+
 ## P1 — TERMINAL-MULTI-DRAFT-001
 
 ### Finding
@@ -104,9 +122,9 @@ Connection architecture stays separated from logical routing:
 
 ## Current recommended order
 
-1. TERMINAL-MULTI-DRAFT-001
-2. Product Owner staging validation
-3. TERMINAL-CLOSE-PRINT-001
-4. Product Owner staging validation
-5. PRINTER-CONFIG-002
-6. Continue pilot findings one at a time
+1. Apply the approved `20260912000100` migration to the proven staging target and run focused Product Owner UAT for the three 2026-09-12 repository fixes under a separately authorized staging phase.
+2. `PORTAL-ORDER-VALIDATION-SUMMARY-001`
+3. `POS-DAILY-CLOSE-001` refinements, once precisely scoped
+4. `NETWORK-FAILURE-UX-001`
+5. `AUTH-CONFIG-DRIFT-001` under the mandatory Auth pre-production gate
+6. Continue `TERMINAL-MULTI-DRAFT-001`, `TERMINAL-CLOSE-PRINT-001`, `PRINTER-CONFIG-002` and remaining pilot findings one isolated task at a time

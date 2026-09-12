@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-09-12
 
-Current Mission: BACKUP-DR-001D FINAL REHEARSAL DECOMMISSION DOCUMENTATION
+Current Mission: PHOENIX-UAT-CLOSEOUT-001 — CURRENT BASELINE DOCUMENTATION
 
-Next Action: PRODUCT OWNER / CTO REVIEW — PRODUCTION AUTH REHEARSAL REMAINS REQUIRED BEFORE GO-LIVE
+Next Action: PRODUCT OWNER / CTO REVIEW — STAGING UAT REMAINS PENDING; AUTH RECOVERY REMAINS A PRE-PRODUCTION BLOCKER
 
 ---
 
@@ -27,10 +27,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | BACKUP-DR-001D rehearsal and decommission complete; database and Storage recovery verified; Auth remains a mandatory pre-production blocker |
-| Last completed implementation mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 — align dashboard logistics with parent lifecycle |
-| Approved baseline before this documentation update | d3c160017ae03e9d8514d2240ec416b7676d4deb |
-| Remote status | local `main` synchronized with `origin/main` at `d3c160017ae03e9d8514d2240ec416b7676d4deb` before this uncommitted documentation update |
+| Current mission | PHOENIX-UAT-CLOSEOUT-001 — record the stable repository implementation baseline and remaining UAT work |
+| Last completed implementation mission | ORDER-CANCEL-LOGISTICS-CONSISTENCY-001 — cancellation and Daily Close logistics consistency |
+| Approved baseline before this documentation update | 0a90a401abddf9f947fa9722e165afc1503b7ea6 |
+| Remote status | local `main` synchronized with `origin/main` at `0a90a401abddf9f947fa9722e165afc1503b7ea6` before this uncommitted documentation update |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
@@ -92,6 +92,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | LOGISTICS-TIMEZONE-001 status | COMPLETE / STABLE; tenant wall-clock input and manager/staff rendering use `organizations.timezone`, absolute instants remain `timestamptz`, Shop Terminal and dashboard are aligned, and staging Product Owner E2E passed without migration or historical rewrite |
 | LOGISTICS-COMPLETED-HISTORY-001 status | COMPLETE / STABLE; canonical pickup/delivery rows and `completed_at` provide tenant-local completed-today history, staff scope is own assignments, owner/manager scope is the organization team, Mi día remains open work only, and staging Product Owner E2E passed without migration |
 | DASHBOARD-LOGISTICS-LIFECYCLE-001 status | COMPLETE / STABLE; dashboard today, overdue and workload signals plus operational alerts reuse the canonical logistics parent lifecycle, exclude draft/cancelled/inactive parents, and preserve received+ and production-completed eligibility; staging Product Owner E2E passed without migration |
+| TERMINAL-ORDER-STATE-AND-TIME-001 status | COMPLETE / STABLE IN REPOSITORY at `5346a0eee08ebf32bf0bf9801a58fded99a68cfe`; receipt rendering is tenant-timezone safe and operational display status separates production completion from fulfillment completion |
+| CONTROL-CENTER-ALERTS-COVERAGE-001 status | COMPLETE / STABLE IN REPOSITORY at `43966be8ac6adea7521a803e895e50aff6ced5a7`; unpaid/partial completed-production orders now enter canonical Operational Alerts while Alerts page/navigation badge parity is preserved; no migration |
+| ORDER-CANCEL-LOGISTICS-CONSISTENCY-001 status | COMPLETE / STABLE IN REPOSITORY at `0a90a401abddf9f947fa9722e165afc1503b7ea6`; cancelled/inactive parents reject actionable logistics, Daily Close excludes correctly scheduled future work, and the corrective migration safely reconciles legacy open logistics under cancelled parents |
 | BACKUP-DR-001D / PHX-AUTH-DR-001 status | Rehearsal/decommission complete; database and Storage recovery verified; managed Auth recovery and authenticated application recovery remain unverified pre-production blockers |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
@@ -108,8 +111,16 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging aligned through 20260908000300; authoritative logistics-parent transition enforcement is applied, with production, fulfillment and financial boundaries preserved |
-| Commercial readiness | Database and Storage recovery are verified. PHX-AUTH-DR-001 selects the Auth strategy, but provider coverage, identity/configuration recovery material and an isolated authenticated recovery rehearsal remain mandatory before production. Full DR is incomplete. NETWORK-FAILURE-UX-001 and RECEIPT-COMPACT-LINES-UX remain open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+| Backend/SaaS implementation | Supabase Staging remains documented as aligned through 20260908000300. Repository `main` additionally contains `20260912000100_order_cancel_logistics_consistency_001.sql`; its staging application and Product Owner UAT are not recorded as complete |
+| Commercial readiness | Database and Storage recovery are verified. PHX-AUTH-DR-001 selects the Auth strategy, but provider coverage, identity/configuration recovery material and an isolated authenticated recovery rehearsal remain mandatory before production. Full DR is incomplete. PORTAL-ORDER-VALIDATION-SUMMARY-001, POS-DAILY-CLOSE-001 refinements, NETWORK-FAILURE-UX-001, AUTH-CONFIG-DRIFT-001 and remaining pilot findings stay open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+
+## PHOENIX-UAT-CLOSEOUT-001 Checkpoint
+
+- `TERMINAL-ORDER-STATE-AND-TIME-001` is complete and stable in repository commit `5346a0eee08ebf32bf0bf9801a58fded99a68cfe`. Receipt/operator time rendering follows the tenant organization timezone, and the derived operational order status no longer equates production completion with final pickup/delivery fulfillment.
+- `CONTROL-CENTER-ALERTS-COVERAGE-001` is complete and stable in repository commit `43966be8ac6adea7521a803e895e50aff6ced5a7`. Completed-production unpaid/partial orders generate Operational Alerts, and the Alerts page and navigation badge continue to use the same canonical derivation. No database migration was introduced.
+- `ORDER-CANCEL-LOGISTICS-CONSISTENCY-001` is complete and stable in repository commit `0a90a401abddf9f947fa9722e165afc1503b7ea6`. Cancelled/inactive parents cannot receive new actionable pickup/delivery; cancellation cascade consistency is strengthened; Daily Close excludes correctly scheduled work beyond the tenant-local closing day; and migration `20260912000100_order_cancel_logistics_consistency_001.sql` narrowly reconciles open legacy logistics under cancelled parents using the latest authoritative `order_status_history.changed_by` cancellation actor, with an existing FK-valid logistics actor only as fallback.
+- These entries describe the committed repository baseline. They do not claim that migration `20260912000100` has been applied to staging or that Product Owner staging UAT has passed.
+- Financial canon, fiscal/VERI*FACTU scope and historical completed/cancelled logistics remain unchanged.
 
 ## BACKUP-DR-001D / PHX-AUTH-DR-001 Checkpoint
 
@@ -160,6 +171,9 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 ## Open Findings
 
 - `PHX-AUTH-DR-001` — BACKUP-DR-001D rehearsal/decommission is complete and database/Storage recovery are verified; managed Auth and authenticated application recovery remain mandatory pre-production blockers before go-live.
+- `AUTH-CONFIG-DRIFT-001` — reconcile the repository expectation that signup is disabled with the previously observed hosted staging signup configuration; do not change Auth configuration without a separately approved task.
+- `PORTAL-ORDER-VALIDATION-SUMMARY-001` — add a clear order-level validation notice/summary when required Portal order data is missing, while retaining field-level errors and directing the customer to the incomplete field.
+- `POS-DAILY-CLOSE-001` — remaining POS/Daily Close refinements stay open pending focused Product Owner/CTO scope; current financial calculations and canon remain unchanged.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; not a blocker.
 - Duplicate “Próxima actividad / Mis actividades” presentation remains non-blocking UX polish unless reprioritized.
