@@ -11,6 +11,8 @@ import type {
   OrderListFilters,
   ProductionStatus,
 } from "@/features/orders/types";
+import { deriveOrderDisplayStatus, type OrderListEntry } from "@/features/orders/display-status";
+import type { FulfillmentStatus } from "@/features/logistics/types";
 
 type OrderRow = {
   assigned_to: string | null;
@@ -56,6 +58,16 @@ type HistoryRow = {
   id: string;
   reason: string | null;
   to_status: ProductionStatus;
+};
+
+type OrderLogisticsStatusRow = {
+  order_id: string;
+  status: FulfillmentStatus;
+};
+
+export type OrderListData = {
+  orders: OrderListEntry[];
+  timeZone: string;
 };
 
 export type OrderSelectOption = {
@@ -171,7 +183,7 @@ function mapHistory(row: HistoryRow): OrderHistory {
 export async function listOrders(
   locale: string,
   filters: OrderListFilters,
-): Promise<Order[]> {
+): Promise<OrderListData> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   let query = supabase
@@ -197,10 +209,43 @@ export async function listOrders(
 
   if (error || !data) {
     console.error("Order list query failed", error?.code);
-    return [];
+    return { orders: [], timeZone: membership.organization.timezone };
   }
 
-  return data.map((row) => mapOrder(row, t("occasionalCustomer")));
+  const orderIds = data.map((row) => row.id);
+  const [pickupsResult, deliveriesResult] = orderIds.length ? await Promise.all([
+    supabase.from("pickups").select("order_id, status")
+      .eq("organization_id", membership.organization.id).in("order_id", orderIds)
+      .neq("status", "cancelled").returns<OrderLogisticsStatusRow[]>(),
+    supabase.from("deliveries").select("order_id, status")
+      .eq("organization_id", membership.organization.id).in("order_id", orderIds)
+      .neq("status", "cancelled").returns<OrderLogisticsStatusRow[]>(),
+  ]) : [
+    { data: [] as OrderLogisticsStatusRow[], error: null },
+    { data: [] as OrderLogisticsStatusRow[], error: null },
+  ];
+
+  if (pickupsResult.error) console.error("Order list pickup status query failed", pickupsResult.error.code);
+  if (deliveriesResult.error) console.error("Order list delivery status query failed", deliveriesResult.error.code);
+
+  const pickupStatuses = new Map((pickupsResult.data ?? []).map((row) => [row.order_id, row.status]));
+  const deliveryStatuses = new Map((deliveriesResult.data ?? []).map((row) => [row.order_id, row.status]));
+
+  return {
+    orders: data.map((row) => {
+      const order = mapOrder(row, t("occasionalCustomer"));
+
+      return {
+        ...order,
+        displayStatus: deriveOrderDisplayStatus({
+          deliveryStatus: deliveryStatuses.get(order.id),
+          pickupStatus: pickupStatuses.get(order.id),
+          productionStatus: order.productionStatus,
+        }),
+      };
+    }),
+    timeZone: membership.organization.timezone,
+  };
 }
 
 export async function listProductionQueueOrders(locale: string): Promise<ProductionQueueOrder[]> {

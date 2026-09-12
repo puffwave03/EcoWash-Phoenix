@@ -48,7 +48,7 @@ function relation<T>(value: T | T[] | null) {
   return Array.isArray(value) ? value[0] ?? null : value;
 }
 
-function mapReceipt(row: ReceiptRow, logoUrl?: string | null): OperationalReceipt {
+function mapReceipt(row: ReceiptRow, timeZone: string, logoUrl?: string | null): OperationalReceipt {
   return {
     amount: Number(row.amount),
     cancellationReason: row.cancellation_reason,
@@ -68,6 +68,7 @@ function mapReceipt(row: ReceiptRow, logoUrl?: string | null): OperationalReceip
       organization: { ...row.snapshot.organization, logoUrl },
     },
     snapshotVersion: row.snapshot_version,
+    timeZone,
   };
 }
 
@@ -79,7 +80,7 @@ export async function getOperationalReceipt(locale: string, receiptId: string): 
   if (error || !data || data.snapshot_version !== 1) notFound();
   const logoPath = data.snapshot.organization.logoPath;
   const logoUrl = logoPath ? supabase.storage.from("brand-media").getPublicUrl(logoPath).data.publicUrl : null;
-  return mapReceipt(data, logoUrl);
+  return mapReceipt(data, membership.organization.timezone, logoUrl);
 }
 
 export async function listSalesDocuments(locale: string): Promise<SalesDocument[]> {

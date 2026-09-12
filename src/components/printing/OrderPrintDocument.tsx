@@ -10,16 +10,16 @@ import { Link } from "@/i18n/navigation";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
 import { ScannableQrCode } from "@/components/barcode/ScannableQrCode";
 import { createOrderCode } from "@/features/barcode/payload";
+import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 export type OrderPrintMode = "labels" | "receipt" | "ticket";
 
 function formatDate(value: string | null, locale: string, timezone: string, includeTime = false) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat(locale, {
+  return formatOrganizationDateTime(value, locale, timezone, {
     dateStyle: "medium",
     ...(includeTime ? { timeStyle: "short" as const } : {}),
-    timeZone: timezone,
-  }).format(new Date(value));
+  });
 }
 
 function paymentMethodTotals(context: PrintOrderContext) {

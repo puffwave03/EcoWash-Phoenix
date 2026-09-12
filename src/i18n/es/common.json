@@ -1573,7 +1573,8 @@
     "order": "Pedido",
     "customer": "Cliente",
     "property": "Propiedad",
-    "status": "Estado de producción",
+    "status": "Estado operativo",
+    "productionStatus": "Estado de producción",
     "priority": "Prioridad",
     "total": "Total",
     "subtotal": "Subtotal",
@@ -1605,6 +1606,12 @@
       "completed": "Producción completada",
       "on_hold": "En pausa",
       "cancelled": "Cancelado"
+    },
+    "displayStatuses": {
+      "completed": "Completado",
+      "delivery_in_progress": "En reparto",
+      "delivery_scheduled": "Entrega programada",
+      "ready_for_pickup": "Listo para recoger"
     },
     "form": {
       "newTitle": "Nuevo pedido",

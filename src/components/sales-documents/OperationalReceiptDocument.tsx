@@ -4,6 +4,7 @@ import { PrintButton } from "@/components/printing/PrintButton";
 import type { OperationalReceipt } from "@/features/sales-documents/types";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
+import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 export async function OperationalReceiptDocument({ locale, printRequestedAction, receipt }: {
   locale: string;
@@ -38,7 +39,7 @@ export async function OperationalReceiptDocument({ locale, printRequestedAction,
       <section className="print-title-block">
         <p className="print-document-kind">{t("receipt")}</p>
         <h2>{document.receiptNumber}</h2>
-        <p>{new Date(document.issuedAt).toLocaleString(locale)}</p>
+        <p>{formatOrganizationDateTime(document.issuedAt, locale, receipt.timeZone)}</p>
       </section>
       <dl className="print-key-values">
         <div><dt>{t("customer")}</dt><dd>{receipt.snapshot.customer.displayName}</dd></div>

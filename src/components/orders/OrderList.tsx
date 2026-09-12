@@ -1,8 +1,10 @@
 import { Card } from "@/components/Card";
 import { StatusBadge, type Tone } from "@/components/operational/OperationalUi";
 import { Link } from "@/i18n/navigation";
-import type { Order, OrderPriority, ProductionStatus } from "@/features/orders/types";
+import type { OrderPriority } from "@/features/orders/types";
+import type { OrderDisplayStatus, OrderListEntry } from "@/features/orders/display-status";
 import { formatCurrency } from "@/lib/number-format";
+import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 type OrderListText = {
   created: string;
@@ -13,20 +15,23 @@ type OrderListText = {
   priority: string;
   property: string;
   status: string;
+  statuses: Record<OrderDisplayStatus, string>;
   total: string;
   view: string;
 };
 
-function formatDate(value: string | null, locale: string) {
-  return value ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value)) : "-";
+function formatDate(value: string | null, locale: string, timeZone: string) {
+  return value ? formatOrganizationDateTime(value, locale, timeZone, { dateStyle: "medium" }) : "-";
 }
 
 function readableToken(value: string) {
   return value.replaceAll("_", " ");
 }
 
-function statusTone(status: ProductionStatus): Tone {
-  if (status === "completed" || status === "ready") return "success";
+function statusTone(status: OrderDisplayStatus): Tone {
+  if (status === "completed") return "success";
+  if (["ready", "ready_for_pickup", "delivery_scheduled"].includes(status)) return "warning";
+  if (status === "delivery_in_progress") return "info";
   if (status === "on_hold") return "warning";
   if (status === "cancelled") return "neutral";
 
@@ -41,10 +46,12 @@ export function OrderList({
   locale,
   orders,
   text,
+  timeZone,
 }: {
   locale: string;
-  orders: Order[];
+  orders: OrderListEntry[];
   text: OrderListText;
+  timeZone: string;
 }) {
   if (orders.length === 0) {
     return <Card><p className="text-sm text-muted">{text.empty}</p></Card>;
@@ -70,7 +77,7 @@ export function OrderList({
           >
             <div className="min-w-0">
               <p className="truncate text-base font-semibold text-primary">{order.orderNumber}</p>
-              <p className="mt-1 text-xs text-muted">{text.created}: {formatDate(order.createdAt, locale)}</p>
+              <p className="mt-1 text-xs text-muted">{text.created}: {formatDate(order.createdAt, locale, timeZone)}</p>
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-primary">{order.customerName}</p>
@@ -78,8 +85,8 @@ export function OrderList({
             </div>
             <p className="hidden truncate text-sm text-muted xl:block">{order.propertyName || "-"}</p>
             <div>
-              <StatusBadge tone={statusTone(order.productionStatus)}>
-                {readableToken(order.productionStatus)}
+              <StatusBadge tone={statusTone(order.displayStatus)}>
+                {text.statuses[order.displayStatus] ?? readableToken(order.displayStatus)}
               </StatusBadge>
             </div>
             <div>
@@ -88,7 +95,7 @@ export function OrderList({
               </StatusBadge>
             </div>
             <p className="text-sm font-semibold text-primary">{formatCurrency(order.total, order.currency, locale)}</p>
-            <p className="text-sm text-muted">{formatDate(order.dueAt, locale)}</p>
+            <p className="text-sm text-muted">{formatDate(order.dueAt, locale, timeZone)}</p>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-control border border-primary px-3 text-sm font-semibold text-primary transition-standard hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               href={`/app/orders/${order.id}`}

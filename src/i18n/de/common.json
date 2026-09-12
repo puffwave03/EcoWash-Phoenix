@@ -1573,7 +1573,8 @@
     "order": "Auftrag",
     "customer": "Kunde",
     "property": "Objekt",
-    "status": "Produktionsstatus",
+    "status": "Betriebsstatus",
+    "productionStatus": "Produktionsstatus",
     "priority": "Priorität",
     "total": "Gesamt",
     "subtotal": "Zwischensumme",
@@ -1605,6 +1606,12 @@
       "completed": "Produktion abgeschlossen",
       "on_hold": "Pausiert",
       "cancelled": "Storniert"
+    },
+    "displayStatuses": {
+      "completed": "Abgeschlossen",
+      "delivery_in_progress": "In Zustellung",
+      "delivery_scheduled": "Lieferung geplant",
+      "ready_for_pickup": "Abholbereit"
     },
     "form": {
       "newTitle": "Neuer Auftrag",

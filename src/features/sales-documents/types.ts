@@ -71,6 +71,7 @@ export type OperationalReceipt = {
   series: string;
   snapshot: OperationalReceiptSnapshot;
   snapshotVersion: number;
+  timeZone: string;
 };
 
 export type SalesDocument = {

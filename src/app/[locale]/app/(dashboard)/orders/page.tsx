@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/operational/OperationalUi";
 import { OrderList } from "@/components/orders/OrderList";
 import { Link } from "@/i18n/navigation";
 import { listOrders } from "@/features/orders/server/queries";
+import type { OrderDisplayStatus } from "@/features/orders/display-status";
 import { parseOrderFilters } from "@/features/orders/validation";
 
 type OrdersPageProps = {
@@ -16,7 +17,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   const { locale } = await params;
   const rawFilters = await searchParams;
   const filters = parseOrderFilters(rawFilters);
-  const [orders, t] = await Promise.all([
+  const [orderData, t] = await Promise.all([
     listOrders(locale, filters),
     getTranslations({ locale, namespace: "common.orders" }),
   ]);
@@ -40,7 +41,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
             <input className="min-h-11 w-full rounded-control border border-border bg-white px-3 text-sm shadow-sm transition-standard focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-soft" defaultValue={filters.query} name="q" placeholder={t("searchPlaceholder")} />
           </label>
           <label className="space-y-2 text-sm font-semibold text-primary">
-            <span>{t("status")}</span>
+            <span>{t("productionStatus")}</span>
             <select className="min-h-11 w-full rounded-control border border-border bg-white px-3 text-sm shadow-sm transition-standard focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-soft" defaultValue={filters.status} name="status">
               <option value="all">{t("all")}</option>
               {Object.entries(t.raw("statuses") as Record<string, string>).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
@@ -68,7 +69,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
 
       <OrderList
         locale={locale}
-        orders={orders}
+        orders={orderData.orders}
         text={{
           created: t("created"),
           customer: t("customer"),
@@ -78,9 +79,14 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
           priority: t("priority"),
           property: t("property"),
           status: t("status"),
+          statuses: {
+            ...(t.raw("statuses") as Record<string, string>),
+            ...(t.raw("displayStatuses") as Record<string, string>),
+          } as Record<OrderDisplayStatus, string>,
           total: t("total"),
           view: t("view"),
         }}
+        timeZone={orderData.timeZone}
       />
     </div>
   );

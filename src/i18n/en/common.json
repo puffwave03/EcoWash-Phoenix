@@ -1632,7 +1632,8 @@
     "order": "Order",
     "customer": "Customer",
     "property": "Property",
-    "status": "Production status",
+    "status": "Operational status",
+    "productionStatus": "Production status",
     "priority": "Priority",
     "total": "Total",
     "subtotal": "Subtotal",
@@ -1664,6 +1665,12 @@
       "completed": "Production completed",
       "on_hold": "On hold",
       "cancelled": "Cancelled"
+    },
+    "displayStatuses": {
+      "completed": "Completed",
+      "delivery_in_progress": "Out for delivery",
+      "delivery_scheduled": "Delivery scheduled",
+      "ready_for_pickup": "Ready for pickup"
     },
     "form": {
       "newTitle": "New order",

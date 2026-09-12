@@ -49,11 +49,13 @@ import { listEffectiveServicesForOrder } from "@/features/pricing-segments/serve
 import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
 import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
 import type { ProductionStatus } from "@/features/orders/types";
+import { deriveOrderDisplayStatus, type OrderDisplayStatus } from "@/features/orders/display-status";
 import { canEditCatalog } from "@/features/orders/workflow";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { formatCurrency, formatNumberInput } from "@/lib/number-format";
 import { getQuickDropOrderOrNull } from "@/features/quick-drop/server/queries";
+import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -100,6 +102,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
+  const displayStatusLabels = {
+    ...statusLabels,
+    ...(t.raw("displayStatuses") as Record<string, string>),
+  } as Record<OrderDisplayStatus, string>;
+  const displayStatus = deriveOrderDisplayStatus({
+    deliveryStatus: logistics.delivery?.status,
+    pickupStatus: logistics.pickup?.status,
+    productionStatus: order.productionStatus,
+  });
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
@@ -129,7 +140,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="rounded-control bg-white px-3 py-1 text-xs font-semibold text-primary">
-                {statusLabels[order.productionStatus]}
+                {displayStatusLabels[displayStatus]}
               </span>
               <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
                 {t(`priorities.${order.priority}`)}
@@ -154,7 +165,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
             <dt className="text-xs font-semibold uppercase text-white/68">{t("due")}</dt>
-            <dd className="mt-2 font-semibold text-white">{order.dueAt ? new Date(order.dueAt).toLocaleString(locale) : "-"}</dd>
+            <dd className="mt-2 font-semibold text-white">{order.dueAt ? formatOrganizationDateTime(order.dueAt, locale, access.membership.organization.timezone) : "-"}</dd>
           </div>
           <div className="rounded-card border border-white/16 bg-white/10 p-4">
             <dt className="text-xs font-semibold uppercase text-white/68">{t("assignment.assignedTo")}</dt>

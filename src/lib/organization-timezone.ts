@@ -144,3 +144,14 @@ export function isoToOrganizationDateTimeLocal(value: string, timeZone: string) 
     ? `${parts.year}-${twoDigits(parts.month)}-${twoDigits(parts.day)}T${twoDigits(parts.hour)}:${twoDigits(parts.minute)}`
     : null;
 }
+
+export function formatOrganizationDateTime(
+  value: string | Date,
+  locale: string,
+  timeZone: string,
+  options: Intl.DateTimeFormatOptions = { dateStyle: "medium", timeStyle: "short" },
+) {
+  return new Intl.DateTimeFormat(locale, { ...options, timeZone }).format(
+    typeof value === "string" ? new Date(value) : value,
+  );
+}
