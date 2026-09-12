@@ -1,6 +1,6 @@
 # Staging Recovery Inventory and Runbook
 
-Status: BACKUP-DR-001D database and Storage recovery verified; PHX-AUTH-DR-001 strategy approved, with Auth recovery and authenticated application recovery still pending
+Status: BACKUP-DR-001D rehearsal and decommission complete; database and Storage recovery verified; Auth recovery remains a mandatory pre-production blocker
 
 Last verified: 2026-09-12
 
@@ -89,11 +89,11 @@ The verified 001B set was captured from staging on 2026-09-10. It contains actua
 
 ## BACKUP-DR-001D Recovery Rehearsal
 
-The following evidence is `VERIFIED`. It applies only to the isolated disposable project `EcoWash Phoenix Recovery Rehearsal 001D` (`xsjmhjmhaftieokuwssf`) in `eu-west-1`, using PostgreSQL 17. The protected staging project remained `exthnplfokcucaqydney`; staging and production were not mutated, and the repository remained unchanged throughout the rehearsal. The disposable target is retained under `RETAIN_UNTIL_CTO_APPROVAL`.
+The following evidence is `VERIFIED`. It applies only to the isolated disposable project `EcoWash Phoenix Recovery Rehearsal 001D` (`xsjmhjmhaftieokuwssf`) in `eu-west-1`, using PostgreSQL 17. The protected staging project remained `exthnplfokcucaqydney`; staging and production were not mutated, and the repository remained unchanged throughout the rehearsal. After the approved rehearsal, the disposable recovery project was permanently deleted.
 
-FitIQtracker's Supabase project was temporarily paused only to free a Supabase Free project slot for this rehearsal. It was not deleted and has not yet been resumed.
+FitIQtracker's Supabase project was temporarily paused only to free a Supabase Free project slot for this rehearsal and was successfully resumed after recovery-project decommissioning.
 
-Final rehearsal cleanup remains pending CTO approval: decide the recovery-project disposition, resume FitIQtracker, and remove local rehearsal material only under the approved retention and cleanup procedure.
+Final rehearsal decommissioning is `COMPLETE`: the recovery project was deleted, FitIQtracker was resumed, the local `postgres:17` rehearsal image was removed, and no temporary rehearsal files remained in `/tmp` or Downloads. The verified Phoenix backup artifacts in `~/EcoWash-Backups` were deliberately retained. Final observed local free disk was approximately 8.9 GiB.
 
 ### Phase 2A — isolated target (`VERIFIED`)
 

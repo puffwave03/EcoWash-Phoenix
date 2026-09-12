@@ -6,9 +6,9 @@ Version: 0.1
 
 Last Updated: 2026-09-12
 
-Current Mission: PHX-AUTH-DR-001 AUTH DR STRATEGY AND PRE-PRODUCTION GATE DOCUMENTATION
+Current Mission: BACKUP-DR-001D FINAL REHEARSAL DECOMMISSION DOCUMENTATION
 
-Next Action: PRODUCT OWNER / CTO REVIEW — AUTH IMPLEMENTATION AND REHEARSAL NOT AUTHORIZED
+Next Action: PRODUCT OWNER / CTO REVIEW — PRODUCTION AUTH REHEARSAL REMAINS REQUIRED BEFORE GO-LIVE
 
 ---
 
@@ -27,10 +27,10 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PHX-AUTH-DR-001 documents Option A as the primary Auth DR strategy, Option B as the original-UUID fallback and Auth recovery as a mandatory pre-production blocker |
+| Current mission | BACKUP-DR-001D rehearsal and decommission complete; database and Storage recovery verified; Auth remains a mandatory pre-production blocker |
 | Last completed implementation mission | DASHBOARD-LOGISTICS-LIFECYCLE-001 — align dashboard logistics with parent lifecycle |
-| Approved baseline before this documentation update | b48f9c9e38517de457e363e4b31675c7b071397c |
-| Remote status | local `main` synchronized with `origin/main` at `b48f9c9e38517de457e363e4b31675c7b071397c` before this uncommitted documentation update |
+| Approved baseline before this documentation update | d3c160017ae03e9d8514d2240ec416b7676d4deb |
+| Remote status | local `main` synchronized with `origin/main` at `d3c160017ae03e9d8514d2240ec416b7676d4deb` before this uncommitted documentation update |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
@@ -92,7 +92,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | LOGISTICS-TIMEZONE-001 status | COMPLETE / STABLE; tenant wall-clock input and manager/staff rendering use `organizations.timezone`, absolute instants remain `timestamptz`, Shop Terminal and dashboard are aligned, and staging Product Owner E2E passed without migration or historical rewrite |
 | LOGISTICS-COMPLETED-HISTORY-001 status | COMPLETE / STABLE; canonical pickup/delivery rows and `completed_at` provide tenant-local completed-today history, staff scope is own assignments, owner/manager scope is the organization team, Mi día remains open work only, and staging Product Owner E2E passed without migration |
 | DASHBOARD-LOGISTICS-LIFECYCLE-001 status | COMPLETE / STABLE; dashboard today, overdue and workload signals plus operational alerts reuse the canonical logistics parent lifecycle, exclude draft/cancelled/inactive parents, and preserve received+ and production-completed eligibility; staging Product Owner E2E passed without migration |
-| BACKUP-DR-001D / PHX-AUTH-DR-001 status | Database and Storage recovery verified; Auth strategy approved, but managed Auth recovery and authenticated application recovery remain unverified pre-production blockers |
+| BACKUP-DR-001D / PHX-AUTH-DR-001 status | Rehearsal/decommission complete; database and Storage recovery verified; managed Auth recovery and authenticated application recovery remain unverified pre-production blockers |
 | OPS-001.5 status | Completed and pushed |
 | OPS-001.6 status | Completed and pushed |
 | UI-001 status | Completed and pushed |
@@ -120,7 +120,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 - `APPROVED STRATEGY`: Option A uses Supabase-supported physical backup / Restore to a New Project on the confirmed production plan. Option B is the original-UUID Supabase Admin API fallback with credential reset/reinvitation and MFA reenrollment where continuity is unavailable. Option C is emergency degraded continuity only.
 - `KNOWN GAP / PRE-PRODUCTION BLOCKER`: managed Auth was not captured or restored, the current backup does not preserve password continuity, and authenticated staff/portal/RLS recovery remains unverified.
 - Production readiness requires confirmed provider capability and backup coverage, a protected Auth identity inventory, a versioned non-secret Auth configuration manifest, separate secret custody, the documented Option B procedure, resolution of the signup drift and a successful isolated Auth recovery rehearsal. The authoritative gate is in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
-- The disposable target remains `RETAIN_UNTIL_CTO_APPROVAL`; staging and production were untouched. FitIQtracker remains paused. Recovery-project disposition, FitIQtracker resume and local rehearsal cleanup remain pending.
+- `DECOMMISSION COMPLETE`: recovery project `xsjmhjmhaftieokuwssf` was permanently deleted; protected staging `exthnplfokcucaqydney` remained intact; FitIQtracker was resumed; the local `postgres:17` rehearsal image and temporary rehearsal files were removed. Verified Phoenix backup artifacts were deliberately retained.
 - No further recovery phase is authorized. Full Phoenix DR must not be described as complete.
 
 ## DASHBOARD-LOGISTICS-LIFECYCLE-001 Closeout
@@ -159,7 +159,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 
 ## Open Findings
 
-- `PHX-AUTH-DR-001` — database and Storage recovery are verified and the Auth DR strategy is approved; managed Auth and authenticated application recovery remain mandatory pre-production blockers.
+- `PHX-AUTH-DR-001` — BACKUP-DR-001D rehearsal/decommission is complete and database/Storage recovery are verified; managed Auth and authenticated application recovery remain mandatory pre-production blockers before go-live.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; not a blocker.
 - Duplicate “Próxima actividad / Mis actividades” presentation remains non-blocking UX polish unless reprioritized.

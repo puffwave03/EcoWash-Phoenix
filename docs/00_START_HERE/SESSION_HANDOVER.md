@@ -4,17 +4,17 @@ Status: Active
 
 Date: 2026-09-12
 
-Approximate closeout time: after PHX-AUTH-DR-001 strategy and pre-production gate documentation
+Approximate closeout time: after BACKUP-DR-001D final decommission documentation
 
-Session checkpoint: PHX-AUTH-DR-001 STRATEGY APPROVED / AUTH REMAINS A PRE-PRODUCTION BLOCKER
+Session checkpoint: BACKUP-DR-001D REHEARSAL AND DECOMMISSION COMPLETE / AUTH REMAINS A PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this documentation update: `b48f9c9e38517de457e363e4b31675c7b071397c`
+Approved baseline before this documentation update: `d3c160017ae03e9d8514d2240ec416b7676d4deb`
 
-Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `b48f9c9e38517de457e363e4b31675c7b071397c`.
+Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `d3c160017ae03e9d8514d2240ec416b7676d4deb`.
 
 Working tree status before this documentation update: clean.
 
@@ -33,7 +33,7 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 - `KNOWN GAP / PRE-PRODUCTION BLOCKER`: managed Supabase Auth was not backed up or restored. The current backup cannot preserve password continuity; Auth recovery, staff/portal login and authenticated RLS/tenant validation remain unverified.
 - The repository expects signup disabled, while previously observed hosted staging configuration appeared to allow signup. The drift remains unresolved and must be reviewed separately.
 - Phoenix must not be considered fully production-ready or DR-complete until provider eligibility/coverage, protected identity inventory, versioned non-secret Auth configuration, secret custody, the Option B procedure and an isolated Auth recovery rehearsal all pass the mandatory gate in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
-- The recovery target remains retained under `RETAIN_UNTIL_CTO_APPROVAL`. FitIQtracker was paused, not deleted, and has not yet been resumed. Recovery-target disposition, FitIQtracker resume and local rehearsal cleanup remain pending CTO approval.
+- `DECOMMISSION COMPLETE`: recovery project `xsjmhjmhaftieokuwssf` was permanently deleted, protected staging `exthnplfokcucaqydney` remained intact, FitIQtracker was resumed, the local `postgres:17` rehearsal image was removed and no rehearsal temporary files remained in `/tmp` or Downloads. Verified backup artifacts in `~/EcoWash-Backups` were deliberately retained.
 - No Auth implementation or further recovery phase is authorized. Detailed evidence and the canonical pre-production gate are in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
 
 ---
@@ -77,7 +77,7 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ## Open Findings
 
-- `PHX-AUTH-DR-001` — database and Storage recovery are verified; the Auth strategy is approved, but Auth recovery and authenticated application recovery remain a mandatory pre-production blocker.
+- `PHX-AUTH-DR-001` — BACKUP-DR-001D rehearsal/decommission is complete and database/Storage recovery are verified; Auth recovery and authenticated application recovery remain a mandatory pre-production blocker before go-live.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.
