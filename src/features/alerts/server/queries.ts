@@ -226,7 +226,9 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
     if (!order.assigned_to) {
       alerts.push(alertBase(order, "unassigned_order", "warning", order.due_at));
     }
+  }
 
+  for (const order of orders) {
     const totals = paymentTotals(order, payments);
     if (totals.balanceDue > 0) {
       alerts.push({
