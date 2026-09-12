@@ -4,17 +4,17 @@ Status: Active
 
 Date: 2026-09-12
 
-Approximate closeout time: after BACKUP-DR-001D Phase 3A Storage recovery rehearsal
+Approximate closeout time: after PHX-AUTH-DR-001 strategy and pre-production gate documentation
 
-Session checkpoint: BACKUP-DR-001D DATABASE AND STORAGE RECOVERY VERIFIED THROUGH PHASE 3A / AUTH PENDING
+Session checkpoint: PHX-AUTH-DR-001 STRATEGY APPROVED / AUTH REMAINS A PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this documentation update: `8c38f690b128f70c0146b3a863667eeabf7140f4`
+Approved baseline before this documentation update: `b48f9c9e38517de457e363e4b31675c7b071397c`
 
-Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `8c38f690b128f70c0146b3a863667eeabf7140f4`.
+Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `b48f9c9e38517de457e363e4b31675c7b071397c`.
 
 Working tree status before this documentation update: clean.
 
@@ -22,16 +22,19 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ---
 
-## BACKUP-DR-001D Phase 2A–3A Checkpoint
+## BACKUP-DR-001D / PHX-AUTH-DR-001 Checkpoint
 
 - `VERIFIED`: a new isolated PostgreSQL 17 Supabase recovery project was created in `eu-west-1`; the protected staging ref remained unchanged and staging/production were untouched.
 - `VERIFIED`: 49/49 canonical migrations, the complete 1,528-row `data.sql` payload and the relevant safe `roles.sql` state were restored and validated. Schema, row-count, public-FK, uniqueness, sequence and tenant consistency checks passed.
 - `VERIFIED WITH MANAGED-ROLE EXCEPTION`: the reserved `supabase_admin` timeout override was rejected and not forced; required application-facing role/grant state passed.
 - `VERIFIED`: BACKUP-DR-001B was exercised end to end through the supported Storage API. All 223 objects and 22,451,620 bytes were restored and re-downloaded; 223/223 SHA-256 checks matched with no failures, missing objects or extras.
 - `NOT YET VERIFIED`: authenticated application flows/RLS, final end-to-end recovery and final RTO.
-- `KNOWN LIMITATION`: managed Supabase Auth was not backed up or restored; identity-preserving Auth recovery remains an open recovery gap.
-- The recovery target remains retained under `RETAIN_UNTIL_CTO_APPROVAL`. FitIQtracker was paused, not deleted, to free the rehearsal slot and has not yet been resumed.
-- No further recovery phase is authorized. Full Phoenix disaster recovery must not yet be claimed; Auth and authenticated application recovery remain pending. Detailed evidence is canonical in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
+- `APPROVED STRATEGY`: Option A is primary—use Supabase-supported physical backup / Restore to a New Project on the confirmed production plan. Option B is the original-UUID Supabase Admin API fallback with reset/reinvitation and MFA reenrollment when continuity is unavailable. Option C is emergency degraded continuity only.
+- `KNOWN GAP / PRE-PRODUCTION BLOCKER`: managed Supabase Auth was not backed up or restored. The current backup cannot preserve password continuity; Auth recovery, staff/portal login and authenticated RLS/tenant validation remain unverified.
+- The repository expects signup disabled, while previously observed hosted staging configuration appeared to allow signup. The drift remains unresolved and must be reviewed separately.
+- Phoenix must not be considered fully production-ready or DR-complete until provider eligibility/coverage, protected identity inventory, versioned non-secret Auth configuration, secret custody, the Option B procedure and an isolated Auth recovery rehearsal all pass the mandatory gate in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
+- The recovery target remains retained under `RETAIN_UNTIL_CTO_APPROVAL`. FitIQtracker was paused, not deleted, and has not yet been resumed. Recovery-target disposition, FitIQtracker resume and local rehearsal cleanup remain pending CTO approval.
+- No Auth implementation or further recovery phase is authorized. Detailed evidence and the canonical pre-production gate are in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
 
 ---
 
@@ -74,7 +77,7 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ## Open Findings
 
-- `BACKUP-DR-001D` — database and Storage-byte recovery are verified through Phase 3A; managed Auth and authenticated application recovery remain open.
+- `PHX-AUTH-DR-001` — database and Storage recovery are verified; the Auth strategy is approved, but Auth recovery and authenticated application recovery remain a mandatory pre-production blocker.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
 - `RECEIPT-COMPACT-LINES-UX` — consider future vertical-space optimization for long item descriptions while preserving readability and print safety; this is non-blocking UX polish.
 - The duplicate “Próxima actividad / Mis actividades” presentation is non-blocking UX polish unless the Product Owner prioritizes it later.

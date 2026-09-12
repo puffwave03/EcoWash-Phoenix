@@ -1,6 +1,6 @@
 # Staging Recovery Inventory and Runbook
 
-Status: BACKUP-DR-001D database and Storage recovery verified through Phase 3A; Auth and authenticated application recovery pending
+Status: BACKUP-DR-001D database and Storage recovery verified; PHX-AUTH-DR-001 strategy approved, with Auth recovery and authenticated application recovery still pending
 
 Last verified: 2026-09-12
 
@@ -47,7 +47,7 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Supabase link | `supabase/.temp/project-ref` | No | Supabase project ref; ignored local link file | Yes for CLI operations | Authenticate the CLI and link explicitly to the verified ref. After project replacement, use the new staging ref. | No | `DOCUMENTED_NOT_VERIFIED` | Current ignored link points to `exthnplfokcucaqydney`. |
 | Supabase Auth | Site URL and redirect allowlist | No | Supabase Auth settings | Yes | Recreate only the approved local and active staging HTTPS redirect patterns, then test login and password recovery. | No | `DOCUMENTED_NOT_VERIFIED` | Current staging redirect behavior was previously E2E validated; settings are not in 001A or 001B. |
 | Supabase Auth | Email provider, signup control, email confirmation, JWT/session/refresh settings, rate limits and templates | Mixed | Supabase Auth settings | Yes | Capture approved names/policy, configure a replacement project, and test invite, reset and session refresh. | No | `MISSING` | Remote settings report sign-up enabled while the repository config/documentation says email sign-up is disabled. CTO must select the canonical recovery state. |
-| Supabase Auth | Managed users, identities, password hashes, sessions and MFA factors | Yes | Supabase managed Auth schema/platform | Yes | Define and rehearse a Supabase-supported Auth export/restore or identity reconstruction plan in an isolated project. | No | `MISSING` | 001A excludes managed Auth. Recreating users with different IDs can break public profile/membership/history references and must not be improvised. |
+| Supabase Auth | Managed users, identities, password hashes, sessions and MFA factors | Yes | Supabase managed Auth schema/platform | Yes | Primary: use Supabase-supported physical backup / Restore to a New Project on an eligible production plan. Fallback: rehearse supported Admin API reconstruction with the original UUIDs and credential reset/reinvitation where continuity is unavailable. | No | `MISSING` | 001A excludes managed Auth. Do not fabricate managed Auth records or replace identity UUIDs; Option C onboarding is emergency degraded continuity only. |
 | Supabase Storage | `brand-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as public, with a 2 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the definition and restored all 221 backed-up objects through the supported Storage API. |
 | Supabase Storage | `order-media` bucket definition | No | Supabase Storage configuration; definition also exists in migrations | Yes | Apply the canonical migrations to recreate it as private, with a 1 MiB maximum and JPEG/PNG/WebP allowlist, before importing bytes. | Yes | `VERIFIED` | BACKUP-DR-001D recreated the definition and restored both backed-up objects through the supported Storage API. Keep private. |
 | Supabase Storage | Object restore/import procedure | Uses a secret credential | BACKUP-DR-001B manifest/checksums plus the supported Supabase Storage API; no repository restore script | Yes | Verify the backup, require an empty approved target, upload without upsert, then re-download and hash-check every object. | Yes | `VERIFIED` | BACKUP-DR-001D Phase 3A exercised all 223 objects and 22,451,620 bytes end to end with zero failures, missing objects or extras. |
@@ -59,7 +59,7 @@ Vercel's `Production` scope below means the production target of the **staging V
 | DNS | Delegation/nameservers, Resend DKIM, SPF, DMARC and mail-routing categories | No, but do not paste record tokens into Git | Registrar/DNS provider | Yes for Auth mail | Recover the registrar and DNS-host accounts. Reconstruct provider-required records from Resend rather than from memory. | No | `MISSING` | Public nameserver/MX resolution was checked. Registrar identity, DNS account custody, record export and recovery rehearsal are missing. |
 | Staging hostname | Vercel-assigned `ecowash-phoenix-staging.vercel.app` | No | Vercel | Yes while the existing project survives | Recover the project or accept a new assigned hostname and update dependent Site URL/Auth redirects. | No | `DOCUMENTED_NOT_VERIFIED` | No custom staging domain is required. |
 | Production domain/DNS | Not selected or purchased | Not applicable | Not established | No | Do not create or configure during staging recovery. | Not applicable | `NOT_APPLICABLE` | The unrelated Vercel-team domain inventory is not a Phoenix production-domain decision. |
-| Tenant/application configuration | Public-schema organization, location, profile, membership, capability/entitlement, branding metadata, catalog, segment, pricing, printer, Billing and numbering configuration | Contains sensitive tenant/business data | Supabase `public` database | Yes | Restore from 001A with the verified canonical-migration and `data.sql` sequence; validate tenant consistency and keep Auth-linked UUIDs unchanged until managed Auth recovery is solved. | Yes | `VERIFIED` | BACKUP-DR-001D restored and validated the public application data. Branding object bytes are separately in 001B and remain pending. |
+| Tenant/application configuration | Public-schema organization, location, profile, membership, capability/entitlement, branding metadata, catalog, segment, pricing, printer, Billing and numbering configuration | Contains sensitive tenant/business data | Supabase `public` database | Yes | Restore from 001A with the verified canonical-migration and `data.sql` sequence; validate tenant consistency and keep Auth-linked UUIDs unchanged until managed Auth recovery is solved. | Yes | `VERIFIED` | BACKUP-DR-001D restored and validated the public application data; the separate 001B branding object bytes were also restored and verified. |
 | Online payment provider | Real provider credentials/configuration | Would be secret | Not configured | No for current staging recovery | Do not invent or provision during this task. | Not applicable | `NOT_APPLICABLE` | Only test-provider boundaries exist; real online-provider configuration remains deferred. |
 
 ## Recovery Ownership Matrix
@@ -92,6 +92,8 @@ The verified 001B set was captured from staging on 2026-09-10. It contains actua
 The following evidence is `VERIFIED`. It applies only to the isolated disposable project `EcoWash Phoenix Recovery Rehearsal 001D` (`xsjmhjmhaftieokuwssf`) in `eu-west-1`, using PostgreSQL 17. The protected staging project remained `exthnplfokcucaqydney`; staging and production were not mutated, and the repository remained unchanged throughout the rehearsal. The disposable target is retained under `RETAIN_UNTIL_CTO_APPROVAL`.
 
 FitIQtracker's Supabase project was temporarily paused only to free a Supabase Free project slot for this rehearsal. It was not deleted and has not yet been resumed.
+
+Final rehearsal cleanup remains pending CTO approval: decide the recovery-project disposition, resume FitIQtracker, and remove local rehearsal material only under the approved retention and cleanup procedure.
 
 ### Phase 2A — isolated target (`VERIFIED`)
 
@@ -127,9 +129,19 @@ FitIQtracker's Supabase project was temporarily paused only to free a Supabase F
 
 ### Not yet verified and known limitations
 
-- `KNOWN LIMITATION`: managed Supabase Auth users were not captured or restored. Auth backup and identity-preserving recovery remain an unresolved recovery gap.
+- `KNOWN LIMITATION`: managed Supabase Auth users were not captured or restored. PHX-AUTH-DR-001 selected the recovery strategy, but the required provider coverage, recovery inventory, fallback procedure and isolated Auth rehearsal are not yet implemented or verified.
 - `NOT YET VERIFIED`: authenticated application flows, authenticated RLS behavior, final end-to-end application recovery, final RTO and production recovery.
 - The rehearsal verifies the canonical database schema/migrations, public application data, relevant database role/settings state and BACKUP-DR-001B Storage object-byte recovery. It does **not** establish complete Phoenix disaster recovery.
+
+### PHX-AUTH-DR-001 — approved Auth recovery strategy
+
+Original Auth user UUIDs are mandatory recovery identities. Direct dependencies are `profiles.id -> auth.users.id`, `customer_portal_access.user_id -> auth.users.id` and `online_payment_attempts.initiated_by_user_id -> auth.users.id`; profiles then anchor memberships, roles, tenant authorization, portal access and historical application attribution. BACKUP-DR-001A contains the public application links but not managed `auth.users`, identities, password hashes, sessions or MFA state, so it cannot preserve password continuity by itself.
+
+- **Primary — Option A:** when Phoenix moves to the appropriate production Supabase plan, use the provider-supported physical backup / Restore to a New Project capability. Confirm the provider's exact capability and limitations at that time. This is the preferred path because it preserves original UUIDs, Auth records and password hashes where supported while minimizing application remapping risk.
+- **Fallback — Option B:** maintain and rehearse a supported Supabase Admin API procedure that reconstructs users with their original Phoenix UUIDs. Preserve profile, membership and portal relationships. Require password reset or reinvitation when password continuity is unavailable, and require MFA reenrollment whenever continuity cannot be proven. Never fabricate managed Auth records directly.
+- **Emergency only — Option C:** controlled re-onboarding without historical Auth continuity is degraded continuity, not the normal Phoenix DR strategy and not evidence of complete recovery.
+
+The repository expectation is that public email signup is disabled. Previously observed hosted staging settings appeared to allow signup. This unresolved drift requires a separate approved review; do not select or change the hosted value during an unrelated recovery phase.
 
 ### Local PostgreSQL tooling guardrail
 
@@ -140,7 +152,7 @@ Client-side PostgreSQL tooling was verified with the existing `postgres:17` imag
 - GitHub write/admin access and recovery factors.
 - Vercel team access, project recreation, Git connection and environment re-entry.
 - Supabase organization access, project creation, public API identifiers and secret regeneration.
-- A supported solution for managed Auth identities that preserves or deliberately reconciles UUID relationships.
+- Supabase production-plan and physical-backup eligibility for the approved primary Auth recovery strategy, plus a rehearsed original-UUID fallback.
 - Supabase Auth URLs, signup/confirmation policy, session policy, templates, rate limits and Custom SMTP configuration.
 - Resend account recovery and SMTP credential regeneration.
 - Registrar/DNS-host account recovery and reconstruction of mail-verification records.
@@ -172,13 +184,13 @@ This scenario is documented but has not been rehearsed.
 1. Stop normal deployment and preserve the failed project's evidence. Do not point staging or production at an unverified replacement.
 2. Recover the Supabase organization or create an approved replacement staging project in the intended region with PostgreSQL major-version compatibility. Record the new ref; never reuse the old ref as an assumption.
 3. Verify both backup sets and repository migrations. In an isolated target, follow the BACKUP-DR-001D sequence: apply the 49 canonical migrations, verify and handle only the known migration-created catalog seed rows, import the checked `data.sql`, and apply only safe `roles.sql` operations. Do not restore `schema.sql` after migrations.
-4. Preserve identity-linked public UUIDs and explicitly classify the expected Auth-side orphans. 001A does not contain Auth users or password material; do not improvise UUID remapping. Managed Auth recovery remains a separate unresolved gate.
+4. Preserve identity-linked public UUIDs and explicitly classify the expected Auth-side orphans. Use approved Option A when provider coverage is available or the rehearsed Option B fallback; 001A does not contain Auth users or password material. Never improvise UUID remapping or fabricate managed Auth records.
 5. Recreate the Storage bucket definitions and approved policies, then restore 001B bytes through the verified supported-API procedure: require an empty target, do not upsert, and re-download/hash-check every object.
 6. Recreate Auth URL, email/signup/confirmation, session, rate-limit, template and SMTP configuration. Resolve the current signup-control discrepancy with the CTO before choosing the restored value.
 7. Obtain/regenerate the replacement public identifiers and service-role credential, then update only the staging Vercel project and secured local environment.
 8. Validate schema/data counts, RLS and tenant isolation, Auth flows, Storage privacy, representative tenant configuration, numbering/financial history and application health before cutover.
 
-Full Supabase recovery is currently blocked by the missing Auth identity plan and the remaining authenticated end-to-end validation. The logical public database and Storage-byte restore sequences are verified.
+Full Supabase recovery remains blocked because the approved Auth strategy has not yet been implemented or rehearsed and authenticated end-to-end validation remains pending. The logical public database and Storage-byte restore sequences are verified.
 
 ## SMTP/DNS-Credential-Loss Scenario
 
@@ -190,15 +202,23 @@ Full Supabase recovery is currently blocked by the missing Auth identity plan an
 
 The current provider/domain/sender are known, but DNS account custody, registrar identity, credential recovery and a recovery rehearsal remain unresolved.
 
-## Recovery Acceptance Gate
+## Mandatory Pre-Production Auth and DR Gate
 
-Phoenix staging is not fully DR-ready until all `MISSING` items are resolved and the following is rehearsed in an isolated target. Items 3 and 5 are verified by BACKUP-DR-001D; authenticated Storage authorization behavior remains part of item 7:
+Database recovery and Storage recovery are `VERIFIED`. Auth recovery is a `KNOWN GAP / PRE-PRODUCTION BLOCKER`, and full authenticated application recovery is `NOT YET VERIFIED`. Phoenix must not be considered fully production-ready, and Phoenix DR must not be marked `COMPLETE`, until every item below is complete:
 
-1. recover the repository and provider accounts from a clean machine;
-2. retrieve backup copies after simulated Mac loss;
-3. restore 001A without schema/ordering or historical-data corruption;
-4. preserve or safely reconcile managed Auth identities;
-5. recreate buckets/policies and import/verify all 001B bytes;
-6. recreate Vercel, Auth, SMTP and DNS configuration from named systems of record;
-7. pass tenant isolation, role, Auth, Storage, financial-history and application smoke validation;
-8. document recovery time, operator, evidence, rollback and remaining risk without recording secrets.
+1. Select and confirm a Supabase production plan that supports the approved physical-backup / Restore to a New Project path.
+2. Verify the provider's exact Auth recovery capability and limitations at that time.
+3. Enable and verify the appropriate provider backup coverage.
+4. Create a protected Auth recovery inventory containing each original user UUID, verified login identity/email, provider type, required non-secret metadata and application linkage needed for recovery.
+5. Create a versioned non-secret Auth configuration manifest covering signup policy, confirmation behavior, Site URL, redirect allowlist, enabled providers, expected SMTP configuration and relevant session/security expectations.
+6. Define separate secure custody and recovery for Auth, provider, SMTP and signing secrets; never record secret values in this repository.
+7. Build and document the Option B original-UUID reconstruction fallback using supported Supabase Admin APIs, password reset/reinvitation when required and MFA reenrollment when continuity cannot be proven.
+8. Perform an isolated Auth recovery rehearsal before production.
+9. Verify recovered staff login.
+10. Verify recovered customer portal login.
+11. Verify authenticated RLS, tenant isolation, roles and application authorization after recovery.
+12. Resolve the signup-configuration drift and verify the approved canonical setting.
+13. Record final non-secret Auth DR evidence in this runbook, including recovery time, operator, rollback and remaining risk.
+14. Only after all preceding checks pass may Phoenix DR be marked `COMPLETE` for production.
+
+The wider recovery gate still includes clean-machine repository/provider-account recovery, off-device backup retrieval after simulated Mac loss, the already verified 001A database and 001B Storage restores, recreation of Vercel/Auth/SMTP/DNS configuration, authenticated Storage validation, financial-history/application smoke validation and final RTO evidence.
