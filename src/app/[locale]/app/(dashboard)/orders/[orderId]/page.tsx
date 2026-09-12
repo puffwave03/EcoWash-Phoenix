@@ -353,6 +353,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             pickup: assignments.pickup,
           }}
           canAssign={canManageAssignments}
+          configurationEnabled={order.isActive && order.productionStatus !== "cancelled"}
           logistics={logistics}
           operationalTransitionsEnabled={isOperationalLogisticsParent({
             isActive: order.isActive,

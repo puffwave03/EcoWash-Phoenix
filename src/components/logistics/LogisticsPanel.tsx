@@ -50,6 +50,7 @@ type LogisticsPanelProps = {
     pickup: AssignmentOption[];
   };
   canAssign: boolean;
+  configurationEnabled: boolean;
   logistics: OrderLogistics;
   operationalTransitionsEnabled: boolean;
   text: LogisticsPanelText;
@@ -78,6 +79,7 @@ function LogisticsForm({
   action,
   assignments,
   canAssign,
+  editable,
   record,
   text,
   timeZone,
@@ -86,6 +88,7 @@ function LogisticsForm({
   action: (state: LogisticsActionState, formData: FormData) => Promise<LogisticsActionState>;
   assignments: AssignmentOption[];
   canAssign: boolean;
+  editable: boolean;
   record: LogisticsRecord | null;
   text: LogisticsPanelText;
   timeZone: string;
@@ -96,6 +99,7 @@ function LogisticsForm({
 
   return (
     <form action={formAction} className="space-y-4">
+      <fieldset className="min-w-0 space-y-4 border-0 p-0" disabled={!editable}>
       <input name="recordId" type="hidden" value={record?.id ?? ""} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="min-w-0 text-lg font-semibold text-primary">{title}</h4>
@@ -171,7 +175,8 @@ function LogisticsForm({
         <span>{text.notes}</span>
         <textarea className={`${fieldClass()} min-h-24 py-3`} defaultValue={record?.notes ?? ""} name="notes" />
       </label>
-      <Button className="w-full sm:w-auto" disabled={isPending} type="submit">{isPending ? text.saving : text.save}</Button>
+      {editable ? <Button className="w-full sm:w-auto" disabled={isPending} type="submit">{isPending ? text.saving : text.save}</Button> : null}
+      </fieldset>
     </form>
   );
 }
@@ -216,6 +221,7 @@ export function LogisticsPanel({
   actions,
   assignments,
   canAssign,
+  configurationEnabled,
   logistics,
   operationalTransitionsEnabled,
   text,
@@ -226,12 +232,12 @@ export function LogisticsPanel({
       <h3 className="text-xl font-semibold text-primary">{text.inProgress}</h3>
       <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
-          <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} timeZone={timeZone} title={text.pickup} />
-          <TransitionButtons action={actions.transitionPickup} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} />
+          <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} editable={configurationEnabled} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} timeZone={timeZone} title={text.pickup} />
+          {configurationEnabled ? <TransitionButtons action={actions.transitionPickup} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} /> : null}
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
-          <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />
-          <TransitionButtons action={actions.transitionDelivery} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} />
+          <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} editable={configurationEnabled} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />
+          {configurationEnabled ? <TransitionButtons action={actions.transitionDelivery} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} /> : null}
         </section>
       </div>
     </Card>

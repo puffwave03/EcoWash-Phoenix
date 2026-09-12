@@ -8,6 +8,7 @@ import type {
   DailyCloseItem,
 } from "@/features/daily-close/types";
 import type { FulfillmentStatus } from "@/features/logistics/types";
+import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { PaymentRecordStatus } from "@/features/payments/types";
 import {
@@ -42,7 +43,9 @@ type PaymentRow = {
 type LogisticsOrderRelation = {
   customer: { display_name: string } | { display_name: string }[] | null;
   id: string;
+  is_active: boolean;
   order_number: string;
+  production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
 };
 
@@ -96,7 +99,15 @@ function paymentItem(order: OrderRow, payments: PaymentRow[]): DailyCloseItem | 
 function logisticsItem(row: LogisticsRow, kind: "pickup" | "delivery", now: Date): DailyCloseItem | null {
   const order = relationOne(row.order);
 
-  if (!order) return null;
+  if (
+    !order ||
+    !isOperationalLogisticsParent({
+      isActive: order.is_active,
+      productionStatus: order.production_status,
+    })
+  ) {
+    return null;
+  }
 
   return {
     assignedToName: relationName(row.assigned_to_profile),
@@ -112,6 +123,12 @@ function logisticsItem(row: LogisticsRow, kind: "pickup" | "delivery", now: Date
     status: row.status,
     timestamp: row.scheduled_at ?? row.completed_at,
   };
+}
+
+function isDueForClose(row: LogisticsRow, end: Date) {
+  if (row.status === "in_progress") return true;
+
+  return Boolean(row.scheduled_at && new Date(row.scheduled_at) <= end);
 }
 
 function sortByAttention(a: DailyCloseItem, b: DailyCloseItem) {
@@ -156,7 +173,7 @@ export async function getDailyCloseData(locale: string): Promise<DailyCloseData>
       .returns<PaymentRow[]>(),
     supabase
       .from("pickups")
-      .select("id, status, scheduled_at, completed_at, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
+      .select("id, status, scheduled_at, completed_at, assigned_to_profile:profiles!pickups_assigned_to_fkey(display_name), order:orders!pickups_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .order("scheduled_at", { ascending: true, nullsFirst: false })
@@ -164,7 +181,7 @@ export async function getDailyCloseData(locale: string): Promise<DailyCloseData>
       .returns<LogisticsRow[]>(),
     supabase
       .from("deliveries")
-      .select("id, status, scheduled_at, completed_at, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
+      .select("id, status, scheduled_at, completed_at, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))")
       .eq("organization_id", membership.organization.id)
       .in("status", ["scheduled", "in_progress"])
       .order("scheduled_at", { ascending: true, nullsFirst: false })
@@ -198,6 +215,7 @@ export async function getDailyCloseData(locale: string): Promise<DailyCloseData>
     .map((order) => orderItem(order, order.due_at, isLateOrder(order, now)))
     .sort(sortByAttention);
   const incompletePickups = (pickupsResult.data ?? [])
+    .filter((row) => isDueForClose(row, end))
     .flatMap((row) => {
       const item = logisticsItem(row, "pickup", now);
 
@@ -205,6 +223,7 @@ export async function getDailyCloseData(locale: string): Promise<DailyCloseData>
     })
     .sort(sortByAttention);
   const incompleteDeliveries = (deliveriesResult.data ?? [])
+    .filter((row) => isDueForClose(row, end))
     .flatMap((row) => {
       const item = logisticsItem(row, "delivery", now);
 
