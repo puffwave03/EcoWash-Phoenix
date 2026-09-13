@@ -6,10 +6,12 @@ import { requireMembership } from "@/lib/auth/require-membership";
 
 type DailyClosePageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ date?: string; location?: string }>;
 };
 
-export default async function DailyClosePage({ params }: DailyClosePageProps) {
+export default async function DailyClosePage({ params, searchParams }: DailyClosePageProps) {
   const { locale } = await params;
+  const { date, location } = await searchParams;
   const access = await requireMembership(locale);
 
   if (access.membership.role === "staff") {
@@ -17,7 +19,7 @@ export default async function DailyClosePage({ params }: DailyClosePageProps) {
   }
 
   const [data, t] = await Promise.all([
-    getDailyCloseData(locale),
+    getDailyCloseData(locale, { businessDate: date, locationId: location }),
     getTranslations({ locale, namespace: "common.dailyClose" }),
   ]);
 
@@ -27,8 +29,10 @@ export default async function DailyClosePage({ params }: DailyClosePageProps) {
       locale={locale}
       text={{
         anomalies: t.raw("anomalies"),
+        blockers: t.raw("blockers"),
         description: t("description"),
         empty: t("empty"),
+        filter: t.raw("filter"),
         groups: t.raw("groups"),
         labels: {
           assignedTo: t("labels.assignedTo"),
@@ -40,10 +44,16 @@ export default async function DailyClosePage({ params }: DailyClosePageProps) {
           time: t("labels.time"),
           view: t("labels.view"),
         },
+        metrics: t.raw("metrics"),
+        nonFiscal: t("nonFiscal"),
         paymentStatuses: t.raw("paymentStatuses"),
+        previewLabel: t("previewLabel"),
+        semantics: t.raw("semantics"),
+        sections: t.raw("sections"),
+        sourceLabels: t.raw("sourceLabels"),
         statuses: t.raw("statuses"),
-        summary: t.raw("summary"),
         title: t("title"),
+        unavailable: t("unavailable"),
       }}
     />
   );

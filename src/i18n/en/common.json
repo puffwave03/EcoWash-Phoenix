@@ -711,7 +711,16 @@
   },
   "dailyClose": {
     "title": "Daily close",
-    "description": "Review today's completed work, open exceptions, logistics gaps and balances before closing the operating day.",
+    "description": "Review the selected business day's work, exceptions, logistics, payments and POS readiness.",
+    "previewLabel": "Operational preview — day not yet closed",
+    "nonFiscal": "Internal operational document/view — non-fiscal",
+    "semantics": {"selectedDateFacts": "Selected-date facts", "selectedDateNote": "Events and amounts are calculated within the selected tenant-local business-day boundaries.", "currentState": "Related current state", "currentStateNote": "These values show the current state of records related to the selected date, not their state at that day's close.", "historicalNotice": "Historical end-of-day state is not reconstructed. Selected-date facts are separated from related current state; an as-of close will only be available after persisted Daily Close snapshots are introduced in Phase 2."},
+    "unavailable": "Required canonical data is unavailable. This preview is incomplete and is not ready for a future definitive close.",
+    "sections": {"businessDay": "Business day", "orders": "Orders", "payments": "Payments", "pos": "Cash / POS sessions", "logistics": "Logistics", "attention": "Attention required / blockers"},
+    "filter": {"businessDate": "Business date", "location": "Location", "allLocations": "All locations", "apply": "View day", "current": "Current business day", "past": "Previous business day", "future": "Future date — preview only"},
+    "metrics": {"ordersCreated": "Orders created", "productionCompleted": "Production completed", "finalFulfillmentCompleted": "Final fulfillment completed", "cancelled": "Orders cancelled", "open": "Open orders", "onHold": "On hold", "late": "Late orders", "confirmedPayments": "confirmed payments", "collectedGross": "Confirmed payments", "refunds": "Refunds", "collectedNet": "Net collected", "outstanding": "Outstanding balance", "outstandingOrders": "Orders with balance", "cash": "Cash", "card": "Card (manual)", "bankTransfer": "Bank transfer", "other": "Other", "online": "Online", "openSessions": "Open POS sessions", "closedSessions": "Closed sessions for day", "cashWithoutSession": "Cash entries without session", "expectedCash": "Expected cash", "countedCash": "Counted cash", "variance": "Variance", "pickupsDue": "Pickups due/open", "deliveriesDue": "Deliveries due/open", "overduePickups": "Overdue pickups", "overdueDeliveries": "Overdue deliveries", "inProgress": "Logistics in progress"},
+    "blockers": {"ready": "Preview data ready", "notReady": "Not ready for close", "none": "No readiness blocker detected in the live preview.", "source_unavailable": "Canonical source unavailable", "future_business_date": "A future date is informational only", "invalid_location": "The requested location is not available for this tenant", "open_pos_session": "Open POS sessions", "cash_without_session": "Cash entries without a valid POS session", "unassigned_location": "Operational facts without a location"},
+    "sourceLabels": {"locations": "locations", "orders": "orders", "payments": "payments/Accounting", "pos": "POS sessions", "logistics": "logistics"},
     "empty": "Nothing to review in this group.",
     "summary": {
       "completedToday": "Completed today",

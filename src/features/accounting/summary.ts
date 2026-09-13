@@ -112,6 +112,26 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const round = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 const sum = <T>(rows: T[], value: (row: T) => number) => round(rows.reduce((total, row) => total + value(row), 0));
 
+export function buildReceivableBalances(
+  orders: Pick<AccountingOrderFact, "id" | "total">[],
+  confirmedPayments: Pick<AccountingPaymentFact, "amount" | "orderId" | "status">[],
+) {
+  const confirmedByOrder = new Map<string, number>();
+
+  for (const payment of confirmedPayments) {
+    if (payment.status !== "confirmed") continue;
+    confirmedByOrder.set(
+      payment.orderId,
+      round((confirmedByOrder.get(payment.orderId) ?? 0) + payment.amount),
+    );
+  }
+
+  return new Map(orders.map((order) => [
+    order.id,
+    round(Math.max(order.total - (confirmedByOrder.get(order.id) ?? 0), 0)),
+  ]));
+}
+
 export function localDateBoundaryUtc(date: string, timezone: string) {
   if (!DATE.test(date)) throw new Error("accounting_period_invalid");
   const [year, month, day] = date.split("-").map(Number);
@@ -184,10 +204,10 @@ export function buildAccountingSummary(input: AccountingSummaryInput): Accountin
     const payments = input.periodPayments.filter((payment) => payment.currency === currency);
     const confirmed = payments.filter((payment) => payment.status === "confirmed");
     const refunds = payments.filter((payment) => payment.status === "refunded");
-    const allConfirmedByOrder = new Map<string, number>();
-    for (const payment of input.receivableConfirmedPayments.filter((payment) => payment.currency === currency)) {
-      allConfirmedByOrder.set(payment.orderId, round((allConfirmedByOrder.get(payment.orderId) ?? 0) + payment.amount));
-    }
+    const balances = buildReceivableBalances(
+      orders,
+      input.receivableConfirmedPayments.filter((payment) => payment.currency === currency),
+    );
 
     result.orderIds = orders.map((order) => order.id);
     result.orderCount = orders.length;
@@ -195,7 +215,7 @@ export function buildAccountingSummary(input: AccountingSummaryInput): Accountin
     result.salesNet = sum(orders, (order) => order.total);
     result.discountTotal = round(result.salesGross - result.salesNet);
     for (const order of orders) {
-      const due = round(Math.max(order.total - (allConfirmedByOrder.get(order.id) ?? 0), 0));
+      const due = balances.get(order.id) ?? 0;
       result.outstanding = round(result.outstanding + due);
       if (due > 0) result.outstandingOrderIds.push(order.id);
     }
