@@ -11,7 +11,11 @@ import type {
   OrderListFilters,
   ProductionStatus,
 } from "@/features/orders/types";
-import { deriveOrderDisplayStatus, type OrderListEntry } from "@/features/orders/display-status";
+import {
+  deriveOrderDisplayStatus,
+  hasInboundPickupProductionAnomaly,
+  type OrderListEntry,
+} from "@/features/orders/display-status";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 
 type OrderRow = {
@@ -239,6 +243,12 @@ export async function listOrders(
         ...order,
         displayStatus: deriveOrderDisplayStatus({
           deliveryStatus: deliveryStatuses.get(order.id),
+          isActive: order.isActive,
+          pickupStatus: pickupStatuses.get(order.id),
+          productionStatus: order.productionStatus,
+        }),
+        hasLifecycleAnomaly: hasInboundPickupProductionAnomaly({
+          isActive: order.isActive,
           pickupStatus: pickupStatuses.get(order.id),
           productionStatus: order.productionStatus,
         }),

@@ -478,6 +478,7 @@
     "queueMine": "La mia coda produzione",
     "queueTeam": "Coda produzione del team",
     "openTask": "Apri attività produzione",
+    "pickupBlocked": "Produzione disponibile dopo il completamento del ritiro.",
     "noDeadline": "Senza scadenza",
     "services": "Servizi",
     "description": "Segui gli ordini attivi per fase di lavorazione e apri il dettaglio quando il lavoro deve avanzare.",
@@ -558,6 +559,7 @@
     "queueMine": "La mia coda qualità e confezionamento",
     "queueTeam": "Coda qualità e confezionamento del team",
     "openTask": "Apri attività",
+    "pickupBlocked": "Produzione disponibile dopo il completamento del ritiro.",
     "noDeadline": "Senza scadenza",
     "order": "Ordine",
     "property": "Struttura",
@@ -811,7 +813,8 @@
       "delivery_due_soon": "Consegna imminente",
       "delivery_overdue": "Consegna arretrata",
       "payment_issue": "Pagamento incompleto",
-      "operational_anomaly": "Anomalia operativa"
+      "operational_anomaly": "Anomalia operativa",
+      "lifecycle_integrity": "Incoerenza tra ritiro e produzione"
     },
     "labels": {
       "order": "Ordine",
@@ -1616,6 +1619,7 @@
     "view": "Vedi",
     "edit": "Modifica",
     "empty": "Nessun ordine corrisponde ai filtri.",
+    "lifecycleAnomaly": "Sequenza operativa incoerente",
     "unitTypes": {
       "weight": "Peso",
       "piece": "Pezzo"
@@ -1641,7 +1645,9 @@
       "completed": "Completato",
       "delivery_in_progress": "In consegna",
       "delivery_scheduled": "Consegna programmata",
-      "ready_for_pickup": "Pronto al ritiro"
+      "pickup_in_progress": "Ritiro in corso",
+      "pickup_scheduled": "Ritiro programmato",
+      "ready_for_customer_pickup": "Pronto per il ritiro del cliente"
     },
     "form": {
       "newTitle": "Nuovo ordine",

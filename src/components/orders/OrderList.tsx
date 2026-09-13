@@ -11,6 +11,7 @@ type OrderListText = {
   customer: string;
   due: string;
   empty: string;
+  lifecycleAnomaly: string;
   order: string;
   priority: string;
   property: string;
@@ -30,8 +31,8 @@ function readableToken(value: string) {
 
 function statusTone(status: OrderDisplayStatus): Tone {
   if (status === "completed") return "success";
-  if (["ready", "ready_for_pickup", "delivery_scheduled"].includes(status)) return "warning";
-  if (status === "delivery_in_progress") return "info";
+  if (["ready", "ready_for_customer_pickup", "delivery_scheduled", "pickup_scheduled"].includes(status)) return "warning";
+  if (["delivery_in_progress", "pickup_in_progress"].includes(status)) return "info";
   if (status === "on_hold") return "warning";
   if (status === "cancelled") return "neutral";
 
@@ -88,6 +89,9 @@ export function OrderList({
               <StatusBadge tone={statusTone(order.displayStatus)}>
                 {text.statuses[order.displayStatus] ?? readableToken(order.displayStatus)}
               </StatusBadge>
+              {order.hasLifecycleAnomaly ? (
+                <p className="mt-1 text-xs font-semibold text-red-700">{text.lifecycleAnomaly}</p>
+              ) : null}
             </div>
             <div>
               <StatusBadge tone={priorityTone(order.priority)}>

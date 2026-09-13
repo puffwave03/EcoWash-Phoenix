@@ -75,6 +75,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
           customer: t("customer"),
           due: t("due"),
           empty: t("empty"),
+          lifecycleAnomaly: t("lifecycleAnomaly"),
           order: t("order"),
           priority: t("priority"),
           property: t("property"),

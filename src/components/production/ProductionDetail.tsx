@@ -30,6 +30,7 @@ export type ProductionDetailText = {
   order: string;
   priorities: Record<OrderPriority, string>;
   priority: string;
+  pickupBlocked: string;
   property: string;
   reason: string;
   selectPhase: string;
@@ -147,6 +148,13 @@ export function ProductionDetail({
             <section className="rounded-card border border-amber-200 bg-amber-50 p-4">
               <h3 className="text-sm font-semibold text-amber-900">{text.blocked}</h3>
               <p className="mt-2 text-sm leading-6 text-amber-900">{task.onHoldReason}</p>
+            </section>
+          ) : null}
+
+          {task.productionBlockedByPickup ? (
+            <section className="rounded-card border border-amber-200 bg-amber-50 p-4">
+              <h3 className="text-sm font-semibold text-amber-900">{text.blocked}</h3>
+              <p className="mt-2 text-sm leading-6 text-amber-900">{text.pickupBlocked}</p>
             </section>
           ) : null}
 

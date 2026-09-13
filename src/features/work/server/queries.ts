@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
+import { hasPendingInboundPickup } from "@/features/orders/display-status";
 import {
   relationName,
   relationOne,
@@ -25,6 +26,7 @@ type OrderRow = {
   id: string;
   is_active: boolean;
   order_number: string;
+  pickups: { status: FulfillmentStatus }[] | null;
   production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
 };
@@ -189,7 +191,7 @@ export async function getMyDayData(locale: string): Promise<MyDayData> {
 
   let ordersQuery = supabase
     .from("orders")
-    .select("id, order_number, production_status, due_at, is_active, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)")
+    .select("id, order_number, production_status, due_at, is_active, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name), pickups:pickups!pickups_order_same_org(status)")
     .eq("organization_id", membership.organization.id)
     .eq("is_active", true)
     .in("production_status", PRODUCTION_STATUSES)
@@ -231,6 +233,9 @@ export async function getMyDayData(locale: string): Promise<MyDayData> {
 
   const orders = (ordersResult.data ?? [])
     .filter((order) => {
+      const pickupStatus = order.pickups?.find((pickup) => pickup.status !== "cancelled")?.status;
+      if (hasPendingInboundPickup(pickupStatus)) return false;
+
       const isActiveWork = ACTIVE_PRODUCTION_STATUSES.includes(order.production_status);
 
       return isActiveWork || !order.due_at || new Date(order.due_at) <= end;

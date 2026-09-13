@@ -478,6 +478,7 @@
     "queueMine": "Mi cola de producción",
     "queueTeam": "Cola de producción del equipo",
     "openTask": "Abrir tarea de producción",
+    "pickupBlocked": "La producción estará disponible cuando se complete la recogida.",
     "noDeadline": "Sin fecha límite",
     "services": "Servicios",
     "description": "Sigue los pedidos activos por fase de producción y abre el detalle cuando el trabajo deba avanzar.",
@@ -558,6 +559,7 @@
     "queueMine": "Mi cola de calidad y empaquetado",
     "queueTeam": "Cola de calidad y empaquetado del equipo",
     "openTask": "Abrir tarea",
+    "pickupBlocked": "La producción estará disponible cuando se complete la recogida.",
     "noDeadline": "Sin fecha límite",
     "order": "Pedido",
     "property": "Propiedad",
@@ -811,7 +813,8 @@
       "delivery_due_soon": "Entrega inminente",
       "delivery_overdue": "Entrega atrasada",
       "payment_issue": "Pago incompleto",
-      "operational_anomaly": "Anomalía operativa"
+      "operational_anomaly": "Anomalía operativa",
+      "lifecycle_integrity": "Incoherencia entre recogida y producción"
     },
     "labels": {
       "order": "Pedido",
@@ -1595,6 +1598,7 @@
     "view": "Ver",
     "edit": "Editar",
     "empty": "No hay pedidos para los filtros actuales.",
+    "lifecycleAnomaly": "Secuencia operativa incoherente",
     "unitTypes": {
       "weight": "Peso",
       "piece": "Pieza"
@@ -1620,7 +1624,9 @@
       "completed": "Completado",
       "delivery_in_progress": "En reparto",
       "delivery_scheduled": "Entrega programada",
-      "ready_for_pickup": "Listo para recoger"
+      "pickup_in_progress": "Recogida en curso",
+      "pickup_scheduled": "Recogida programada",
+      "ready_for_customer_pickup": "Listo para la recogida del cliente"
     },
     "form": {
       "newTitle": "Nuevo pedido",

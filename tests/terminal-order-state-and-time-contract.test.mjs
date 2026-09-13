@@ -11,17 +11,18 @@ const completed = (pickupStatus, deliveryStatus) => deriveOrderDisplayStatus({
   productionStatus: "completed",
 });
 
-test("counter order remains ready for pickup until pickup closes", () => {
-  assert.equal(completed("scheduled", null), "ready_for_pickup");
-  assert.equal(completed(null, null), "ready_for_pickup");
-  assert.equal(completed("completed", null), "completed");
+test("inbound pickup remains distinct from final customer collection", () => {
+  assert.equal(completed("scheduled", null), "pickup_scheduled");
+  assert.equal(completed("in_progress", null), "pickup_in_progress");
+  assert.equal(completed(null, null), "ready_for_customer_pickup");
+  assert.equal(completed("completed", null), "ready_for_customer_pickup");
 });
 
 test("completed production follows the delivery lifecycle", () => {
   assert.equal(completed(null, "scheduled"), "delivery_scheduled");
   assert.equal(completed(null, "in_progress"), "delivery_in_progress");
   assert.equal(completed(null, "completed"), "completed");
-  assert.equal(completed("scheduled", "completed"), "ready_for_pickup");
+  assert.equal(completed("scheduled", "completed"), "pickup_scheduled");
   assert.equal(completed("completed", "completed"), "completed");
 });
 

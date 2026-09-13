@@ -12,6 +12,7 @@ import type {
 import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
+import { hasInboundPickupProductionAnomaly } from "@/features/orders/display-status";
 import type { PaymentRecordStatus } from "@/features/payments/types";
 import {
   isOpenProductionStatus,
@@ -240,6 +241,16 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
   }
 
   for (const pickup of pickups) {
+    const pickupOrder = relationOne(pickup.order);
+    if (pickupOrder && hasInboundPickupProductionAnomaly({
+      isActive: pickupOrder.is_active,
+      pickupStatus: pickup.status,
+      productionStatus: pickupOrder.production_status,
+    })) {
+      const alert = logisticsAlert(pickup, "lifecycle_integrity", "critical");
+      if (alert) alerts.push(alert);
+    }
+
     if (isOverdue(pickup.scheduled_at, now)) {
       const alert = logisticsAlert(pickup, "pickup_overdue", "critical");
       if (alert) alerts.push(alert);

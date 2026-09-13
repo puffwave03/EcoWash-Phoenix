@@ -23,6 +23,7 @@ export type ProductionWorkspaceText = {
   openTask: string;
   order: string;
   priority: string;
+  pickupBlocked: string;
   priorities: Record<OrderPriority, string>;
   queueMine: string;
   queueTeam: string;
@@ -199,6 +200,12 @@ function ProductionTaskCard({
         {task.onHoldReason ? (
           <p className="rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900">
             {task.onHoldReason}
+          </p>
+        ) : null}
+
+        {task.productionBlockedByPickup ? (
+          <p className="rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900">
+            {text.pickupBlocked}
           </p>
         ) : null}
 

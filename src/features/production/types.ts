@@ -3,6 +3,7 @@ import type {
   ProductionStatus,
 } from "@/features/orders/types";
 import type { ServiceUnitType } from "@/features/services/types";
+import type { FulfillmentStatus } from "@/features/logistics/types";
 
 export type ProductionGroup =
   | "toStart"
@@ -35,9 +36,11 @@ export type ProductionTask = {
   note: string | null;
   onHoldReason: string | null;
   orderNumber: string;
+  pickupStatus: FulfillmentStatus | null;
   previousStatus: ProductionStatus | null;
   priority: OrderPriority;
   productionStatus: ProductionStatus;
+  productionBlockedByPickup: boolean;
   propertyName: string | null;
   serviceNames: string[];
   totalPieces: number;

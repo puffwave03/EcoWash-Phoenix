@@ -20,6 +20,11 @@ import type {
 } from "@/features/production/types";
 import type { ServiceUnitType } from "@/features/services/types";
 import type { OperationalCapability } from "@/lib/auth/capabilities";
+import type { FulfillmentStatus } from "@/features/logistics/types";
+import {
+  ACTUAL_PRODUCTION_STATUSES,
+  hasPendingInboundPickup,
+} from "@/features/orders/display-status";
 import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -42,6 +47,7 @@ type ProductionOrderRow = {
   items: ProductionItemRow[] | null;
   on_hold_reason: string | null;
   order_number: string;
+  pickups: { status: FulfillmentStatus }[] | null;
   priority: OrderPriority;
   production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
@@ -76,7 +82,11 @@ const QUALITY_WORKSPACE_STATUSES: ProductionStatus[] = [
   "packing",
 ];
 const PRODUCTION_SELECT =
-  "id, order_number, production_status, priority, due_at, assigned_to, internal_notes, on_hold_reason, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name), items:order_items!order_items_order_same_organization(description, unit_type, quantity, notes, is_active)";
+  "id, order_number, production_status, priority, due_at, assigned_to, internal_notes, on_hold_reason, created_at, customer:customers!orders_customer_same_organization!inner(display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name), items:order_items!order_items_order_same_organization(description, unit_type, quantity, notes, is_active), pickups:pickups!pickups_order_same_org(status)";
+
+function inboundPickupStatus(pickups: ProductionOrderRow["pickups"]) {
+  return pickups?.find((pickup) => pickup.status !== "cancelled")?.status ?? null;
+}
 
 function groupForStatus(status: ProductionStatus): ProductionGroup {
   if (["draft", "received"].includes(status)) return "toStart";
@@ -126,6 +136,7 @@ function mapProductionTask(
   previousStatus: ProductionStatus | null = null,
 ): ProductionTask {
   const items = activeItems(row.items);
+  const pickupStatus = inboundPickupStatus(row.pickups);
 
   return {
     assignedTo: row.assigned_to,
@@ -138,9 +149,11 @@ function mapProductionTask(
     note: row.internal_notes,
     onHoldReason: row.on_hold_reason,
     orderNumber: row.order_number,
+    pickupStatus,
     previousStatus,
     priority: row.priority,
     productionStatus: row.production_status,
+    productionBlockedByPickup: hasPendingInboundPickup(pickupStatus),
     propertyName: relationName(row.property),
     serviceNames: [...new Set(items.map((item) => item.description))],
     totalPieces: items
@@ -295,9 +308,11 @@ export async function getProductionWorkspaceTask(
 
   const previousStatus = previousProductionStatus(historyData ?? []);
   const task = mapProductionTask(data, now, previousStatus);
+  const allowedTransitions = getAllowedTransitions(task.productionStatus, previousStatus)
+    .filter((status) => !task.productionBlockedByPickup || !ACTUAL_PRODUCTION_STATUSES.includes(status));
 
   return {
-    allowedTransitions: getAllowedTransitions(task.productionStatus, previousStatus),
+    allowedTransitions,
     isSupervision,
     task,
     timeZone,

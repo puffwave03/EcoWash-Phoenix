@@ -478,6 +478,7 @@
     "queueMine": "Ma file de production",
     "queueTeam": "File de production de l'équipe",
     "openTask": "Ouvrir la tâche de production",
+    "pickupBlocked": "La production sera disponible une fois la collecte terminée.",
     "noDeadline": "Sans échéance",
     "services": "Services",
     "description": "Suivez les commandes actives par étape de production et ouvrez le détail quand le travail doit avancer.",
@@ -558,6 +559,7 @@
     "queueMine": "Ma file qualité et emballage",
     "queueTeam": "File qualité et emballage de l'équipe",
     "openTask": "Ouvrir la tâche",
+    "pickupBlocked": "La production sera disponible une fois la collecte terminée.",
     "noDeadline": "Sans échéance",
     "order": "Commande",
     "property": "Propriété",
@@ -811,7 +813,8 @@
       "delivery_due_soon": "Livraison imminente",
       "delivery_overdue": "Livraison en retard",
       "payment_issue": "Paiement incomplet",
-      "operational_anomaly": "Anomalie opérationnelle"
+      "operational_anomaly": "Anomalie opérationnelle",
+      "lifecycle_integrity": "Incohérence entre collecte et production"
     },
     "labels": {
       "order": "Commande",
@@ -1595,6 +1598,7 @@
     "view": "Voir",
     "edit": "Modifier",
     "empty": "Aucune commande ne correspond aux filtres.",
+    "lifecycleAnomaly": "Séquence opérationnelle incohérente",
     "unitTypes": {
       "weight": "Poids",
       "piece": "Pièce"
@@ -1620,7 +1624,9 @@
       "completed": "Terminée",
       "delivery_in_progress": "En livraison",
       "delivery_scheduled": "Livraison planifiée",
-      "ready_for_pickup": "Prête à retirer"
+      "pickup_in_progress": "Collecte en cours",
+      "pickup_scheduled": "Collecte programmée",
+      "ready_for_customer_pickup": "Prête pour le retrait client"
     },
     "form": {
       "newTitle": "Nouvelle commande",

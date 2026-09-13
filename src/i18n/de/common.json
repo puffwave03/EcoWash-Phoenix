@@ -478,6 +478,7 @@
     "queueMine": "Meine Produktionsliste",
     "queueTeam": "Produktionsliste des Teams",
     "openTask": "Produktionsaufgabe öffnen",
+    "pickupBlocked": "Die Produktion ist nach Abschluss der Kundenabholung verfügbar.",
     "noDeadline": "Keine Frist",
     "services": "Leistungen",
     "description": "Verfolgen Sie aktive Aufträge nach Produktionsphase und öffnen Sie den Auftrag, wenn Arbeit weitergehen muss.",
@@ -558,6 +559,7 @@
     "queueMine": "Meine Qualitäts- und Verpackungsliste",
     "queueTeam": "Qualitäts- und Verpackungsliste des Teams",
     "openTask": "Aufgabe öffnen",
+    "pickupBlocked": "Die Produktion ist nach Abschluss der Kundenabholung verfügbar.",
     "noDeadline": "Keine Frist",
     "order": "Auftrag",
     "property": "Objekt",
@@ -811,7 +813,8 @@
       "delivery_due_soon": "Lieferung bald fällig",
       "delivery_overdue": "Lieferung überfällig",
       "payment_issue": "Unvollständige Zahlung",
-      "operational_anomaly": "Operative Anomalie"
+      "operational_anomaly": "Operative Anomalie",
+      "lifecycle_integrity": "Konflikt zwischen Kundenabholung und Produktion"
     },
     "labels": {
       "order": "Auftrag",
@@ -1595,6 +1598,7 @@
     "view": "Ansehen",
     "edit": "Bearbeiten",
     "empty": "Keine Aufträge passen zu den aktuellen Filtern.",
+    "lifecycleAnomaly": "Inkonsistenter Betriebsablauf",
     "unitTypes": {
       "weight": "Gewicht",
       "piece": "Stück"
@@ -1620,7 +1624,9 @@
       "completed": "Abgeschlossen",
       "delivery_in_progress": "In Zustellung",
       "delivery_scheduled": "Lieferung geplant",
-      "ready_for_pickup": "Abholbereit"
+      "pickup_in_progress": "Kundenabholung läuft",
+      "pickup_scheduled": "Kundenabholung geplant",
+      "ready_for_customer_pickup": "Zur Abholung durch den Kunden bereit"
     },
     "form": {
       "newTitle": "Neuer Auftrag",

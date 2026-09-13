@@ -45,6 +45,7 @@ export default async function QualityDetailPage({ params }: QualityDetailPagePro
         order: t("order"),
         priorities: t.raw("priorities"),
         priority: t("priority"),
+        pickupBlocked: t("pickupBlocked"),
         property: t("property"),
         reason: t("detail.reason"),
         selectPhase: t("detail.selectPhase"),

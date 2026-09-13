@@ -81,8 +81,9 @@ test("3 selected-day order events use created, production-completed and cancelle
 });
 
 test("4 production completion and final fulfillment remain distinct", () => {
-  assert.equal(deriveOrderDisplayStatus({ productionStatus: "completed", pickupStatus: "scheduled", deliveryStatus: null }), "ready_for_pickup");
-  assert.equal(deriveOrderDisplayStatus({ productionStatus: "completed", pickupStatus: "completed", deliveryStatus: null }), "completed");
+  assert.equal(deriveOrderDisplayStatus({ productionStatus: "completed", pickupStatus: "scheduled", deliveryStatus: null }), "pickup_scheduled");
+  assert.equal(deriveOrderDisplayStatus({ productionStatus: "completed", pickupStatus: "completed", deliveryStatus: null }), "ready_for_customer_pickup");
+  assert.equal(deriveOrderDisplayStatus({ productionStatus: "completed", pickupStatus: null, deliveryStatus: "completed" }), "completed");
 });
 
 test("5-8 payment totals, refunds, methods and outstanding reuse Accounting canon", () => {

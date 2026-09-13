@@ -17,7 +17,6 @@ import {
 } from "@/features/daily-close/preview";
 import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
-import { deriveOrderDisplayStatus } from "@/features/orders/display-status";
 import type { ProductionStatus } from "@/features/orders/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -404,23 +403,18 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
     };
 
     if (orderSummary) {
-      const pickupStatuses = new Map(value.pickupStatuses.map((row) => [row.order_id, row]));
-      const deliveryStatuses = new Map(value.deliveryStatuses.map((row) => [row.order_id, row]));
-      const candidateOrders = new Map([...value.completedPickups, ...value.completedDeliveries]
-        .map((row) => [row.order_id, relationOne(row.order)]));
-      orderSummary.finalFulfillmentCompleted = [...candidateOrders.entries()].filter(([orderId, order]) => {
-        if (!order || !order.is_active || !inLocation(order.location_id, selectedLocationId)) return false;
-        const pickup = pickupStatuses.get(orderId);
-        const delivery = deliveryStatuses.get(orderId);
-        if (deriveOrderDisplayStatus({
-          deliveryStatus: delivery?.status,
-          pickupStatus: pickup?.status,
-          productionStatus: order.production_status,
-        }) !== "completed") return false;
-        const finalAt = [pickup?.completed_at, delivery?.completed_at]
-          .filter((value): value is string => Boolean(value)).sort().at(-1) ?? null;
-        return isInBusinessDay(finalAt, day);
-      }).length;
+      // Pickups are inbound collections and cannot prove final fulfillment.
+      // Until final in-store handoff is modeled, only completed outbound
+      // deliveries are canonical final-fulfillment evidence.
+      orderSummary.finalFulfillmentCompleted = new Set(value.completedDeliveries
+        .filter((delivery) => {
+          const order = relationOne(delivery.order);
+          return order?.is_active
+            && order.production_status === "completed"
+            && inLocation(order.location_id, selectedLocationId)
+            && isInBusinessDay(delivery.completed_at, day);
+        })
+        .map((delivery) => delivery.order_id)).size;
     }
   }
 

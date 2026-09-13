@@ -24,6 +24,7 @@ export async function ProductionWorkspacePage({ locale }: { locale: string }) {
         order: t("order"),
         priorities: t.raw("priorities"),
         priority: t("priority"),
+        pickupBlocked: t("pickupBlocked"),
         queueMine: t("queueMine"),
         queueTeam: t("queueTeam"),
         services: t("services"),

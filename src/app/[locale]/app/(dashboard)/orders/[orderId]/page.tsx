@@ -49,7 +49,11 @@ import { listEffectiveServicesForOrder } from "@/features/pricing-segments/serve
 import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
 import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
 import type { ProductionStatus } from "@/features/orders/types";
-import { deriveOrderDisplayStatus, type OrderDisplayStatus } from "@/features/orders/display-status";
+import {
+  deriveOrderDisplayStatus,
+  hasInboundPickupProductionAnomaly,
+  type OrderDisplayStatus,
+} from "@/features/orders/display-status";
 import { canEditCatalog } from "@/features/orders/workflow";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
@@ -108,6 +112,12 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   } as Record<OrderDisplayStatus, string>;
   const displayStatus = deriveOrderDisplayStatus({
     deliveryStatus: logistics.delivery?.status,
+    isActive: order.isActive,
+    pickupStatus: logistics.pickup?.status,
+    productionStatus: order.productionStatus,
+  });
+  const hasLifecycleAnomaly = hasInboundPickupProductionAnomaly({
+    isActive: order.isActive,
     pickupStatus: logistics.pickup?.status,
     productionStatus: order.productionStatus,
   });
@@ -142,6 +152,11 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <span className="rounded-control bg-white px-3 py-1 text-xs font-semibold text-primary">
                 {displayStatusLabels[displayStatus]}
               </span>
+              {hasLifecycleAnomaly ? (
+                <span className="rounded-control bg-red-100 px-3 py-1 text-xs font-semibold text-red-900">
+                  {t("lifecycleAnomaly")}
+                </span>
+              ) : null}
               <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
                 {t(`priorities.${order.priority}`)}
               </span>

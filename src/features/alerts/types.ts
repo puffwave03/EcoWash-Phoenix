@@ -12,6 +12,7 @@ export type OperationalAlertType =
   | "pickup_overdue"
   | "delivery_due_soon"
   | "delivery_overdue"
+  | "lifecycle_integrity"
   | "payment_issue"
   | "operational_anomaly";
 
