@@ -722,7 +722,7 @@
     "filter": {"businessDate": "Geschäftsdatum", "location": "Standort", "allLocations": "Alle Standorte", "apply": "Tag anzeigen", "current": "Aktueller Geschäftstag", "past": "Früherer Geschäftstag", "future": "Zukünftiges Datum — nur Vorschau"},
     "metrics": {"ordersCreated": "Erstellte Aufträge", "productionCompleted": "Produktion abgeschlossen", "finalFulfillmentCompleted": "Endübergabe abgeschlossen", "cancelled": "Stornierte Aufträge", "open": "Offene Aufträge", "onHold": "Pausiert", "late": "Überfällige Aufträge", "confirmedPayments": "bestätigte Zahlungen", "collectedGross": "Bestätigte Zahlungen", "refunds": "Erstattungen", "collectedNet": "Nettoeinnahmen", "outstanding": "Offener Betrag", "outstandingOrders": "Aufträge mit Saldo", "cash": "Bar", "card": "Karte (manuell)", "bankTransfer": "Überweisung", "other": "Sonstige", "online": "Online", "openSessions": "Offene POS-Sitzungen", "closedSessions": "Geschlossene Sitzungen des Tages", "cashWithoutSession": "Bargeld ohne Sitzung", "expectedCash": "Erwartetes Bargeld", "countedCash": "Gezähltes Bargeld", "variance": "Differenz", "pickupsDue": "Fällige/offene Abholungen", "deliveriesDue": "Fällige/offene Lieferungen", "overduePickups": "Überfällige Abholungen", "overdueDeliveries": "Überfällige Lieferungen", "inProgress": "Logistik in Bearbeitung"},
     "blockers": {"ready": "Vorschaudaten bereit", "notReady": "Nicht abschlussbereit", "none": "Keine Bereitschaftsblocker in der Live-Vorschau erkannt.", "source_unavailable": "Kanonische Quelle nicht verfügbar", "future_business_date": "Ein zukünftiges Datum dient nur zur Information", "invalid_location": "Der angeforderte Standort ist für diesen Mandanten nicht verfügbar", "open_pos_session": "Offene POS-Sitzungen", "cash_without_session": "Bargeldbewegungen ohne gültige POS-Sitzung", "unassigned_location": "Operative Fakten ohne Standort"},
-    "sourceLabels": {"locations": "Standorte", "orders": "Aufträge", "payments": "Zahlungen/Buchhaltung", "pos": "POS-Sitzungen", "logistics": "Logistik"},
+    "sourceLabels": {"locations": "Standorte", "orders": "Aufträge", "payments": "Zahlungen/Buchhaltung", "pos": "POS-Sitzungen", "logistics": "Logistik", "handoffs": "endgültige Kundenübergaben"},
     "empty": "In dieser Gruppe gibt es nichts zu prüfen.",
     "summary": {
       "completedToday": "Heute abgeschlossen",
@@ -1627,6 +1627,23 @@
       "pickup_in_progress": "Kundenabholung läuft",
       "pickup_scheduled": "Kundenabholung geplant",
       "ready_for_customer_pickup": "Zur Abholung durch den Kunden bereit"
+    },
+    "handoff": {
+      "title": "Endgültige Kundenübergabe",
+      "readOnlyTitle": "Endgültige Kundenübergabe",
+      "completeAction": "Als vom Kunden abgeholt markieren",
+      "confirmation": "Endgültige Übergabe dieses Auftrags an den Kunden bestätigen?",
+      "order": "Auftrag",
+      "currentOperator": "Mitarbeiter",
+      "currentTime": "Ortszeit",
+      "unpaidWarning": "Für diesen Auftrag besteht noch ein offener Betrag von {amount}. Bestätigen Sie, dass Sie den Auftrag trotzdem an den Kunden übergeben möchten.",
+      "acknowledgement": "Ich bestätige die Kundenübergabe trotz des offenen Betrags.",
+      "notes": "Optionale Notizen",
+      "notesPlaceholder": "Notizen zur Übergabe hinzufügen",
+      "completedAt": "An den Kunden übergeben am",
+      "operator": "Mitarbeiter",
+      "balanceAtHandoff": "Saldo bei Übergabe",
+      "unpaidAcknowledged": "Offener Betrag bestätigt"
     },
     "form": {
       "newTitle": "Neuer Auftrag",

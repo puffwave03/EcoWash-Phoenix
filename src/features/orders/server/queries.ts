@@ -69,6 +69,8 @@ type OrderLogisticsStatusRow = {
   status: FulfillmentStatus;
 };
 
+type OrderHandoffRow = { order_id: string };
+
 export type OrderListData = {
   orders: OrderListEntry[];
   timeZone: string;
@@ -217,23 +219,29 @@ export async function listOrders(
   }
 
   const orderIds = data.map((row) => row.id);
-  const [pickupsResult, deliveriesResult] = orderIds.length ? await Promise.all([
+  const [pickupsResult, deliveriesResult, handoffsResult] = orderIds.length ? await Promise.all([
     supabase.from("pickups").select("order_id, status")
       .eq("organization_id", membership.organization.id).in("order_id", orderIds)
       .neq("status", "cancelled").returns<OrderLogisticsStatusRow[]>(),
     supabase.from("deliveries").select("order_id, status")
       .eq("organization_id", membership.organization.id).in("order_id", orderIds)
       .neq("status", "cancelled").returns<OrderLogisticsStatusRow[]>(),
+    supabase.from("order_customer_handoffs").select("order_id")
+      .eq("organization_id", membership.organization.id).in("order_id", orderIds)
+      .returns<OrderHandoffRow[]>(),
   ]) : [
     { data: [] as OrderLogisticsStatusRow[], error: null },
     { data: [] as OrderLogisticsStatusRow[], error: null },
+    { data: [] as OrderHandoffRow[], error: null },
   ];
 
   if (pickupsResult.error) console.error("Order list pickup status query failed", pickupsResult.error.code);
   if (deliveriesResult.error) console.error("Order list delivery status query failed", deliveriesResult.error.code);
+  if (handoffsResult.error) console.error("Order list customer handoff query failed", handoffsResult.error.code);
 
   const pickupStatuses = new Map((pickupsResult.data ?? []).map((row) => [row.order_id, row.status]));
   const deliveryStatuses = new Map((deliveriesResult.data ?? []).map((row) => [row.order_id, row.status]));
+  const handoffOrderIds = new Set((handoffsResult.data ?? []).map((row) => row.order_id));
 
   return {
     orders: data.map((row) => {
@@ -242,6 +250,7 @@ export async function listOrders(
       return {
         ...order,
         displayStatus: deriveOrderDisplayStatus({
+          customerHandoffCompleted: handoffOrderIds.has(order.id),
           deliveryStatus: deliveryStatuses.get(order.id),
           isActive: order.isActive,
           pickupStatus: pickupStatuses.get(order.id),

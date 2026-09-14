@@ -722,7 +722,7 @@
     "filter": {"businessDate": "Data operativa", "location": "Sede", "allLocations": "Tutte le sedi", "apply": "Visualizza giornata", "current": "Giornata operativa corrente", "past": "Giornata operativa precedente", "future": "Data futura — sola anteprima"},
     "metrics": {"ordersCreated": "Ordini creati", "productionCompleted": "Produzione completata", "finalFulfillmentCompleted": "Consegna finale completata", "cancelled": "Ordini annullati", "open": "Ordini aperti", "onHold": "In pausa", "late": "Ordini in ritardo", "confirmedPayments": "pagamenti confermati", "collectedGross": "Pagamenti confermati", "refunds": "Rimborsi", "collectedNet": "Incassato netto", "outstanding": "Saldo da incassare", "outstandingOrders": "Ordini con saldo", "cash": "Contanti", "card": "Carta (manuale)", "bankTransfer": "Bonifico", "other": "Altro", "online": "Online", "openSessions": "Sessioni POS aperte", "closedSessions": "Sessioni chiuse della giornata", "cashWithoutSession": "Contanti senza sessione", "expectedCash": "Contanti attesi", "countedCash": "Contanti contati", "variance": "Differenza", "pickupsDue": "Ritiri previsti/aperti", "deliveriesDue": "Consegne previste/aperte", "overduePickups": "Ritiri in ritardo", "overdueDeliveries": "Consegne in ritardo", "inProgress": "Logistica in corso"},
     "blockers": {"ready": "Dati anteprima pronti", "notReady": "Non pronta per la chiusura", "none": "Nessun blocco di preparazione rilevato nell’anteprima live.", "source_unavailable": "Fonte canonica non disponibile", "future_business_date": "Una data futura è solo informativa", "invalid_location": "La sede richiesta non è disponibile per questo tenant", "open_pos_session": "Sessioni POS aperte", "cash_without_session": "Movimenti in contanti senza sessione POS valida", "unassigned_location": "Dati operativi senza sede"},
-    "sourceLabels": {"locations": "sedi", "orders": "ordini", "payments": "pagamenti/Contabilità", "pos": "sessioni POS", "logistics": "logistica"},
+    "sourceLabels": {"locations": "sedi", "orders": "ordini", "payments": "pagamenti/Contabilità", "pos": "sessioni POS", "logistics": "logistica", "handoffs": "consegne finali al cliente"},
     "empty": "Niente da verificare in questo gruppo.",
     "summary": {
       "completedToday": "Completati oggi",
@@ -1648,6 +1648,23 @@
       "pickup_in_progress": "Ritiro in corso",
       "pickup_scheduled": "Ritiro programmato",
       "ready_for_customer_pickup": "Pronto per il ritiro del cliente"
+    },
+    "handoff": {
+      "title": "Consegna finale al cliente",
+      "readOnlyTitle": "Consegna finale al cliente",
+      "completeAction": "Segna come ritirato dal cliente",
+      "confirmation": "Confermi la consegna finale di questo ordine al cliente?",
+      "order": "Ordine",
+      "currentOperator": "Operatore",
+      "currentTime": "Ora locale",
+      "unpaidWarning": "Questo ordine presenta ancora un saldo da incassare di {amount}. Conferma di voler consegnare comunque l'ordine al cliente.",
+      "acknowledgement": "Confermo la consegna al cliente nonostante il saldo ancora aperto.",
+      "notes": "Note facoltative",
+      "notesPlaceholder": "Aggiungi note sulla consegna",
+      "completedAt": "Consegnato al cliente il",
+      "operator": "Operatore",
+      "balanceAtHandoff": "Saldo al momento della consegna",
+      "unpaidAcknowledged": "Saldo aperto confermato"
     },
     "form": {
       "newTitle": "Nuovo ordine",

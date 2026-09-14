@@ -15,6 +15,7 @@ export type OrderListEntry = Order & {
 };
 
 export type OrderDisplayState = {
+  customerHandoffCompleted?: boolean;
   deliveryStatus?: FulfillmentStatus | null;
   isActive?: boolean;
   pickupStatus?: FulfillmentStatus | null;
@@ -47,6 +48,7 @@ export function hasInboundPickupProductionAnomaly({
 }
 
 export function deriveOrderDisplayStatus({
+  customerHandoffCompleted = false,
   deliveryStatus,
   isActive = true,
   pickupStatus,
@@ -64,6 +66,7 @@ export function deriveOrderDisplayStatus({
   if (deliveryStatus === "in_progress") return "delivery_in_progress";
   if (deliveryStatus === "scheduled") return "delivery_scheduled";
   if (deliveryStatus === "completed") return "completed";
+  if (customerHandoffCompleted) return "completed";
 
   return "ready_for_customer_pickup";
 }

@@ -722,7 +722,7 @@
     "filter": {"businessDate": "Fecha operativa", "location": "Sede", "allLocations": "Todas las sedes", "apply": "Ver jornada", "current": "Jornada actual", "past": "Jornada anterior", "future": "Fecha futura — solo vista previa"},
     "metrics": {"ordersCreated": "Pedidos creados", "productionCompleted": "Producción completada", "finalFulfillmentCompleted": "Entrega final completada", "cancelled": "Pedidos cancelados", "open": "Pedidos abiertos", "onHold": "En pausa", "late": "Pedidos atrasados", "confirmedPayments": "pagos confirmados", "collectedGross": "Pagos confirmados", "refunds": "Reembolsos", "collectedNet": "Cobrado neto", "outstanding": "Saldo pendiente", "outstandingOrders": "Pedidos con saldo", "cash": "Efectivo", "card": "Tarjeta (manual)", "bankTransfer": "Transferencia", "other": "Otro", "online": "Online", "openSessions": "Sesiones POS abiertas", "closedSessions": "Sesiones cerradas del día", "cashWithoutSession": "Efectivo sin sesión", "expectedCash": "Efectivo esperado", "countedCash": "Efectivo contado", "variance": "Diferencia", "pickupsDue": "Recogidas previstas/abiertas", "deliveriesDue": "Entregas previstas/abiertas", "overduePickups": "Recogidas atrasadas", "overdueDeliveries": "Entregas atrasadas", "inProgress": "Logística en curso"},
     "blockers": {"ready": "Datos de vista previa preparados", "notReady": "No preparado para cierre", "none": "No se detectaron bloqueos de preparación en la vista en vivo.", "source_unavailable": "Fuente canónica no disponible", "future_business_date": "Una fecha futura es solo informativa", "invalid_location": "La sede solicitada no está disponible para este tenant", "open_pos_session": "Sesiones POS abiertas", "cash_without_session": "Movimientos de efectivo sin sesión POS válida", "unassigned_location": "Datos operativos sin sede"},
-    "sourceLabels": {"locations": "sedes", "orders": "pedidos", "payments": "pagos/Contabilidad", "pos": "sesiones POS", "logistics": "logística"},
+    "sourceLabels": {"locations": "sedes", "orders": "pedidos", "payments": "pagos/Contabilidad", "pos": "sesiones POS", "logistics": "logística", "handoffs": "entregas finales al cliente"},
     "empty": "Nada que revisar en este grupo.",
     "summary": {
       "completedToday": "Completados hoy",
@@ -1627,6 +1627,23 @@
       "pickup_in_progress": "Recogida en curso",
       "pickup_scheduled": "Recogida programada",
       "ready_for_customer_pickup": "Listo para la recogida del cliente"
+    },
+    "handoff": {
+      "title": "Entrega final al cliente",
+      "readOnlyTitle": "Entrega final al cliente",
+      "completeAction": "Marcar como recogido por el cliente",
+      "confirmation": "¿Confirmas la entrega final de este pedido al cliente?",
+      "order": "Pedido",
+      "currentOperator": "Operador",
+      "currentTime": "Hora local",
+      "unpaidWarning": "Este pedido todavía tiene un saldo pendiente de {amount}. Confirma que deseas entregarlo al cliente de todos modos.",
+      "acknowledgement": "Confirmo la entrega al cliente a pesar del saldo pendiente.",
+      "notes": "Notas opcionales",
+      "notesPlaceholder": "Añade notas sobre la entrega",
+      "completedAt": "Entregado al cliente el",
+      "operator": "Operador",
+      "balanceAtHandoff": "Saldo en el momento de la entrega",
+      "unpaidAcknowledged": "Saldo pendiente confirmado"
     },
     "form": {
       "newTitle": "Nuevo pedido",

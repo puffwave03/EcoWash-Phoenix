@@ -51,7 +51,9 @@ test("8 Daily Close excludes logistics under cancelled or inactive parents", asy
 
   assert.match(dailyClose, /import \{ isOperationalLogisticsParent \}/);
   assert.match(dailyClose, /isOperationalLogisticsParent\(\{\s+isActive: order\.is_active,\s+productionStatus: order\.production_status,/);
-  assert.equal((dailyClose.match(/order:orders![^\n]+production_status, is_active/g) ?? []).length, 2);
+  // Pickup, delivery, and final customer handoff sources all retain an
+  // active/non-cancelled parent relationship in the close preview.
+  assert.equal((dailyClose.match(/order:orders![^\n]+production_status, is_active/g) ?? []).length, 3);
 });
 
 test("9 in-progress logistics remains visible regardless of unusual schedule", async () => {

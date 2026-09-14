@@ -13,7 +13,7 @@ export type DailyCloseGroupKey =
   | "anomalies";
 
 export type DailyCloseItemKind = "order" | "pickup" | "delivery" | "payment" | "anomaly";
-export type DailyCloseSource = "locations" | "logistics" | "orders" | "payments" | "pos";
+export type DailyCloseSource = "handoffs" | "locations" | "logistics" | "orders" | "payments" | "pos";
 export type DailyCloseBlockerKey =
   | "cash_without_session"
   | "future_business_date"

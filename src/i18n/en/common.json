@@ -722,7 +722,7 @@
     "filter": {"businessDate": "Business date", "location": "Location", "allLocations": "All locations", "apply": "View day", "current": "Current business day", "past": "Previous business day", "future": "Future date — preview only"},
     "metrics": {"ordersCreated": "Orders created", "productionCompleted": "Production completed", "finalFulfillmentCompleted": "Final fulfillment completed", "cancelled": "Orders cancelled", "open": "Open orders", "onHold": "On hold", "late": "Late orders", "confirmedPayments": "confirmed payments", "collectedGross": "Confirmed payments", "refunds": "Refunds", "collectedNet": "Net collected", "outstanding": "Outstanding balance", "outstandingOrders": "Orders with balance", "cash": "Cash", "card": "Card (manual)", "bankTransfer": "Bank transfer", "other": "Other", "online": "Online", "openSessions": "Open POS sessions", "closedSessions": "Closed sessions for day", "cashWithoutSession": "Cash entries without session", "expectedCash": "Expected cash", "countedCash": "Counted cash", "variance": "Variance", "pickupsDue": "Pickups due/open", "deliveriesDue": "Deliveries due/open", "overduePickups": "Overdue pickups", "overdueDeliveries": "Overdue deliveries", "inProgress": "Logistics in progress"},
     "blockers": {"ready": "Preview data ready", "notReady": "Not ready for close", "none": "No readiness blocker detected in the live preview.", "source_unavailable": "Canonical source unavailable", "future_business_date": "A future date is informational only", "invalid_location": "The requested location is not available for this tenant", "open_pos_session": "Open POS sessions", "cash_without_session": "Cash entries without a valid POS session", "unassigned_location": "Operational facts without a location"},
-    "sourceLabels": {"locations": "locations", "orders": "orders", "payments": "payments/Accounting", "pos": "POS sessions", "logistics": "logistics"},
+    "sourceLabels": {"locations": "locations", "orders": "orders", "payments": "payments/Accounting", "pos": "POS sessions", "logistics": "logistics", "handoffs": "final customer handoffs"},
     "empty": "Nothing to review in this group.",
     "summary": {
       "completedToday": "Completed today",
@@ -1686,6 +1686,23 @@
       "pickup_in_progress": "Pickup in progress",
       "pickup_scheduled": "Pickup scheduled",
       "ready_for_customer_pickup": "Ready for customer collection"
+    },
+    "handoff": {
+      "title": "Final customer handoff",
+      "readOnlyTitle": "Final customer handoff",
+      "completeAction": "Mark as collected by customer",
+      "confirmation": "Confirm final handoff of this order to the customer?",
+      "order": "Order",
+      "currentOperator": "Operator",
+      "currentTime": "Local time",
+      "unpaidWarning": "This order still has an outstanding balance of {amount}. Confirm that you want to hand the order to the customer anyway.",
+      "acknowledgement": "I confirm the customer handoff despite the outstanding balance.",
+      "notes": "Optional notes",
+      "notesPlaceholder": "Add handoff notes",
+      "completedAt": "Handed to customer at",
+      "operator": "Operator",
+      "balanceAtHandoff": "Balance at handoff",
+      "unpaidAcknowledged": "Outstanding balance acknowledged"
     },
     "form": {
       "newTitle": "New order",

@@ -722,7 +722,7 @@
     "filter": {"businessDate": "Date opérationnelle", "location": "Site", "allLocations": "Tous les sites", "apply": "Afficher la journée", "current": "Journée actuelle", "past": "Journée précédente", "future": "Date future — aperçu uniquement"},
     "metrics": {"ordersCreated": "Commandes créées", "productionCompleted": "Production terminée", "finalFulfillmentCompleted": "Remise finale terminée", "cancelled": "Commandes annulées", "open": "Commandes ouvertes", "onHold": "En pause", "late": "Commandes en retard", "confirmedPayments": "paiements confirmés", "collectedGross": "Paiements confirmés", "refunds": "Remboursements", "collectedNet": "Encaissement net", "outstanding": "Solde restant", "outstandingOrders": "Commandes avec solde", "cash": "Espèces", "card": "Carte (manuelle)", "bankTransfer": "Virement", "other": "Autre", "online": "En ligne", "openSessions": "Sessions POS ouvertes", "closedSessions": "Sessions clôturées du jour", "cashWithoutSession": "Espèces sans session", "expectedCash": "Espèces attendues", "countedCash": "Espèces comptées", "variance": "Écart", "pickupsDue": "Collectes prévues/ouvertes", "deliveriesDue": "Livraisons prévues/ouvertes", "overduePickups": "Collectes en retard", "overdueDeliveries": "Livraisons en retard", "inProgress": "Logistique en cours"},
     "blockers": {"ready": "Données d’aperçu prêtes", "notReady": "Pas prête pour la clôture", "none": "Aucun blocage de préparation détecté dans l’aperçu en direct.", "source_unavailable": "Source canonique indisponible", "future_business_date": "Une date future est uniquement informative", "invalid_location": "Le site demandé n’est pas disponible pour ce tenant", "open_pos_session": "Sessions POS ouvertes", "cash_without_session": "Mouvements d’espèces sans session POS valide", "unassigned_location": "Données opérationnelles sans site"},
-    "sourceLabels": {"locations": "sites", "orders": "commandes", "payments": "paiements/Comptabilité", "pos": "sessions POS", "logistics": "logistique"},
+    "sourceLabels": {"locations": "sites", "orders": "commandes", "payments": "paiements/Comptabilité", "pos": "sessions POS", "logistics": "logistique", "handoffs": "remises finales au client"},
     "empty": "Rien à vérifier dans ce groupe.",
     "summary": {
       "completedToday": "Terminées aujourd'hui",
@@ -1627,6 +1627,23 @@
       "pickup_in_progress": "Collecte en cours",
       "pickup_scheduled": "Collecte programmée",
       "ready_for_customer_pickup": "Prête pour le retrait client"
+    },
+    "handoff": {
+      "title": "Remise finale au client",
+      "readOnlyTitle": "Remise finale au client",
+      "completeAction": "Marquer comme retirée par le client",
+      "confirmation": "Confirmez-vous la remise finale de cette commande au client ?",
+      "order": "Commande",
+      "currentOperator": "Opérateur",
+      "currentTime": "Heure locale",
+      "unpaidWarning": "Cette commande présente encore un solde dû de {amount}. Confirmez que vous souhaitez tout de même la remettre au client.",
+      "acknowledgement": "Je confirme la remise au client malgré le solde restant dû.",
+      "notes": "Notes facultatives",
+      "notesPlaceholder": "Ajouter des notes sur la remise",
+      "completedAt": "Remise au client le",
+      "operator": "Opérateur",
+      "balanceAtHandoff": "Solde au moment de la remise",
+      "unpaidAcknowledged": "Solde dû confirmé"
     },
     "form": {
       "newTitle": "Nouvelle commande",

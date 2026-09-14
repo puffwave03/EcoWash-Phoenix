@@ -84,11 +84,11 @@ test("17 draft pickup configuration and normal counter flow remain available", a
 test("18 Daily Close counts outbound delivery, never inbound pickup, as final fulfillment", async () => {
   const dailyClose = await source("src/features/daily-close/server/queries.ts");
   const finalCount = dailyClose.slice(
-    dailyClose.indexOf("orderSummary.finalFulfillmentCompleted ="),
-    dailyClose.indexOf("if (accountingResult.status", dailyClose.indexOf("orderSummary.finalFulfillmentCompleted =")),
+    dailyClose.indexOf("const completedOrderIds = new Set"),
+    dailyClose.indexOf("if (accountingResult.status", dailyClose.indexOf("const completedOrderIds = new Set")),
   );
 
-  assert.match(finalCount, /value\.completedDeliveries/);
+  assert.match(finalCount, /logisticsResult\.value\.completedDeliveries/);
   assert.doesNotMatch(finalCount, /completedPickups|pickupStatuses|pickup.*completed_at/i);
   assert.match(finalCount, /order\.production_status === "completed"/);
 });

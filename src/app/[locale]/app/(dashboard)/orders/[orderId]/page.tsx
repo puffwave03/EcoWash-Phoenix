@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { CustomerHandoffPanel, type CustomerHandoffText } from "@/components/orders/CustomerHandoffPanel";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
 import { OrderAssignmentForm } from "@/components/orders/OrderAssignmentForm";
@@ -48,6 +49,8 @@ import { getCurrentPosSession } from "@/features/pos/server/queries";
 import { listEffectiveServicesForOrder } from "@/features/pricing-segments/server/order-services";
 import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
 import { getCurrentEntitlements } from "@/features/entitlements/server/resolver";
+import { completeCustomerHandoffAction } from "@/features/handoffs/server/actions";
+import { getCustomerHandoff } from "@/features/handoffs/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
 import {
   deriveOrderDisplayStatus,
@@ -86,13 +89,14 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
     getOrderHistory(locale, orderId),
     listEffectiveServicesForOrder(locale, orderId),
     getOrderLogistics(locale, orderId),
+    getCustomerHandoff(locale, orderId),
     listAssignableStaff(locale),
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
@@ -111,6 +115,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     ...(t.raw("displayStatuses") as Record<string, string>),
   } as Record<OrderDisplayStatus, string>;
   const displayStatus = deriveOrderDisplayStatus({
+    customerHandoffCompleted: Boolean(handoff),
     deliveryStatus: logistics.delivery?.status,
     isActive: order.isActive,
     pickupStatus: logistics.pickup?.status,
@@ -129,10 +134,14 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const posSession = canUsePos ? await getCurrentPosSession(locale) : null;
   const canPrint = entitlementEnabled(entitlements, FEATURES.printing)
     && hasOperationalCapability(access.membership, "pos");
+  const canCompleteCustomerHandoff = canUsePos
+    && displayStatus === "ready_for_customer_pickup"
+    && (!logistics.delivery || logistics.delivery.status === "not_required");
   const sectionLinks = [
     { href: "#items", label: t("items.title") },
     { href: "#production", label: t("workflow.change") },
     { href: "#logistics", label: t("logistics.title") },
+    ...(handoff || canCompleteCustomerHandoff ? [{ href: "#customer-handoff", label: t("handoff.title") }] : []),
     { href: "#payments", label: t("payments.title") },
     { href: "#photos", label: t("photos.title") },
   ];
@@ -401,6 +410,25 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           }}
         />
       </SectionShell>
+
+      {(handoff || canCompleteCustomerHandoff) ? (
+        <SectionShell id="customer-handoff" title={t("handoff.title")}>
+          <CustomerHandoffPanel
+            action={completeCustomerHandoffAction.bind(null, locale, order.id)}
+            balanceDue={paymentSummary.balanceDue}
+            canComplete={canCompleteCustomerHandoff}
+            currency={order.currency}
+            currentOperator={access.profile.displayName || access.user.email || "-"}
+            currentTime={formatOrganizationDateTime(new Date(), locale, access.membership.organization.timezone)}
+            customerName={order.customerName}
+            handoff={handoff}
+            locale={locale}
+            orderNumber={order.orderNumber}
+            text={t.raw("handoff") as CustomerHandoffText}
+            timeZone={access.membership.organization.timezone}
+          />
+        </SectionShell>
+      ) : null}
 
       <SectionShell id="payments" title={t("payments.title")}>
         {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel

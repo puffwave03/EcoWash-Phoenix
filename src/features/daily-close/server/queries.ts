@@ -83,10 +83,12 @@ type LogisticsRow = {
   status: FulfillmentStatus;
 };
 
-type LogisticsStatusRow = {
-  completed_at: string | null;
+type CustomerHandoffRow = {
+  completed_at: string;
+  id: string;
+  location_id: string | null;
   order_id: string;
-  status: FulfillmentStatus;
+  order: Pick<LogisticsOrderRelation, "id" | "is_active" | "production_status"> | Pick<LogisticsOrderRelation, "id" | "is_active" | "production_status">[] | null;
 };
 
 type PosSessionRow = {
@@ -272,22 +274,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
         .gte("completed_at", day.start.toISOString()).lt("completed_at", endExclusive.toISOString())
         .order("completed_at").order("id").range(from, to).returns<LogisticsRow[]>()),
     ]);
-    const candidateIds = [...new Set([...completedPickups, ...completedDeliveries].map((row) => row.order_id))];
-    const pickupStatuses: LogisticsStatusRow[] = [];
-    const deliveryStatuses: LogisticsStatusRow[] = [];
-    for (const ids of chunks(candidateIds)) {
-      const [pickups, deliveries] = await Promise.all([
-        pages<LogisticsStatusRow>((from, to) => supabase.from("pickups").select("order_id, status, completed_at")
-          .eq("organization_id", organizationId).in("order_id", ids).neq("status", "cancelled")
-          .order("id").range(from, to).returns<LogisticsStatusRow[]>()),
-        pages<LogisticsStatusRow>((from, to) => supabase.from("deliveries").select("order_id, status, completed_at")
-          .eq("organization_id", organizationId).in("order_id", ids).neq("status", "cancelled")
-          .order("id").range(from, to).returns<LogisticsStatusRow[]>()),
-      ]);
-      pickupStatuses.push(...pickups);
-      deliveryStatuses.push(...deliveries);
-    }
-    return { completedDeliveries, completedPickups, deliveryStatuses, openDeliveries, openPickups, pickupStatuses };
+    return { completedDeliveries, completedPickups, openDeliveries, openPickups };
   })();
 
   const accountingPromise = (async () => {
@@ -325,17 +312,30 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
     return { cashWithoutSession, lingeringOpen, sessions };
   })();
 
-  const [ordersResult, logisticsResult, accountingResult, posResult] = await Promise.allSettled([
+  const handoffsPromise = pages<CustomerHandoffRow>((from, to) => supabase
+    .from("order_customer_handoffs")
+    .select("id, order_id, location_id, completed_at, order:orders!order_customer_handoffs_order_same_org!inner(id, production_status, is_active)")
+    .eq("organization_id", organizationId)
+    .gte("completed_at", day.start.toISOString())
+    .lt("completed_at", endExclusive.toISOString())
+    .order("completed_at")
+    .order("id")
+    .range(from, to)
+    .returns<CustomerHandoffRow[]>());
+
+  const [ordersResult, logisticsResult, accountingResult, posResult, handoffsResult] = await Promise.allSettled([
     ordersPromise,
     logisticsPromise,
     accountingPromise,
     posPromise,
+    handoffsPromise,
   ]);
   if (ordersResult.status === "rejected") failedSources.push("orders");
   if (logisticsResult.status === "rejected") failedSources.push("logistics");
   if (accountingResult.status === "rejected") failedSources.push("payments");
   if (posResult.status === "rejected") failedSources.push("pos");
-  for (const result of [ordersResult, logisticsResult, accountingResult, posResult]) {
+  if (handoffsResult.status === "rejected") failedSources.push("handoffs");
+  for (const result of [ordersResult, logisticsResult, accountingResult, posResult, handoffsResult]) {
     if (result.status === "rejected") console.error("Daily close canonical source failed", result.reason instanceof Error ? result.reason.message : "unknown");
   }
 
@@ -401,21 +401,31 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
       overduePickups: groups.incompletePickups.filter((item) => item.isLate).length,
       pickupsDueOpen: groups.incompletePickups.length,
     };
+  }
 
-    if (orderSummary) {
-      // Pickups are inbound collections and cannot prove final fulfillment.
-      // Until final in-store handoff is modeled, only completed outbound
-      // deliveries are canonical final-fulfillment evidence.
-      orderSummary.finalFulfillmentCompleted = new Set(value.completedDeliveries
-        .filter((delivery) => {
-          const order = relationOne(delivery.order);
-          return order?.is_active
-            && order.production_status === "completed"
-            && inLocation(order.location_id, selectedLocationId)
-            && isInBusinessDay(delivery.completed_at, day);
-        })
-        .map((delivery) => delivery.order_id)).size;
+  if (orderSummary && logisticsResult.status === "fulfilled" && handoffsResult.status === "fulfilled") {
+    const completedOrderIds = new Set(logisticsResult.value.completedDeliveries
+      .filter((delivery) => {
+        const order = relationOne(delivery.order);
+        return order?.is_active
+          && order.production_status === "completed"
+          && inLocation(order.location_id, selectedLocationId)
+          && isInBusinessDay(delivery.completed_at, day);
+      })
+      .map((delivery) => delivery.order_id));
+
+    for (const handoff of handoffsResult.value) {
+      const order = relationOne(handoff.order);
+      if (order?.is_active
+        && order.production_status === "completed"
+        && inLocation(handoff.location_id, selectedLocationId)
+        && isInBusinessDay(handoff.completed_at, day)) {
+        completedOrderIds.add(handoff.order_id);
+      }
     }
+
+    orderSummary.finalFulfillmentCompleted = completedOrderIds.size;
+    unassignedLocationFacts += handoffsResult.value.filter((handoff) => handoff.location_id === null).length;
   }
 
   if (accountingResult.status === "fulfilled") {
