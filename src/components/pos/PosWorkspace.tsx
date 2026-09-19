@@ -16,7 +16,7 @@ export type PosText = {
   methods: Record<PaymentMethod, string>;
   orders: { customer: string; empty: string; method: string; notes: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };
   payments: { empty: string; manualCard: string; phoenixRefund: string; reason: string; title: string };
-  session: { cashPayments: string; cashRefunds: string; closed: string; expected: string; opening: string; openingAmount: string; open: string; selectLocation: string; title: string; transactions: string };
+  session: { cashPayments: string; cashRefunds: string; chooseLocation: string; closed: string; expected: string; noLocations: string; opening: string; openingAmount: string; open: string; selectLocation: string; title: string; transactions: string };
   statuses: Record<PaymentRecordStatus, string>;
   subtitle: string;
   success: string;
@@ -35,14 +35,16 @@ function result(state: PosActionState, text: PosText) {
 
 function OpenSessionForm({ action, locations, text }: { action: Action; locations: PosLocation[]; text: PosText }) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const hasLocations = locations.length > 0;
   return (
     <form action={formAction} className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+      {!hasLocations ? <p className="rounded-control bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900 md:col-span-3" role="alert">{text.session.noLocations}</p> : null}
       <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.session.selectLocation}</span>
-        <select className={inputClass} name="locationId"><option value="">{text.common.noLocation}</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select>
+        <select className={inputClass} defaultValue={locations.length === 1 ? locations[0].id : ""} disabled={!hasLocations} name="locationId" required><option disabled value="">{text.session.chooseLocation}</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select>
       </label>
-      <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.session.openingAmount}</span><input className={inputClass} min="0" name="openingCash" required step="0.01" type="number" /></label>
+      <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.session.openingAmount}</span><input className={inputClass} disabled={!hasLocations} min="0" name="openingCash" required step="0.01" type="number" /></label>
       <input name="notes" type="hidden" />
-      <Button className="min-h-12" disabled={pending} type="submit">{text.actions.open}</Button>
+      <Button className="min-h-12" disabled={pending || !hasLocations} type="submit">{text.actions.open}</Button>
       <div className="md:col-span-3">{result(state, text)}</div>
     </form>
   );

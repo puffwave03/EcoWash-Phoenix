@@ -20,8 +20,8 @@ export function parseOpenSession(formData: FormData) {
   const locationId = value(formData, "locationId", 80);
   const fieldErrors: Record<string, string> = {};
   if (!Number.isFinite(openingCash) || openingCash < 0) fieldErrors.openingCash = "invalid";
-  if (locationId && !UUID.test(locationId)) fieldErrors.locationId = "invalid";
-  return { fieldErrors, input: { locationId: locationId || null, notes: value(formData, "notes"), openingCash }, valid: Object.keys(fieldErrors).length === 0 };
+  if (!locationId || !UUID.test(locationId)) fieldErrors.locationId = locationId ? "invalid" : "required";
+  return { fieldErrors, input: { locationId, notes: value(formData, "notes"), openingCash }, valid: Object.keys(fieldErrors).length === 0 };
 }
 
 export function parsePosPayment(formData: FormData) {
