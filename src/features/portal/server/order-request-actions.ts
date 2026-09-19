@@ -21,6 +21,7 @@ function requestError(message: string | undefined): CustomerPortalOrderRequestEr
   if (message?.includes("portal_request_invalid_property")) return "property";
   if (message?.includes("portal_request_invalid_items")) return "invalidQuantity";
   if (message?.includes("portal_request_service_unavailable")) return "services";
+  if (message?.includes("portal_request_location_")) return "location";
 
   return "generic";
 }

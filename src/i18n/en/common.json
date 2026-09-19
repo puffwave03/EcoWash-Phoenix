@@ -1054,6 +1054,7 @@
       "errors": {
         "generic": "The request could not be created. Check the information and try again.",
         "invalidQuantity": "Enter a valid quantity. Item services require whole numbers; weight supports up to three decimals.",
+        "location": "Online ordering is unavailable until the laundry configures exactly one active location.",
         "pickupPast": "Choose a future pickup time.",
         "property": "Select one of your active pickup addresses.",
         "requestedPickupAt": "Choose the requested pickup date and time.",
@@ -1721,6 +1722,9 @@
       "dueAt": "Due date",
       "customerNotes": "Customer notes",
       "internalNotes": "Internal notes",
+      "location": "Location",
+      "chooseLocation": "Choose a location",
+      "noLocations": "Create an active location before creating an order.",
       "save": "Save order",
       "saving": "Saving...",
       "error": "The order could not be saved."

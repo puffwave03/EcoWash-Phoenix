@@ -103,6 +103,7 @@ export default async function CustomerOrderRequestPage({
               errors: {
                 generic: t("request.errors.generic"),
                 invalidQuantity: t("request.errors.invalidQuantity"),
+                location: t("request.errors.location"),
                 pickupPast: t("request.errors.pickupPast"),
                 property: t("request.errors.property"),
                 requestedPickupAt: t("request.errors.requestedPickupAt"),

@@ -361,6 +361,27 @@ export async function listCustomersForOrder(locale: string): Promise<OrderSelect
   return data.map((customer) => ({ id: customer.id, label: customer.display_name }));
 }
 
+export async function listActiveLocationsForOrder(locale: string): Promise<OrderSelectOption[]> {
+  const { membership } = await requireMembership(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("locations")
+    .select("id, name")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .order("name", { ascending: true })
+    .order("id", { ascending: true })
+    .returns<{ id: string; name: string }[]>();
+
+  if (error || !data) {
+    if (error) console.error("Order locations query failed", error.code);
+    return [];
+  }
+
+  return data.map((location) => ({ id: location.id, label: location.name }));
+}
+
 export async function listPropertiesForCustomer(locale: string): Promise<PropertySelectOption[]> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();

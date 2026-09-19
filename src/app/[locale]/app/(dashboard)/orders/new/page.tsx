@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/operational/OperationalUi";
 import { OrderForm } from "@/components/orders/OrderForm";
 import { createOrderAction } from "@/features/orders/server/actions";
 import {
+  listActiveLocationsForOrder,
   listCustomersForOrder,
   listPropertiesForCustomer,
 } from "@/features/orders/server/queries";
@@ -15,9 +16,10 @@ type NewOrderPageProps = {
 
 export default async function NewOrderPage({ params, searchParams }: NewOrderPageProps) {
   const [{ locale }, rawSearchParams] = await Promise.all([params, searchParams]);
-  const [customers, properties, t] = await Promise.all([
+  const [customers, properties, locations, t] = await Promise.all([
     listCustomersForOrder(locale),
     listPropertiesForCustomer(locale),
+    listActiveLocationsForOrder(locale),
     getTranslations({ locale, namespace: "common.orders" }),
   ]);
   const steps = [
@@ -59,6 +61,7 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
             action={createOrderAction.bind(null, locale)}
             customers={customers}
             initialCustomerId={customers.some((customer) => customer.id === rawSearchParams.customerId) ? rawSearchParams.customerId : undefined}
+            locations={locations}
             properties={properties}
             text={{
               customer: t("form.customer"),
@@ -67,6 +70,9 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
               error: t("form.error"),
               express: t("form.express"),
               internalNotes: t("form.internalNotes"),
+              location: t("form.location"),
+              chooseLocation: t("form.chooseLocation"),
+              noLocations: t("form.noLocations"),
               normal: t("form.normal"),
               priority: t("form.priority"),
               property: t("form.property"),

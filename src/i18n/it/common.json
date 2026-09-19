@@ -1054,6 +1054,7 @@
       "errors": {
         "generic": "Non è stato possibile creare la richiesta. Controlla i dati e riprova.",
         "invalidQuantity": "Inserisci una quantità valida. I servizi a pezzo richiedono numeri interi; il peso supporta fino a tre decimali.",
+        "location": "Gli ordini online non sono disponibili finché la lavanderia non configura un'unica sede attiva.",
         "pickupPast": "Scegli un orario di ritiro futuro.",
         "property": "Seleziona uno dei tuoi indirizzi di ritiro attivi.",
         "requestedPickupAt": "Scegli la data e l'orario di ritiro richiesti.",
@@ -1683,6 +1684,9 @@
       "dueAt": "Scadenza",
       "customerNotes": "Note cliente",
       "internalNotes": "Note interne",
+      "location": "Sede",
+      "chooseLocation": "Seleziona una sede",
+      "noLocations": "Crea una sede attiva prima di creare un ordine.",
       "save": "Salva ordine",
       "saving": "Salvataggio...",
       "error": "L'ordine non può essere salvato."

@@ -166,6 +166,7 @@ export type CustomerPortalOrderRequestOptions = {
 export type CustomerPortalOrderRequestError =
   | "generic"
   | "invalidQuantity"
+  | "location"
   | "pickupPast"
   | "property"
   | "requestedPickupAt"

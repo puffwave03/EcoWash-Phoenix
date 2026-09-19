@@ -93,7 +93,9 @@ export async function createOrderAction(
 
   if (error || !data) {
     console.error("Order create failed", error?.code ?? "unknown");
-    return fail("generic");
+    return error?.message.includes("order_location")
+      ? fail("generic", { locationId: "invalid" })
+      : fail("generic");
   }
 
   revalidateOrders(locale, data.id);

@@ -12,6 +12,9 @@ type OrderFormText = {
   error: string;
   express: string;
   internalNotes: string;
+  location: string;
+  chooseLocation: string;
+  noLocations: string;
   normal: string;
   priority: string;
   property: string;
@@ -23,6 +26,7 @@ type OrderFormProps = {
   action: (state: OrderActionState, formData: FormData) => Promise<OrderActionState>;
   customers: OrderSelectOption[];
   initialCustomerId?: string;
+  locations?: OrderSelectOption[];
   order?: Order;
   properties: PropertySelectOption[];
   text: OrderFormText;
@@ -36,8 +40,9 @@ function fieldClass(hasError: boolean) {
   }`;
 }
 
-export function OrderForm({ action, customers, initialCustomerId, order, properties, text }: OrderFormProps) {
+export function OrderForm({ action, customers, initialCustomerId, locations = [], order, properties, text }: OrderFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const canCreate = Boolean(order) || locations.length > 0;
 
   return (
     <form action={formAction} className="space-y-6">
@@ -68,6 +73,21 @@ export function OrderForm({ action, customers, initialCustomerId, order, propert
           <span>{text.dueAt}</span>
           <input className={fieldClass(Boolean(state.fieldErrors.dueAt))} defaultValue={order?.dueAt ? order.dueAt.slice(0, 16) : ""} name="dueAt" type="datetime-local" />
         </label>
+        {!order ? (
+          <label className="space-y-2 text-sm font-semibold text-primary md:col-span-2">
+            <span>{text.location}</span>
+            <select
+              className={fieldClass(Boolean(state.fieldErrors.locationId))}
+              defaultValue={locations.length === 1 ? locations[0].id : ""}
+              disabled={!canCreate}
+              name="locationId"
+              required
+            >
+              <option disabled value="">{text.chooseLocation}</option>
+              {locations.map((location) => <option key={location.id} value={location.id}>{location.label}</option>)}
+            </select>
+          </label>
+        ) : null}
       </div>
       {order ? (
         <>
@@ -75,7 +95,7 @@ export function OrderForm({ action, customers, initialCustomerId, order, propert
           <input name="propertyId" type="hidden" value={order.propertyId ?? ""} />
         </>
       ) : null}
-      <input name="locationId" type="hidden" value="" />
+      {!order && !canCreate ? <p className="rounded-control border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900" role="alert">{text.noLocations}</p> : null}
       <label className="space-y-2 text-sm font-semibold text-primary">
         <span>{text.customerNotes}</span>
         <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3.5 py-3 text-base outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20" defaultValue={order?.customerNotes ?? ""} name="customerNotes" />
@@ -85,7 +105,7 @@ export function OrderForm({ action, customers, initialCustomerId, order, propert
         <textarea className="min-h-24 w-full rounded-control border border-border bg-white px-3.5 py-3 text-base outline-none transition-standard focus:border-primary focus:ring-2 focus:ring-primary/20" defaultValue={order?.internalNotes ?? ""} name="internalNotes" />
       </label>
       <div className="flex justify-end border-t border-border pt-5">
-        <Button className="w-full sm:w-auto" disabled={isPending} type="submit">
+        <Button className="w-full sm:w-auto" disabled={isPending || !canCreate} type="submit">
           {isPending ? text.saving : text.save}
         </Button>
       </div>

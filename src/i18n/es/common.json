@@ -1052,6 +1052,7 @@
       "errors": {
         "generic": "No se pudo crear la solicitud. Comprueba los datos e inténtalo de nuevo.",
         "invalidQuantity": "Introduce una cantidad válida. Los servicios por pieza requieren números enteros; el peso admite hasta tres decimales.",
+        "location": "Los pedidos en línea no están disponibles hasta que la lavandería configure una única sede activa.",
         "pickupPast": "Elige un horario de recogida futuro.",
         "property": "Selecciona una de tus direcciones de recogida activas.",
         "requestedPickupAt": "Elige la fecha y hora de recogida solicitadas.",
@@ -1662,6 +1663,9 @@
       "dueAt": "Vencimiento",
       "customerNotes": "Notas del cliente",
       "internalNotes": "Notas internas",
+      "location": "Sede",
+      "chooseLocation": "Selecciona una sede",
+      "noLocations": "Crea una sede activa antes de crear un pedido.",
       "save": "Guardar pedido",
       "saving": "Guardando...",
       "error": "No se pudo guardar el pedido."

@@ -45,6 +45,7 @@ type CustomerOrderRequestText = {
   errors: {
     generic: string;
     invalidQuantity: string;
+    location: string;
     pickupPast: string;
     property: string;
     requestedPickupAt: string;
