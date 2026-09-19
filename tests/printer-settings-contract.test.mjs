@@ -133,13 +133,14 @@ test("16 existing shared receipt ticket and label renderers remain canonical", a
   assert.match(document, /buildPrintLabels\(context\)/);
 });
 
-test("17 no barcode, proprietary SDK or silent printing was added", async () => {
+test("17 intentional Phoenix barcodes remain provider-neutral without proprietary SDKs or silent printing", async () => {
   const files = await Promise.all([
     source("src/components/printer-settings/PrinterSettingsWorkspace.tsx"),
     source("src/features/printer-settings/server/actions.ts"),
     source("src/components/printing/OrderPrintDocument.tsx"),
   ]);
-  assert.doesNotMatch(files.join("\n"), /\b(?:zebra|epson|brother|star)\b|esc\/pos|window\.print\(\).*useEffect|barcode|qr-code/i);
+  assert.match(files[2], /ScannableQrCode/);
+  assert.doesNotMatch(files.join("\n"), /\b(?:zebra|epson|brother|star)\b|esc\/pos|window\.print\(\).*useEffect/i);
 });
 
 test("18 management navigation exposes printers once through the Settings hub", async () => {

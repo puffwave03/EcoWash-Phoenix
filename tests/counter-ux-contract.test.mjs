@@ -50,17 +50,22 @@ test("7 regular customer creation remains a quick canonical action", async () =>
   assert.match(actions, /from\("customers"\)\.insert/);
 });
 
-test("8 each walk-in gets a distinct traceable canonical customer", async () => {
-  const actions = await source("src/features/shop-terminal/server/actions.ts");
+test("8 each walk-in uses the tenant-scoped shared customer with order-local identity", async () => {
+  const [actions, migration] = await Promise.all([
+    source("src/features/shop-terminal/server/actions.ts"),
+    source("supabase/migrations/20260902000200_terminal_customer_ux_001b_shared_walk_in.sql"),
+  ]);
   assert.match(actions, /customerKind"\) === "walk_in"/);
-  assert.match(actions, /`WALKIN-\$\{crypto\.randomUUID\(\)\.toUpperCase\(\)\}`/);
-  assert.match(actions, /Occasional customer created at the shop terminal/);
+  assert.match(actions, /rpc\("resolve_shared_walk_in_customer"\)/);
+  assert.match(migration, /org_id uuid := public\.app_current_organization_id\(\)/);
+  assert.match(migration, /set walk_in_name = normalized_walk_in_name,[\s\S]*walk_in_phone = normalized_walk_in_phone/);
 });
 
-test("9 walk-in never uses a shared global anonymous customer", async () => {
-  const actions = await source("src/features/shop-terminal/server/actions.ts");
-  assert.doesNotMatch(actions, /shared|anonymous_customer|global_walk/i);
-  assert.match(actions, /crypto\.randomUUID/);
+test("9 walk-in anchor is tenant-local and never accepts client tenant context", async () => {
+  const migration = await source("supabase/migrations/20260902000200_terminal_customer_ux_001b_shared_walk_in.sql");
+  assert.match(migration, /require_shop_terminal_access\(org_id\)/);
+  assert.match(migration, /on conflict \(organization_id, customer_code\)[\s\S]*do nothing/);
+  assert.doesNotMatch(migration, /resolve_shared_walk_in_customer\([^)]*organization/i);
 });
 
 test("10 customer creation remains tenant scoped and attributable", async () => {
@@ -70,9 +75,13 @@ test("10 customer creation remains tenant scoped and attributable", async () => 
   assert.match(actions, /updated_by: user\.id/);
 });
 
-test("11 no parallel walk-in schema or COUNTER migration was added", async () => {
+test("11 approved shared walk-in migration is singular and no COUNTER UX migration exists", async () => {
   const migrations = await readdir(new URL("../supabase/migrations", import.meta.url));
-  assert.equal(migrations.some((name) => /counter_ux_002|walk.?in/i.test(name)), false);
+  assert.deepEqual(
+    migrations.filter((name) => /walk.?in/i.test(name)),
+    ["20260902000200_terminal_customer_ux_001b_shared_walk_in.sql"],
+  );
+  assert.equal(migrations.some((name) => /counter_ux_002/i.test(name)), false);
 });
 
 test("12 catalog offers real category navigation and service search", async () => {
@@ -84,8 +93,10 @@ test("12 catalog offers real category navigation and service search", async () =
 
 test("13 service tiles are touch-sized and add immediately", async () => {
   const ui = await source(uiPath);
-  assert.match(ui, /min-h-40/);
-  assert.match(ui, /onClick=\{\(\) => addService\(service\)\}/);
+  const mobileCard = ui.slice(ui.indexOf("data-terminal-mobile-service-card"), ui.indexOf("data-terminal-service-card"));
+  const desktopCard = ui.slice(ui.indexOf("data-terminal-service-card"), ui.indexOf("</button>", ui.indexOf("data-terminal-service-card")));
+  assert.match(mobileCard, /min-h-11 min-w-11[\s\S]*onClick=\{\(\) => addService\(service\)\}/);
+  assert.match(desktopCard, /onClick=\{\(\) => addService\(service\)\}/);
 });
 
 test("14 repeated service taps increment the existing line", async () => {
@@ -194,9 +205,11 @@ test("29 navigation keeps one terminal entry with POS as management fallback", a
 });
 
 test("30 five locales expose the professional-register vocabulary", async () => {
+  const english = JSON.parse(await source("src/i18n/en/common.json"));
+  const expectedKeys = Object.keys(english.shopTerminal.labels).sort();
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 68);
+    assert.deepEqual(Object.keys(messages.shopTerminal.labels).sort(), expectedKeys);
     for (const key of ["catalog", "occasionalCustomer", "regularCustomer", "splitPayment", "tillManagement"]) assert.equal(typeof messages.shopTerminal.labels[key], "string");
   }
 });

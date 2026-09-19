@@ -57,7 +57,8 @@ test("7 resolver rechecks terminal access, barcode entitlement and tenant owners
   const actions = await source("src/features/shop-terminal/server/actions.ts");
   assert.match(actions, /requireShopTerminalAccess\(locale\)/);
   assert.match(actions, /requireEntitlement\(locale, FEATURES\.barcode\)/);
-  assert.match(actions, /from\("orders"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*eq\("id", parsed\.orderId\)/);
+  assert.match(actions, /from\("orders"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)/);
+  assert.match(actions, /orderNumber[\s\S]*orderQuery\.eq\("order_number", orderNumber\)[\s\S]*orderQuery\.eq\("id", orderId \?\? parsed!\.orderId\)/);
 });
 
 test("8 label resolution verifies the canonical active item and unit boundary", async () => {
