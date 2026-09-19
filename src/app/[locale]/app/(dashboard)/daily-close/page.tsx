@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { DailyCloseDashboard } from "@/components/daily-close/DailyCloseDashboard";
+import { requestDailyCloseAction } from "@/features/daily-close/server/actions";
+import { getPersistedDailyClose } from "@/features/daily-close/server/persisted-queries";
 import { getDailyCloseData } from "@/features/daily-close/server/queries";
 import { requireMembership } from "@/lib/auth/require-membership";
 
@@ -22,15 +24,26 @@ export default async function DailyClosePage({ params, searchParams }: DailyClos
     getDailyCloseData(locale, { businessDate: date, locationId: location }),
     getTranslations({ locale, namespace: "common.dailyClose" }),
   ]);
+  const persistedClose = await getPersistedDailyClose(locale, {
+    businessDate: data.businessDate,
+    locationId: data.selectedLocationId,
+  });
 
   return (
     <DailyCloseDashboard
+      closeAction={requestDailyCloseAction.bind(null, locale)}
       data={data}
       locale={locale}
+      persistedClose={persistedClose}
       text={{
         anomalies: t.raw("anomalies"),
         blockers: t.raw("blockers"),
         description: t("description"),
+        definitive: {
+          ...t.raw("definitive"),
+          metrics: t.raw("metrics"),
+          sourceLabels: t.raw("sourceLabels"),
+        },
         empty: t("empty"),
         filter: t.raw("filter"),
         groups: t.raw("groups"),

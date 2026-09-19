@@ -96,6 +96,7 @@ export type DailyCloseBlocker = {
 export type DailyCloseData = {
   blockers: DailyCloseBlocker[];
   businessDate: string;
+  cashVarianceSessions: number;
   complete: boolean;
   currentBusinessDate: string;
   failedSources: DailyCloseSource[];
@@ -103,6 +104,7 @@ export type DailyCloseData = {
   isFutureBusinessDate: boolean;
   locations: DailyCloseLocation[];
   logistics: DailyCloseLogisticsSummary | null;
+  nonSessionNonCashActivity: number;
   orders: DailyCloseOrderSummary | null;
   payments: DailyClosePaymentSummary[] | null;
   pos: DailyClosePosReadiness | null;

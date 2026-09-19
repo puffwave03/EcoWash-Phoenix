@@ -55,7 +55,9 @@ type PaymentRow = {
 
 type PaymentLocationRow = {
   id: string;
+  method: string;
   order: { location_id: string | null } | { location_id: string | null }[] | null;
+  pos_session_id: string | null;
 };
 
 type CashWithoutSessionRow = {
@@ -93,6 +95,7 @@ type CustomerHandoffRow = {
 
 type PosSessionRow = {
   closed_at: string | null;
+  difference: number | null;
   id: string;
   location_id: string | null;
   opened_at: string;
@@ -285,7 +288,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
         salesPeriod: period,
       }),
       pages<PaymentLocationRow>((from, to) => supabase.from("payments")
-        .select("id, order:orders!payments_order_same_org!inner(location_id)")
+        .select("id, method, pos_session_id, order:orders!payments_order_same_org!inner(location_id)")
         .eq("organization_id", organizationId).in("status", ["confirmed", "refunded"])
         .gte("paid_at", day.start.toISOString()).lt("paid_at", endExclusive.toISOString())
         .order("paid_at").order("id").range(from, to).returns<PaymentLocationRow[]>()),
@@ -296,11 +299,11 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
   const posPromise = (async () => {
     const [sessions, lingeringOpen, cashWithoutSession] = await Promise.all([
       pages<PosSessionRow>((from, to) => supabase.from("pos_sessions")
-        .select("id, location_id, opened_at, closed_at, status").eq("organization_id", organizationId)
+        .select("id, location_id, opened_at, closed_at, status, difference").eq("organization_id", organizationId)
         .gte("opened_at", day.start.toISOString()).lt("opened_at", endExclusive.toISOString())
         .order("opened_at").order("id").range(from, to).returns<PosSessionRow[]>()),
       pages<PosSessionRow>((from, to) => supabase.from("pos_sessions")
-        .select("id, location_id, opened_at, closed_at, status").eq("organization_id", organizationId)
+        .select("id, location_id, opened_at, closed_at, status, difference").eq("organization_id", organizationId)
         .eq("status", "open").lt("opened_at", day.start.toISOString())
         .order("opened_at").order("id").range(from, to).returns<PosSessionRow[]>()),
       pages<CashWithoutSessionRow>((from, to) => supabase.from("payments")
@@ -343,6 +346,8 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
   const cutoff = attentionCutoff(day);
   const end = day.end;
   let unassignedLocationFacts = 0;
+  let cashVarianceSessions = 0;
+  let nonSessionNonCashActivity = 0;
   let orderSummary: DailyCloseData["orders"] = null;
   let logisticsSummary: DailyCloseData["logistics"] = null;
   let paymentSummary: DailyCloseData["payments"] = null;
@@ -430,6 +435,8 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
 
   if (accountingResult.status === "fulfilled") {
     const accounting = accountingResult.value.summary;
+    const scopedPaymentLocations = accountingResult.value.paymentLocations
+      .filter((row) => inLocation(relationOne(row.order)?.location_id ?? null, selectedLocationId));
     paymentSummary = accounting.currencies.map((currency) => ({
       bankTransferCollected: currency.bankTransferCollected,
       cardCollected: currency.cardCollected,
@@ -470,6 +477,8 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
     }
     unassignedLocationFacts += accountingResult.value.paymentLocations
       .filter((row) => relationOne(row.order)?.location_id === null).length;
+    nonSessionNonCashActivity = scopedPaymentLocations
+      .filter((row) => row.method !== "cash" && row.pos_session_id === null).length;
   }
 
   if (posResult.status === "fulfilled") {
@@ -477,6 +486,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
     const lingeringOpen = posResult.value.lingeringOpen.filter((row) => inLocation(row.location_id, selectedLocationId));
     const cashWithoutSession = posResult.value.cashWithoutSession.filter((row) => inLocation(relationOne(row.order)?.location_id ?? null, selectedLocationId));
     const openIds = new Set([...sessions.filter((row) => row.status === "open"), ...lingeringOpen].map((row) => row.id));
+    cashVarianceSessions = sessions.filter((row) => Number(row.difference ?? 0) !== 0).length;
     const accountingCurrencies = accountingResult.status === "fulfilled" ? accountingResult.value.summary.currencies : [];
     posReadiness = {
       cashPaymentsWithoutSession: cashWithoutSession.length,
@@ -514,6 +524,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
   return {
     blockers,
     businessDate: day.businessDate,
+    cashVarianceSessions,
     complete: failedSources.length === 0,
     currentBusinessDate: day.currentBusinessDate,
     failedSources,
@@ -521,6 +532,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
     isFutureBusinessDate: day.isFuture,
     locations,
     logistics: logisticsSummary,
+    nonSessionNonCashActivity,
     orders: orderSummary,
     payments: paymentSummary,
     pos: posReadiness,
