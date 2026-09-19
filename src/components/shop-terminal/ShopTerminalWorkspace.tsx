@@ -50,7 +50,7 @@ export type ShopTerminalText = {
   saveCustomer: string; saving: string; searchServices: string; segmentPrice: string; selectCustomer: string;
   segmentCatalog: string;
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
-  tillOpen: string; tillRequired: string; title: string; total: string; unitTypes: Record<string, string>;
+  tillClosed: string; tillOpen: string; title: string; total: string; unitTypes: Record<string, string>;
   scanCode: string; scanPlaceholder: string; scanSubmit: string; scanning: string; scanInvalid: string; scanNotFound: string;
   addressLine1: string; addressLine2: string; city: string; contactName: string; contactPhone: string;
   countryCode: string; delivery: string; deliveryAssignee: string; deliveryNotes: string;
@@ -575,7 +575,8 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
         <div className="min-w-0"><p className="truncate text-[0.68rem] font-black uppercase tracking-[0.16em] text-white/65">{organizationName}</p><h1 className="text-xl font-black tracking-tight">{text.title}</h1></div>
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
           <span className="rounded-control bg-white/10 px-3 py-2">{text.operator}: {operatorName}</span>
-          <Link className={`rounded-control px-3 py-2 ${session ? "bg-white text-primary" : "bg-amber-100 !text-amber-950"}`} href="/app/pos" locale={locale}>{session ? `${text.tillOpen} · ${session.locationName ?? organizationName}` : text.tillRequired} · {text.tillManagement} →</Link>
+          <span className={`rounded-control px-3 py-2 ${session ? "bg-emerald-100 text-emerald-950" : "bg-white/10 text-white"}`}>{session ? text.tillOpen : text.tillClosed}{session?.locationName ? ` · ${session.locationName}` : ""}</span>
+          <Link className={`rounded-control px-3 py-2 ${session ? "bg-white !text-primary" : "bg-amber-100 !text-amber-950"}`} href="/app/pos" locale={locale}>{session ? text.tillManagement : text.openTill} →</Link>
           {canConfigurePrinters ? <Link className="rounded-control border border-white/25 px-3 py-2 !text-white" href="/app/settings/printers" locale={locale}>{text.printerSettings}</Link> : null}
         </div>
       </div>
@@ -601,7 +602,10 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
             <p className="truncate text-[0.65rem] font-black uppercase tracking-[0.12em] text-muted">{organizationName}</p>
             <h1 className="truncate text-lg font-black text-primary">{text.title}</h1>
           </div>
-          <Link aria-label={text.tillManagement} className={`inline-flex min-h-11 shrink-0 items-center rounded-control px-3 text-xs font-bold ${session ? "bg-primary-soft !text-primary" : "bg-amber-100 !text-amber-950"}`} href="/app/pos" locale={locale}>{session ? text.tillOpen : text.tillRequired}</Link>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className={`rounded-full px-2 py-0.5 text-[0.68rem] font-bold ${session ? "bg-emerald-50 text-emerald-800" : "bg-[#f2f3f2] text-muted"}`}>{session ? text.tillOpen : text.tillClosed}</span>
+            <Link className={`inline-flex min-h-11 items-center rounded-control px-3 text-xs font-bold ${session ? "bg-primary-soft !text-primary" : "bg-amber-100 !text-amber-950"}`} href="/app/pos" locale={locale}>{session ? text.tillManagement : text.openTill}</Link>
+          </div>
         </div>
         <div className={`grid min-w-0 gap-2 ${canScan ? "lg:grid-cols-[minmax(20rem,0.8fr)_minmax(0,1.2fr)]" : ""}`}>
           {canScan ? (

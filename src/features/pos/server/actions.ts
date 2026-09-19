@@ -12,6 +12,7 @@ const fail = (fieldErrors: Record<string, string> = {}, formError = "generic"): 
 
 function refresh(locale: string, orderId?: string) {
   revalidatePath(`/${locale}/app/pos`);
+  revalidatePath(`/${locale}/app/daily-close`);
   if (orderId) revalidatePath(`/${locale}/app/orders/${orderId}`);
   revalidatePath(`/${locale}/app/billing`);
   revalidatePath(`/${locale}/app/customers`);

@@ -21,7 +21,7 @@ import { formatCurrency } from "@/lib/number-format";
 
 type DailyCloseText = {
   anomalies: Record<"late" | "logistics" | "onHold" | "payment", string>;
-  blockers: Record<DailyCloseBlockerKey | "none" | "notReady" | "ready", string>;
+  blockers: Record<DailyCloseBlockerKey | "managePos" | "none" | "notReady" | "ready", string>;
   description: string;
   empty: string;
   filter: Record<"allLocations" | "apply" | "businessDate" | "current" | "future" | "location" | "past", string>;
@@ -245,7 +245,7 @@ export function DailyCloseDashboard({ data, locale, text }: { data: DailyCloseDa
         <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-xl font-semibold text-primary" id="daily-close-attention">{text.sections.attention}</h3><StatusBadge tone={data.complete && data.blockers.length === 0 ? "success" : "critical"}>{data.complete && data.blockers.length === 0 ? text.blockers.ready : text.blockers.notReady}</StatusBadge></div>
         {isHistoricalBusinessDate ? <p className="rounded-control border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{text.semantics.currentStateNote}</p> : null}
         {!data.complete ? <div className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{text.unavailable}</div> : null}
-        {data.blockers.length ? <ul className="space-y-2">{data.blockers.map((blocker, index) => <li className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" key={`${blocker.key}-${index}`}>{blockerText(data, index, text)}</li>)}</ul> : <EmptyState>{text.blockers.none}</EmptyState>}
+        {data.blockers.length ? <ul className="space-y-2">{data.blockers.map((blocker, index) => <li className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" key={`${blocker.key}-${index}`}><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><span>{blockerText(data, index, text)}</span>{blocker.key === "open_pos_session" ? <Link className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-control bg-primary px-4 font-semibold !text-white" href="/app/pos" locale={locale}>{text.blockers.managePos}</Link> : null}</div></li>)}</ul> : <EmptyState>{text.blockers.none}</EmptyState>}
         {data.groups.anomalies.length ? <div className="grid gap-4 xl:grid-cols-2">{data.groups.anomalies.map((item) => <DailyCloseCard item={item} key={`anomaly-${item.id}-${item.paymentStatus ?? item.status}`} locale={locale} text={text} timeZone={data.timeZone} />)}</div> : null}
       </section>
     </div>
