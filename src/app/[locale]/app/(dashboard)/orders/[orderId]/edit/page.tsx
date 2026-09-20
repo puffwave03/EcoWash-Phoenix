@@ -14,11 +14,12 @@ type EditOrderPageProps = {
 
 export default async function EditOrderPage({ params }: EditOrderPageProps) {
   const { locale, orderId } = await params;
-  const [order, customers, properties, t] = await Promise.all([
+  const [order, customers, properties, t, gateT] = await Promise.all([
     getOrderById(locale, orderId),
     listCustomersForOrder(locale),
     listPropertiesForCustomer(locale),
     getTranslations({ locale, namespace: "common.orders.form" }),
+    getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
 
   return (
@@ -38,6 +39,7 @@ export default async function EditOrderPage({ params }: EditOrderPageProps) {
           internalNotes: t("internalNotes"),
           location: t("location"),
           chooseLocation: t("chooseLocation"),
+          closedDay: gateT("general"),
           noLocations: t("noLocations"),
           normal: t("normal"),
           priority: t("priority"),

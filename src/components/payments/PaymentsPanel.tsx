@@ -26,6 +26,7 @@ type PaymentsPanelText = {
   balanceDue: string;
   cancelledPaidWarning: string;
   cashRefundRequiresTill: string;
+  closedDay: string;
   date: string;
   empty: string;
   error: string;
@@ -107,7 +108,7 @@ function RefundForm({
         <Button disabled={pending || cashRequiresSession} type="submit" variant="secondary">{pending ? text.saving : text.refund}</Button>
       </div>
       {cashRequiresSession ? <p className="text-xs font-medium text-amber-800">{text.cashRefundRequiresTill}</p> : null}
-      {state.formError ? <p className="text-xs font-medium text-red-700">{text.error}</p> : null}
+      {state.formError ? <p className="text-xs font-medium text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
       {state.success ? <p className="text-xs font-medium text-green-700">{text.refundSuccess}</p> : null}
     </form>
   );

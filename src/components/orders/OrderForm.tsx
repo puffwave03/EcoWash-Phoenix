@@ -14,6 +14,7 @@ type OrderFormText = {
   internalNotes: string;
   location: string;
   chooseLocation: string;
+  closedDay: string;
   noLocations: string;
   normal: string;
   priority: string;
@@ -46,7 +47,7 @@ export function OrderForm({ action, customers, initialCustomerId, locations = []
 
   return (
     <form action={formAction} className="space-y-6">
-      {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
+      {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.customer}</span>

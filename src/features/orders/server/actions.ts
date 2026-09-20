@@ -14,6 +14,7 @@ import {
   parseProductionStatus,
 } from "@/features/orders/validation";
 import { FINAL_PRODUCTION_STATUSES } from "@/features/orders/workflow";
+import { isBusinessDayClosedError } from "@/lib/daily-close-error";
 
 const initialState: OrderActionState = { fieldErrors: {}, formError: null, success: false };
 const ASSIGNMENT_ROLES = ["owner", "manager"] as const;
@@ -93,6 +94,7 @@ export async function createOrderAction(
 
   if (error || !data) {
     console.error("Order create failed", error?.code ?? "unknown");
+    if (isBusinessDayClosedError(error)) return fail("closedDay");
     return error?.message.includes("order_location")
       ? fail("generic", { locationId: "invalid" })
       : fail("generic");

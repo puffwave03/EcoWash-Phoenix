@@ -5,6 +5,7 @@ import { createOrderCode } from "@/features/barcode/payload";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import type { QuickDropCreateResult } from "@/features/quick-drop/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isBusinessDayClosedError } from "@/lib/daily-close-error";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const PHONE = /^[+()\d\s.-]{3,32}$/;
@@ -43,7 +44,7 @@ export async function createQuickDropAction(locale: string, formData: FormData):
 
   if (error || !data) {
     console.error("Quick Drop create failed", error?.code ?? "unknown");
-    return { error: "generic", order: null };
+    return { error: isBusinessDayClosedError(error) ? "closedDay" : "generic", order: null };
   }
 
   revalidatePath(`/${locale}/app`);

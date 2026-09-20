@@ -89,7 +89,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -107,6 +107,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
     getTranslations({ locale, namespace: "common.quickDrop" }),
+    getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
@@ -451,6 +452,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             balanceDue: t("payments.balanceDue"),
             cancelledPaidWarning: t("payments.cancelledPaidWarning"),
             cashRefundRequiresTill: t("payments.cashRefundRequiresTill"),
+            closedDay: gateT("general"),
             date: t("payments.date"),
             empty: t("payments.empty"),
             error: t("payments.error"),

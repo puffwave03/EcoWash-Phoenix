@@ -21,7 +21,7 @@ type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT] = await Promise.all([
+  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT, gateT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
     listShopOperationalOptions(locale),
@@ -33,9 +33,11 @@ export default async function ShopPage({ params }: ShopPageProps) {
     getTranslations({ locale, namespace: "common.print" }),
     getTranslations({ locale, namespace: "common.barcode.terminal" }),
     getTranslations({ locale, namespace: "common.quickDrop" }),
+    getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
   const text = {
-    ...(t.raw("labels") as Omit<ShopTerminalText, "unitTypes">),
+    ...(t.raw("labels") as Omit<ShopTerminalText, "errorClosedDay" | "unitTypes">),
+    errorClosedDay: gateT("terminal"),
     scanCode: barcodeT("scanCode"),
     scanInvalid: barcodeT("scanInvalid"),
     scanning: barcodeT("scanning"),
@@ -77,6 +79,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         detailOrder: quickDropT("detailOrder"),
         dueAt: quickDropT("dueAt"),
         errorGeneric: quickDropT("errorGeneric"),
+        errorClosedDay: gateT("general"),
         errorValidation: quickDropT("errorValidation"),
         help: quickDropT("help"),
         labelsDeferred: quickDropT("labelsDeferred"),

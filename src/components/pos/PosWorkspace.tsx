@@ -11,7 +11,7 @@ export type PosText = {
   actions: { close: string; open: string; pay: string; refund: string; search: string };
   close: { counted: string; description: string; difference: string; notes: string; title: string };
   common: { actor: string; amount: string; date: string; location: string; noLocation: string; reference: string };
-  errors: { alreadyOpen: string; close: string; generic: string; payment: string; refund: string; validation: string };
+  errors: { alreadyOpen: string; close: string; closedDay: string; closedDayOpen: string; generic: string; payment: string; refund: string; validation: string };
   history: { counted: string; difference: string; empty: string; expected: string; title: string };
   methods: Record<PaymentMethod, string>;
   orders: { customer: string; empty: string; method: string; notes: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };

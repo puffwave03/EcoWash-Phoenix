@@ -1549,7 +1549,11 @@
     "history": {"title": "Till history", "empty": "No till sessions yet.", "expected": "Expected", "counted": "Counted", "difference": "Difference"},
     "methods": {"cash": "Cash", "card": "Card (manual)", "bank_transfer": "Bank transfer", "other": "Other"},
     "statuses": {"pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
-    "errors": {"generic": "The POS operation could not be completed.", "validation": "Check the entered values.", "alreadyOpen": "A till is already open for this location.", "payment": "The payment was rejected. Check the balance and current till.", "refund": "The refund was rejected. Check the refundable amount and current till.", "close": "The till could not be closed."}
+    "errors": {"generic": "The POS operation could not be completed.", "validation": "Check the entered values.", "alreadyOpen": "A till is already open for this location.", "closedDay": "The operating day is already closed. New operations will be available on the next day.", "closedDayOpen": "The till cannot be opened because the operating day is already closed.", "payment": "The payment was rejected. Check the balance and current till.", "refund": "The refund was rejected. Check the refundable amount and current till.", "close": "The till could not be closed."}
+  },
+  "postCloseGate": {
+    "general": "The operating day is already closed. New operations will be available on the next day.",
+    "terminal": "The order cannot be created because the operating day is already closed."
   },
   "organizationSuspended": {
     "eyebrow": "Account service",

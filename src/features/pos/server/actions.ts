@@ -6,6 +6,7 @@ import { requirePosAccess } from "@/features/pos/server/access";
 import type { PosActionState } from "@/features/pos/types";
 import { parseCloseSession, parseOpenSession, parsePosPayment, parsePosRefund } from "@/features/pos/validation";
 import { MANUAL_CARD_PROVIDER } from "@/features/pos/providers/types";
+import { isBusinessDayClosedError } from "@/lib/daily-close-error";
 
 const initialState: PosActionState = { fieldErrors: {}, formError: null, success: false };
 const fail = (fieldErrors: Record<string, string> = {}, formError = "generic"): PosActionState => ({ fieldErrors, formError, success: false });
@@ -25,7 +26,7 @@ export async function openPosSessionAction(locale: string, _state: PosActionStat
   await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("open_pos_session", { target_location_id: parsed.input.locationId, target_notes: parsed.input.notes || null, target_opening_cash: parsed.input.openingCash });
-  if (error) { console.error("POS open failed", error.code); return fail({}, error.code === "23505" ? "alreadyOpen" : "generic"); }
+  if (error) { console.error("POS open failed", error.code); return fail({}, isBusinessDayClosedError(error) ? "closedDayOpen" : error.code === "23505" ? "alreadyOpen" : "generic"); }
   refresh(locale);
   return { ...initialState, success: true };
 }
@@ -42,7 +43,7 @@ export async function recordPosPaymentAction(locale: string, _state: PosActionSt
     target_order_id: parsed.input.orderId, target_pos_session_id: parsed.input.sessionId, target_provider: parsed.input.method === "card" ? MANUAL_CARD_PROVIDER : null,
     target_provider_reference: parsed.input.method === "card" ? parsed.input.reference || null : null, target_reference: parsed.input.reference || null,
   });
-  if (error) { console.error("POS payment failed", error.code); return fail({}, "payment"); }
+  if (error) { console.error("POS payment failed", error.code); return fail({}, isBusinessDayClosedError(error) ? "closedDay" : "payment"); }
   refresh(locale, parsed.input.orderId);
   return { ...initialState, success: true };
 }
@@ -54,7 +55,7 @@ export async function refundPosPaymentAction(locale: string, _state: PosActionSt
   await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("record_pos_refund", { target_amount: parsed.input.amount, target_idempotency_key: parsed.input.idempotencyKey, target_payment_id: parsed.input.paymentId, target_pos_session_id: parsed.input.sessionId, target_reason: parsed.input.reason });
-  if (error) { console.error("POS refund failed", error.code); return fail({}, "refund"); }
+  if (error) { console.error("POS refund failed", error.code); return fail({}, isBusinessDayClosedError(error) ? "closedDay" : "refund"); }
   refresh(locale, parsed.input.orderId ?? undefined);
   return { ...initialState, success: true };
 }

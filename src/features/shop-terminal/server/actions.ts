@@ -12,6 +12,7 @@ import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
 import { organizationDateTimeLocalToIso } from "@/lib/organization-timezone";
+import { isBusinessDayClosedError } from "@/lib/daily-close-error";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -263,7 +264,9 @@ export async function submitShopOrderAction(
 
   if (error || !data) {
     console.error("Shop order submit failed", error?.code);
-    const known = error?.message.includes("session") ? "till" : error?.message.includes("discount") ? "discount" : "generic";
+    const known = isBusinessDayClosedError(error)
+      ? "closedDay"
+      : error?.message.includes("session") ? "till" : error?.message.includes("discount") ? "discount" : "generic";
     return { error: known, result: null };
   }
 

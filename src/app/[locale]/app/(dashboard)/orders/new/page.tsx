@@ -16,11 +16,12 @@ type NewOrderPageProps = {
 
 export default async function NewOrderPage({ params, searchParams }: NewOrderPageProps) {
   const [{ locale }, rawSearchParams] = await Promise.all([params, searchParams]);
-  const [customers, properties, locations, t] = await Promise.all([
+  const [customers, properties, locations, t, gateT] = await Promise.all([
     listCustomersForOrder(locale),
     listPropertiesForCustomer(locale),
     listActiveLocationsForOrder(locale),
     getTranslations({ locale, namespace: "common.orders" }),
+    getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
   const steps = [
     t("form.steps.details"),
@@ -72,6 +73,7 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
               internalNotes: t("form.internalNotes"),
               location: t("form.location"),
               chooseLocation: t("form.chooseLocation"),
+              closedDay: gateT("general"),
               noLocations: t("form.noLocations"),
               normal: t("form.normal"),
               priority: t("form.priority"),
