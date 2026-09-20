@@ -1553,6 +1553,7 @@
   },
   "postCloseGate": {
     "general": "The operating day is already closed. New operations will be available on the next day.",
+    "quickDrop": "Quick Drop is unavailable because the operating day is already closed.",
     "terminal": "The order cannot be created because the operating day is already closed."
   },
   "organizationSuspended": {

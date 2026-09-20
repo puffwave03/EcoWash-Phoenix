@@ -82,6 +82,7 @@ type Props = {
   printText: PrintActionText;
   productionAssignments: ShopAssignmentOption[];
   quickDropText: QuickDropText;
+  quickDropClosed: boolean;
   role: string;
   session: PosSession | null;
   text: ShopTerminalText;
@@ -187,7 +188,7 @@ function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTermi
   }
 }
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
@@ -634,7 +635,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
             ) : null}
           </div>
         </div>
-        <div className="mt-2"><QuickDropTerminalPanel action={actions.createQuickDrop} canPrint={canPrint} canQr={canScan} customer={selectedCustomer ? { id: selectedCustomer.id, isWalkIn: selectedCustomer.isWalkIn, name: selectedCustomerName ?? text.occasionalCustomer, phone: selectedCustomer.phone, walkInName: selectedCustomer.isWalkIn ? selectedCustomer.name || null : null } : null} locale={locale} locationId={session?.locationId ?? null} onNewOrder={clearCustomer} pending={pendingQuickDrops} printText={printText} text={quickDropText} /></div>
+        <div className="mt-2"><QuickDropTerminalPanel action={actions.createQuickDrop} canPrint={canPrint} canQr={canScan} closedDay={quickDropClosed} customer={selectedCustomer ? { id: selectedCustomer.id, isWalkIn: selectedCustomer.isWalkIn, name: selectedCustomerName ?? text.occasionalCustomer, phone: selectedCustomer.phone, walkInName: selectedCustomer.isWalkIn ? selectedCustomer.name || null : null } : null} locale={locale} locationId={session?.locationId ?? null} onNewOrder={clearCustomer} pending={pendingQuickDrops} printText={printText} text={quickDropText} /></div>
       </section>
 
       <div className="grid min-w-0 lg:grid-cols-[minmax(0,2.1fr)_minmax(20rem,1fr)] xl:grid-cols-[minmax(0,2.2fr)_minmax(23rem,1fr)]">

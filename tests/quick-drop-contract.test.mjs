@@ -188,9 +188,9 @@ test("17a Quick Drop eligibility stays customer and active-location scoped with 
   assert.match(workspace, /customer=\{selectedCustomer \? \{ id: selectedCustomer\.id,[\s\S]*isWalkIn: selectedCustomer\.isWalkIn,[\s\S]*name: selectedCustomerName/);
   assert.match(workspace, /locationId=\{session\?\.locationId \?\? null\}/);
   assert.match(panel, /customer \? <section/);
-  assert.match(panel, /disabled=\{!locationId\}/);
-  assert.match(panel, /disabled=\{isPending \|\| !locationId\}/);
-  assert.match(panel, /aria-describedby=\{!locationId \? "quick-drop-location-required" : undefined\}/);
+  assert.match(panel, /disabled=\{closedDay \|\| !locationId\}/);
+  assert.match(panel, /disabled=\{closedDay \|\| isPending \|\| !locationId\}/);
+  assert.match(panel, /aria-describedby=\{closedDay \|\| !locationId \? "quick-drop-unavailable" : undefined\}/);
   assert.match(panel, /text\.locationRequired/);
   assert.match(page, /locationRequired: quickDropT\("locationRequired"\)/);
   for (const locale of ["it", "en", "es", "fr", "de"]) {
@@ -231,8 +231,8 @@ test("20 production guard has a clear localized UX and returns attempted transit
 test("21 client and database both protect against duplicate receipt submission", async () => {
   const panel = await source("src/components/quick-drop/QuickDropTerminalPanel.tsx");
   assert.match(panel, /idempotencyKey\.current \?\?= crypto\.randomUUID\(\)/);
-  assert.match(panel, /if \(!customer \|\| !locationId \|\| isPending\) return/);
-  assert.match(panel, /disabled=\{isPending \|\| !locationId\}/);
+  assert.match(panel, /if \(!customer \|\| closedDay \|\| !locationId \|\| isPending\) return/);
+  assert.match(panel, /disabled=\{closedDay \|\| isPending \|\| !locationId\}/);
 });
 
 test("22 all five locales expose the complete Quick Drop UX vocabulary", async () => {

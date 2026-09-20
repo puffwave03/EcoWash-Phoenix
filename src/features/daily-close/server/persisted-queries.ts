@@ -1,7 +1,10 @@
 import "server-only";
 
 import type { PersistedDailyClose } from "@/features/daily-close/persisted-types";
+import { resolveDailyCloseBusinessDay } from "@/features/daily-close/preview";
+import { requireMembership } from "@/lib/auth/require-membership";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type DailyCloseRow = {
@@ -22,6 +25,32 @@ type DailyCloseRow = {
   snapshot_schema_version: number;
   tenant_timezone: string;
 };
+
+export type CurrentDailyCloseState = {
+  locationIds: string[];
+  organizationWide: boolean;
+};
+
+export async function getCurrentDailyCloseState(locale: string): Promise<CurrentDailyCloseState> {
+  const { membership } = await requireMembership(locale);
+  const businessDate = resolveDailyCloseBusinessDay(
+    undefined,
+    membership.organization.timezone,
+  ).businessDate;
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.from("daily_closes")
+    .select("location_id")
+    .eq("organization_id", membership.organization.id)
+    .eq("business_date", businessDate)
+    .returns<{ location_id: string | null }[]>();
+
+  if (error) throw new Error(`daily_close_state_read_failed:${error.code}`);
+
+  return {
+    locationIds: (data ?? []).flatMap((row) => row.location_id ? [row.location_id] : []),
+    organizationWide: (data ?? []).some((row) => row.location_id === null),
+  };
+}
 
 export async function getPersistedDailyClose(
   locale: string,

@@ -16,18 +16,20 @@ import { listShopCustomers, listShopOperationalOptions } from "@/features/shop-t
 import { createQuickDropAction } from "@/features/quick-drop/server/actions";
 import { listPendingQuickDrops } from "@/features/quick-drop/server/queries";
 import type { QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
+import { getCurrentDailyCloseState } from "@/features/daily-close/server/persisted-queries";
 
 type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, t, catalogT, printT, barcodeT, quickDropT, gateT] = await Promise.all([
+  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, closeState, t, catalogT, printT, barcodeT, quickDropT, gateT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
     listShopOperationalOptions(locale),
     getCurrentPosSession(locale),
     listPendingQuickDrops(locale),
     getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
+    getCurrentDailyCloseState(locale),
     getTranslations({ locale, namespace: "common.shopTerminal" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
@@ -35,6 +37,9 @@ export default async function ShopPage({ params }: ShopPageProps) {
     getTranslations({ locale, namespace: "common.quickDrop" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
+  const quickDropClosed = closeState.organizationWide || Boolean(
+    session?.locationId && closeState.locationIds.includes(session.locationId),
+  );
   const text = {
     ...(t.raw("labels") as Omit<ShopTerminalText, "errorClosedDay" | "unitTypes">),
     errorClosedDay: gateT("terminal"),
@@ -81,6 +86,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         errorGeneric: quickDropT("errorGeneric"),
         errorClosedDay: gateT("general"),
         errorValidation: quickDropT("errorValidation"),
+        closedDayUnavailable: gateT("quickDrop"),
         help: quickDropT("help"),
         labelsDeferred: quickDropT("labelsDeferred"),
         locationRequired: quickDropT("locationRequired"),
@@ -98,6 +104,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
       } satisfies QuickDropText}
       role={access.membership.role}
       session={session}
+      quickDropClosed={quickDropClosed}
       text={text}
     />
   );
