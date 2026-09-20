@@ -55,7 +55,7 @@ test("5 location and organization-wide scopes are displayed from persisted rows"
   assert.match(detailPage, /close\.locationName \?\? t\("history\.organizationWide"\)/);
 });
 
-test("6 history is read-only and exposes no mutation, export, print or deletion path", async () => {
+test("6 history remains read-only while exposing export and print actions", async () => {
   const [query, listPage, detailPage] = await Promise.all([
     source(queryPath),
     source(listPagePath),
@@ -63,20 +63,22 @@ test("6 history is read-only and exposes no mutation, export, print or deletion 
   ]);
   const historySource = `${query.slice(query.indexOf("export async function listPersistedDailyCloses"))}\n${listPage}\n${detailPage}`;
   assert.doesNotMatch(historySource, /\.insert\(|\.update\(|\.delete\(|\.rpc\(|requestDailyCloseAction/);
-  assert.doesNotMatch(historySource, /download|\.csv|\.pdf|window\.print|reopen|deleteAction/i);
+  assert.doesNotMatch(historySource, /reopen|deleteAction/i);
 });
 
 test("7 list and detail navigation remain responsive on mobile and desktop", async () => {
-  const [dashboard, listPage, detailPage] = await Promise.all([
+  const [dashboard, listPage, detailPage, exportActions] = await Promise.all([
     source("src/components/daily-close/DailyCloseDashboard.tsx"),
     source(listPagePath),
     source(detailPagePath),
+    source("src/components/daily-close/DailyCloseExportActions.tsx"),
   ]);
   assert.match(dashboard, /href="\/app\/daily-close\/history"/);
   assert.match(listPage, /md:grid-cols-\[1fr_1fr_auto\]/);
   assert.match(listPage, /sm:grid-cols-\[1fr_1fr_auto\]/);
   assert.ok((listPage.match(/w-full[^"]*sm:w-auto/g) ?? []).length >= 2);
-  assert.match(detailPage, /w-full[^"]*sm:w-auto/);
+  assert.match(detailPage, /<DailyCloseExportActions/);
+  assert.match(exportActions, /w-full[^"]*sm:w-auto/);
 });
 
 test("8 all five locales expose identical minimal history keys", async () => {

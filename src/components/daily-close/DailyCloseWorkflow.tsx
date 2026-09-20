@@ -53,7 +53,7 @@ export function PersistedSummary({ close, locale, scopeLabel: selectedScope, tex
   const snapshot = readDailyCloseSnapshot(close.snapshot);
 
   return (
-    <Card className="space-y-5 border-green-200 bg-green-50/50">
+    <Card className="space-y-5 border-green-200 bg-green-50/50 print:border-0 print:bg-white print:p-0 print:shadow-none">
       <div><p className="text-sm font-semibold uppercase tracking-[0.12em] text-green-800">{text.immutable}</p><h3 className="mt-1 text-3xl font-semibold text-green-900">{text.closed}</h3><p className="mt-2 text-sm leading-6 text-green-950">{text.closedDescription}</p></div>
       <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-control bg-white p-3"><dt className="text-xs text-muted">{text.labels.businessDate}</dt><dd className="mt-1 break-words font-semibold text-primary">{close.businessDate}</dd></div>
