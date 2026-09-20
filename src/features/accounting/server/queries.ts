@@ -50,6 +50,7 @@ type PosSessionRow = {
 export type AccountingSummaryFilter = {
   locationId?: string | null;
   paymentPeriod: AccountingPeriod;
+  salesOperationalBusinessDate?: string;
   salesPeriod: AccountingPeriod;
 };
 
@@ -115,8 +116,10 @@ export async function getAccountingSummary(locale: string, filter: AccountingSum
   const orderRows = await pages<OrderRow>((from, to) => {
     let query = supabase.from("orders").select("id, location_id, subtotal, total, currency, created_at")
       .eq("organization_id", organizationId).eq("is_active", true).neq("production_status", "cancelled")
-      .gte("created_at", salesBounds.start).lt("created_at", salesBounds.end)
       .order("created_at").order("id").range(from, to);
+    query = filter.salesOperationalBusinessDate
+      ? query.or(`and(operational_business_date.is.null,created_at.gte.${salesBounds.start},created_at.lt.${salesBounds.end}),operational_business_date.eq.${filter.salesOperationalBusinessDate}`)
+      : query.gte("created_at", salesBounds.start).lt("created_at", salesBounds.end);
     if (locationId) query = query.eq("location_id", locationId);
     return query;
   });

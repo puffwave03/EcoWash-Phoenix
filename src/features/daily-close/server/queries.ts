@@ -234,11 +234,13 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
   const selectedLocationId = invalidLocation ? null : requestedLocationId;
 
   const period = { startDate: day.businessDate, endDateExclusive: addLocalDays(day.businessDate, 1) };
+  const createdOrderFilter = `and(operational_business_date.is.null,created_at.gte.${day.start.toISOString()},created_at.lt.${endExclusive.toISOString()}),operational_business_date.eq.${day.businessDate}`;
+  const openOrderFilter = `and(operational_business_date.is.null,created_at.lt.${endExclusive.toISOString()}),operational_business_date.lte.${day.businessDate}`;
 
   const ordersPromise = (async () => {
     const [created, productionCompleted, cancelled, open] = await Promise.all([
       pages<OrderRow>((from, to) => supabase.from("orders").select(ORDER_SELECT)
-        .eq("organization_id", organizationId).gte("created_at", day.start.toISOString()).lt("created_at", endExclusive.toISOString())
+        .eq("organization_id", organizationId).or(createdOrderFilter)
         .order("created_at").order("id").range(from, to).returns<OrderRow[]>()),
       pages<OrderRow>((from, to) => supabase.from("orders").select(ORDER_SELECT)
         .eq("organization_id", organizationId).gte("completed_at", day.start.toISOString()).lt("completed_at", endExclusive.toISOString())
@@ -249,7 +251,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
       pages<OrderRow>((from, to) => supabase.from("orders").select(ORDER_SELECT)
         .eq("organization_id", organizationId).eq("is_active", true)
         .in("production_status", ["draft", "received", "washing", "drying", "ironing", "quality_check", "packing", "ready", "on_hold"])
-        .lt("created_at", endExclusive.toISOString()).order("created_at").order("id").range(from, to).returns<OrderRow[]>()),
+        .or(openOrderFilter).order("created_at").order("id").range(from, to).returns<OrderRow[]>()),
     ]);
     const confirmedPayments: PaymentRow[] = [];
     for (const ids of chunks(created.map((order) => order.id))) {
@@ -285,6 +287,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
       getAccountingSummary(locale, {
         locationId: selectedLocationId,
         paymentPeriod: period,
+        salesOperationalBusinessDate: day.businessDate,
         salesPeriod: period,
       }),
       pages<PaymentLocationRow>((from, to) => supabase.from("payments")

@@ -70,9 +70,11 @@ test("2b date-bound order, payment and logistics values remain sourced from the 
   assert.equal((query.match(/\.filter\(\(row\) => isDueForClose\(row, end\)\)/g) ?? []).length, 2);
 });
 
-test("3 selected-day order events use created, production-completed and cancelled timestamps", async () => {
+test("3 selected-day order events use operational creation, production-completed and cancelled dates", async () => {
   const query = await source("src/features/daily-close/server/queries.ts");
-  for (const timestamp of ["created_at", "completed_at", "cancelled_at"]) {
+  assert.match(query, /operational_business_date\.is\.null,created_at\.gte\.\$\{day\.start\.toISOString\(\)\},created_at\.lt\.\$\{endExclusive\.toISOString\(\)\}/);
+  assert.match(query, /operational_business_date\.eq\.\$\{day\.businessDate\}/);
+  for (const timestamp of ["completed_at", "cancelled_at"]) {
     assert.match(query, new RegExp(`gte\\(\"${timestamp}\", day\\.start\\.toISOString\\(\\)\\)\\.lt\\(\"${timestamp}\", endExclusive\\.toISOString\\(\\)\\)`));
   }
   assert.match(query, /created: created\.length/);
