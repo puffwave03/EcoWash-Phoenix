@@ -44,14 +44,13 @@ function warningLabel(warning: DailyCloseSnapshotWarning, text: DailyCloseDefini
   return text.warningLabels[warning.code] ?? warning.code.replaceAll("_", " ");
 }
 
-function PersistedSummary({ close, data, locale, text }: {
+export function PersistedSummary({ close, locale, scopeLabel: selectedScope, text }: {
   close: PersistedDailyClose;
-  data: DailyCloseData;
   locale: string;
+  scopeLabel: string;
   text: DailyCloseDefinitiveText;
 }) {
   const snapshot = readDailyCloseSnapshot(close.snapshot);
-  const selectedScope = scopeLabel(data, text.allLocations, close.locationId);
 
   return (
     <Card className="space-y-5 border-green-200 bg-green-50/50">
@@ -110,7 +109,7 @@ function previewBlockers(data: DailyCloseData, text: DailyCloseDefinitiveText) {
 }
 
 export function DailyCloseWorkflow({ action, data, locale, persistedClose, text }: Props) {
-  if (persistedClose) return <PersistedSummary close={persistedClose} data={data} locale={locale} text={text} />;
+  if (persistedClose) return <PersistedSummary close={persistedClose} locale={locale} scopeLabel={scopeLabel(data, text.allLocations, persistedClose.locationId)} text={text} />;
 
   const blockers = previewBlockers(data, text);
   const preview: DailyCloseWorkflowPreview = {

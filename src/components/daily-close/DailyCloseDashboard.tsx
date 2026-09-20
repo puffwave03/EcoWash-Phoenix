@@ -29,6 +29,7 @@ type DailyCloseText = {
   empty: string;
   filter: Record<"allLocations" | "apply" | "businessDate" | "current" | "future" | "location" | "past", string>;
   groups: Record<"incompleteDeliveries" | "incompletePickups", string>;
+  history: { open: string };
   labels: {
     assignedTo: string;
     customer: string;
@@ -176,7 +177,12 @@ export function DailyCloseDashboard({ closeAction, data, locale, persistedClose,
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow={text.previewLabel} title={text.title} description={text.description} />
+      <PageHeader
+        action={<Link className="inline-flex min-h-11 w-full items-center justify-center rounded-control border border-primary px-4 text-sm font-semibold text-primary hover:bg-primary hover:text-white sm:w-auto" href="/app/daily-close/history" locale={locale}>{text.history.open}</Link>}
+        eyebrow={text.previewLabel}
+        title={text.title}
+        description={text.description}
+      />
       <div className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">{text.nonFiscal}</div>
 
       <section className="space-y-3" aria-labelledby="daily-close-business-day">

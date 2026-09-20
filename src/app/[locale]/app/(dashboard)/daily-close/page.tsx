@@ -47,6 +47,7 @@ export default async function DailyClosePage({ params, searchParams }: DailyClos
         empty: t("empty"),
         filter: t.raw("filter"),
         groups: t.raw("groups"),
+        history: { open: t("history.open") },
         labels: {
           assignedTo: t("labels.assignedTo"),
           customer: t("labels.customer"),
