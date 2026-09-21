@@ -10,6 +10,19 @@ export type WarehousePosition = {
   name: string | null;
   positionType: WarehousePositionType;
 };
+
+export type WarehouseLocation = {
+  id: string;
+  isActive: boolean;
+  name: string;
+};
+
+export type WarehousePositionActionState = {
+  fieldErrors: Record<string, string>;
+  formError: "duplicate" | "generic" | "location" | "notFound" | null;
+  success: boolean;
+};
+
 export type OrderStorageAssignment = {
   enteredAt: string;
   id: string;

@@ -3,6 +3,7 @@ import "server-only";
 import type {
   OrderStorageAssignment,
   OrderStorageMode,
+  WarehouseLocation,
   WarehousePosition,
   WarehousePositionType,
 } from "@/features/warehouse/types";
@@ -33,6 +34,26 @@ type OrderStorageRow = {
 function positionRelation(value: OrderStorageRow["position"]) {
   return Array.isArray(value) ? value[0] : value;
 }
+
+export async function listWarehouseLocations(locale: string): Promise<WarehouseLocation[]> {
+  const { membership } = await requireMembership(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("locations")
+    .select("id, name, is_active")
+    .eq("organization_id", membership.organization.id)
+    .is("deleted_at", null)
+    .order("name")
+    .limit(100)
+    .returns<Array<{ id: string; is_active: boolean; name: string }>>();
+  if (error) throw new Error(`warehouse_locations_read_failed:${error.code}`);
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    isActive: row.is_active,
+    name: row.name,
+  }));
+}
+
 export async function listWarehousePositions(
   locale: string,
   locationId?: string,
