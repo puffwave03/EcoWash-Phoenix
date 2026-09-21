@@ -8,6 +8,7 @@ import type {
   WarehousePositionType,
 } from "@/features/warehouse/types";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type WarehousePositionRow = {
@@ -59,7 +60,7 @@ export async function listWarehousePositions(
   locationId?: string,
 ): Promise<WarehousePosition[]> {
   const { membership } = await requireMembership(locale);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   let query = supabase.from("warehouse_positions")
     .select("id, location_id, code, name, description, position_type, is_active")
     .eq("organization_id", membership.organization.id)
