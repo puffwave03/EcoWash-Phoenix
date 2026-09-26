@@ -37,6 +37,7 @@ export type Order = {
   internalNotes: string | null;
   isActive: boolean;
   isSharedWalkIn: boolean;
+  locationId: string | null;
   orderNumber: string;
   priority: OrderPriority;
   productionStatus: ProductionStatus;

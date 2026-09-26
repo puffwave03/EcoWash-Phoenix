@@ -32,6 +32,7 @@ type OrderRow = {
   id: string;
   internal_notes: string | null;
   is_active: boolean;
+  location_id: string | null;
   order_number: string;
   priority: Order["priority"];
   production_status: ProductionStatus;
@@ -98,7 +99,7 @@ export type ProductionQueueOrder = Pick<
 >;
 
 const ORDER_SELECT =
-  "id, order_number, customer_id, property_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, assigned_to, is_active, created_at, walk_in_name, walk_in_phone, customer:customers!orders_customer_same_organization!inner(customer_code, display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
+  "id, order_number, customer_id, property_id, location_id, production_status, priority, due_at, completed_at, customer_notes, internal_notes, subtotal, discount_amount, total, currency, assigned_to, is_active, created_at, walk_in_name, walk_in_phone, customer:customers!orders_customer_same_organization!inner(customer_code, display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const PRODUCTION_QUEUE_SELECT =
   "id, order_number, production_status, priority, due_at, assigned_to, walk_in_name, customer:customers!orders_customer_same_organization!inner(customer_code, display_name), property:properties!orders_property_same_customer(name), assigned_to_profile:profiles!orders_assigned_to_fkey(display_name)";
 const ITEM_SELECT =
@@ -135,6 +136,7 @@ function mapOrder(row: OrderRow, occasionalCustomer: string): Order {
     internalNotes: row.internal_notes,
     isActive: row.is_active,
     isSharedWalkIn: (Array.isArray(row.customer) ? row.customer[0] : row.customer)?.customer_code === "WALKIN-SHARED",
+    locationId: row.location_id,
     orderNumber: row.order_number,
     priority: row.priority,
     productionStatus: row.production_status,

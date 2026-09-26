@@ -10,6 +10,7 @@ import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
+import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
 import { Link } from "@/i18n/navigation";
 import {
   saveDeliveryAction,
@@ -63,6 +64,11 @@ import { requireMembership } from "@/lib/auth/require-membership";
 import { formatCurrency, formatNumberInput } from "@/lib/number-format";
 import { getQuickDropOrderOrNull } from "@/features/quick-drop/server/queries";
 import { formatOrganizationDateTime } from "@/lib/organization-timezone";
+import { saveOrderStorageAssignmentAction } from "@/features/warehouse/server/storage-actions";
+import {
+  getOrderStorageAssignment,
+  listWarehousePositions,
+} from "@/features/warehouse/server/queries";
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -89,7 +95,7 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -108,6 +114,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getTranslations({ locale, namespace: "common.print" }),
     getTranslations({ locale, namespace: "common.quickDrop" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
+    getTranslations({ locale, namespace: "common.orderStorage" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
@@ -130,6 +137,13 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
+  const [storageAssignment, warehousePositions] = canManageAssignments
+    ? await Promise.all([
+        getOrderStorageAssignment(locale, order.id),
+        order.locationId ? listWarehousePositions(locale, order.locationId) : Promise.resolve([]),
+      ])
+    : [null, []];
+  const activeWarehousePositions = warehousePositions.filter((position) => position.isActive);
   const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
     && hasOperationalCapability(access.membership, "pos");
   const posSession = canUsePos ? await getCurrentPosSession(locale) : null;
@@ -141,6 +155,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const sectionLinks = [
     { href: "#items", label: t("items.title") },
     { href: "#production", label: t("workflow.change") },
+    ...(canManageAssignments ? [{ href: "#warehouse-storage", label: storageT("title") }] : []),
     { href: "#logistics", label: t("logistics.title") },
     ...(handoff || canCompleteCustomerHandoff ? [{ href: "#customer-handoff", label: t("handoff.title") }] : []),
     { href: "#payments", label: t("payments.title") },
@@ -364,6 +379,19 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </Card>
         </div>
       </SectionShell>
+
+      {canManageAssignments ? (
+        <SectionShell id="warehouse-storage" title={storageT("title")}>
+          <OrderStoragePanel
+            action={saveOrderStorageAssignmentAction.bind(null, locale, order.id)}
+            assignment={storageAssignment}
+            enteredAt={storageAssignment ? formatOrganizationDateTime(storageAssignment.enteredAt, locale, access.membership.organization.timezone) : null}
+            hasOrderLocation={Boolean(order.locationId)}
+            positions={activeWarehousePositions}
+            text={storageT.raw("labels") as OrderStorageText}
+          />
+        </SectionShell>
+      ) : null}
 
       <SectionShell id="logistics" title={t("logistics.title")}>
         <LogisticsPanel

@@ -34,3 +34,9 @@ export type OrderStorageAssignment = {
   positionName: string | null;
   storageMode: OrderStorageMode;
 };
+
+export type OrderStorageActionState = {
+  fieldErrors: Record<string, string>;
+  formError: "generic" | "notFound" | "orderLocation" | "position" | null;
+  success: boolean;
+};

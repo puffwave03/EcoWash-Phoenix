@@ -87,7 +87,7 @@ export async function getOrderStorageAssignment(
   orderId: string,
 ): Promise<OrderStorageAssignment | null> {
   const { membership } = await requireMembership(locale);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase.from("order_storage")
     .select("id, order_id, location_id, warehouse_position_id, package_count, storage_mode, entered_at, position:warehouse_positions!order_storage_position_same_location(id, code, name)")
     .eq("organization_id", membership.organization.id)
