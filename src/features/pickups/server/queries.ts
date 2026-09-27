@@ -1,7 +1,7 @@
 import "server-only";
 
 import { notFound } from "next/navigation";
-import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
+import { isVisibleInboundPickupParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import {
   relationName,
@@ -189,7 +189,7 @@ export async function getPickupWorkspaceData(
 
       if (
         !order ||
-        !isOperationalLogisticsParent({
+        !isVisibleInboundPickupParent({
           isActive: order.is_active,
           productionStatus: order.production_status,
         })
@@ -244,7 +244,7 @@ export async function getPickupWorkspaceTask(locale: string, pickupId: string) {
 
   if (
     !order ||
-    !isOperationalLogisticsParent({
+    !isVisibleInboundPickupParent({
       isActive: order.is_active,
       productionStatus: order.production_status,
     })

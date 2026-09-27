@@ -15,6 +15,7 @@ type DashboardShellText = {
   controlGroup: string;
   dailyClose: string;
   delivery: string;
+  pickup: string;
   foundation: string;
   logout: string;
   logoutError: string;
@@ -127,6 +128,7 @@ export function DashboardShell({
                 customers: text.customers,
                 dailyClose: text.dailyClose,
                 delivery: text.delivery,
+                pickup: text.pickup,
                 managementGroup: text.managementGroup,
                 more: text.more,
                 closeMore: text.closeMore,
@@ -206,6 +208,7 @@ export function DashboardShell({
               customers: text.customers,
               dailyClose: text.dailyClose,
               delivery: text.delivery,
+              pickup: text.pickup,
               managementGroup: text.managementGroup,
               more: text.more,
               closeMore: text.closeMore,
@@ -249,6 +252,7 @@ export function DashboardShell({
           customers: text.customers,
           dailyClose: text.dailyClose,
           delivery: text.delivery,
+          pickup: text.pickup,
           managementGroup: text.managementGroup,
           more: text.more,
           closeMore: text.closeMore,

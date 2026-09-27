@@ -3,7 +3,7 @@ import "server-only";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
+import { isVisibleInboundPickupParent, isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { ProductionStatus } from "@/features/orders/types";
 import { hasPendingInboundPickup } from "@/features/orders/display-status";
@@ -113,7 +113,7 @@ function logisticsActivity(
 
   if (
     !order ||
-    !isOperationalLogisticsParent({
+    !(kind === "pickup" ? isVisibleInboundPickupParent : isOperationalLogisticsParent)({
       isActive: order.is_active,
       productionStatus: order.production_status,
     })

@@ -416,6 +416,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             isActive: order.isActive,
             productionStatus: order.productionStatus,
           })}
+          pickupTransitionsEnabled={order.isActive && (order.productionStatus === "draft" || order.productionStatus === "received")}
           inboundUnavailable={warehouseError}
           timeZone={access.membership.organization.timezone}
           text={{

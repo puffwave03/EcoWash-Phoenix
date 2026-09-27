@@ -277,6 +277,9 @@ export async function transitionOrderStatusAction(
   });
 
   if (error) {
+    if (error.message.includes("warehouse_default_inbound_unavailable")) {
+      redirect(`/${locale}/app/orders/${orderId}?warehouse=inbound-unavailable`);
+    }
     if (error.message.includes("quick_drop_detail_required")) {
       redirect(`/${locale}/app/orders/${orderId}#items`);
     }

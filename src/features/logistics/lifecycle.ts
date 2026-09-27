@@ -15,3 +15,10 @@ export function isOperationalLogisticsParent({
     productionStatus !== "cancelled"
   );
 }
+
+export function isVisibleInboundPickupParent({
+  isActive,
+  productionStatus,
+}: LogisticsParent) {
+  return isActive && productionStatus !== "cancelled";
+}

@@ -6,7 +6,7 @@ import {
 } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
+import { isVisibleInboundPickupParent, isOperationalLogisticsParent } from "@/features/logistics/lifecycle";
 import type {
   FulfillmentStatus,
   LogisticsRecord,
@@ -146,7 +146,7 @@ function mapDeliveryTask(row: DeliveryTaskRow, kind: DeliveryTaskKind): Delivery
 
   if (
     !order ||
-    !isOperationalLogisticsParent({
+    !(kind === "pickup" ? isVisibleInboundPickupParent : isOperationalLogisticsParent)({
       isActive: order.is_active,
       productionStatus: order.production_status,
     })

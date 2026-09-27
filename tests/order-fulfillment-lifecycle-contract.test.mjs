@@ -32,28 +32,28 @@ test("2 assigned draft deliveries are absent from the staff delivery workspace",
   assert.doesNotMatch(deliveries, /function isOperationalOrder/);
 });
 
-test("3 assigned draft pickups are absent while completed history stays separate", async () => {
+test("3 assigned draft pickups are visible while completed history stays separate", async () => {
   const pickups = await source("src/features/pickups/server/queries.ts");
 
   assert.match(pickups, /\.in\("status", \["scheduled", "in_progress"\]\)/);
   assert.match(pickups, /completedQuery[\s\S]*\.eq\("status", "completed"\)/);
   assert.match(pickups, /activeQuery = activeQuery\.eq\("assigned_to", profile\.id\)/);
   assert.match(pickups, /completedQuery = completedQuery\.eq\("assigned_to", profile\.id\)/);
-  assert.match(pickups, /isOperationalLogisticsParent\(\{[\s\S]*productionStatus: order\.production_status/);
+  assert.match(pickups, /isVisibleInboundPickupParent\(\{[\s\S]*productionStatus: order\.production_status/);
   assert.match(pickups, /const completedToday = \(completedResult\.data \?\? \[\]\)\.flatMap/);
   assert.match(pickups, /const tasks = \(activeResult\.data \?\? \[\]\)/);
 });
 
-test("4 draft logistics are absent from My Day without changing production cards", async () => {
+test("4 My Day distinguishes draft pickups from draft deliveries without changing production cards", async () => {
   const work = await source("src/features/work/server/queries.ts");
 
   assert.match(work, /const PRODUCTION_STATUSES:[\s\S]*"received"[\s\S]*"packing"/);
-  assert.match(work, /function logisticsActivity[\s\S]*isOperationalLogisticsParent\(\{/);
+  assert.match(work, /function logisticsActivity[\s\S]*kind === "pickup" \? isVisibleInboundPickupParent : isOperationalLogisticsParent/);
   assert.match(work, /pickupsQuery[\s\S]*\.in\("status", \["scheduled", "in_progress"\]\)/);
   assert.match(work, /deliveriesQuery[\s\S]*\.in\("status", \["scheduled", "in_progress"\]\)/);
 });
 
-test("5 completed-production open logistics remain eligible across operational read models", async () => {
+test("5 completed-production deliveries remain eligible while pickups are pre-production", async () => {
   const [lifecycle, deliveries, pickups, work] = await Promise.all([
     source("src/features/logistics/lifecycle.ts"),
     source("src/features/deliveries/server/queries.ts"),
@@ -62,10 +62,10 @@ test("5 completed-production open logistics remain eligible across operational r
   ]);
 
   assert.doesNotMatch(lifecycle, /productionStatus !== "completed"/);
-  for (const readModel of [deliveries, pickups, work]) {
-    assert.match(readModel, /isOperationalLogisticsParent/);
-    assert.doesNotMatch(readModel, /\["completed", "cancelled"\]\.includes\(order\.production_status\)/);
-  }
+  assert.match(deliveries, /isOperationalLogisticsParent/);
+  assert.match(pickups, /isVisibleInboundPickupParent/);
+  assert.match(work, /kind === "pickup" \? isVisibleInboundPickupParent : isOperationalLogisticsParent/);
+  for (const readModel of [deliveries, pickups, work]) assert.doesNotMatch(readModel, /\["completed", "cancelled"\]\.includes\(order\.production_status\)/);
 });
 
 test("6 ready and on-hold parents remain operational", async () => {
@@ -75,7 +75,7 @@ test("6 ready and on-hold parents remain operational", async () => {
   assert.doesNotMatch(lifecycle, /FINAL_PRODUCTION_STATUSES/);
 });
 
-test("7 the combined queue applies the shared parent lifecycle rule", async () => {
+test("7 the combined queue applies separate pickup and delivery parent rules", async () => {
   const logistics = await source("src/features/logistics/server/queries.ts");
   const queue = logistics.slice(
     logistics.indexOf("type DeliveryTaskOrderRelation"),
@@ -85,7 +85,7 @@ test("7 the combined queue applies the shared parent lifecycle rule", async () =
   assert.match(queue, /production_status: ProductionStatus/);
   assert.match(queue, /is_active: boolean/);
   assert.match(queue, /order_number, production_status, is_active/);
-  assert.match(queue, /isOperationalLogisticsParent\(\{/);
+  assert.match(queue, /kind === "pickup" \? isVisibleInboundPickupParent : isOperationalLogisticsParent/);
 });
 
 test("8 order-detail draft planning stays readable and configurable", async () => {
@@ -104,7 +104,7 @@ test("8 order-detail draft planning stays readable and configurable", async () =
   assert.match(page, /savePickup: savePickupAction/);
 });
 
-test("9 draft order detail hides start and complete while preserving cancellation", async () => {
+test("9 draft order detail permits pickup execution while delivery stays gated", async () => {
   const [panel, page] = await Promise.all([
     source("src/components/logistics/LogisticsPanel.tsx"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"),
@@ -113,6 +113,7 @@ test("9 draft order detail hides start and complete while preserving cancellatio
   assert.match(panel, /operationalTransitionsEnabled \|\|[\s\S]*!\["in_progress", "completed"\]\.includes\(status\)/);
   assert.match(panel, /status === "cancelled"/);
   assert.match(page, /operationalTransitionsEnabled=\{isOperationalLogisticsParent\(\{/);
+  assert.match(page, /pickupTransitionsEnabled=\{order\.isActive && \(order\.productionStatus === "draft" \|\| order\.productionStatus === "received"\)\}/);
 });
 
 test("10 transition RPCs reject operational advancement for draft or cancelled parents", async () => {

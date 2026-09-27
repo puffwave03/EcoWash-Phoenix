@@ -53,6 +53,7 @@ type LogisticsPanelProps = {
   configurationEnabled: boolean;
   logistics: OrderLogistics;
   operationalTransitionsEnabled: boolean;
+  pickupTransitionsEnabled: boolean;
   inboundUnavailable?: boolean;
   text: LogisticsPanelText;
   timeZone: string;
@@ -228,6 +229,7 @@ export function LogisticsPanel({
   configurationEnabled,
   logistics,
   operationalTransitionsEnabled,
+  pickupTransitionsEnabled,
   inboundUnavailable = false,
   text,
   timeZone,
@@ -238,7 +240,7 @@ export function LogisticsPanel({
       <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
           <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} editable={configurationEnabled} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} timeZone={timeZone} title={text.pickup} />
-          {configurationEnabled ? <TransitionButtons action={actions.transitionPickup} inboundUnavailable={inboundUnavailable} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} /> : null}
+          {configurationEnabled ? <TransitionButtons action={actions.transitionPickup} inboundUnavailable={inboundUnavailable} operationalTransitionsEnabled={pickupTransitionsEnabled} record={logistics.pickup} text={text} /> : null}
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
           <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} editable={configurationEnabled} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />

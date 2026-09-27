@@ -5,7 +5,7 @@ import test from "node:test";
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migrationPath = "supabase/migrations/20260927000200_warehouse_001d_b1_automatic_inbound_storage.sql";
 
-// The migration is intentionally unapplied: these contracts check its canonical boundaries.
+// Historical B1 contracts; the forward-only inbound-custody migration supersedes its intake hook.
 test("1 counter submission finalization stages Quick Drop and Terminal inside their RPC transactions", async () => {
   const [sql, quickDrop, terminal] = await Promise.all([
     source(migrationPath),

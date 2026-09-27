@@ -44,6 +44,7 @@ export default async function DashboardLayout({
         controlGroup: t("controlGroup"),
         dailyClose: t("dailyClose"),
         delivery: t("delivery"),
+        pickup: t("pickup"),
         foundation: t("foundation"),
         logout: t("logout"),
         logoutError: t("logoutError"),

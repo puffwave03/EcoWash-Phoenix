@@ -25,6 +25,7 @@ type AppNavigationText = {
   more: string;
   closeMore: string;
   orders: string;
+  pickup: string;
   warehouse: string;
   pos: string;
   overview: string;
@@ -140,6 +141,14 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
+  if (href === "/app/work/pickups") {
+    return (
+      <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
+        <path d="M4 17h16M6 17V7h8v10M14 10h4l2 3v4M8 10h4M8 13h4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
   return (
     <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
       <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -219,6 +228,7 @@ export function AppNavigation({
             { href: "/app/work", label: text.work, match: "/app/work" },
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
+            { href: "/app/work/pickups", label: text.pickup, match: "/app/work/pickups" },
             { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
             { href: "/app/warehouse", label: text.warehouse, match: "/app/warehouse" },
           ],
@@ -254,6 +264,9 @@ export function AppNavigation({
               : []),
             ...(canUse("quality")
               ? [{ href: "/app/work/quality", label: text.quality, match: "/app/work/quality" }]
+              : []),
+            ...(canUse("pickup")
+              ? [{ href: "/app/work/pickups", label: text.pickup, match: "/app/work/pickups" }]
               : []),
             ...(canUse("delivery")
               ? [{ href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" }]
