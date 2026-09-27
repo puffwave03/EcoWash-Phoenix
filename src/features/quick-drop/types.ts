@@ -22,6 +22,6 @@ export type PendingQuickDrop = {
 };
 
 export type QuickDropCreateResult = {
-  error: "closedDay" | "generic" | "validation" | null;
+  error: "closedDay" | "generic" | "inboundUnavailable" | "validation" | null;
   order: QuickDropOrder | null;
 };

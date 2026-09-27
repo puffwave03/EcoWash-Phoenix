@@ -244,15 +244,24 @@ export async function transitionPickupAction(
   });
 
   if (error) {
+    if (error.message.includes("warehouse_default_inbound_unavailable")) {
+      redirect(surface === "workspace"
+        ? `/${locale}/app/work/pickups/${pickupId}?warehouse=inbound-unavailable`
+        : `/${locale}/app/orders/${orderId}?warehouse=inbound-unavailable#logistics`);
+    }
     console.error("Pickup transition failed", error.code);
     return;
   }
 
   revalidateOrder(locale, orderId);
   revalidatePath(`/${locale}/app/work/pickups/${pickupId}`);
+  revalidatePath(`/${locale}/app/warehouse`);
 
   if (transitionLeavesLogisticsSurface(surface, targetStatus)) {
     redirect(logisticsWorkspacePath(locale, "pickups"));
+  }
+  if (formData.get("clearWarehouseError") === "true") {
+    redirect(`/${locale}/app/orders/${orderId}#logistics`);
   }
 }
 

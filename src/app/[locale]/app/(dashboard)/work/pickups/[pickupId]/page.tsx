@@ -5,19 +5,23 @@ import { getPickupWorkspaceTask } from "@/features/pickups/server/queries";
 
 type PickupDetailPageProps = {
   params: Promise<{ locale: string; pickupId: string }>;
+  searchParams: Promise<{ warehouse?: string }>;
 };
 
-export default async function PickupDetailPage({ params }: PickupDetailPageProps) {
+export default async function PickupDetailPage({ params, searchParams }: PickupDetailPageProps) {
   const { locale, pickupId } = await params;
-  const [{ isSupervision, task, timeZone }, t] = await Promise.all([
+  const warehouseError = (await searchParams).warehouse === "inbound-unavailable";
+  const [{ isSupervision, task, timeZone }, t, commonT] = await Promise.all([
     getPickupWorkspaceTask(locale, pickupId),
     getTranslations({ locale, namespace: "common.pickupWorkspace" }),
+    getTranslations({ locale, namespace: "common" }),
   ]);
 
   return (
     <PickupDetail
       action={transitionPickupAction.bind(null, locale, task.orderId, "workspace")}
       isSupervision={isSupervision}
+      inboundUnavailable={warehouseError}
       locale={locale}
       task={task}
       text={{
@@ -30,6 +34,7 @@ export default async function PickupDetailPage({ params }: PickupDetailPageProps
         details: t("detail.details"),
         noNotes: t("detail.noNotes"),
         noTime: t("noTime"),
+        inboundUnavailable: commonT("warehouseInboundUnavailable"),
         notes: t("detail.notes"),
         openOrder: t("detail.openOrder"),
         order: t("order"),

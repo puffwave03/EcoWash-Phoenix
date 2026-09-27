@@ -72,6 +72,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
+  searchParams: Promise<{ warehouse?: string }>;
 };
 
 function SectionShell({
@@ -93,9 +94,10 @@ function SectionShell({
   );
 }
 
-export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
+export default async function OrderDetailPage({ params, searchParams }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT] = await Promise.all([
+  const warehouseError = (await searchParams).warehouse === "inbound-unavailable";
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, commonT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -115,6 +117,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     getTranslations({ locale, namespace: "common.quickDrop" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
     getTranslations({ locale, namespace: "common.orderStorage" }),
+    getTranslations({ locale, namespace: "common" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
@@ -394,6 +397,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       ) : null}
 
       <SectionShell id="logistics" title={t("logistics.title")}>
+        {warehouseError ? <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("warehouseInboundUnavailable")}</p> : null}
         <LogisticsPanel
           actions={{
             saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
@@ -412,6 +416,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             isActive: order.isActive,
             productionStatus: order.productionStatus,
           })}
+          inboundUnavailable={warehouseError}
           timeZone={access.membership.organization.timezone}
           text={{
             addressLine1: t("logistics.addressLine1"),

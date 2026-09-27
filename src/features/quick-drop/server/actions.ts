@@ -44,12 +44,14 @@ export async function createQuickDropAction(locale: string, formData: FormData):
 
   if (error || !data) {
     console.error("Quick Drop create failed", error?.code ?? "unknown");
-    return { error: isBusinessDayClosedError(error) ? "closedDay" : "generic", order: null };
+    return { error: isBusinessDayClosedError(error) ? "closedDay"
+      : error?.message.includes("warehouse_default_inbound_unavailable") ? "inboundUnavailable" : "generic", order: null };
   }
 
   revalidatePath(`/${locale}/app`);
   revalidatePath(`/${locale}/app/orders`);
   revalidatePath(`/${locale}/app/orders/${data.order_id}`);
+  revalidatePath(`/${locale}/app/warehouse`);
   revalidatePath(`/${locale}/app/shop`);
   return {
     error: null,

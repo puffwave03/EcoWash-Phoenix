@@ -53,6 +53,7 @@ type LogisticsPanelProps = {
   configurationEnabled: boolean;
   logistics: OrderLogistics;
   operationalTransitionsEnabled: boolean;
+  inboundUnavailable?: boolean;
   text: LogisticsPanelText;
   timeZone: string;
 };
@@ -184,11 +185,13 @@ function LogisticsForm({
 function TransitionButtons({
   action,
   operationalTransitionsEnabled,
+  inboundUnavailable = false,
   record,
   text,
 }: {
   action: (formData: FormData) => Promise<void>;
   operationalTransitionsEnabled: boolean;
+  inboundUnavailable?: boolean;
   record: LogisticsRecord | null;
   text: LogisticsPanelText;
 }) {
@@ -205,6 +208,7 @@ function TransitionButtons({
         <form action={action} className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap" key={status}>
           <input name="recordId" type="hidden" value={record.id} />
           <input name="targetStatus" type="hidden" value={status} />
+          {inboundUnavailable ? <input name="clearWarehouseError" type="hidden" value="true" /> : null}
           {status === "cancelled" ? (
             <input className="min-h-11 w-full min-w-0 rounded-control border border-border px-3 text-sm sm:w-auto" name="reason" placeholder={text.cancelledReason} required />
           ) : null}
@@ -224,6 +228,7 @@ export function LogisticsPanel({
   configurationEnabled,
   logistics,
   operationalTransitionsEnabled,
+  inboundUnavailable = false,
   text,
   timeZone,
 }: LogisticsPanelProps) {
@@ -233,7 +238,7 @@ export function LogisticsPanel({
       <div className="grid gap-4 xl:grid-cols-2 xl:gap-6">
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.pickup}>
           <LogisticsForm action={actions.savePickup} assignments={assignments.pickup} canAssign={canAssign} editable={configurationEnabled} key={`pickup:${logistics.pickup?.id ?? "new"}:${logistics.pickup?.assignedTo ?? "unassigned"}`} record={logistics.pickup} text={text} timeZone={timeZone} title={text.pickup} />
-          {configurationEnabled ? <TransitionButtons action={actions.transitionPickup} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} /> : null}
+          {configurationEnabled ? <TransitionButtons action={actions.transitionPickup} inboundUnavailable={inboundUnavailable} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.pickup} text={text} /> : null}
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
           <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} editable={configurationEnabled} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />

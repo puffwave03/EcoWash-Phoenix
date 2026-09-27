@@ -12,6 +12,7 @@ export type PickupDetailText = {
   details: string;
   noNotes: string;
   noTime: string;
+  inboundUnavailable: string;
   notes: string;
   openOrder: string;
   order: string;
@@ -26,6 +27,7 @@ export type PickupDetailText = {
 type PickupDetailProps = {
   action: (formData: FormData) => Promise<void>;
   isSupervision: boolean;
+  inboundUnavailable: boolean;
   locale: string;
   task: PickupTask;
   text: PickupDetailText;
@@ -66,6 +68,7 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 export function PickupDetail({
   action,
   isSupervision,
+  inboundUnavailable,
   locale,
   task,
   text,
@@ -143,6 +146,7 @@ export function PickupDetail({
           </section>
 
           <div className="space-y-2.5 border-t border-border pt-5">
+            {inboundUnavailable ? <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{text.inboundUnavailable}</p> : null}
             {targetStatus ? (
               <form action={action}>
                 <input name="recordId" type="hidden" value={task.id} />

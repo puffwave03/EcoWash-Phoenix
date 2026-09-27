@@ -266,12 +266,14 @@ export async function submitShopOrderAction(
     console.error("Shop order submit failed", error?.code);
     const known = isBusinessDayClosedError(error)
       ? "closedDay"
-      : error?.message.includes("session") ? "till" : error?.message.includes("discount") ? "discount" : "generic";
+      : error?.message.includes("warehouse_default_inbound_unavailable") ? "inboundUnavailable"
+        : error?.message.includes("session") ? "till" : error?.message.includes("discount") ? "discount" : "generic";
     return { error: known, result: null };
   }
 
   revalidatePath(`/${locale}/app/shop`);
   revalidatePath(`/${locale}/app/orders`);
+  revalidatePath(`/${locale}/app/warehouse`);
   revalidatePath(`/${locale}/app/pos`);
   revalidatePath(`/${locale}/app/customers/${customerId}`);
   revalidatePath(`/${locale}/app/billing`);
