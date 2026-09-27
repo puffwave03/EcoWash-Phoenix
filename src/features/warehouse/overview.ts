@@ -39,6 +39,7 @@ export function summarizeCurrentWarehouse(
   const ordersByType = Object.fromEntries(POSITION_TYPES.map((type) => [type, 0])) as Record<WarehousePositionType, number>;
   const positionTypes = new Map(positions.map((position) => [position.id, position.positionType]));
   let totalPackages = 0;
+  let cancelledOrdersInCustody = 0;
 
   for (const order of orders) {
     const type = positionTypes.get(order.positionId);
@@ -49,6 +50,7 @@ export function summarizeCurrentWarehouse(
     counts.set(order.positionId, count);
     ordersByType[type] += 1;
     totalPackages += order.packageCount;
+    if (order.productionStatus === "cancelled") cancelledOrdersInCustody += 1;
   }
 
   const positionOverview: WarehousePositionOverview[] = positions.map((position) => ({
@@ -61,7 +63,7 @@ export function summarizeCurrentWarehouse(
     || left.locationName.localeCompare(right.locationName)
     || left.code.localeCompare(right.code));
 
-  return { totalOrders: orders.length, totalPackages, ordersByType, positions: positionOverview };
+  return { totalOrders: orders.length, totalPackages, cancelledOrdersInCustody, ordersByType, positions: positionOverview };
 }
 
 export function filterCurrentStoredOrders(

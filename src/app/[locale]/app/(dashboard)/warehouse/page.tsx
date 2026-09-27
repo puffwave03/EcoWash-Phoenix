@@ -43,9 +43,10 @@ export default async function WarehouseOverviewPage({ params, searchParams }: Pa
     <div className="space-y-6">
       <PageHeader eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
 
-      <section aria-label={t("summary")} className="grid gap-3 sm:grid-cols-2">
+      <section aria-label={t("summary")} className="grid gap-3 sm:grid-cols-3">
         <Card className="bg-white/95"><p className="text-sm text-muted">{t("totalOrders")}</p><p className="mt-1 text-3xl font-black text-primary">{overview.totalOrders}</p></Card>
         <Card className="bg-white/95"><p className="text-sm text-muted">{t("totalPackages")}</p><p className="mt-1 text-3xl font-black text-primary">{overview.totalPackages}</p></Card>
+        <Card className="border-rose-300 bg-rose-50"><p className="text-sm font-semibold text-rose-900">{t("cancelledInCustody")}</p><p className="mt-1 text-3xl font-black text-rose-950">{overview.cancelledOrdersInCustody}</p></Card>
       </section>
       <Card className="bg-white/95">
         <h2 className="font-semibold text-primary">{t("byType")}</h2>
@@ -85,8 +86,10 @@ export default async function WarehouseOverviewPage({ params, searchParams }: Pa
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {filteredOrders.map((order) => {
               const position = positionsById.get(order.positionId);
-              return <Link className="rounded-card border border-border bg-white p-4 shadow-sm transition-standard hover:border-primary/40 hover:bg-primary-soft/30" href={`/app/orders/${order.orderId}`} key={order.orderId} locale={locale}>
-                <div className="flex items-start justify-between gap-2"><div><p className="font-bold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><span className="rounded-full bg-primary-soft px-2 py-1 text-xs font-semibold text-primary">{statusLabels[order.productionStatus]}</span></div>
+              const isCancelled = order.productionStatus === "cancelled";
+              return <Link className={`rounded-card border p-4 shadow-sm transition-standard ${isCancelled ? "border-rose-400 bg-rose-50 hover:border-rose-600 hover:bg-rose-100" : "border-border bg-white hover:border-primary/40 hover:bg-primary-soft/30"}`} href={`/app/orders/${order.orderId}`} key={order.orderId} locale={locale}>
+                <div className="flex items-start justify-between gap-2"><div><p className="font-bold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><span className={`rounded-full px-2 py-1 text-xs font-bold ${isCancelled ? "bg-rose-200 text-rose-950" : "bg-primary-soft text-primary"}`}>{statusLabels[order.productionStatus]}</span></div>
+                {isCancelled ? <p className="mt-3 text-sm font-bold text-rose-950">{t("toReturn")}</p> : null}
                 <dl className="mt-3 grid grid-cols-2 gap-2 text-sm"><div><dt className="text-muted">{t("position")}</dt><dd className="font-semibold text-foreground">{position?.code}{position?.name ? ` · ${position.name}` : ""}</dd></div><div><dt className="text-muted">{t("packageCount")}</dt><dd className="font-semibold text-foreground">{order.packageCount}</dd></div><div><dt className="text-muted">{t("storageMode")}</dt><dd className="font-semibold text-foreground">{modeLabels[order.storageMode]}</dd></div><div><dt className="text-muted">{t("enteredAt")}</dt><dd className="font-semibold text-foreground">{formatOrganizationDateTime(order.enteredAt, locale, data.timeZone)}</dd></div></dl>
               </Link>;
             })}
