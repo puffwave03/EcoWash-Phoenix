@@ -22,6 +22,7 @@ type DashboardShellText = {
   navigationLabel: string;
   customers: string;
   orders: string;
+  warehouse: string;
   pos: string;
   organizationLabel: string;
   overview: string;
@@ -126,6 +127,7 @@ export function DashboardShell({
                 delivery: text.delivery,
                 managementGroup: text.managementGroup,
                 orders: text.orders,
+                warehouse: text.warehouse,
                 pos: text.pos,
                 overview: text.overview,
                 production: text.production,
@@ -202,6 +204,7 @@ export function DashboardShell({
               delivery: text.delivery,
               managementGroup: text.managementGroup,
               orders: text.orders,
+              warehouse: text.warehouse,
               pos: text.pos,
               overview: text.overview,
               production: text.production,
@@ -242,6 +245,7 @@ export function DashboardShell({
           delivery: text.delivery,
           managementGroup: text.managementGroup,
           orders: text.orders,
+          warehouse: text.warehouse,
           pos: text.pos,
           overview: text.overview,
           production: text.production,

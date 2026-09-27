@@ -22,6 +22,7 @@ type AppNavigationText = {
   delivery: string;
   managementGroup: string;
   orders: string;
+  warehouse: string;
   pos: string;
   overview: string;
   production: string;
@@ -192,6 +193,7 @@ export function AppNavigation({
             { href: "/app/work/production", label: text.production, match: "/app/work/production" },
             { href: "/app/work/quality", label: text.quality, match: "/app/work/quality" },
             { href: "/app/work/deliveries", label: text.delivery, match: "/app/work/deliveries" },
+            { href: "/app/warehouse", label: text.warehouse, match: "/app/warehouse" },
           ],
           label: text.workGroup,
         },

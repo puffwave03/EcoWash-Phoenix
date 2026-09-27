@@ -51,6 +51,7 @@ export default async function DashboardLayout({
         navigationLabel: t("navigationLabel"),
         customers: t("customers"),
         orders: t("orders"),
+        warehouse: t("warehouse"),
         pos: t("pos"),
         organizationLabel: t("organizationLabel"),
         overview: t("overview"),

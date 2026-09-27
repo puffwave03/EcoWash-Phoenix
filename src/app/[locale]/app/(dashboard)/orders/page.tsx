@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { listOrders } from "@/features/orders/server/queries";
 import type { OrderDisplayStatus } from "@/features/orders/display-status";
 import { parseOrderFilters } from "@/features/orders/validation";
+import { requireMembership } from "@/lib/auth/require-membership";
 
 type OrdersPageProps = {
   params: Promise<{ locale: string }>;
@@ -17,21 +18,23 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   const { locale } = await params;
   const rawFilters = await searchParams;
   const filters = parseOrderFilters(rawFilters);
-  const [orderData, t] = await Promise.all([
+  const [orderData, t, navT, access] = await Promise.all([
     listOrders(locale, filters),
     getTranslations({ locale, namespace: "common.orders" }),
+    getTranslations({ locale, namespace: "common.auth.dashboard" }),
+    requireMembership(locale),
   ]);
+  const canViewWarehouse = access.membership.role === "owner" || access.membership.role === "manager";
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         description={t("description")}
-        action={(
-        <Link href="/app/orders/new" locale={locale}>
-          <Button>{t("newOrder")}</Button>
-        </Link>
-        )}
+        action={<div className="flex flex-wrap gap-2">
+          {canViewWarehouse ? <Link className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 font-semibold !text-primary" href="/app/warehouse" locale={locale}>{navT("warehouse")}</Link> : null}
+          <Link href="/app/orders/new" locale={locale}><Button>{t("newOrder")}</Button></Link>
+        </div>}
       />
 
       <Card className="bg-white/95">
