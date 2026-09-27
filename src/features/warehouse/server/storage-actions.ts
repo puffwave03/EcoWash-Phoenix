@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { OrderStorageActionState, OrderStorageMode } from "@/features/warehouse/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const STORAGE_MODES: OrderStorageMode[] = ["folded", "hanging", "mixed", "other"];
@@ -20,7 +21,7 @@ export async function saveOrderStorageAssignmentAction(
   formData: FormData,
 ): Promise<OrderStorageActionState> {
   void _state;
-  const { membership } = await requireOwnerOrManager(locale);
+  await requireOwnerOrManager(locale);
   const positionId = value(formData, "positionId");
   const packageCountValue = value(formData, "packageCount");
   const storageMode = value(formData, "storageMode") as OrderStorageMode;
@@ -35,76 +36,49 @@ export async function saveOrderStorageAssignmentAction(
   if (!STORAGE_MODES.includes(storageMode)) fieldErrors.storageMode = "invalid";
   if (Object.keys(fieldErrors).length) return { ...initialState, fieldErrors };
 
-  const admin = createSupabaseAdminClient();
-  const { data: order, error: orderError } = await admin.from("orders")
-    .select("id, location_id")
-    .eq("organization_id", membership.organization.id)
-    .eq("id", orderId)
-    .maybeSingle<{ id: string; location_id: string | null }>();
-  if (orderError) return { ...initialState, formError: "generic" };
-  if (!order) return { ...initialState, formError: "notFound" };
-  if (!order.location_id) return { ...initialState, formError: "orderLocation" };
-
-  const [{ data: location, error: locationError }, { data: position, error: positionError }] = await Promise.all([
-    admin.from("locations")
-      .select("id")
-      .eq("organization_id", membership.organization.id)
-      .eq("id", order.location_id)
-      .eq("is_active", true)
-      .is("deleted_at", null)
-      .maybeSingle<{ id: string }>(),
-    admin.from("warehouse_positions")
-      .select("id")
-      .eq("organization_id", membership.organization.id)
-      .eq("location_id", order.location_id)
-      .eq("id", positionId)
-      .eq("is_active", true)
-      .maybeSingle<{ id: string }>(),
-  ]);
-  if (locationError || positionError) return { ...initialState, formError: "generic" };
-  if (!location) return { ...initialState, formError: "orderLocation" };
-  if (!position) return { ...initialState, formError: "position" };
-
-  const { data: existing, error: existingError } = await admin.from("order_storage")
-    .select("id, warehouse_position_id")
-    .eq("organization_id", membership.organization.id)
-    .eq("order_id", orderId)
-    .maybeSingle<{ id: string; warehouse_position_id: string }>();
-  if (existingError) return { ...initialState, formError: "generic" };
-
-  if (existing) {
-    const update: {
-      entered_at?: string;
-      package_count: number;
-      storage_mode: OrderStorageMode;
-      warehouse_position_id: string;
-    } = {
-      package_count: packageCount,
-      storage_mode: storageMode,
-      warehouse_position_id: positionId,
-    };
-    if (existing.warehouse_position_id !== positionId) update.entered_at = new Date().toISOString();
-
-    const { data, error } = await admin.from("order_storage")
-      .update(update)
-      .eq("organization_id", membership.organization.id)
-      .eq("id", existing.id)
-      .select("id")
-      .maybeSingle<{ id: string }>();
-    if (error) return { ...initialState, formError: error.code === "22023" ? "position" : "generic" };
-    if (!data) return { ...initialState, formError: "notFound" };
-  } else {
-    const { error } = await admin.from("order_storage").insert({
-      location_id: order.location_id,
-      order_id: orderId,
-      organization_id: membership.organization.id,
-      package_count: packageCount,
-      storage_mode: storageMode,
-      warehouse_position_id: positionId,
-    });
-    if (error) return { ...initialState, formError: error.code === "22023" ? "position" : "generic" };
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("save_order_storage_assignment", {
+    target_order_id: orderId,
+    target_position_id: positionId,
+    target_package_count: packageCount,
+    target_storage_mode: storageMode,
+  });
+  if (error) {
+    const formError = error.message.includes("warehouse_storage_order_location_invalid")
+      ? "orderLocation" : error.message.includes("warehouse_storage_position_invalid")
+        ? "position" : "generic";
+    return { ...initialState, formError };
   }
+  if (!data) return { ...initialState, formError: "generic" };
 
   revalidatePath(`/${locale}/app/orders/${orderId}`);
+  revalidatePath(`/${locale}/app/warehouse`);
   return { ...initialState, success: true };
+}
+
+export async function returnCancelledOrderFromWarehouseAction(
+  locale: string,
+  orderId: string,
+  formData: FormData,
+): Promise<void> {
+  await requireOwnerOrManager(locale);
+  if (!UUID.test(orderId) || formData.get("confirmed") !== "yes") {
+    redirect(`/${locale}/app/warehouse?returnError=1`);
+  }
+  const note = value(formData, "note");
+  if (note.length > 500) redirect(`/${locale}/app/warehouse?returnError=1`);
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("return_cancelled_order_from_warehouse", {
+    target_order_id: orderId,
+    target_note: note || null,
+  });
+  if (error) {
+    console.error("Cancelled Warehouse return failed", error.code);
+    redirect(`/${locale}/app/warehouse?returnError=1`);
+  }
+
+  revalidatePath(`/${locale}/app/warehouse`);
+  revalidatePath(`/${locale}/app/orders/${orderId}`);
+  redirect(`/${locale}/app/warehouse?returned=1`);
 }

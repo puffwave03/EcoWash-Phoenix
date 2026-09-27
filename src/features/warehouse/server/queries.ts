@@ -3,11 +3,13 @@ import "server-only";
 import type {
   OrderStorageAssignment,
   OrderStorageMode,
+  WarehouseMovement,
   WarehouseLocation,
   WarehousePosition,
   WarehousePositionType,
 } from "@/features/warehouse/types";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -112,4 +114,53 @@ export async function getOrderStorageAssignment(
     positionName: position.name,
     storageMode: data.storage_mode,
   };
+}
+
+type WarehouseMovementRow = {
+  id: string;
+  occurred_at: string;
+  actor_name: string | null;
+  movement_type: WarehouseMovement["movementType"];
+  source: WarehouseMovement["source"];
+  from_position_label: string | null;
+  to_position_label: string | null;
+  from_package_count: number | null;
+  to_package_count: number | null;
+  from_storage_mode: OrderStorageMode | null;
+  to_storage_mode: OrderStorageMode | null;
+  note: string | null;
+};
+
+export async function listWarehouseMovements(locale: string, orderId: string): Promise<WarehouseMovement[]> {
+  const { membership } = await requireOwnerOrManager(locale);
+  const admin = createSupabaseAdminClient();
+  const rows: WarehouseMovementRow[] = [];
+  const pageSize = 500;
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await admin.from("warehouse_movements")
+      .select("id, occurred_at, actor_name, movement_type, source, from_position_label, to_position_label, from_package_count, to_package_count, from_storage_mode, to_storage_mode, note")
+      .eq("organization_id", membership.organization.id)
+      .eq("order_id", orderId)
+      .order("occurred_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(offset, offset + pageSize - 1)
+      .returns<WarehouseMovementRow[]>();
+    if (error) throw new Error(`warehouse_movements_read_failed:${error.code}`);
+    rows.push(...(data ?? []));
+    if (!data || data.length < pageSize) break;
+  }
+  return rows.map((row) => ({
+    id: row.id,
+    occurredAt: row.occurred_at,
+    actorName: row.actor_name,
+    movementType: row.movement_type,
+    source: row.source,
+    fromPositionLabel: row.from_position_label,
+    toPositionLabel: row.to_position_label,
+    fromPackageCount: row.from_package_count,
+    toPackageCount: row.to_package_count,
+    fromStorageMode: row.from_storage_mode,
+    toStorageMode: row.to_storage_mode,
+    note: row.note,
+  }));
 }

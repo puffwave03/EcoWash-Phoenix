@@ -2,13 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { PageHeader } from "@/components/operational/OperationalUi";
 import { listCurrentWarehouseOverview } from "@/features/warehouse/server/overview-queries";
+import { returnCancelledOrderFromWarehouseAction } from "@/features/warehouse/server/storage-actions";
 import { filterCurrentStoredOrders, POSITION_TYPES, STORAGE_MODES, summarizeCurrentWarehouse } from "@/features/warehouse/overview";
 import type { ProductionStatus } from "@/features/orders/types";
 import type { OrderStorageMode, WarehousePositionType } from "@/features/warehouse/types";
 import { Link } from "@/i18n/navigation";
 import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
-type SearchParams = { q?: string; location?: string; position?: string; mode?: string };
+type SearchParams = { q?: string; location?: string; position?: string; mode?: string; returned?: string; returnError?: string };
 type PageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<SearchParams>;
@@ -42,6 +43,8 @@ export default async function WarehouseOverviewPage({ params, searchParams }: Pa
   return (
     <div className="space-y-6">
       <PageHeader eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
+      {raw.returned === "1" ? <p className="rounded-control border border-emerald-300 bg-emerald-50 p-3 text-sm font-semibold text-emerald-950" role="status">{t("returnSuccess")}</p> : null}
+      {raw.returnError === "1" ? <p className="rounded-control border border-rose-300 bg-rose-50 p-3 text-sm font-semibold text-rose-950" role="alert">{t("returnError")}</p> : null}
 
       <section aria-label={t("summary")} className="grid gap-3 sm:grid-cols-3">
         <Card className="bg-white/95"><p className="text-sm text-muted">{t("totalOrders")}</p><p className="mt-1 text-3xl font-black text-primary">{overview.totalOrders}</p></Card>
@@ -87,11 +90,22 @@ export default async function WarehouseOverviewPage({ params, searchParams }: Pa
             {filteredOrders.map((order) => {
               const position = positionsById.get(order.positionId);
               const isCancelled = order.productionStatus === "cancelled";
-              return <Link className={`rounded-card border p-4 shadow-sm transition-standard ${isCancelled ? "border-rose-400 bg-rose-50 hover:border-rose-600 hover:bg-rose-100" : "border-border bg-white hover:border-primary/40 hover:bg-primary-soft/30"}`} href={`/app/orders/${order.orderId}`} key={order.orderId} locale={locale}>
-                <div className="flex items-start justify-between gap-2"><div><p className="font-bold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><span className={`rounded-full px-2 py-1 text-xs font-bold ${isCancelled ? "bg-rose-200 text-rose-950" : "bg-primary-soft text-primary"}`}>{statusLabels[order.productionStatus]}</span></div>
-                {isCancelled ? <p className="mt-3 text-sm font-bold text-rose-950">{t("toReturn")}</p> : null}
-                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm"><div><dt className="text-muted">{t("position")}</dt><dd className="font-semibold text-foreground">{position?.code}{position?.name ? ` · ${position.name}` : ""}</dd></div><div><dt className="text-muted">{t("packageCount")}</dt><dd className="font-semibold text-foreground">{order.packageCount}</dd></div><div><dt className="text-muted">{t("storageMode")}</dt><dd className="font-semibold text-foreground">{modeLabels[order.storageMode]}</dd></div><div><dt className="text-muted">{t("enteredAt")}</dt><dd className="font-semibold text-foreground">{formatOrganizationDateTime(order.enteredAt, locale, data.timeZone)}</dd></div></dl>
-              </Link>;
+              return <article className={`rounded-card border p-4 shadow-sm ${isCancelled ? "border-rose-400 bg-rose-50" : "border-border bg-white"}`} key={order.orderId}>
+                <Link className="block rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" href={`/app/orders/${order.orderId}`} locale={locale}>
+                  <div className="flex items-start justify-between gap-2"><div><p className="font-bold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><span className={`rounded-full px-2 py-1 text-xs font-bold ${isCancelled ? "bg-rose-200 text-rose-950" : "bg-primary-soft text-primary"}`}>{statusLabels[order.productionStatus]}</span></div>
+                  {isCancelled ? <p className="mt-3 text-sm font-bold text-rose-950">{t("toReturn")}</p> : null}
+                  <dl className="mt-3 grid grid-cols-2 gap-2 text-sm"><div><dt className="text-muted">{t("position")}</dt><dd className="font-semibold text-foreground">{position?.code}{position?.name ? ` · ${position.name}` : ""}</dd></div><div><dt className="text-muted">{t("packageCount")}</dt><dd className="font-semibold text-foreground">{order.packageCount}</dd></div><div><dt className="text-muted">{t("storageMode")}</dt><dd className="font-semibold text-foreground">{modeLabels[order.storageMode]}</dd></div><div><dt className="text-muted">{t("enteredAt")}</dt><dd className="font-semibold text-foreground">{formatOrganizationDateTime(order.enteredAt, locale, data.timeZone)}</dd></div></dl>
+                </Link>
+                {isCancelled ? <details className="mt-4 border-t border-rose-200 pt-3">
+                  <summary className="min-h-11 cursor-pointer font-semibold text-rose-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600">{t("registerReturn")}</summary>
+                  <p className="mt-2 text-sm text-rose-950">{t("returnConfirm")}</p>
+                  <form action={returnCancelledOrderFromWarehouseAction.bind(null, locale, order.orderId)} className="mt-3 space-y-3">
+                    <label className="flex items-start gap-2 text-sm text-rose-950"><input className="mt-1" name="confirmed" required type="checkbox" value="yes" />{t("returnConfirmCheckbox")}</label>
+                    <label className="block text-sm font-semibold text-foreground">{t("returnNote")}<input className={controlClass} maxLength={500} name="note" /></label>
+                    <button className="min-h-11 rounded-control bg-rose-800 px-4 text-sm font-semibold text-white hover:bg-rose-900" type="submit">{t("confirmReturn")}</button>
+                  </form>
+                </details> : null}
+              </article>;
             })}
           </div>
         )}

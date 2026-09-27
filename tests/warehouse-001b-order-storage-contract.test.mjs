@@ -7,6 +7,7 @@ const actionsPath = "src/features/warehouse/server/storage-actions.ts";
 const componentPath = "src/components/warehouse/OrderStoragePanel.tsx";
 const pagePath = "src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx";
 const queriesPath = "src/features/warehouse/server/queries.ts";
+const movementMigrationPath = "supabase/migrations/20260927000400_warehouse_001e_a_movement_history.sql";
 
 test("1 storage assignment is exposed to Owner and Manager while Staff is denied", async () => {
   const [actions, page, roles] = await Promise.all([
@@ -15,7 +16,8 @@ test("1 storage assignment is exposed to Owner and Manager while Staff is denied
     source("src/lib/auth/require-role.ts"),
   ]);
   const save = actions.slice(actions.indexOf("export async function saveOrderStorageAssignmentAction"));
-  assert.match(save, /const \{ membership \} = await requireOwnerOrManager\(locale\)/);
+  assert.match(save, /await requireOwnerOrManager\(locale\)/);
+  assert.match(save, /rpc\("save_order_storage_assignment"/);
   assert.match(roles, /requireRole\(locale, \["owner", "manager"\]\)/);
   assert.match(page, /canManageAssignments[\s\S]*role === "owner"[\s\S]*role === "manager"/);
   assert.match(page, /\{canManageAssignments \? \([\s\S]*<OrderStoragePanel/);
@@ -35,40 +37,31 @@ test("2 current assignment read and display remain server-derived and tenant sco
 });
 
 test("3 order and active location are resolved inside the authenticated tenant", async () => {
-  const actions = await source(actionsPath);
-  const save = actions.slice(actions.indexOf("export async function saveOrderStorageAssignmentAction"));
-  assert.match(save, /from\("orders"\)[\s\S]*\.eq\("organization_id", membership\.organization\.id\)[\s\S]*\.eq\("id", orderId\)/);
-  assert.match(save, /from\("locations"\)[\s\S]*\.eq\("organization_id", membership\.organization\.id\)[\s\S]*\.eq\("id", order\.location_id\)[\s\S]*\.eq\("is_active", true\)[\s\S]*\.is\("deleted_at", null\)/);
-  assert.match(save, /if \(!order\.location_id\)[\s\S]*formError: "orderLocation"/);
+  const sql = await source(movementMigrationPath);
+  assert.match(sql, /org_id uuid := public\.app_current_organization_id\(\)/);
+  assert.match(sql, /join public\.locations location[\s\S]*orders\.organization_id = org_id[\s\S]*orders\.id = target_order_id[\s\S]*location\.is_active and location\.deleted_at is null/);
+  assert.match(sql, /warehouse_storage_order_location_invalid/);
 });
 
 test("4 only an active same-location tenant position can be assigned", async () => {
-  const actions = await source(actionsPath);
-  const save = actions.slice(actions.indexOf("export async function saveOrderStorageAssignmentAction"));
-  const position = save.slice(save.indexOf('admin.from("warehouse_positions")'), save.indexOf("]);", save.indexOf('admin.from("warehouse_positions")')));
-  assert.match(position, /\.eq\("organization_id", membership\.organization\.id\)/);
-  assert.match(position, /\.eq\("location_id", order\.location_id\)/);
-  assert.match(position, /\.eq\("id", positionId\)/);
-  assert.match(position, /\.eq\("is_active", true\)/);
-  assert.match(save, /if \(!position\)[\s\S]*formError: "position"/);
+  const sql = await source(movementMigrationPath);
+  assert.match(sql, /position\.organization_id = org_id[\s\S]*position\.location_id = order_location_id[\s\S]*position\.id = target_position_id[\s\S]*position\.is_active/);
+  assert.match(sql, /warehouse_storage_position_invalid/);
 });
 
 test("5 new assignment derives organization order and location server-side", async () => {
-  const actions = await source(actionsPath);
-  const save = actions.slice(actions.indexOf("export async function saveOrderStorageAssignmentAction"));
-  assert.match(save, /from\("order_storage"\)\.insert\(\{[\s\S]*location_id: order\.location_id,[\s\S]*order_id: orderId,[\s\S]*organization_id: membership\.organization\.id,[\s\S]*package_count: packageCount,[\s\S]*storage_mode: storageMode,[\s\S]*warehouse_position_id: positionId/);
+  const sql = await source(movementMigrationPath);
+  assert.match(sql, /insert into public\.order_storage \([\s\S]*organization_id, order_id, location_id, warehouse_position_id, package_count, storage_mode[\s\S]*org_id, target_order_id, order_location_id, target_position_id, target_package_count, target_storage_mode/);
 });
 
 test("6 existing assignment can move or update without replacing its identity", async () => {
-  const actions = await source(actionsPath);
-  const save = actions.slice(actions.indexOf("export async function saveOrderStorageAssignmentAction"));
-  const update = save.slice(save.indexOf("if (existing)"), save.indexOf("} else {", save.indexOf("if (existing)")));
-  assert.match(update, /package_count: packageCount/);
-  assert.match(update, /storage_mode: storageMode/);
-  assert.match(update, /warehouse_position_id: positionId/);
-  assert.match(update, /existing\.warehouse_position_id !== positionId[\s\S]*entered_at = new Date\(\)\.toISOString\(\)/);
-  assert.match(update, /\.eq\("organization_id", membership\.organization\.id\)[\s\S]*\.eq\("id", existing\.id\)/);
-  assert.doesNotMatch(update, /organization_id:|order_id:|location_id:/);
+  const sql = await source(movementMigrationPath);
+  const update = sql.slice(sql.indexOf("create function public.save_order_storage_assignment"), sql.indexOf("create function public.return_cancelled_order_from_warehouse"));
+  assert.match(update, /select \* into storage_row from public\.order_storage storage[\s\S]*for update/);
+  assert.match(update, /set warehouse_position_id = target_position_id,[\s\S]*package_count = target_package_count,[\s\S]*storage_mode = target_storage_mode/);
+  assert.match(update, /entered_at = case when warehouse_position_id is distinct from target_position_id then now\(\) else entered_at end/);
+  assert.match(update, /where organization_id = org_id and id = storage_row\.id/);
+  assert.doesNotMatch(update, /set organization_id|set order_id|set location_id/);
 });
 
 test("7 package count and storage mode are validated before persistence", async () => {

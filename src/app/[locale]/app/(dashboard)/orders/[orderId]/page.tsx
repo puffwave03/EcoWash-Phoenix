@@ -11,6 +11,7 @@ import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
+import { WarehouseMovementHistory, type WarehouseMovementText } from "@/components/warehouse/WarehouseMovementHistory";
 import { Link } from "@/i18n/navigation";
 import {
   saveDeliveryAction,
@@ -67,6 +68,7 @@ import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 import { saveOrderStorageAssignmentAction } from "@/features/warehouse/server/storage-actions";
 import {
   getOrderStorageAssignment,
+  listWarehouseMovements,
   listWarehousePositions,
 } from "@/features/warehouse/server/queries";
 
@@ -97,7 +99,7 @@ function SectionShell({
 export default async function OrderDetailPage({ params, searchParams }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
   const warehouseError = (await searchParams).warehouse === "inbound-unavailable";
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, commonT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, commonT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -117,6 +119,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getTranslations({ locale, namespace: "common.quickDrop" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
     getTranslations({ locale, namespace: "common.orderStorage" }),
+    getTranslations({ locale, namespace: "common.warehouseMovements" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
@@ -147,6 +150,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       ])
     : [null, []];
   const activeWarehousePositions = warehousePositions.filter((position) => position.isActive);
+  const warehouseMovements = canManageAssignments ? await listWarehouseMovements(locale, order.id) : [];
   const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
     && hasOperationalCapability(access.membership, "pos");
   const posSession = canUsePos ? await getCurrentPosSession(locale) : null;
@@ -392,6 +396,12 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             hasOrderLocation={Boolean(order.locationId)}
             positions={activeWarehousePositions}
             text={storageT.raw("labels") as OrderStorageText}
+          />
+          <WarehouseMovementHistory
+            history={warehouseMovements}
+            locale={locale}
+            text={movementT.raw("labels") as WarehouseMovementText}
+            timeZone={access.membership.organization.timezone}
           />
         </SectionShell>
       ) : null}

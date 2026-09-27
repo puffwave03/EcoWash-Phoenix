@@ -41,3 +41,19 @@ export type OrderStorageActionState = {
   formError: "generic" | "notFound" | "orderLocation" | "position" | null;
   success: boolean;
 };
+
+export type WarehouseMovement = {
+  id: string;
+  occurredAt: string;
+  actorName: string | null;
+  movementType: "entered" | "moved" | "updated" | "exited";
+  source: "canonical_receipt" | "manual_assignment" | "manual_move" | "manual_update"
+    | "customer_handoff" | "delivery_completed" | "cancelled_return";
+  fromPositionLabel: string | null;
+  toPositionLabel: string | null;
+  fromPackageCount: number | null;
+  toPackageCount: number | null;
+  fromStorageMode: OrderStorageMode | null;
+  toStorageMode: OrderStorageMode | null;
+  note: string | null;
+};
