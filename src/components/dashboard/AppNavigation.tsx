@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
@@ -21,6 +22,8 @@ type AppNavigationText = {
   dailyClose: string;
   delivery: string;
   managementGroup: string;
+  more: string;
+  closeMore: string;
   orders: string;
   warehouse: string;
   pos: string;
@@ -164,6 +167,30 @@ export function AppNavigation({
   userLabel,
 }: AppNavigationProps) {
   const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const morePanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    morePanelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !mobileNavRef.current?.contains(event.target)) setMoreOpen(false);
+    };
+    const closeEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMoreOpen(false);
+        moreButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeEscape);
+    };
+  }, [moreOpen]);
   const isControlRole = role === "owner" || role === "manager";
   const canUse = (capability: OperationalCapability) => role
     ? hasOperationalCapability({ capabilities, role }, capability)
@@ -347,23 +374,49 @@ export function AppNavigation({
           "/app/orders",
           "/app/pos",
           "/app/work",
-          "/app/alerts",
         ].includes(item.href))
       : navigationItems;
+    const primaryHrefs = new Set(primaryItems.map((item) => item.href));
+    const moreGroups = isControlRole
+      ? navigationGroups.map((group) => ({
+          ...group,
+          items: group.items.filter((item) => !primaryHrefs.has(item.href)),
+        })).filter((group) => group.items.length > 0)
+      : [];
+    const moreActive = moreGroups.some((group) => group.items.some((item) => item.href === activeItem.href));
+    const mobileItemCount = primaryItems.length + (isControlRole ? 1 : 0);
 
     return (
       <nav
         aria-label={navigationLabel}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 px-2.5 pb-[max(env(safe-area-inset-bottom),0.375rem)] pt-1.5 shadow-[0_-8px_24px_rgb(15_59_46_/_0.08)] backdrop-blur-lg lg:hidden"
+        ref={mobileNavRef}
       >
+        {isControlRole && moreOpen ? (
+          <div aria-label={text.more} className="absolute inset-x-2 bottom-[calc(100%+0.5rem)] max-h-[65vh] overflow-y-auto rounded-card border border-border bg-white p-3 shadow-luxury" id="mobile-more-destinations" ref={morePanelRef} role="region">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <h2 className="font-semibold text-primary">{text.more}</h2>
+              <button aria-label={text.closeMore} className="min-h-11 min-w-11 rounded-control text-xl text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={() => { setMoreOpen(false); moreButtonRef.current?.focus(); }} type="button">×</button>
+            </div>
+            {moreGroups.map((group) => <div className="mb-3" key={group.label}>
+              <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted">{group.label}</p>
+              <div className="grid gap-1 sm:grid-cols-2">
+                {group.items.map((item) => <Link aria-current={activeItem.href === item.href ? "page" : undefined} className={`flex min-h-11 items-center justify-between rounded-control px-3 text-sm font-semibold ${activeItem.href === item.href ? "bg-primary-soft !text-primary" : "!text-foreground hover:bg-primary-soft/50"}`} href={item.href} key={item.href} locale={locale} onClick={() => setMoreOpen(false)}>
+                  <span className="flex items-center gap-3"><NavigationIcon href={item.href} />{item.label}</span>
+                  {item.alertBadge && alertCount > 0 ? <span className="rounded-full bg-gold px-2 text-xs text-primary">{alertCount}</span> : null}
+                </Link>)}
+              </div>
+            </div>)}
+          </div>
+        ) : null}
         <div className={`mx-auto grid max-w-lg gap-1 ${
-          primaryItems.length === 1
+          mobileItemCount === 1
             ? "grid-cols-1"
-            : primaryItems.length === 2
+            : mobileItemCount === 2
               ? "grid-cols-2"
-              : primaryItems.length === 3
+              : mobileItemCount === 3
                 ? "grid-cols-3"
-                : primaryItems.length === 5
+                : mobileItemCount === 5
                   ? "grid-cols-5"
                   : "grid-cols-4"
         }`}>
@@ -381,6 +434,7 @@ export function AppNavigation({
                 href={item.href}
                 key={item.href}
                 locale={locale}
+                onClick={() => setMoreOpen(false)}
               >
                 <NavigationIcon href={item.href} />
                 <span className="line-clamp-2 max-w-full px-0.5">{item.label}</span>
@@ -392,6 +446,10 @@ export function AppNavigation({
               </Link>
             );
           })}
+          {isControlRole ? <button aria-controls={moreOpen ? "mobile-more-destinations" : undefined} aria-expanded={moreOpen} aria-label={text.more} className={`relative flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-0.5 text-center text-[0.68rem] font-semibold leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${moreOpen || moreActive ? "bg-primary-soft text-primary" : "text-muted hover:bg-[#f5f7f5] hover:text-primary"}`} onClick={() => setMoreOpen((open) => !open)} ref={moreButtonRef} type="button">
+            <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="7" r="1.8" /><circle cx="12" cy="7" r="1.8" /><circle cx="19" cy="7" r="1.8" /><circle cx="5" cy="17" r="1.8" /><circle cx="12" cy="17" r="1.8" /><circle cx="19" cy="17" r="1.8" /></svg>
+            <span className="line-clamp-2 max-w-full px-0.5">{text.more}</span>
+          </button> : null}
         </div>
       </nav>
     );

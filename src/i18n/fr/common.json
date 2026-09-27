@@ -147,6 +147,8 @@
       "controlGroup": "Contrôle",
       "workGroup": "Travail",
       "managementGroup": "Gestion",
+      "more": "Plus",
+      "closeMore": "Fermer Plus",
       "toolsGroup": "Outils de contrôle",
       "overview": "Vue d'ensemble",
       "work": "Ma journée",

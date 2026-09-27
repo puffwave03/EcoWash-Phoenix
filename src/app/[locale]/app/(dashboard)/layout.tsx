@@ -48,6 +48,8 @@ export default async function DashboardLayout({
         logout: t("logout"),
         logoutError: t("logoutError"),
         managementGroup: t("managementGroup"),
+        more: t("more"),
+        closeMore: t("closeMore"),
         navigationLabel: t("navigationLabel"),
         customers: t("customers"),
         orders: t("orders"),
