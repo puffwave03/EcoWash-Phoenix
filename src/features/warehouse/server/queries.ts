@@ -16,6 +16,7 @@ type WarehousePositionRow = {
   description: string | null;
   id: string;
   is_active: boolean;
+  is_default_inbound: boolean;
   location_id: string;
   name: string | null;
   position_type: WarehousePositionType;
@@ -62,7 +63,7 @@ export async function listWarehousePositions(
   const { membership } = await requireMembership(locale);
   const supabase = createSupabaseAdminClient();
   let query = supabase.from("warehouse_positions")
-    .select("id, location_id, code, name, description, position_type, is_active")
+    .select("id, location_id, code, name, description, position_type, is_active, is_default_inbound")
     .eq("organization_id", membership.organization.id)
     .order("code")
     .limit(500);
@@ -76,6 +77,7 @@ export async function listWarehousePositions(
     description: row.description,
     id: row.id,
     isActive: row.is_active,
+    isDefaultInbound: row.is_default_inbound,
     locationId: row.location_id,
     name: row.name,
     positionType: row.position_type,

@@ -21,6 +21,12 @@ export type WarehousePositionText = {
   configured: string;
   createTitle: string;
   deactivate: string;
+  defaultActiveError: string;
+  defaultDeactivationError: string;
+  defaultInbound: string;
+  defaultUpdated: string;
+  removeDefaultInbound: string;
+  setDefaultInbound: string;
   description: string;
   duplicateError: string;
   edit: string;
@@ -60,25 +66,31 @@ function errorMessage(state: WarehousePositionActionState, text: WarehousePositi
   if (state.formError === "duplicate") return text.duplicateError;
   if (state.formError === "location") return text.locationError;
   if (state.formError === "notFound") return text.notFoundError;
+  if (state.formError === "defaultActive") return text.defaultActiveError;
+  if (state.formError === "defaultDeactivation") return text.defaultDeactivationError;
   if (state.formError) return text.genericError;
   return null;
 }
 
 function PositionCard({
   action,
+  defaultInboundAction,
   locationName,
   onEdit,
   position,
   text,
 }: {
   action: WarehouseAction;
+  defaultInboundAction: WarehouseAction;
   locationName: string;
   onEdit: () => void;
   position: WarehousePosition;
   text: WarehousePositionText;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const [defaultState, defaultFormAction, defaultPending] = useActionState(defaultInboundAction, initialState);
   const error = errorMessage(state, text);
+  const defaultError = errorMessage(defaultState, text);
 
   return (
     <article className="rounded-card border border-border bg-white p-4 shadow-card">
@@ -94,8 +106,11 @@ function PositionCard({
       </div>
       {position.name ? <p className="mt-3 font-semibold text-foreground">{position.name}</p> : null}
       {position.description ? <p className="mt-1 text-sm leading-6 text-muted">{position.description}</p> : null}
+      {position.isDefaultInbound ? <span className="mt-2 inline-flex rounded-full bg-primary-soft px-2 py-1 text-xs font-semibold text-primary">{text.defaultInbound}</span> : null}
       {state.success ? <p className="mt-3 text-sm font-semibold text-emerald-700" role="status">{text.statusUpdated}</p> : null}
       {error ? <p className="mt-3 text-sm text-red-700" role="alert">{error}</p> : null}
+      {defaultState.success ? <p className="mt-3 text-sm font-semibold text-emerald-700" role="status">{text.defaultUpdated}</p> : null}
+      {defaultError ? <p className="mt-3 text-sm text-red-700" role="alert">{defaultError}</p> : null}
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <button className="min-h-11 rounded-control border border-border px-4 text-sm font-semibold text-primary" onClick={onEdit} type="button">{text.edit}</button>
         <form action={formAction}>
@@ -106,6 +121,13 @@ function PositionCard({
           </button>
         </form>
       </div>
+      <form action={defaultFormAction} className="mt-2">
+        <input name="positionId" type="hidden" value={position.id} />
+        <input name="enabled" type="hidden" value={position.isDefaultInbound ? "false" : "true"} />
+        <button className="min-h-11 w-full rounded-control border border-primary/30 px-4 text-sm font-semibold text-primary disabled:opacity-50" disabled={defaultPending || (!position.isActive && !position.isDefaultInbound)} type="submit">
+          {position.isDefaultInbound ? text.removeDefaultInbound : text.setDefaultInbound}
+        </button>
+      </form>
     </article>
   );
 }
@@ -171,12 +193,14 @@ function PositionForm({
 
 export function WarehousePositionManagement({
   activeAction,
+  defaultInboundAction,
   locations,
   positions,
   saveAction,
   text,
 }: {
   activeAction: WarehouseAction;
+  defaultInboundAction: WarehouseAction;
   locations: WarehouseLocation[];
   positions: WarehousePosition[];
   saveAction: WarehouseAction;
@@ -210,6 +234,7 @@ export function WarehousePositionManagement({
             {visiblePositions.map((position) => (
               <PositionCard
                 action={activeAction}
+                defaultInboundAction={defaultInboundAction}
                 key={position.id}
                 locationName={locationNames.get(position.locationId) ?? "—"}
                 onEdit={() => setEditingId(position.id)}

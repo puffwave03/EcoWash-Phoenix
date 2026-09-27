@@ -6,6 +6,7 @@ export type WarehousePosition = {
   description: string | null;
   id: string;
   isActive: boolean;
+  isDefaultInbound: boolean;
   locationId: string;
   name: string | null;
   positionType: WarehousePositionType;
@@ -19,7 +20,7 @@ export type WarehouseLocation = {
 
 export type WarehousePositionActionState = {
   fieldErrors: Record<string, string>;
-  formError: "duplicate" | "generic" | "location" | "notFound" | null;
+  formError: "defaultActive" | "defaultDeactivation" | "duplicate" | "generic" | "location" | "notFound" | null;
   success: boolean;
 };
 

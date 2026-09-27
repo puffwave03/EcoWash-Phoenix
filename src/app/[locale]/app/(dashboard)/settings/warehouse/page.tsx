@@ -6,6 +6,7 @@ import {
 } from "@/components/warehouse/WarehousePositionManagement";
 import {
   saveWarehousePositionAction,
+  setWarehouseDefaultInboundAction,
   setWarehousePositionActiveAction,
 } from "@/features/warehouse/server/actions";
 import {
@@ -36,6 +37,7 @@ export default async function WarehouseSettingsPage({ params }: {
       />
       <WarehousePositionManagement
         activeAction={setWarehousePositionActiveAction.bind(null, locale)}
+        defaultInboundAction={setWarehouseDefaultInboundAction.bind(null, locale)}
         locations={locations}
         positions={positions}
         saveAction={saveWarehousePositionAction.bind(null, locale)}

@@ -7,6 +7,7 @@ import type {
 } from "@/features/warehouse/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const POSITION_TYPES: WarehousePositionType[] = ["shelf", "rack", "hanger", "cabinet", "other"];
@@ -129,9 +130,39 @@ export async function setWarehousePositionActiveAction(
     .select("id")
     .maybeSingle<{ id: string }>();
 
-  if (error) return fail(error.code === "22023" ? "location" : "generic");
+  if (error) return fail(error.message.includes("warehouse_default_inbound_deactivation_forbidden") ? "defaultDeactivation" : error.code === "22023" ? "location" : "generic");
   if (!data) return fail("notFound");
 
   revalidateWarehouse(locale);
+  return { ...initialState, success: true };
+}
+
+export async function setWarehouseDefaultInboundAction(
+  locale: string,
+  _state: WarehousePositionActionState = initialState,
+  formData: FormData,
+): Promise<WarehousePositionActionState> {
+  void _state;
+  const positionId = value(formData, "positionId");
+  const enabled = value(formData, "enabled");
+  if (!UUID.test(positionId) || !["true", "false"].includes(enabled)) {
+    return fail(null, { positionId: "invalid" });
+  }
+
+  await requireOwnerOrManager(locale);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("set_warehouse_default_inbound", {
+    target_position_id: positionId,
+    target_enabled: enabled === "true",
+  });
+  if (error) {
+    if (error.message.includes("warehouse_default_inbound_position_inactive")) return fail("defaultActive");
+    if (error.message.includes("warehouse_default_inbound_location_inactive")) return fail("location");
+    if (error.message.includes("warehouse_default_inbound_position_not_found")) return fail("notFound");
+    return fail("generic");
+  }
+
+  revalidateWarehouse(locale);
+  revalidatePath(`/${locale}/app/warehouse`);
   return { ...initialState, success: true };
 }

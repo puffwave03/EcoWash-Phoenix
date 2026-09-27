@@ -61,6 +61,7 @@ export default async function WarehouseOverviewPage({ params, searchParams }: Pa
             {visiblePositions.map((position) => (
               <Link className={`rounded-card border p-4 shadow-sm transition-standard hover:border-primary/40 hover:bg-primary-soft/30 ${position.orderCount === 0 ? "border-border bg-white/65" : "border-primary/20 bg-white"}`} href={`/app/warehouse?position=${encodeURIComponent(position.id)}#stored-orders`} key={position.id} locale={locale}>
                 <div className="flex items-start justify-between gap-2"><div><p className="font-bold text-primary">{position.code}{position.name ? ` · ${position.name}` : ""}</p><p className="text-sm text-muted">{position.locationName} · {typeLabels[position.positionType]}</p></div><span className={`rounded-full px-2 py-1 text-xs font-semibold ${position.isActive ? "bg-emerald-100 text-emerald-900" : "bg-amber-100 text-amber-900"}`}>{position.isActive ? t("active") : t("inactive")}</span></div>
+                {position.isDefaultInbound ? <span className="mt-2 inline-flex rounded-full bg-primary-soft px-2 py-1 text-xs font-semibold text-primary">{t("defaultInbound")}</span> : null}
                 <p className="mt-3 text-sm text-foreground">{t("positionCounts", { orders: position.orderCount, packages: position.packageCount })}</p>
               </Link>
             ))}
