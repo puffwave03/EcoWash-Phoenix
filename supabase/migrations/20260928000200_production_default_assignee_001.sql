@@ -594,4 +594,3 @@ begin
     round(greatest(target_order.total - paid_total, 0), 2);
 end;
 $$;
-
