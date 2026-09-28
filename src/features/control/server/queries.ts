@@ -73,7 +73,7 @@ function productionException(task: ProductionTask): ControlException | null {
   } else if (task.urgency === "overdue") {
     severity = "critical";
     type = "overdue";
-  } else if (!task.assignedTo) {
+  } else if (!task.assignedTo && ["washing", "drying", "ironing", "quality_check", "packing"].includes(task.productionStatus)) {
     severity = "warning";
     type = "unassigned";
   } else if (task.urgency !== "due_soon") {

@@ -69,6 +69,11 @@ export default async function SettingsPage({ params }: {
           href: "/app/settings/warehouse",
           title: t("items.warehouse.title"),
         },
+        {
+          description: t("items.productionDefaultAssignee.description"),
+          href: "/app/settings/production",
+          title: t("items.productionDefaultAssignee.title"),
+        },
         ...(entitlementEnabled(entitlements, FEATURES.catalogSegments)
           ? [{
               description: t("items.customerSegments.description"),

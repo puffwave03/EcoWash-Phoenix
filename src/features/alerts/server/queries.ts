@@ -224,7 +224,7 @@ async function loadOperationalAlerts(locale: string): Promise<OperationalAlertsD
       alerts.push(alertBase(order, "on_hold_order", isLateOrder(order, now) ? "critical" : "warning", order.due_at));
     }
 
-    if (!order.assigned_to) {
+    if (!order.assigned_to && ["washing", "drying", "ironing", "quality_check", "packing"].includes(order.production_status)) {
       alerts.push(alertBase(order, "unassigned_order", "warning", order.due_at));
     }
   }
