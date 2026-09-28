@@ -4,13 +4,17 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-29
+Last Updated: 2026-09-28
 
-Current Mission: COUNTER-UX-002 professional counter register redesign completed
+Current Mission: DOCS-PILOT-BASELINE-REFRESH-001 — documentation-only baseline refresh
 
-Next Action: BARCODE-001
+Next Action: Pilot operational closeout/E2E and focused findings, subject to separate approval
 
 ---
+
+## Historical 2026-08-29 Checkpoints
+
+The COUNTER-UX-002 and PRINT-001 sequences below record what was proposed then. BARCODE-001, operational Accounting and later pilot features are now implemented; these are not current next-task instructions.
 
 ## COUNTER-UX-002 — Completed
 
@@ -39,6 +43,24 @@ Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain 
 ## Purpose
 
 Track the approved high-level EcoWash Phoenix roadmap without adding unapproved dates or guarantees.
+
+## Current Pilot Baseline And Sequence — 2026-09-28
+
+At repository baseline `53f04ca840b9e56ed3f0052621e1b000b4e840e3`, `PRODUCTION-DEFAULT-ASSIGNEE-001` is **COMPLETE / Product Owner UAT PASS**; staging migration `20260928000200_production_default_assignee_001.sql` is applied. `ORDER-ITEMS-LIFECYCLE-GATE-001` is also **COMPLETE / Product Owner UAT PASS**. Staging implementation is not public-production readiness; managed Auth/authenticated application recovery is **BLOCKED** as a pre-production gate despite verified database and Storage recovery.
+
+- **Order and fulfillment — COMPLETE:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Production completion is not final fulfillment. A no-delivery order becomes `ready_for_customer_pickup` until explicit customer handoff; payment and operational receipt do not represent physical handoff.
+- **Daily Close — COMPLETE:** live preview, immutable persisted close snapshot, organization/location scope, tenant-local business date, internal post-close operational/financial gate, Portal after-close intake protection, history and exports. POS session close is independent. Neither Daily Close nor operational receipt is statutory/fiscal closure.
+- **Warehouse — COMPLETE:** positions with configured default inbound; one current order-level placement; canonical receipt-driven automatic inbound placement; owner/manager manual assignment/move/update; append-only movement history; cancelled custody until explicit physical return; final READY placement; atomic current-storage exit on customer handoff or completed delivery; overview/search and mobile discovery. Draft Terminal/order creation does not prove physical receipt. Quick Drop and completed inbound pickup may establish received custody and storage atomically. Warehouse is not per-garment inventory.
+- **Active-item gate — COMPLETE / UAT PASS:** normal manual draft→received needs ≥1 active `order_item`; only canonical Quick Drop and completed inbound pickup are zero-item receipt exceptions. Zero-item orders cannot enter real production or final handoff/delivery; cancellation remains valid and adding an active item restores eligibility. No placeholders/backfill.
+- **Production assignment — COMPLETE / UAT PASS:** optional per-location active, production-capable staff default configured by Owner/Manager. Valid default is assigned atomically when unassigned received→washing; existing assignment stays. No arbitrary Terminal first-staff fallback or fake user. Unassigned warning applies to active production, not draft/received/ready/completed/cancelled.
+
+**Phoenix V1 physical-item decision:** catalog/services → commercial `order_items` snapshot → internal ticket and labels → order-level production → order-level Warehouse → fulfillment. Catalog is the price list and `order_items` feed pricing/accounting; no second inventory/catalog. Browser-printed receipts, tickets and configured-printer-profile labels use order QR and label QR `PHX1:L:<order UUID>:<order-item UUID>:<unit index>`. Two trousers can print labels `1/2` and `2/2`; operators verify the whole order, whose production/READY and storage remain order-level. 18 kg laundry in three bags remains commercial quantity 18 kg and physical `package_count = 3`. QR is identifier-only; no persistent garment entity, per-piece scan history or partial ready/fulfillment. Those possible capabilities are **DEFERRED**, not an approved implementation task.
+
+**Intended sequence, each step separately approved:** (1) pilot operational closeout/E2E; (2) small integrity/UX findings; (3) SaaS Productization Baseline; (4) clean Demo Tenant onboarding; (5) `PHX-FISCAL-001` architecture/compliance boundary; (6) VERI*FACTU/provider integration only after architecture approval. Fiscal architecture: Phoenix Core → Fiscal Adapter → tenant/provider-specific fiscal provider → AEAT where applicable. Phoenix operational receipts are non-fiscal; no VERI*FACTU compliance claim. EcoWash La Tejita is the first tenant/reference, not hardcoded identity; tenant/RLS/auth boundaries remain intact.
+
+**Open small backlog:** `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still reproducible, `NETWORK-FAILURE-UX-001`, Auth DR/`AUTH-CONFIG-DRIFT-001`, and still-valid pilot findings. These remain open unless implementation proves closure.
+
+The milestone/priority lists below retain historical planning detail. Older “next” instructions, absence claims and planned statuses are superseded by this current baseline; use them as history, not the live execution queue.
 
 ---
 
@@ -139,7 +161,7 @@ Remaining areas:
 
 PRODUCT-001 treats code, migrations, Server Actions, routes, smoke results and active documentation as separate evidence sources. A feature is commercial-ready only when it exists in code or schema, is reachable through the app where needed, and has a clear verification path.
 
-### Current Implemented Baseline
+### Historical Implemented Baseline — Earlier Staging MVP
 
 Status: Staging MVP validated and online, not yet production-commercial.
 
@@ -388,7 +410,7 @@ Exit criteria:
 
 Customer portal is now part of M1 pilot scoping. The online-payment core is implemented but real provider onboarding/configuration remains separate future work. Do not combine it with formal e-invoicing/advanced fiscal PDFs, notifications, native mobile, OCR, advanced analytics, offline mode, Realtime, Edge Functions or a workflow builder.
 
-### Product Decision After COUNTER-UX-002
+### Historical Product Decision After COUNTER-UX-002 — Superseded Sequence
 
 The professional counter redesign and print foundation are complete. Barcode generation/scanning remains a separate next task; real payment-provider readiness remains blocked on a separately approved official adapter and sandbox validation.
 

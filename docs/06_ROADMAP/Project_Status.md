@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-12
+Last Updated: 2026-09-28
 
-Current Mission: PHOENIX-UAT-CLOSEOUT-001 — CURRENT BASELINE DOCUMENTATION
+Current Mission: DOCS-PILOT-BASELINE-REFRESH-001 — documentation-only baseline refresh
 
-Next Action: PRODUCT OWNER / CTO REVIEW — STAGING UAT REMAINS PENDING; AUTH RECOVERY REMAINS A PRE-PRODUCTION BLOCKER
+Next Action: Product Owner / CTO documentation review; pilot operational closeout remains the product phase; Auth DR remains a pre-production blocker.
 
 ---
 
@@ -20,17 +20,38 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 
 ## Contents
 
-## Current Status
+## Authoritative Current Status — 2026-09-28
+
+| Area | Current state |
+| --- | --- |
+| Repository | `main` and `origin/main` aligned at `53f04ca840b9e56ed3f0052621e1b000b4e840e3` before this uncommitted docs change. |
+| Latest functional task | `PRODUCTION-DEFAULT-ASSIGNEE-001` **COMPLETE / Product Owner UAT PASS**; migration `20260928000200_production_default_assignee_001.sql` applied to staging. |
+| Order items | `ORDER-ITEMS-LIFECYCLE-GATE-001` **COMPLETE / Product Owner UAT PASS**. Normal manual draft→received needs ≥1 active item. Only canonical Quick Drop and completed inbound pickup may receive with zero items; every zero-item order is blocked from real production and final handoff/delivery until an active item is added. Cancellation remains available; no placeholders/backfill. |
+| Order/fulfillment | Inbound pickup customer→EcoWash; outbound delivery EcoWash→customer. Production completion is not final fulfillment; no-delivery orders show `ready_for_customer_pickup` until explicit customer handoff. Payment/receipt does not transfer custody. |
+| Daily Close | **COMPLETE:** live preview, immutable persisted snapshot, organization/location scope, tenant-local business date, internal post-close operational/financial gate, Portal after-close intake protection, history/exports. Independent of POS sessions; not fiscal/statutory close. |
+| Warehouse | **COMPLETE:** order-level custody via `warehouse_positions`, configurable default inbound, one current `order_storage`, automatic placement on canonical receipt, authorized manual assignment/move/update, append-only `warehouse_movements`, cancelled custody and explicit return, READY final placement, atomic exit on handoff/completed delivery, overview/search and mobile navigation. Draft Terminal/order creation is not physical receipt; `received` is. |
+| Production assignment | Optional per-location active production-capable staff default, Owner/Manager configured. Valid default is applied atomically on unassigned received→washing; existing/manual assignment preserved. No fake/system user or arbitrary first-staff Terminal fallback. Unassigned warning is for active production, not draft/received/ready/completed/cancelled. |
+| Auth/DR | **BLOCKED for public production:** database and Storage recovery verified; managed Auth and authenticated application recovery not yet proven. Staging is not production readiness. |
+
+Phoenix V1 physical flow is **catalog/services → commercial `order_items` snapshot → internal ticket/labels → order-level production → order-level Warehouse → fulfillment**. QR `PHX1:L:<order UUID>:<order-item UUID>:<unit index>` identifies a label only: two trousers can have labels `1/2` and `2/2`. It is not a garment entity or scan-event log. Operators verify complete orders. A commercial 18 kg laundry quantity can coexist with `package_count = 3` bags. Per-garment/package lifecycle, scan history and partial ready/fulfillment are **DEFERRED**; no second catalog/inventory is approved.
+
+Pilot closeout/E2E and remaining small findings precede SaaS Productization Baseline and clean Demo Tenant onboarding. `PHX-FISCAL-001` architecture/compliance comes before any approved VERI*FACTU/provider integration: Phoenix Core → Fiscal Adapter → tenant/provider-specific provider → AEAT where applicable. Operational receipts are non-fiscal; no compliance claim. EcoWash La Tejita is the first tenant/reference, not hardcoded product identity. Tenant/RLS/auth boundaries remain mandatory.
+
+**Open findings:** `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if reproducible, `NETWORK-FAILURE-UX-001`, Auth DR/`AUTH-CONFIG-DRIFT-001`, and remaining valid pilot findings. These are not complete.
+
+The detailed table and dated closeouts below preserve earlier evidence. Rows with old “current mission,” migration-pending or next-action wording refer to their original checkpoint and are superseded by this status.
+
+## Historical Status Table — Earlier Checkpoint
 
 | Item | Status |
 | --- | --- |
 | Project | EcoWash Phoenix |
 | Current phase | Commercial Readiness |
 | Current milestone | Milestone 8 — M1 Commercial Pilot Baseline |
-| Current mission | PHOENIX-UAT-CLOSEOUT-001 — record the stable repository implementation baseline and remaining UAT work |
-| Last completed implementation mission | ORDER-CANCEL-LOGISTICS-CONSISTENCY-001 — cancellation and Daily Close logistics consistency |
-| Approved baseline before this documentation update | 0a90a401abddf9f947fa9722e165afc1503b7ea6 |
-| Remote status | local `main` synchronized with `origin/main` at `0a90a401abddf9f947fa9722e165afc1503b7ea6` before this uncommitted documentation update |
+| Current mission | Documentation refresh; latest functional mission is `PRODUCTION-DEFAULT-ASSIGNEE-001` |
+| Last completed implementation mission | `PRODUCTION-DEFAULT-ASSIGNEE-001` — Product Owner UAT PASS |
+| Approved baseline before this documentation update | `53f04ca840b9e56ed3f0052621e1b000b4e840e3` |
+| Remote status | local `main` synchronized with `origin/main` at `53f04ca840b9e56ed3f0052621e1b000b4e840e3` before this uncommitted documentation update |
 | DEV-010.4 status | Completed, committed and pushed |
 | APP-001 status | Approved architecture and MVP definition |
 | APP-002 status | Completed and pushed |
@@ -111,8 +132,8 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 | Current staging test block | None for operational role/workspace validation; endpoint-specific Auth throttling remains possible |
 | Public website release state | Release-ready, deployment deferred |
 | Production domain | Not selected or purchased yet |
-| Backend/SaaS implementation | Supabase Staging remains documented as aligned through 20260908000300. Repository `main` additionally contains `20260912000100_order_cancel_logistics_consistency_001.sql`; its staging application and Product Owner UAT are not recorded as complete |
-| Commercial readiness | Database and Storage recovery are verified. PHX-AUTH-DR-001 selects the Auth strategy, but provider coverage, identity/configuration recovery material and an isolated authenticated recovery rehearsal remain mandatory before production. Full DR is incomplete. PORTAL-ORDER-VALIDATION-SUMMARY-001, POS-DAILY-CLOSE-001 refinements, NETWORK-FAILURE-UX-001, AUTH-CONFIG-DRIFT-001 and remaining pilot findings stay open. Real online-provider configuration, subscription collection, onboarding and formal e-invoicing remain future work |
+| Backend/SaaS implementation | Staging migrations include `20260928000200_production_default_assignee_001.sql`; latest functional Product Owner UAT passed. Public production remains deferred. |
+| Commercial readiness | Database and Storage recovery are verified, but managed Auth and authenticated application recovery remain mandatory before production. Remaining pilot findings and SaaS/fiscal productization are separately scoped; no VERI*FACTU compliance claim. |
 
 ## PHOENIX-UAT-CLOSEOUT-001 Checkpoint
 
@@ -962,7 +983,7 @@ The current site icon and social-preview set is committed at:
 
 The DEV-010.4 mark follows the Product Owner reference direction: green side form, blue central drop, blue lower wave and three bubbles. It does not use the old "EcoWash La Tejita" lockup, the old URL, or embedded raster artwork. Metadata paths are configured and verified for `/favicon.ico`, `/icon.png`, `/apple-icon.png` and `/social/ecowash-og.png`.
 
-## Current Limitations
+## Historical Limitations — Earlier Staging Baseline
 
 - Supabase tenant foundation exists
 - Login UI exists
@@ -1008,7 +1029,7 @@ The DEV-010.4 mark follows the Product Owner reference direction: green side for
 - Check worktree before each mission
 - Confirm local and remote `main` synchronization before new implementation
 
-## Next Session
+## Historical Next Session — Superseded Checkpoint
 
 Restart phrase:
 

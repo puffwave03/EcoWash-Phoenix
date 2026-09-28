@@ -2,23 +2,36 @@
 
 Status: Active
 
-Date: 2026-09-12
+Date: 2026-09-28
 
-Approximate closeout time: after PHOENIX-UAT-CLOSEOUT-001 baseline documentation
-
-Session checkpoint: THREE UAT IMPLEMENTATIONS STABLE ON MAIN / STAGING UAT PENDING / AUTH REMAINS A PRE-PRODUCTION BLOCKER
+Session checkpoint: PILOT OPERATIONAL BASELINE / PRODUCTION-DEFAULT-ASSIGNEE-001 PRODUCT OWNER UAT PASS / AUTH DR PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this documentation update: `0a90a401abddf9f947fa9722e165afc1503b7ea6`
+Approved baseline before this documentation update: `53f04ca840b9e56ed3f0052621e1b000b4e840e3`
 
-Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `0a90a401abddf9f947fa9722e165afc1503b7ea6`.
+Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `53f04ca840b9e56ed3f0052621e1b000b4e840e3`.
 
 Working tree status before this documentation update: clean.
 
 This documentation update remains uncommitted for Product Owner / CTO review. No application code, migration or script change is authorized.
+
+---
+
+## Current Handover — 2026-09-28
+
+- **COMPLETE / UAT PASS:** `ORDER-ITEMS-LIFECYCLE-GATE-001` and `PRODUCTION-DEFAULT-ASSIGNEE-001`. The latter uses staging migration `20260928000200_production_default_assignee_001.sql`. Normal manual draft→received requires an active order item; only Quick Drop and completed inbound pickup may receive without one. All zero-item orders are blocked from actual production and final fulfillment until an active item is added; cancellation is allowed. No placeholders or backfill.
+- **COMPLETE:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Production completion is not final fulfillment. Without delivery, `ready_for_customer_pickup` awaits explicit customer handoff. Payment/receipt is not physical handoff.
+- **COMPLETE:** Daily Close has live preview, immutable saved snapshot, tenant-local business date, organization/location scope, history/exports, internal post-close operational/financial gate and Portal after-close intake protection. POS sessions remain independent. It is operational, not statutory/fiscal close.
+- **COMPLETE:** Warehouse is order-level physical custody: positions and configured default inbound; one current `order_storage`; receipt-driven automatic inbound placement; owner/manager manual placement/move/update; append-only `warehouse_movements`; cancelled custody and explicit return; required final placement on READY; atomic storage exit on customer handoff or completed delivery; overview/search and mobile navigation. Draft Terminal/order creation is not receipt; Quick Drop and completed inbound pickup can establish `received` plus storage atomically. No per-garment Warehouse lifecycle.
+- **COMPLETE / UAT PASS:** optional location default production assignee is active production-capable staff configured by Owner/Manager. Unassigned received→washing assigns that valid default atomically; existing/manual assignment stays. Terminal has no arbitrary first-staff fallback. Unassigned warning applies only during active production, not draft/received/ready/completed/cancelled.
+- **V1 decision:** catalog/services → commercial `order_items` snapshot → ticket/labels → order-level production → order-level Warehouse → fulfillment. Discrete labels may identify each unit (`PHX1:L:<order UUID>:<order-item UUID>:<unit index>`); two trousers can print `1/2` and `2/2`. This QR identifies an order/item/unit, not a persistent garment or scan event. Operators verify complete orders. Commercial 18 kg laundry and three physical bags remain 18 kg order quantity and `package_count = 3`. Garment/package tracking and partial ready/fulfillment are deferred, not approved.
+- **Next sequence, subject to separate approval:** pilot operational closeout/E2E → small integrity/UX findings → SaaS Productization Baseline → clean Demo Tenant onboarding → `PHX-FISCAL-001` architecture/compliance → provider/VERI*FACTU work only after approval. Phoenix Core → Fiscal Adapter → tenant/provider-specific provider → AEAT where applicable. Operational receipts remain non-fiscal.
+- **BLOCKED for public production:** database and Storage recovery are proven; managed Auth and authenticated application recovery are not. Keep tenant/RLS/auth boundaries and EcoWash La Tejita as first tenant/reference, never product identity. Open findings include `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still present, `NETWORK-FAILURE-UX-001` and Auth DR/`AUTH-CONFIG-DRIFT-001`.
+
+The dated closeouts below record earlier checkpoints. Their “next proposed task,” staging-pending and implementation-boundary statements are historical, not the current resume instruction.
 
 ---
 
@@ -311,7 +324,7 @@ SEC-001.1 added database privilege hardening, explicit authenticated RPC allowli
 
 OPS-001.2A added the minimum migration needed to allow owner/manager corrections to completed pickup and delivery logistics without reopening logistics architecture. OPS-001.3 added assignment support for production and logistics using existing role boundaries. OPS-001.4 added staff-management and invite flows using server-only Supabase Auth Admin access.
 
-## Current Functional State
+## Historical Functional State — Earlier Checkpoint
 
 Available now:
 
@@ -699,7 +712,7 @@ Out of scope confirmed:
 - new tables, migrations or RPCs
 - new dependencies
 
-## Current Resume Point
+## Historical Resume Point — Superseded 2026-09-12 Checkpoint
 
 There is no current SMTP delivery block. AUTH-INFRA-001 enabled Resend Custom SMTP and a real Supabase Auth email was sent and received successfully. The configured limit is 30 Auth emails/hour; endpoint-specific throttling can still apply, so access/reset actions should remain deliberate and application errors must stay user-friendly.
 

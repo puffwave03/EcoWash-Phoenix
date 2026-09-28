@@ -2,18 +2,16 @@
 
 Status: Active
 
-Recorded: 2026-09-02
+Recorded: 2026-09-28
 Purpose: Short mutable product baseline for the next Codex task
 
 Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each completed product task.
 
 ## Current Git
 
-- Product baseline before this docs update: `6017dff` (`TERMINAL-UX-MOBILE-001`).
-- Latest relevant application commit: `6017dff` (`TERMINAL-UX-MOBILE-001 optimize smartphone terminal workflow`).
-- Previous completed product documentation commit: `e748b00` (`DOCS-SEGMENTS-I18N-FIX-001`); this document's new commit SHA belongs in the final report because a commit cannot self-record its final hash.
-- Latest migration: `20260902000200_terminal_customer_ux_001b_shared_walk_in.sql`.
-- Linked migration history is aligned through `20260902000200`.
+- Baseline before this uncommitted documentation update: local `main` and `origin/main` at `53f04ca840b9e56ed3f0052621e1b000b4e840e3`.
+- Latest functional task: `PRODUCTION-DEFAULT-ASSIGNEE-001`; Product Owner UAT: **PASS**. Its staging migration `20260928000200_production_default_assignee_001.sql` was applied and verified. HEAD additionally contains a whitespace-only correction to that migration.
+- The task statuses below retain useful earlier closeout detail; the current product baseline is the sections following this list.
 - ACCOUNTING-001A status: `READY`.
 - ACCOUNTING-001B status: `READY`.
 - ACCOUNTING-001C status: `READY`; no new migration was required.
@@ -56,6 +54,24 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 | Barcode / QR | Shop Terminal resolves versioned order and label QR references to canonical tenant orders. Discrete labels identify order + line + 1-based unit; continuous lines use one label with unit index `0`. This is identifier-only V1, not garment lifecycle tracking. |
 | Settings / UX-POLISH-001 | Authenticated low-frequency configuration is grouped under one role/entitlement-aware Settings hub: Company, Appearance & Portal, Operations, and People & Access. Daily navigation remains focused on operational work. |
 | Accounting / ACCOUNTING-001A+B+C | Operational Accounting is available at `/[locale]/app/accounting`. Currency-separated canonical summaries cover net sales, collections, refunds, outstanding balances, expenses and operational result without invoice double-counting. Period/location filters, activity views, payment/expense breakdowns, tenant-scoped supplier/category/expense management and UTF-8 CSV exports complete the operational workspace. |
+
+## Current Operational Baseline
+
+- **Order and fulfillment — COMPLETE:** inbound pickup moves goods from customer to EcoWash; outbound delivery returns them to the customer. Production `completed` is not final fulfillment. An order without delivery becomes `ready_for_customer_pickup`; explicit customer handoff completes collection. Payment and operational receipt do not prove physical handoff.
+- **Daily Close — COMPLETE:** live preview, immutable persisted snapshot, tenant-local business date, organization-wide or location scope, history and exports. The internal post-close operational/financial gate and Portal after-close intake protection are in place. POS till sessions are independent. Daily Close and operational receipts are not statutory or fiscal closure.
+- **Warehouse — COMPLETE:** tenant/location-scoped `warehouse_positions` with explicit default inbound position, one current order-level `order_storage` placement, automatic placement on canonical physical receipt, authorized manual assignment/move/update, append-only `warehouse_movements`, and overview/search on desktop and mobile. Draft order creation/Terminal submission does not establish custody; `received` does. Quick Drop and completed inbound pickup can establish receipt and inbound placement atomically. Cancelled orders remain in custody until explicit physical return. READY requires a valid final placement; final customer handoff or completed outbound delivery removes current storage atomically. Warehouse is not per-garment inventory.
+- **Order items gate — COMPLETE / Product Owner UAT PASS:** active `order_items` determine lifecycle eligibility. Normal manual draft→received needs at least one active item; only canonical Quick Drop and inbound pickup completion may receive zero-item orders. Zero-item orders cannot enter actual production or final handoff/delivery; cancellation remains allowed. Adding an active item restores eligibility. No placeholder items or historical backfill.
+- **Production default assignee — COMPLETE / Product Owner UAT PASS:** optional per-location default must be active staff with production capability; Owner/Manager configure it. A valid configured default is assigned atomically when an unassigned received order first enters washing. Existing/manual assignments are preserved; Terminal has no arbitrary first-staff fallback and there is no fake system user. Unassigned warning applies to active production stages, not draft/received/ready/completed/cancelled.
+
+## Physical Item Decision — Phoenix V1
+
+`Catalog → order_items → internal ticket/labels → order-level production → order-level Warehouse → fulfillment`. Services/catalog remain the canonical price list; `order_items` are the commercial snapshot used by pricing/accounting. No second catalog or inventory exists. Discrete quantities can print labels for each unit: two trousers yield `1/2` and `2/2`, each identified by `PHX1:L:<order UUID>:<order-item UUID>:<unit index>`. These are operational identifiers, not persistent garment entities or scan events. Operators verify the complete order using ticket/labels; production and final Warehouse placement remain order-level. For 18 kg laundry in three bags, commercial quantity remains 18 kg while `package_count` can be 3. Persistent garment/package lifecycles, scan history and partial ready/fulfillment are **DEFERRED**, not approved V1 work.
+
+## Pilot And Production Boundary
+
+- Pilot operational closeout/E2E and remaining small findings precede the SaaS Productization Baseline and clean Demo Tenant onboarding. `PHX-FISCAL-001` must define architecture/compliance before any approved VERI*FACTU/provider implementation: Phoenix Core → Fiscal Adapter → tenant/provider-specific provider → AEAT where applicable. Operational receipts are non-fiscal; no VERI*FACTU compliance claim.
+- Auth DR is **BLOCKED before public production**: database and Storage recovery were verified, but managed Auth and authenticated application recovery remain unproven. Staging validation does not imply production readiness. EcoWash La Tejita is the first tenant/reference, not hardcoded Phoenix identity; tenant, RLS and authorization boundaries remain mandatory.
+- **Open/deferred:** `ORDER-PROPERTY-CLIENT-FILTER-001`, photo >1 MB inline validation, PDF technical-key cosmetic issue if reproducible, `NETWORK-FAILURE-UX-001`, Auth DR/`AUTH-CONFIG-DRIFT-001`, and still-valid pilot findings. Do not mark these complete without implementation evidence.
 
 ## Current Important Configuration
 
@@ -111,15 +127,9 @@ Read with `docs/CODEX_EXECUTION_CONTEXT.md`. Update this file after each complet
 - No raw card-data handling, printer driver, silent printing or hardware-status integration.
 - No permanent service/category deletion UI is exposed; lifecycle archival is the safe policy while canonical dependencies exist.
 
-## Next Approved Task
+## Next Work Boundary
 
-`PILOT / USER ACCEPTANCE TEST`.
-
-## Near Future — Not Started by This Task
-
-- `E-INVOICE-001`
-- Real online payment provider integration
-- `QA-HARNESS-001` if still useful
+Pilot closeout and focused findings are the next product phase; no further implementation is authorized by this documentation update. Real payment-provider and fiscal work remain separate, deferred approvals. `QA-HARNESS-001` remains optional.
 
 ## QA Structure
 

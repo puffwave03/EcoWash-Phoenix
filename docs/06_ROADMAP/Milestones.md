@@ -4,32 +4,71 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-29
+Last Updated: 2026-09-28
 
-Current Mission: COUNTER-UX-002 professional counter register redesign completed
+Current Mission: DOCS-PILOT-BASELINE-REFRESH-001 — documentation-only baseline refresh
 
-Next Action: BARCODE-001
+Next Action: Product Owner / CTO documentation review; pilot operational closeout/E2E and focused findings remain the next product phase.
 
 ---
 
-## COUNTER-UX-002 — Completed
+## Current Pilot Milestone — 2026-09-28
+
+Application baseline: `main` at `53f04ca840b9e56ed3f0052621e1b000b4e840e3`. This documentation refresh remains uncommitted; no implementation or remote mutation is authorized.
+
+Current operational environment: **staging**. Database + Storage DR are verified; managed Auth and authenticated application recovery remain a **PRE-PRODUCTION blocker**. No public production readiness or go-live is claimed.
+
+Near-term sequence, each step subject to separate approval:
+
+1. Operational pilot closeout / Product Owner E2E.
+2. Remaining small integrity/UX findings.
+3. SaaS Productization Baseline.
+4. Clean Demo Tenant onboarding and validation.
+5. `PHX-FISCAL-001` architecture/compliance boundary.
+6. Fiscal provider / VERI*FACTU integration only after architecture approval.
+
+### Completed operational baseline
+
+- **BARCODE-001:** stable order QR `PHX1:O:<order UUID>` and label QR `PHX1:L:<order UUID>:<order-item UUID>:<unit index>`. Label identity is order + order_item + unit_index; discrete units are 1-based and continuous lines use index `0`. Terminal supports scanner and manual resolution with tenant/access, entitlement and canonical item/unit revalidation. Codes are identifiers, never authorization tokens. V1 has no garment lifecycle or scan-event history.
+- **PRINT:** operational receipt, internal ticket and labels, configurable printer profiles and browser/system printing. Tickets/labels include QR when Barcode entitlement is enabled. Operational receipts remain **NON-FISCAL**; persisted receipt snapshots and numbering do not mutate payments or Accounting.
+- **Walk-ins:** new occasional visits reuse one tenant-scoped `WALKIN-SHARED` technical customer; optional visitor name/phone live on the order. Historical legacy walk-in customers and orders remain untouched.
+- **ACCOUNTING-001A/B/C:** implemented Operational Accounting covers sales, collections, refunds, outstanding, expenses, operational result and exports. It is not statutory accounting, a general ledger, double entry, tax filing or fiscal compliance. Billing invoices remain canonical Billing documents and do not replace payments.
+- **Daily Close:** implemented live preview, immutable persisted snapshots, tenant-local business date, organization/location scope, history and exports, with internal post-close gates and Portal after-close intake protection. POS till sessions remain independent; this is not statutory/fiscal closure.
+- **Canonical fulfillment:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Draft logistics is not operational work. Production completion means ready, not fulfilled; open pickup/delivery remains visible and actual customer handoff/completed outbound delivery ends custody. Without delivery, `ready_for_customer_pickup` awaits explicit handoff.
+- **Warehouse:** order-level custody, configured default inbound storage, canonical receipt-driven placement, authorized manual moves and append-only movement history, required final placement on READY, cancelled-return custody and atomic final storage exit on actual return/handoff or completed delivery. Draft creation does not establish custody.
+- **ORDER-ITEMS-LIFECYCLE-GATE-001 — COMPLETE / UAT PASS:** normal manual draft→received needs an active item; only Quick Drop and completed inbound pickup may receive zero-item orders. Zero-item orders cannot enter actual production or final fulfillment; cancellation is allowed and adding an active item restores eligibility.
+- **PRODUCTION-DEFAULT-ASSIGNEE-001 — COMPLETE / UAT PASS:** optional per-location active production-capable staff default, configured by Owner/Manager and applied atomically to an unassigned received→washing transition. Existing/manual assignment is preserved. Staging migration `20260928000200_production_default_assignee_001.sql` is applied; no arbitrary first-staff fallback or fake user.
+
+### Physical item V1 decision
+
+`Catalog → order_items → ticket / labels → order-level production → order-level Warehouse → fulfillment`.
+
+Phoenix V1 does **not** implement per-garment lifecycle or per-garment Warehouse. Individual label identities do not imply individual garment workflow. Operators verify complete orders; commercial quantity and physical package count remain distinct. Detailed garment/package tracking, scan-event history and partial ready/fulfillment remain deferred.
+
+### Fiscal boundary
+
+`Phoenix Core → Fiscal Adapter → tenant/provider-specific fiscal provider → AEAT where applicable`.
+
+`PHX-FISCAL-001` architecture comes first. E-INVOICE / VERI*FACTU is not implemented; operational receipts are non-fiscal and no fiscal compliance is claimed.
+
+## COUNTER-UX-002 — Completed; current customer model
 
 - `/[locale]/app/shop` is a compact touch-first laundry register with a fast customer strip, tenant categories, service search/tiles and a persistent tablet/desktop cart with responsive mobile stacking.
-- Regular and occasional customers use the canonical tenant customer model; every walk-in gets a distinct traceable `WALKIN-<UUID>` identity without relaxing required `customer_id` or adding schema.
+- Regular and occasional customers use the canonical tenant customer model. New occasional visits reuse `WALKIN-SHARED` with optional order-local visitor name/phone; legacy `WALKIN-<UUID>` identities remain historical and untouched. Required `customer_id` is preserved.
 - Effective segment/base pricing, discrete/continuous quantity rules, monetary discounts, active-till reuse and canonical cash/manual-card/PAY LATER behavior remain server-authoritative. No fake online CTA exists.
 - PRINT-001 receipt, ticket and label actions remain available from the compact success state. Existing entitlement, Owner/Manager, explicitly capable Staff and tenant boundaries remain authoritative.
-- No migration was added; staging remains aligned through PRINT-owned `20260829000300`. Exact EUR 18.00 paid and EUR 10.00 walk-in PAY LATER scenarios passed with rollback and zero fixtures.
-- Next sequence: `BARCODE-001`. `COUNTER-BILLING-001`, Accounting, fiscal invoicing and real provider configuration remain future work.
+- Historical COUNTER-UX-002 checkpoint: no migration was added; staging was aligned through PRINT-owned `20260829000300`. Exact EUR 18.00 paid and EUR 10.00 walk-in PAY LATER scenarios passed with rollback and zero fixtures.
+- The former next-Barcode sequence is superseded: `BARCODE-001`, `COUNTER-BILLING-001` and operational `ACCOUNTING-001A/B/C` are implemented. Fiscal architecture and real provider configuration remain separate future work.
 
 ---
 
 ## PRINT-001 — Completed
 
 - Dedicated receipt, internal ticket and label preview routes reuse canonical order/payment data, branding and tenant timezone.
-- Receipt privacy/non-fiscal boundary, operational ticket content, discrete/continuous label rules and reserved future-code area are enforced without barcode, QR, hardware or automatic printing.
+- Receipt privacy/non-fiscal boundary, operational ticket content and discrete/continuous label rules are preserved. Configurable printer profiles use browser/system printing; tickets and labels carry PHX1 QR when Barcode entitlement is enabled. No silent printing or printer-driver integration is claimed.
 - Existing `printing` entitlement plus POS capability enforce Owner/Manager and explicitly enabled Staff access; tenant isolation passed.
-- Migration `20260829000300` is additive, applied and aligned. Exact staging proof: subtotal EUR 20.00, discount EUR 2.00, total EUR 18.00, cash EUR 8.00, card EUR 10.00, outstanding EUR 0.00; PAY LATER outstanding EUR 10.00; rollback cleanup zero.
-- Next sequence: `BARCODE-001`. Real provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain future work.
+- Historical PRINT-001 checkpoint: migration `20260829000300` was additive, applied and aligned. Exact staging proof: subtotal EUR 20.00, discount EUR 2.00, total EUR 18.00, cash EUR 8.00, card EUR 10.00, outstanding EUR 0.00; PAY LATER outstanding EUR 10.00; rollback cleanup zero.
+- Barcode and Operational Accounting are implemented. Fiscal implementation remains deferred behind `PHX-FISCAL-001`; real provider configuration requires separate approval.
 
 ---
 
@@ -39,7 +78,9 @@ Track approved EcoWash Phoenix milestones without adding unapproved dates or com
 
 ---
 
-## Contents
+## Historical milestone register
+
+The foundation milestones and earlier M1–M3 plans below preserve project history. Old sequences, migration checkpoints, absence claims and planned statuses describe their original checkpoints, not current instructions. The current pilot milestone above governs next work; historical candidates require scope review and separate approval before execution.
 
 ## Milestone 1 — Repository and Framework Foundation
 
@@ -180,7 +221,7 @@ Approved and current areas:
 
 APP-008.1 added the organization timezone foundation for dashboard day windows. It does not add BI analytics, forecasts, exports, fiscal reporting, Realtime, notifications, customer portal or mobile app.
 
-Current resume task:
+Historical resume task (superseded):
 
 - do not start PORTAL-002.2 without approval; next known Portal work is customer address flexibility and delivery preferences
 - keep clearer Customers access in owner/manager navigation as a separate UX backlog item
@@ -254,7 +295,7 @@ Scope:
 - RELEASE-001 — Staging-first release readiness. Staging is online and validated; production is deferred until pilot product completion.
 - QA-001 — Repeatable smoke/regression checklist for staging and production release.
 
-Official sequence after SEC-001:
+Historical sequence after SEC-001 (superseded):
 
 - SEC-001 — completed
 - PILOT-001 — architecture approved; roles, permissions, route architecture, portal boundaries, dependencies, implementation order and pilot acceptance criteria
@@ -291,7 +332,7 @@ Official sequence after SEC-001:
 - Operational access testing — Pickup, Production, Quality & Packing and Delivery validated end to end
 - PILOT-002 or M1 First Laundry Operational Pilot — real operational pilot execution
 
-Current staging validation checkpoint:
+Historical staging validation checkpoint:
 
 - `TEST-PICKUP-01` → Speed; validated in Pickup Workspace and My Day
 - `TEST-PRODUCTION-01` → Production Test; validated in Production Workspace and My Day
@@ -307,7 +348,7 @@ Current staging validation checkpoint:
 - Segment pricing is implemented through `20260827000100`; base fallback and global visibility/orderability remain authoritative, server-created order snapshots ignore tampered client prices, and future customer-specific precedence is reserved but not implemented.
 - CUSTOMER-ACCOUNT-001 migration `20260826000100` is applied and aligned; Staff denial, tenant isolation, exact total/paid/outstanding values and fixture cleanup passed.
 - CUSTOMER-LIFECYCLE-001 migration `20260826000200` is applied and aligned; Owner/Manager transitions, Staff denial, tenant isolation, Portal/order enforcement and fixture cleanup passed. Anonymization and hard delete remain unavailable.
-- BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing and full accounting remain future work.
+- BILLING-001 migration `20260826000300` is applied and aligned; Owner/Manager operations, Staff denial, tenant isolation, exact numeric reconciliation and fixture cleanup passed. The foundation is premium-ready, while formal e-invoicing remains deferred; Operational Accounting is now implemented, without statutory accounting or fiscal compliance.
 - PRICING-SEGMENTS-001 preserved historical order/invoice values and passed rollback-only fixture cleanup; ENTITLEMENTS-001 now controls its management boundary.
 - ENTITLEMENTS-001 preserves invoice history, segment overrides and stored branding when access is disabled; EcoWash is bootstrapped only for live modules and future tenants receive no implicit premium access.
 - PLATFORM-ADMIN-001 preserves tenant data through feature changes and suspension; EcoWash remains active/entitled and the controlled staging administrator was rolled back.
@@ -315,17 +356,9 @@ Current staging validation checkpoint:
 - PAYMENTS-ONLINE-001 migrations `20260828000200` and corrective `20260829000100` are aligned. Hosted checkout and signed-webhook contracts, exact EUR 15.00 canonical settlement, replay idempotency, failure, cross-customer denial and concurrent POS reconciliation passed with rollback-only cleanup. No real provider is configured; EcoWash remains OFF.
 - QA-PRODUCT-001 reconciled a controlled EUR 15.00 order across POS, Customer Account, Billing and Portal; nine identities/roles, Tenant A/B isolation, entitlement preservation and suspension/reactivation passed with complete rollback cleanup. Visual desktop/mobile acceptance remains non-blocking and separate.
 
-Approved product sequence after this milestone checkpoint:
+Historical product sequence at this checkpoint is superseded. Its Barcode and Operational Accounting steps are implemented; use the current pilot sequence above. Optional `ACCOUNTING-PRO-001`, onboarding, subscription/commercial billing and `PLATFORM-SUPPORT-001` remain historical future intent requiring separate scope approval, not an active queue.
 
-1. `BARCODE-001`
-2. `ACCOUNTING-001`
-3. `E-INVOICE-001`
-4. `ACCOUNTING-PRO-001` — optional
-5. `ONBOARDING-001`
-6. future subscription/commercial billing
-7. `PLATFORM-SUPPORT-001` — optional
-
-Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Real online-provider/TPV integrations, printing, barcode, full accounting, e-invoicing, subscription payments, impersonation, tenant deletion and automated plan templates are not implemented.
+Premium UI, Calm Operations, mobile-first tenant usability, consumer-grade Customer Portal evolution and white-label architecture remain permanent requirements. EcoWash is the first tenant/reference, Platform Admin is separate from Tenant Owner, and potential Base/Premium/Pro plus add-ons resolve to entitlements rather than hardcoded plan branches. Printing, Barcode and Operational Accounting are implemented. Real online-provider/TPV integration, statutory accounting and fiscal compliance are not claimed; subscription payments, impersonation, tenant deletion and automated plan templates remain deferred.
 
 PILOT-001 planning scope:
 
@@ -366,7 +399,7 @@ Commercial exit criteria:
 - no service-role key or private credential is exposed to browser code or public env vars
 - RLS, Storage and RPC permissions have a documented review result
 
-## Milestone 9 — M2 First Paid Operations
+## Milestone 9 — Historical M2 First Paid Operations Plan
 
 Status: Planned after M1
 
@@ -390,18 +423,18 @@ Commercial value:
 
 ## Milestone 10 — M3 Operational Scale And Management Control
 
-Status: Planned after M2
+Status: Core operational capabilities implemented; historical M3 sequence superseded
 
 Purpose: improve throughput, operational control, financial closeout and accounting handoff.
 
 Priority class: P2.
 
-Candidate missions:
+Historical candidate reconciliation:
 
-- REPORT-001 — Daily payment close by currency and method.
-- REPORT-002 — Open balance and overdue collection report.
-- EXPORT-001 — CSV export for accounting or operational handoff.
-- QR-001 — QR order lookup without personally identifiable information.
+- REPORT-001 — Daily payment close is covered by implemented Daily Close/history/exports and canonical POS reconciliation; not a future foundation task.
+- REPORT-002 — Outstanding/open-balance summaries are implemented in Operational Accounting and Customer Account. Any additional overdue ageing or collection-management workflow remains a separately scoped future extension, not a claim that balances are missing.
+- EXPORT-001 — Operational Accounting CSV and Daily Close exports are implemented. Additional export formats/integrations require a distinct approved extension.
+- QR-001 — Identifier-only order/label lookup is delivered by BARCODE-001 with PII-free payloads and tenant/access revalidation. Detailed garment tracking and scan history remain deferred.
 
 Commercial value:
 
@@ -411,7 +444,7 @@ Commercial value:
 - owner can reconcile daily payments and act on unpaid balances
 - accounting handoff no longer depends on manual screen reading
 
-## Milestone 11 — P3 Customer-Facing Growth
+## Milestone 11 — Historical P3 Customer-Facing Growth Plan
 
 Status: Future after M1-M3
 
