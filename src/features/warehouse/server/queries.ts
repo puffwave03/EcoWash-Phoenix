@@ -3,6 +3,7 @@ import "server-only";
 import type {
   OrderStorageAssignment,
   OrderStorageMode,
+  ReadyWarehousePlacement,
   WarehouseMovement,
   WarehouseLocation,
   WarehousePosition,
@@ -114,6 +115,37 @@ export async function getOrderStorageAssignment(
     positionName: position.name,
     storageMode: data.storage_mode,
   };
+}
+
+export async function getReadyWarehousePlacement(
+  locale: string,
+  orderId: string,
+): Promise<ReadyWarehousePlacement> {
+  const { membership } = await requireMembership(locale);
+  const admin = createSupabaseAdminClient();
+  const { data: order, error: orderError } = await admin.from("orders")
+    .select("location_id")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", orderId)
+    .maybeSingle<{ location_id: string | null }>();
+  if (orderError || !order) throw new Error("ready_warehouse_order_unavailable");
+
+  const assignment = await getOrderStorageAssignment(locale, orderId);
+  if (!order.location_id) return { assignment, positions: [] };
+
+  const { data: location, error: locationError } = await admin.from("locations")
+    .select("id")
+    .eq("organization_id", membership.organization.id)
+    .eq("id", order.location_id)
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .maybeSingle<{ id: string }>();
+  if (locationError) throw new Error("ready_warehouse_location_read_failed");
+  if (!location) return { assignment, positions: [] };
+
+  const positions = (await listWarehousePositions(locale, order.location_id))
+    .filter((position) => position.isActive && !position.isDefaultInbound);
+  return { assignment, positions };
 }
 
 type WarehouseMovementRow = {

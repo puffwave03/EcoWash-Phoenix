@@ -41,6 +41,12 @@ function productionSurfacePath(locale: string, surface: ProductionTransitionSurf
   return `/${locale}/app/work/production`;
 }
 
+function readyErrorPath(locale: string, orderId: string, surface: ProductionTransitionSurface, error: string) {
+  const path = surface === "order" ? `/${locale}/app/orders/${orderId}`
+    : `/${locale}/app/work/${surface}/${orderId}`;
+  return `${path}?readyError=${error}`;
+}
+
 function fail(
   formError: OrderActionState["formError"] = "generic",
   fieldErrors: Record<string, string> = {},
@@ -267,6 +273,37 @@ export async function transitionOrderStatusAction(
     (membership.role === "staff" && order.assigned_to !== profile.id)
   ) {
     if (orderError) console.error("Order transition authorization failed", orderError.code);
+    return;
+  }
+
+  if (targetStatus === "ready") {
+    const positionId = String(formData.get("finalPositionId") ?? "").trim();
+    const packageCount = Number(String(formData.get("finalPackageCount") ?? ""));
+    const storageMode = String(formData.get("finalStorageMode") ?? "");
+    if (!isUuid(positionId)) redirect(readyErrorPath(locale, orderId, surface, "invalid-position"));
+    if (!Number.isSafeInteger(packageCount) || packageCount < 1
+      || !["folded", "hanging", "mixed", "other"].includes(storageMode)) {
+      redirect(readyErrorPath(locale, orderId, surface, "invalid-values"));
+    }
+
+    const { error } = await supabase.rpc("transition_order_ready_with_storage", {
+      target_order_id: orderId,
+      target_position_id: positionId,
+      target_package_count: packageCount,
+      target_storage_mode: storageMode,
+    });
+    if (error) {
+      console.error("READY Warehouse transition failed", error.code);
+      const errorKind = error.message.includes("ready_warehouse_storage_missing") ? "missing-storage"
+        : error.message.includes("ready_warehouse_location_invalid") ? "no-positions"
+          : error.message.includes("ready_warehouse_position_invalid") ? "invalid-position"
+            : error.message.includes("ready_warehouse_values_invalid") ? "invalid-values"
+              : "transition-failed";
+      redirect(readyErrorPath(locale, orderId, surface, errorKind));
+    }
+    revalidateOrders(locale, orderId);
+    revalidatePath(`/${locale}/app/warehouse`);
+    if (transitionLeavesSurface(surface, targetStatus)) redirect(productionSurfacePath(locale, surface));
     return;
   }
 

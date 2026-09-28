@@ -1,19 +1,26 @@
 import { getTranslations } from "next-intl/server";
 import { ProductionDetail } from "@/components/production/ProductionDetail";
+import type { ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
 import { transitionOrderStatusAction } from "@/features/orders/server/actions";
 import { getQualityWorkspaceTask } from "@/features/production/server/queries";
+import { getReadyWarehousePlacement } from "@/features/warehouse/server/queries";
 
 type QualityDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
+  searchParams: Promise<{ readyError?: string }>;
 };
 
-export default async function QualityDetailPage({ params }: QualityDetailPageProps) {
+export default async function QualityDetailPage({ params, searchParams }: QualityDetailPageProps) {
   const { locale, orderId } = await params;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT] = await Promise.all([
     getQualityWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.qualityWorkspace" }),
     getTranslations({ locale, namespace: "common.catalog" }),
+    getTranslations({ locale, namespace: "common.readyWarehouse" }),
   ]);
+  const readyPlacement = allowedTransitions.includes("ready")
+    ? await getReadyWarehousePlacement(locale, task.id)
+    : { assignment: null, positions: [] };
   const actionLabel = task.productionStatus === "quality_check"
     ? t("detail.passToPacking")
     : t("detail.markReady");
@@ -23,8 +30,12 @@ export default async function QualityDetailPage({ params }: QualityDetailPagePro
       action={transitionOrderStatusAction.bind(null, locale, task.id, "quality")}
       allowedTransitions={allowedTransitions}
       backHref="/app/work/quality"
+      canConfigureWarehouse={isSupervision}
       isSupervision={isSupervision}
       locale={locale}
+      readyError={(await searchParams).readyError}
+      readyPlacement={readyPlacement}
+      readyText={readyT.raw("labels") as ReadyWarehouseText}
       task={task}
       text={{
         action: actionLabel,

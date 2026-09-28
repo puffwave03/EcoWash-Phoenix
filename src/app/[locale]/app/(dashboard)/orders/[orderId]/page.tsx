@@ -12,6 +12,7 @@ import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
 import { WarehouseMovementHistory, type WarehouseMovementText } from "@/components/warehouse/WarehouseMovementHistory";
+import type { ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
 import { Link } from "@/i18n/navigation";
 import {
   saveDeliveryAction,
@@ -68,13 +69,14 @@ import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 import { saveOrderStorageAssignmentAction } from "@/features/warehouse/server/storage-actions";
 import {
   getOrderStorageAssignment,
+  getReadyWarehousePlacement,
   listWarehouseMovements,
   listWarehousePositions,
 } from "@/features/warehouse/server/queries";
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string }>;
 };
 
 function SectionShell({
@@ -98,8 +100,9 @@ function SectionShell({
 
 export default async function OrderDetailPage({ params, searchParams }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
-  const warehouseError = (await searchParams).warehouse === "inbound-unavailable";
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, commonT] = await Promise.all([
+  const routeSearch = await searchParams;
+  const warehouseError = routeSearch.warehouse === "inbound-unavailable";
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -120,6 +123,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getTranslations({ locale, namespace: "common.postCloseGate" }),
     getTranslations({ locale, namespace: "common.orderStorage" }),
     getTranslations({ locale, namespace: "common.warehouseMovements" }),
+    getTranslations({ locale, namespace: "common.readyWarehouse" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
@@ -151,6 +155,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     : [null, []];
   const activeWarehousePositions = warehousePositions.filter((position) => position.isActive);
   const warehouseMovements = canManageAssignments ? await listWarehouseMovements(locale, order.id) : [];
+  const readyPlacement = ["packing", "on_hold"].includes(order.productionStatus)
+    ? await getReadyWarehousePlacement(locale, order.id)
+    : { assignment: null, positions: [] };
   const canUsePos = entitlementEnabled(entitlements, FEATURES.pos)
     && hasOperationalCapability(access.membership, "pos");
   const posSession = canUsePos ? await getCurrentPosSession(locale) : null;
@@ -356,8 +363,14 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           <Card>
             {pendingQuickDrop ? <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950">{quickDropT("productionBlocked")}</div> : <StatusTransitionForm
               action={transitionOrderStatusAction.bind(null, locale, order.id, "order")}
+              canConfigureWarehouse={canManageAssignments}
               currentStatus={order.productionStatus}
               history={history}
+              key={order.productionStatus}
+              locale={locale}
+              readyError={routeSearch.readyError}
+              readyPlacement={readyPlacement}
+              readyText={readyT.raw("labels") as ReadyWarehouseText}
               text={{
                 change: t("workflow.change"),
                 history: t("workflow.history"),

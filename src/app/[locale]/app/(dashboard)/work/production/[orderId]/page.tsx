@@ -1,26 +1,37 @@
 import { getTranslations } from "next-intl/server";
 import { ProductionDetail } from "@/components/production/ProductionDetail";
+import type { ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
 import { transitionOrderStatusAction } from "@/features/orders/server/actions";
 import { getProductionWorkspaceTask } from "@/features/production/server/queries";
+import { getReadyWarehousePlacement } from "@/features/warehouse/server/queries";
 
 type ProductionDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
+  searchParams: Promise<{ readyError?: string }>;
 };
 
-export default async function ProductionDetailPage({ params }: ProductionDetailPageProps) {
+export default async function ProductionDetailPage({ params, searchParams }: ProductionDetailPageProps) {
   const { locale, orderId } = await params;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT] = await Promise.all([
     getProductionWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.production" }),
     getTranslations({ locale, namespace: "common.catalog" }),
+    getTranslations({ locale, namespace: "common.readyWarehouse" }),
   ]);
+  const readyPlacement = allowedTransitions.includes("ready")
+    ? await getReadyWarehousePlacement(locale, task.id)
+    : { assignment: null, positions: [] };
 
   return (
     <ProductionDetail
       action={transitionOrderStatusAction.bind(null, locale, task.id, "production")}
       allowedTransitions={allowedTransitions}
+      canConfigureWarehouse={isSupervision}
       isSupervision={isSupervision}
       locale={locale}
+      readyError={(await searchParams).readyError}
+      readyPlacement={readyPlacement}
+      readyText={readyT.raw("labels") as ReadyWarehouseText}
       task={task}
       text={{
         action: t("detail.action"),

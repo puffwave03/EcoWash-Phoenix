@@ -1,5 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { ProductionTransitionForm } from "@/components/production/ProductionTransitionForm";
+import type { ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
+import type { ReadyWarehousePlacement } from "@/features/warehouse/types";
 import type {
   OrderPriority,
   ProductionStatus,
@@ -46,8 +48,12 @@ type ProductionDetailProps = {
   action: (formData: FormData) => Promise<void>;
   allowedTransitions: ProductionStatus[];
   backHref?: string;
+  canConfigureWarehouse: boolean;
   isSupervision: boolean;
   locale: string;
+  readyError?: string;
+  readyPlacement: ReadyWarehousePlacement;
+  readyText: ReadyWarehouseText;
   task: ProductionTask;
   text: ProductionDetailText;
   timeZone: string;
@@ -95,8 +101,12 @@ export function ProductionDetail({
   action,
   allowedTransitions,
   backHref = "/app/work/production",
+  canConfigureWarehouse,
   isSupervision,
   locale,
+  readyError,
+  readyPlacement,
+  readyText,
   task,
   text,
   timeZone,
@@ -233,6 +243,12 @@ export function ProductionDetail({
             <ProductionTransitionForm
               action={action}
               allowedTransitions={allowedTransitions}
+              canConfigureWarehouse={canConfigureWarehouse}
+              key={task.productionStatus}
+              locale={locale}
+              readyError={readyError}
+              readyPlacement={readyPlacement}
+              readyText={readyText}
               text={{
                 action: text.action,
                 noActions: text.noActions,

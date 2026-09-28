@@ -36,6 +36,11 @@ export type OrderStorageAssignment = {
   storageMode: OrderStorageMode;
 };
 
+export type ReadyWarehousePlacement = {
+  assignment: OrderStorageAssignment | null;
+  positions: WarehousePosition[];
+};
+
 export type OrderStorageActionState = {
   fieldErrors: Record<string, string>;
   formError: "generic" | "notFound" | "orderLocation" | "position" | null;
@@ -48,7 +53,7 @@ export type WarehouseMovement = {
   actorName: string | null;
   movementType: "entered" | "moved" | "updated" | "exited";
   source: "canonical_receipt" | "manual_assignment" | "manual_move" | "manual_update"
-    | "customer_handoff" | "delivery_completed" | "cancelled_return";
+    | "customer_handoff" | "delivery_completed" | "cancelled_return" | "production_ready";
   fromPositionLabel: string | null;
   toPositionLabel: string | null;
   fromPackageCount: number | null;
