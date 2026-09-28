@@ -1911,5 +1911,6 @@
         "other": "Autre"
       }
     }
-  }
+  },
+  "orderItemsRequired": "Cette commande ne contient aucun article actif. Ajoutez au moins un service ou article avant de poursuivre le traitement."
 }

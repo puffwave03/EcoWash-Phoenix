@@ -1996,5 +1996,6 @@
         "other": "Other"
       }
     }
-  }
+  },
+  "orderItemsRequired": "This order has no active items. Add at least one service or item before continuing processing."
 }

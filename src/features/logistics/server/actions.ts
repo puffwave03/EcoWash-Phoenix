@@ -303,6 +303,11 @@ export async function transitionDeliveryAction(
   });
 
   if (error) {
+    if (error.message.includes("order_items_required")) {
+      redirect(surface === "workspace"
+        ? `/${locale}/app/work/deliveries/${deliveryId}?itemsError=1`
+        : `/${locale}/app/orders/${orderId}?itemsError=1`);
+    }
     console.error("Delivery transition failed", error.code);
     return;
   }

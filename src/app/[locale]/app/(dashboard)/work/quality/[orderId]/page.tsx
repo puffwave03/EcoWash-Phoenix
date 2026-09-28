@@ -7,16 +7,17 @@ import { getReadyWarehousePlacement } from "@/features/warehouse/server/queries"
 
 type QualityDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ readyError?: string }>;
+  searchParams: Promise<{ readyError?: string; itemsError?: string }>;
 };
 
 export default async function QualityDetailPage({ params, searchParams }: QualityDetailPageProps) {
   const { locale, orderId } = await params;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
     getQualityWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.qualityWorkspace" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.readyWarehouse" }),
+    getTranslations({ locale, namespace: "common" }),
   ]);
   const readyPlacement = allowedTransitions.includes("ready")
     ? await getReadyWarehousePlacement(locale, task.id)
@@ -34,6 +35,8 @@ export default async function QualityDetailPage({ params, searchParams }: Qualit
       isSupervision={isSupervision}
       locale={locale}
       readyError={(await searchParams).readyError}
+      itemsError={(await searchParams).itemsError}
+      itemsRequiredText={commonT("orderItemsRequired")}
       readyPlacement={readyPlacement}
       readyText={readyT.raw("labels") as ReadyWarehouseText}
       task={task}

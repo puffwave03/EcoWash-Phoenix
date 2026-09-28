@@ -76,7 +76,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string }>;
 };
 
 function SectionShell({
@@ -178,6 +178,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
   return (
     <div className="space-y-6">
+      {routeSearch.itemsError === "1" ? (
+        <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("orderItemsRequired")}</p>
+      ) : null}
       <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">

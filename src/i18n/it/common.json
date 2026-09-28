@@ -1954,5 +1954,6 @@
         "other": "Altro"
       }
     }
-  }
+  },
+  "orderItemsRequired": "L'ordine non contiene articoli attivi. Aggiungi almeno un servizio o articolo prima di proseguire con la lavorazione."
 }

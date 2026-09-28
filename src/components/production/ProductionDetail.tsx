@@ -52,6 +52,8 @@ type ProductionDetailProps = {
   isSupervision: boolean;
   locale: string;
   readyError?: string;
+  itemsError?: string;
+  itemsRequiredText: string;
   readyPlacement: ReadyWarehousePlacement;
   readyText: ReadyWarehouseText;
   task: ProductionTask;
@@ -105,6 +107,8 @@ export function ProductionDetail({
   isSupervision,
   locale,
   readyError,
+  itemsError,
+  itemsRequiredText,
   readyPlacement,
   readyText,
   task,
@@ -126,6 +130,9 @@ export function ProductionDetail({
         <span aria-hidden="true">←</span> {text.back}
       </Link>
 
+      {itemsError === "1" ? (
+        <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{itemsRequiredText}</p>
+      ) : null}
       <section className="overflow-hidden rounded-card border border-primary/20 bg-white shadow-card">
         <div className="border-b border-primary/10 bg-primary-soft/70 px-4 py-5 sm:px-6">
           <div className="flex flex-wrap items-start justify-between gap-3">

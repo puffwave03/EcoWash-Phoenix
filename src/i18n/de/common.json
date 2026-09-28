@@ -1911,5 +1911,6 @@
         "other": "Sonstiges"
       }
     }
-  }
+  },
+  "orderItemsRequired": "Dieser Auftrag enthält keine aktiven Artikel. Fügen Sie mindestens eine Dienstleistung oder einen Artikel hinzu, bevor Sie die Bearbeitung fortsetzen."
 }

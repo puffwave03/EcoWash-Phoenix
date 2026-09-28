@@ -1911,5 +1911,6 @@
         "other": "Otro"
       }
     }
-  }
+  },
+  "orderItemsRequired": "Este pedido no tiene artículos activos. Añade al menos un servicio o artículo antes de continuar con el procesamiento."
 }

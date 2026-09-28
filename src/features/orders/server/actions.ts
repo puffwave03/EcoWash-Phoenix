@@ -41,6 +41,12 @@ function productionSurfacePath(locale: string, surface: ProductionTransitionSurf
   return `/${locale}/app/work/production`;
 }
 
+function itemErrorPath(locale: string, orderId: string, surface: ProductionTransitionSurface) {
+  const path = surface === "order" ? `/${locale}/app/orders/${orderId}`
+    : `/${locale}/app/work/${surface}/${orderId}`;
+  return `${path}?itemsError=1`;
+}
+
 function readyErrorPath(locale: string, orderId: string, surface: ProductionTransitionSurface, error: string) {
   const path = surface === "order" ? `/${locale}/app/orders/${orderId}`
     : `/${locale}/app/work/${surface}/${orderId}`;
@@ -293,6 +299,9 @@ export async function transitionOrderStatusAction(
       target_storage_mode: storageMode,
     });
     if (error) {
+      if (error.message.includes("order_items_required")) {
+        redirect(itemErrorPath(locale, orderId, surface));
+      }
       console.error("READY Warehouse transition failed", error.code);
       const errorKind = error.message.includes("ready_warehouse_storage_missing") ? "missing-storage"
         : error.message.includes("ready_warehouse_location_invalid") ? "no-positions"
@@ -314,6 +323,9 @@ export async function transitionOrderStatusAction(
   });
 
   if (error) {
+    if (error.message.includes("order_items_required")) {
+      redirect(itemErrorPath(locale, orderId, surface));
+    }
     if (error.message.includes("warehouse_default_inbound_unavailable")) {
       redirect(`/${locale}/app/orders/${orderId}?warehouse=inbound-unavailable`);
     }

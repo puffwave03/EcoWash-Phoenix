@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -23,6 +24,9 @@ export async function completeCustomerHandoffAction(
   });
 
   if (error) {
+    if (error.message.includes("order_items_required")) {
+      redirect(`/${locale}/app/orders/${orderId}?itemsError=1`);
+    }
     console.error("Customer handoff failed", error.code);
     return;
   }
