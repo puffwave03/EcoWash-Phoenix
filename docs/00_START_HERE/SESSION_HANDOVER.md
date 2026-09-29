@@ -2,17 +2,17 @@
 
 Status: Active
 
-Date: 2026-09-28
+Date: 2026-09-29
 
-Session checkpoint: PILOT OPERATIONAL BASELINE / PRODUCTION-DEFAULT-ASSIGNEE-001 PRODUCT OWNER UAT PASS / AUTH DR PRE-PRODUCTION BLOCKER
+Session checkpoint: OPERATIONAL-CLOSEOUT-FIXES-001 PRODUCT OWNER UAT PASS / FINAL LIGHTWEIGHT PILOT SMOKE NEXT / AUTH DR PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Approved baseline before this documentation update: `53f04ca840b9e56ed3f0052621e1b000b4e840e3`
+Approved baseline before this documentation update: `a61629e81bf73d95c579761e049d849c9de1dff6`
 
-Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `53f04ca840b9e56ed3f0052621e1b000b4e840e3`.
+Origin/main status before this documentation update: local `main` and `origin/main` are aligned at `a61629e81bf73d95c579761e049d849c9de1dff6`.
 
 Working tree status before this documentation update: clean.
 
@@ -20,16 +20,18 @@ This documentation update remains uncommitted for Product Owner / CTO review. No
 
 ---
 
-## Current Handover — 2026-09-28
+## Current Handover — 2026-09-29
 
 - **COMPLETE / UAT PASS:** `ORDER-ITEMS-LIFECYCLE-GATE-001` and `PRODUCTION-DEFAULT-ASSIGNEE-001`. The latter uses staging migration `20260928000200_production_default_assignee_001.sql`. Normal manual draft→received requires an active order item; only Quick Drop and completed inbound pickup may receive without one. All zero-item orders are blocked from actual production and final fulfillment until an active item is added; cancellation is allowed. No placeholders or backfill.
 - **COMPLETE:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Production completion is not final fulfillment. Without delivery, `ready_for_customer_pickup` awaits explicit customer handoff. Payment/receipt is not physical handoff.
 - **COMPLETE:** Daily Close has live preview, immutable saved snapshot, tenant-local business date, organization/location scope, history/exports, internal post-close operational/financial gate and Portal after-close intake protection. POS sessions remain independent. It is operational, not statutory/fiscal close.
 - **COMPLETE:** Warehouse is order-level physical custody: positions and configured default inbound; one current `order_storage`; receipt-driven automatic inbound placement; owner/manager manual placement/move/update; append-only `warehouse_movements`; cancelled custody and explicit return; required final placement on READY; atomic storage exit on customer handoff or completed delivery; overview/search and mobile navigation. Draft Terminal/order creation is not receipt; Quick Drop and completed inbound pickup can establish `received` plus storage atomically. No per-garment Warehouse lifecycle.
-- **COMPLETE / UAT PASS:** optional location default production assignee is active production-capable staff configured by Owner/Manager. Unassigned received→washing assigns that valid default atomically; existing/manual assignment stays. Terminal has no arbitrary first-staff fallback. Unassigned warning applies only during active production, not draft/received/ready/completed/cancelled.
+- **COMPLETE / UAT PASS:** Shop Terminal preselects the valid configured per-location default (Quality Test in UAT), otherwise Unassigned; a manual override applies to that order and the next new order returns to the location default. There is no first-staff fallback. Separately, an order still unassigned at received→washing may receive the valid default atomically; the resulting assignment now appears in Order detail immediately without a browser refresh (EW-000118/119). Unassigned warning applies only during active production, not draft/received/ready/completed/cancelled.
+- **COMPLETE / UAT PASS:** With an inbound pickup scheduled or in progress, manual draft→received is blocked and Order detail explains that pickup must be completed first. Pickup completion canonically sets received/received_at and establishes inbound Warehouse custody; no open or a cancelled pickup permits normal manual receipt under existing gates. Quick Drop retains its separate receipt path. Product Owner staging UAT passed for EW-000118/119; migration `20260929000100_inbound_pickup_receipt_gate_001.sql` was reported applied to staging `exthnplfokcucaqydney` with local/remote history aligned through `20260929000100`.
+- **Staging Auth signup:** Product Owner reports the Supabase staging Dashboard now has “Allow new users to sign up” OFF and “Confirm email” ON; this was a manual correction, not programmatic verification. Auth disaster recovery and authenticated application recovery remain separate pre-production blockers.
 - **V1 decision:** catalog/services → commercial `order_items` snapshot → ticket/labels → order-level production → order-level Warehouse → fulfillment. Discrete labels may identify each unit (`PHX1:L:<order UUID>:<order-item UUID>:<unit index>`); two trousers can print `1/2` and `2/2`. This QR identifies an order/item/unit, not a persistent garment or scan event. Operators verify complete orders. Commercial 18 kg laundry and three physical bags remain 18 kg order quantity and `package_count = 3`. Garment/package tracking and partial ready/fulfillment are deferred, not approved.
-- **Next sequence, subject to separate approval:** pilot operational closeout/E2E → small integrity/UX findings → SaaS Productization Baseline → clean Demo Tenant onboarding → `PHX-FISCAL-001` architecture/compliance → provider/VERI*FACTU work only after approval. Phoenix Core → Fiscal Adapter → tenant/provider-specific provider → AEAT where applicable. Operational receipts remain non-fiscal.
-- **BLOCKED for public production:** database and Storage recovery are proven; managed Auth and authenticated application recovery are not. Keep tenant/RLS/auth boundaries and EcoWash La Tejita as first tenant/reference, never product identity. Open findings include `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still present, `NETWORK-FAILURE-UX-001` and Auth DR/`AUTH-CONFIG-DRIFT-001`.
+- **Next sequence, subject to separate approval:** final lightweight operational pilot smoke test → remaining small integrity/UX findings (first likely `ORDER-PROPERTY-CLIENT-FILTER-001`, still open) → SaaS Productization Baseline → clean Demo Tenant onboarding → `PHX-FISCAL-001` architecture/compliance → provider/VERI*FACTU implementation only after architecture approval. Phoenix Core → Fiscal Adapter → tenant/provider-specific provider → AEAT where applicable. Operational receipts remain non-fiscal.
+- **BLOCKED for public production:** database and Storage recovery are proven; managed Auth and authenticated application recovery are not. Keep tenant/RLS/auth boundaries and EcoWash La Tejita as first tenant/reference, never product identity. Open findings include `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still present, `NETWORK-FAILURE-UX-001` and Auth DR.
 
 The dated closeouts below record earlier checkpoints. Their “next proposed task,” staging-pending and implementation-boundary statements are historical, not the current resume instruction.
 
@@ -101,7 +103,7 @@ The dated closeouts below record earlier checkpoints. Their “next proposed tas
 ## Open Findings
 
 - `PHX-AUTH-DR-001` — BACKUP-DR-001D rehearsal/decommission is complete and database/Storage recovery are verified; Auth recovery and authenticated application recovery remain a mandatory pre-production blocker before go-live.
-- `AUTH-CONFIG-DRIFT-001` — the repository expects signup disabled, while hosted staging was previously observed allowing signup; verify and resolve only under a separately approved Auth task.
+- `AUTH-CONFIG-DRIFT-001` — staging signup was manually disabled in the Supabase Dashboard (Product Owner report; no programmatic verification). This configuration finding is resolved; Auth DR remains open separately.
 - `PORTAL-ORDER-VALIDATION-SUMMARY-001` — provide a visible order-level validation notice/summary when required Portal order fields are incomplete, while preserving field-level validation and guiding the customer to the missing data.
 - `POS-DAILY-CLOSE-001` — remaining POS/Daily Close refinements remain open pending focused Product Owner/CTO scope; financial canon must remain unchanged.
 - `NETWORK-FAILURE-UX-001` — define clear user feedback and safe recovery behavior for operational network failures.
@@ -314,7 +316,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Supabase migration history is aligned through `20260908000200`; the ACCOUNTING-SALES-DOCUMENTS-001 registry migration and its corrective receipt SELECT policy are applied to staging.
+Per Product Owner closeout, staging migration history is aligned through `20260929000100`, including `20260929000100_inbound_pickup_receipt_gate_001.sql`. Earlier ACCOUNTING-SALES-DOCUMENTS-001 registry and corrective receipt SELECT migrations remain applied.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 

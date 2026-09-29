@@ -4,24 +4,24 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-28
+Last Updated: 2026-09-29
 
-Current Mission: DOCS-PILOT-BASELINE-REFRESH-001 — documentation-only baseline refresh
+Current Mission: DOCS-OPERATIONAL-CLOSEOUT-REFRESH-001 — documentation-only status update
 
-Next Action: Product Owner / CTO documentation review; pilot operational closeout/E2E and focused findings remain the next product phase.
+Next Action: final lightweight operational pilot smoke test, subject to separate approval.
 
 ---
 
-## Current Pilot Milestone — 2026-09-28
+## Current Pilot Milestone — 2026-09-29
 
-Application baseline: `main` at `53f04ca840b9e56ed3f0052621e1b000b4e840e3`. This documentation refresh remains uncommitted; no implementation or remote mutation is authorized.
+Application baseline: `main` at `a61629e81bf73d95c579761e049d849c9de1dff6`. This documentation refresh remains uncommitted; no implementation or remote mutation is authorized.
 
 Current operational environment: **staging**. Database + Storage DR are verified; managed Auth and authenticated application recovery remain a **PRE-PRODUCTION blocker**. No public production readiness or go-live is claimed.
 
 Near-term sequence, each step subject to separate approval:
 
-1. Operational pilot closeout / Product Owner E2E.
-2. Remaining small integrity/UX findings.
+1. Final lightweight operational pilot smoke test.
+2. Remaining small integrity/UX findings; first likely `ORDER-PROPERTY-CLIENT-FILTER-001`, still open.
 3. SaaS Productization Baseline.
 4. Clean Demo Tenant onboarding and validation.
 5. `PHX-FISCAL-001` architecture/compliance boundary.
@@ -37,7 +37,9 @@ Near-term sequence, each step subject to separate approval:
 - **Canonical fulfillment:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Draft logistics is not operational work. Production completion means ready, not fulfilled; open pickup/delivery remains visible and actual customer handoff/completed outbound delivery ends custody. Without delivery, `ready_for_customer_pickup` awaits explicit handoff.
 - **Warehouse:** order-level custody, configured default inbound storage, canonical receipt-driven placement, authorized manual moves and append-only movement history, required final placement on READY, cancelled-return custody and atomic final storage exit on actual return/handoff or completed delivery. Draft creation does not establish custody.
 - **ORDER-ITEMS-LIFECYCLE-GATE-001 — COMPLETE / UAT PASS:** normal manual draft→received needs an active item; only Quick Drop and completed inbound pickup may receive zero-item orders. Zero-item orders cannot enter actual production or final fulfillment; cancellation is allowed and adding an active item restores eligibility.
-- **PRODUCTION-DEFAULT-ASSIGNEE-001 — COMPLETE / UAT PASS:** optional per-location active production-capable staff default, configured by Owner/Manager and applied atomically to an unassigned received→washing transition. Existing/manual assignment is preserved. Staging migration `20260928000200_production_default_assignee_001.sql` is applied; no arbitrary first-staff fallback or fake user.
+- **Production default and Terminal prefill — COMPLETE / UAT PASS:** Shop Terminal preselects the valid configured per-location default (Quality Test in UAT), otherwise Unassigned; a manual override applies to that order and the next new order returns to the location default. There is no first-staff fallback. Separately, an order still unassigned at received→washing may receive the valid default atomically; the resulting assignment now appears in Order detail immediately without a browser refresh (EW-000118/119). Staging migration `20260928000200_production_default_assignee_001.sql` is applied.
+- **OPERATIONAL-CLOSEOUT-FIXES-001 — COMPLETE / UAT PASS:** With an inbound pickup scheduled or in progress, manual draft→received is blocked and Order detail explains that pickup must be completed first. Pickup completion canonically sets received/received_at and establishes inbound Warehouse custody; no open or a cancelled pickup permits normal manual receipt under existing gates. Quick Drop retains its separate receipt path. Product Owner staging UAT passed for EW-000118/119; migration `20260929000100_inbound_pickup_receipt_gate_001.sql` was reported applied to staging `exthnplfokcucaqydney` with local/remote history aligned through `20260929000100`.
+- **Staging Auth signup:** Product Owner reports the Supabase staging Dashboard now has “Allow new users to sign up” OFF and “Confirm email” ON; this was a manual correction, not programmatic verification. Auth disaster recovery and authenticated application recovery remain separate pre-production blockers.
 
 ### Physical item V1 decision
 

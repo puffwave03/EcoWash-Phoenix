@@ -4,11 +4,11 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-09-28
+Last Updated: 2026-09-29
 
-Current Mission: DOCS-PILOT-BASELINE-REFRESH-001 — documentation-only baseline refresh
+Current Mission: DOCS-OPERATIONAL-CLOSEOUT-REFRESH-001 — documentation-only status update
 
-Next Action: Pilot operational closeout/E2E and focused findings, subject to separate approval
+Next Action: final lightweight operational pilot smoke test, subject to separate approval
 
 ---
 
@@ -44,21 +44,23 @@ Real online-provider configuration, `ACCOUNTING-001` and `E-INVOICE-001` remain 
 
 Track the approved high-level EcoWash Phoenix roadmap without adding unapproved dates or guarantees.
 
-## Current Pilot Baseline And Sequence — 2026-09-28
+## Current Pilot Baseline And Sequence — 2026-09-29
 
-At repository baseline `53f04ca840b9e56ed3f0052621e1b000b4e840e3`, `PRODUCTION-DEFAULT-ASSIGNEE-001` is **COMPLETE / Product Owner UAT PASS**; staging migration `20260928000200_production_default_assignee_001.sql` is applied. `ORDER-ITEMS-LIFECYCLE-GATE-001` is also **COMPLETE / Product Owner UAT PASS**. Staging implementation is not public-production readiness; managed Auth/authenticated application recovery is **BLOCKED** as a pre-production gate despite verified database and Storage recovery.
+At repository baseline `a61629e81bf73d95c579761e049d849c9de1dff6`, `PRODUCTION-DEFAULT-ASSIGNEE-001` is **COMPLETE / Product Owner UAT PASS**; staging migration `20260928000200_production_default_assignee_001.sql` is applied. `ORDER-ITEMS-LIFECYCLE-GATE-001` is also **COMPLETE / Product Owner UAT PASS**. Staging implementation is not public-production readiness; managed Auth/authenticated application recovery is **BLOCKED** as a pre-production gate despite verified database and Storage recovery.
 
 - **Order and fulfillment — COMPLETE:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Production completion is not final fulfillment. A no-delivery order becomes `ready_for_customer_pickup` until explicit customer handoff; payment and operational receipt do not represent physical handoff.
 - **Daily Close — COMPLETE:** live preview, immutable persisted close snapshot, organization/location scope, tenant-local business date, internal post-close operational/financial gate, Portal after-close intake protection, history and exports. POS session close is independent. Neither Daily Close nor operational receipt is statutory/fiscal closure.
 - **Warehouse — COMPLETE:** positions with configured default inbound; one current order-level placement; canonical receipt-driven automatic inbound placement; owner/manager manual assignment/move/update; append-only movement history; cancelled custody until explicit physical return; final READY placement; atomic current-storage exit on customer handoff or completed delivery; overview/search and mobile discovery. Draft Terminal/order creation does not prove physical receipt. Quick Drop and completed inbound pickup may establish received custody and storage atomically. Warehouse is not per-garment inventory.
 - **Active-item gate — COMPLETE / UAT PASS:** normal manual draft→received needs ≥1 active `order_item`; only canonical Quick Drop and completed inbound pickup are zero-item receipt exceptions. Zero-item orders cannot enter real production or final handoff/delivery; cancellation remains valid and adding an active item restores eligibility. No placeholders/backfill.
-- **Production assignment — COMPLETE / UAT PASS:** optional per-location active, production-capable staff default configured by Owner/Manager. Valid default is assigned atomically when unassigned received→washing; existing assignment stays. No arbitrary Terminal first-staff fallback or fake user. Unassigned warning applies to active production, not draft/received/ready/completed/cancelled.
+- **Production assignment — COMPLETE / UAT PASS:** Shop Terminal preselects the valid configured per-location default (Quality Test in UAT), otherwise Unassigned; a manual override applies to that order and the next new order returns to the location default. There is no first-staff fallback. Separately, an order still unassigned at received→washing may receive the valid default atomically; the resulting assignment now appears in Order detail immediately without a browser refresh (EW-000118/119). Unassigned warning applies to active production, not draft/received/ready/completed/cancelled.
+- **Inbound pickup receipt — COMPLETE / UAT PASS:** With an inbound pickup scheduled or in progress, manual draft→received is blocked and Order detail explains that pickup must be completed first. Pickup completion canonically sets received/received_at and establishes inbound Warehouse custody; no open or a cancelled pickup permits normal manual receipt under existing gates. Quick Drop retains its separate receipt path. Product Owner staging UAT passed for EW-000118/119; migration `20260929000100_inbound_pickup_receipt_gate_001.sql` was reported applied to staging `exthnplfokcucaqydney` with local/remote history aligned through `20260929000100`.
+- **Staging Auth signup:** Product Owner reports the Supabase staging Dashboard now has “Allow new users to sign up” OFF and “Confirm email” ON; this was a manual correction, not programmatic verification. Auth disaster recovery and authenticated application recovery remain separate pre-production blockers.
 
 **Phoenix V1 physical-item decision:** catalog/services → commercial `order_items` snapshot → internal ticket and labels → order-level production → order-level Warehouse → fulfillment. Catalog is the price list and `order_items` feed pricing/accounting; no second inventory/catalog. Browser-printed receipts, tickets and configured-printer-profile labels use order QR and label QR `PHX1:L:<order UUID>:<order-item UUID>:<unit index>`. Two trousers can print labels `1/2` and `2/2`; operators verify the whole order, whose production/READY and storage remain order-level. 18 kg laundry in three bags remains commercial quantity 18 kg and physical `package_count = 3`. QR is identifier-only; no persistent garment entity, per-piece scan history or partial ready/fulfillment. Those possible capabilities are **DEFERRED**, not an approved implementation task.
 
-**Intended sequence, each step separately approved:** (1) pilot operational closeout/E2E; (2) small integrity/UX findings; (3) SaaS Productization Baseline; (4) clean Demo Tenant onboarding; (5) `PHX-FISCAL-001` architecture/compliance boundary; (6) VERI*FACTU/provider integration only after architecture approval. Fiscal architecture: Phoenix Core → Fiscal Adapter → tenant/provider-specific fiscal provider → AEAT where applicable. Phoenix operational receipts are non-fiscal; no VERI*FACTU compliance claim. EcoWash La Tejita is the first tenant/reference, not hardcoded identity; tenant/RLS/auth boundaries remain intact.
+**Intended sequence, each step separately approved:** (1) final lightweight operational pilot smoke test; (2) remaining small integrity/UX findings, first likely `ORDER-PROPERTY-CLIENT-FILTER-001`; (3) SaaS Productization Baseline; (4) clean Demo Tenant onboarding; (5) `PHX-FISCAL-001` architecture/compliance boundary; (6) provider/VERI*FACTU implementation only after architecture approval. Fiscal architecture: Phoenix Core → Fiscal Adapter → tenant/provider-specific fiscal provider → AEAT where applicable. Phoenix operational receipts are non-fiscal; no VERI*FACTU compliance claim. EcoWash La Tejita is the first tenant/reference, not hardcoded identity; tenant/RLS/auth boundaries remain intact.
 
-**Open small backlog:** `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still reproducible, `NETWORK-FAILURE-UX-001`, Auth DR/`AUTH-CONFIG-DRIFT-001`, and still-valid pilot findings. These remain open unless implementation proves closure.
+**Open small backlog:** `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation, PDF technical-key cosmetic issue if still reproducible, `NETWORK-FAILURE-UX-001`, Auth DR, and still-valid pilot findings. These remain open unless implementation proves closure.
 
 The milestone/priority lists below retain historical planning detail. Older “next” instructions, absence claims and planned statuses are superseded by this current baseline; use them as history, not the live execution queue.
 
