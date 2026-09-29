@@ -70,7 +70,7 @@ test("8 overview reads and badges default without changing summary", async () =>
     source("src/app/[locale]/app/(dashboard)/warehouse/page.tsx"),
     source("src/features/warehouse/overview.ts"),
   ]);
-  assert.match(query, /\.select\("id, location_id, code, name, description, position_type, is_active, is_default_inbound"\)/);
+  assert.match(query, /\.select\("id, location_id, code, name, description, position_type, is_active, is_default_inbound, is_default_delivery_staging"\)/);
   assert.match(query, /isDefaultInbound: row\.is_default_inbound/);
   assert.match(page, /position\.isDefaultInbound[\s\S]*t\("defaultInbound"\)/);
   assert.doesNotMatch(overview, /isDefaultInbound|is_default_inbound/);

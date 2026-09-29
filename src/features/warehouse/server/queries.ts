@@ -20,6 +20,7 @@ type WarehousePositionRow = {
   id: string;
   is_active: boolean;
   is_default_inbound: boolean;
+  is_default_delivery_staging: boolean;
   location_id: string;
   name: string | null;
   position_type: WarehousePositionType;
@@ -66,7 +67,7 @@ export async function listWarehousePositions(
   const { membership } = await requireMembership(locale);
   const supabase = createSupabaseAdminClient();
   let query = supabase.from("warehouse_positions")
-    .select("id, location_id, code, name, description, position_type, is_active, is_default_inbound")
+    .select("id, location_id, code, name, description, position_type, is_active, is_default_inbound, is_default_delivery_staging")
     .eq("organization_id", membership.organization.id)
     .order("code")
     .limit(500);
@@ -81,6 +82,7 @@ export async function listWarehousePositions(
     id: row.id,
     isActive: row.is_active,
     isDefaultInbound: row.is_default_inbound,
+    isDefaultDeliveryStaging: row.is_default_delivery_staging,
     locationId: row.location_id,
     name: row.name,
     positionType: row.position_type,
@@ -145,7 +147,18 @@ export async function getReadyWarehousePlacement(
 
   const positions = (await listWarehousePositions(locale, order.location_id))
     .filter((position) => position.isActive && !position.isDefaultInbound);
-  return { assignment, positions };
+  const stagingPosition = positions.find((position) => position.isDefaultDeliveryStaging);
+  if (!stagingPosition) return { assignment, positions };
+
+  const { data: delivery, error: deliveryError } = await admin.from("deliveries")
+    .select("id")
+    .eq("organization_id", membership.organization.id)
+    .eq("order_id", orderId)
+    .eq("status", "scheduled")
+    .limit(1)
+    .maybeSingle<{ id: string }>();
+  if (deliveryError) throw new Error("ready_warehouse_delivery_read_failed");
+  return { assignment, positions, suggestedPositionId: delivery ? stagingPosition.id : undefined };
 }
 
 type WarehouseMovementRow = {

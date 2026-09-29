@@ -130,6 +130,7 @@ export async function setWarehousePositionActiveAction(
     .select("id")
     .maybeSingle<{ id: string }>();
 
+  if (error?.message.includes("warehouse_default_delivery_staging_deactivation_forbidden")) return fail("stagingDeactivation");
   if (error) return fail(error.message.includes("warehouse_default_inbound_deactivation_forbidden") ? "defaultDeactivation" : error.code === "22023" ? "location" : "generic");
   if (!data) return fail("notFound");
 
@@ -159,6 +160,37 @@ export async function setWarehouseDefaultInboundAction(
     if (error.message.includes("warehouse_default_inbound_position_inactive")) return fail("defaultActive");
     if (error.message.includes("warehouse_default_inbound_location_inactive")) return fail("location");
     if (error.message.includes("warehouse_default_inbound_position_not_found")) return fail("notFound");
+    return fail("generic");
+  }
+
+  revalidateWarehouse(locale);
+  revalidatePath(`/${locale}/app/warehouse`);
+  return { ...initialState, success: true };
+}
+
+export async function setWarehouseDefaultDeliveryStagingAction(
+  locale: string,
+  _state: WarehousePositionActionState = initialState,
+  formData: FormData,
+): Promise<WarehousePositionActionState> {
+  void _state;
+  const positionId = value(formData, "positionId");
+  const enabled = value(formData, "enabled");
+  if (!UUID.test(positionId) || !["true", "false"].includes(enabled)) {
+    return fail(null, { positionId: "invalid" });
+  }
+
+  await requireOwnerOrManager(locale);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("set_warehouse_default_delivery_staging", {
+    target_position_id: positionId,
+    target_enabled: enabled === "true",
+  });
+  if (error) {
+    if (error.message.includes("warehouse_default_delivery_staging_inbound_forbidden")) return fail("stagingInbound");
+    if (error.message.includes("warehouse_default_delivery_staging_position_inactive")) return fail("stagingActive");
+    if (error.message.includes("warehouse_default_delivery_staging_location_inactive")) return fail("location");
+    if (error.message.includes("warehouse_default_delivery_staging_position_not_found")) return fail("notFound");
     return fail("generic");
   }
 

@@ -24,6 +24,13 @@ export type WarehousePositionText = {
   defaultActiveError: string;
   defaultDeactivationError: string;
   defaultInbound: string;
+  defaultDeliveryStaging: string;
+  setDefaultDeliveryStaging: string;
+  removeDefaultDeliveryStaging: string;
+  stagingUpdated: string;
+  stagingActiveError: string;
+  stagingDeactivationError: string;
+  stagingInboundError: string;
   defaultUpdated: string;
   removeDefaultInbound: string;
   setDefaultInbound: string;
@@ -63,6 +70,9 @@ function fieldClass() {
 
 function errorMessage(state: WarehousePositionActionState, text: WarehousePositionText) {
   if (Object.keys(state.fieldErrors).length) return text.validationError;
+  if (state.formError === "stagingActive") return text.stagingActiveError;
+  if (state.formError === "stagingDeactivation") return text.stagingDeactivationError;
+  if (state.formError === "stagingInbound") return text.stagingInboundError;
   if (state.formError === "duplicate") return text.duplicateError;
   if (state.formError === "location") return text.locationError;
   if (state.formError === "notFound") return text.notFoundError;
@@ -75,6 +85,7 @@ function errorMessage(state: WarehousePositionActionState, text: WarehousePositi
 function PositionCard({
   action,
   defaultInboundAction,
+  defaultDeliveryStagingAction,
   locationName,
   onEdit,
   position,
@@ -82,6 +93,7 @@ function PositionCard({
 }: {
   action: WarehouseAction;
   defaultInboundAction: WarehouseAction;
+  defaultDeliveryStagingAction: WarehouseAction;
   locationName: string;
   onEdit: () => void;
   position: WarehousePosition;
@@ -89,6 +101,8 @@ function PositionCard({
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const [defaultState, defaultFormAction, defaultPending] = useActionState(defaultInboundAction, initialState);
+  const [stagingState, stagingFormAction, stagingPending] = useActionState(defaultDeliveryStagingAction, initialState);
+  const stagingError = errorMessage(stagingState, text);
   const error = errorMessage(state, text);
   const defaultError = errorMessage(defaultState, text);
 
@@ -107,6 +121,7 @@ function PositionCard({
       {position.name ? <p className="mt-3 font-semibold text-foreground">{position.name}</p> : null}
       {position.description ? <p className="mt-1 text-sm leading-6 text-muted">{position.description}</p> : null}
       {position.isDefaultInbound ? <span className="mt-2 inline-flex rounded-full bg-primary-soft px-2 py-1 text-xs font-semibold text-primary">{text.defaultInbound}</span> : null}
+      {position.isDefaultDeliveryStaging ? <span className="mt-2 inline-flex rounded-full bg-primary-soft px-2 py-1 text-xs font-semibold text-primary">{text.defaultDeliveryStaging}</span> : null}
       {state.success ? <p className="mt-3 text-sm font-semibold text-emerald-700" role="status">{text.statusUpdated}</p> : null}
       {error ? <p className="mt-3 text-sm text-red-700" role="alert">{error}</p> : null}
       {defaultState.success ? <p className="mt-3 text-sm font-semibold text-emerald-700" role="status">{text.defaultUpdated}</p> : null}
@@ -124,8 +139,17 @@ function PositionCard({
       <form action={defaultFormAction} className="mt-2">
         <input name="positionId" type="hidden" value={position.id} />
         <input name="enabled" type="hidden" value={position.isDefaultInbound ? "false" : "true"} />
-        <button className="min-h-11 w-full rounded-control border border-primary/30 px-4 text-sm font-semibold text-primary disabled:opacity-50" disabled={defaultPending || (!position.isActive && !position.isDefaultInbound)} type="submit">
+        <button className="min-h-11 w-full rounded-control border border-primary/30 px-4 text-sm font-semibold text-primary disabled:opacity-50" disabled={defaultPending || position.isDefaultDeliveryStaging || (!position.isActive && !position.isDefaultInbound)} type="submit">
           {position.isDefaultInbound ? text.removeDefaultInbound : text.setDefaultInbound}
+        </button>
+      </form>
+      {stagingState.success ? <p className="mt-3 text-sm font-semibold text-emerald-700" role="status">{text.stagingUpdated}</p> : null}
+      {stagingError ? <p className="mt-3 text-sm text-red-700" role="alert">{stagingError}</p> : null}
+      <form action={stagingFormAction} className="mt-2">
+        <input name="positionId" type="hidden" value={position.id} />
+        <input name="enabled" type="hidden" value={position.isDefaultDeliveryStaging ? "false" : "true"} />
+        <button className="min-h-11 w-full rounded-control border border-primary/30 px-4 text-sm font-semibold text-primary disabled:opacity-50" disabled={stagingPending || !position.isActive || position.isDefaultInbound} type="submit">
+          {position.isDefaultDeliveryStaging ? text.removeDefaultDeliveryStaging : text.setDefaultDeliveryStaging}
         </button>
       </form>
     </article>
@@ -194,6 +218,7 @@ function PositionForm({
 export function WarehousePositionManagement({
   activeAction,
   defaultInboundAction,
+  defaultDeliveryStagingAction,
   locations,
   positions,
   saveAction,
@@ -201,6 +226,7 @@ export function WarehousePositionManagement({
 }: {
   activeAction: WarehouseAction;
   defaultInboundAction: WarehouseAction;
+  defaultDeliveryStagingAction: WarehouseAction;
   locations: WarehouseLocation[];
   positions: WarehousePosition[];
   saveAction: WarehouseAction;
@@ -235,6 +261,7 @@ export function WarehousePositionManagement({
               <PositionCard
                 action={activeAction}
                 defaultInboundAction={defaultInboundAction}
+                defaultDeliveryStagingAction={defaultDeliveryStagingAction}
                 key={position.id}
                 locationName={locationNames.get(position.locationId) ?? "—"}
                 onEdit={() => setEditingId(position.id)}

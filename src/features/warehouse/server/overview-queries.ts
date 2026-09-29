@@ -24,6 +24,7 @@ type PositionRow = {
   id: string;
   is_active: boolean;
   is_default_inbound: boolean;
+  is_default_delivery_staging: boolean;
   location_id: string;
   name: string | null;
   position_type: WarehousePositionType;
@@ -63,7 +64,7 @@ export async function listCurrentWarehouseOverview(locale: string): Promise<{
   }
   for (let offset = 0; ; offset += PAGE_SIZE) {
     const { data, error } = await admin.from("warehouse_positions")
-      .select("id, location_id, code, name, description, position_type, is_active, is_default_inbound")
+      .select("id, location_id, code, name, description, position_type, is_active, is_default_inbound, is_default_delivery_staging")
       .eq("organization_id", organizationId).order("id")
       .range(offset, offset + PAGE_SIZE - 1).returns<PositionRow[]>();
     if (error) throw new Error(`warehouse_positions_read_failed:${error.code}`);
@@ -116,6 +117,7 @@ export async function listCurrentWarehouseOverview(locale: string): Promise<{
     positions: positionRows.map((row) => ({
       code: row.code, description: row.description, id: row.id, isActive: row.is_active,
       isDefaultInbound: row.is_default_inbound,
+      isDefaultDeliveryStaging: row.is_default_delivery_staging,
       locationId: row.location_id, name: row.name, positionType: row.position_type,
     })),
     timeZone: membership.organization.timezone,

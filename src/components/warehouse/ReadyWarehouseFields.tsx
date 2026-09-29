@@ -33,9 +33,11 @@ export function ReadyWarehouseFields({
   placement: ReadyWarehousePlacement;
   text: ReadyWarehouseText;
 }) {
-  const selectedPosition = placement.positions.some((position) => position.id === placement.assignment?.positionId)
+  const existingPosition = placement.positions.some((position) => position.id === placement.assignment?.positionId)
     ? placement.assignment!.positionId
     : "";
+  const selectedPosition = placement.positions.find((position) => position.id === placement.suggestedPositionId)?.id
+    ?? existingPosition;
   const errorText = error === "missing-storage" ? text.missingStorage
     : error === "no-positions" ? text.noFinalPositions
       : error === "invalid-position" ? text.invalidPosition

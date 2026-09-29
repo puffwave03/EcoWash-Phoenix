@@ -7,6 +7,7 @@ export type WarehousePosition = {
   id: string;
   isActive: boolean;
   isDefaultInbound: boolean;
+  isDefaultDeliveryStaging: boolean;
   locationId: string;
   name: string | null;
   positionType: WarehousePositionType;
@@ -20,7 +21,7 @@ export type WarehouseLocation = {
 
 export type WarehousePositionActionState = {
   fieldErrors: Record<string, string>;
-  formError: "defaultActive" | "defaultDeactivation" | "duplicate" | "generic" | "location" | "notFound" | null;
+  formError: "stagingActive" | "stagingDeactivation" | "stagingInbound" | "defaultActive" | "defaultDeactivation" | "duplicate" | "generic" | "location" | "notFound" | null;
   success: boolean;
 };
 
@@ -39,6 +40,7 @@ export type OrderStorageAssignment = {
 export type ReadyWarehousePlacement = {
   assignment: OrderStorageAssignment | null;
   positions: WarehousePosition[];
+  suggestedPositionId?: string;
 };
 
 export type OrderStorageActionState = {
