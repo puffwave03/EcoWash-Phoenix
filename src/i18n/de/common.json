@@ -1651,7 +1651,7 @@
     "displayStatuses": {
       "completed": "Abgeschlossen",
       "delivery_in_progress": "In Zustellung",
-      "delivery_scheduled": "Lieferung geplant",
+      "delivery_scheduled": "Bereit zur Lieferung",
       "pickup_in_progress": "Kundenabholung läuft",
       "pickup_scheduled": "Kundenabholung geplant",
       "ready_for_customer_pickup": "Zur Abholung durch den Kunden bereit"

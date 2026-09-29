@@ -1694,7 +1694,7 @@
     "displayStatuses": {
       "completed": "Completato",
       "delivery_in_progress": "In consegna",
-      "delivery_scheduled": "Consegna programmata",
+      "delivery_scheduled": "Pronto per la consegna",
       "pickup_in_progress": "Ritiro in corso",
       "pickup_scheduled": "Ritiro programmato",
       "ready_for_customer_pickup": "Pronto per il ritiro del cliente"

@@ -1736,7 +1736,7 @@
     "displayStatuses": {
       "completed": "Completed",
       "delivery_in_progress": "Out for delivery",
-      "delivery_scheduled": "Delivery scheduled",
+      "delivery_scheduled": "Ready for delivery",
       "pickup_in_progress": "Pickup in progress",
       "pickup_scheduled": "Pickup scheduled",
       "ready_for_customer_pickup": "Ready for customer collection"
