@@ -6,26 +6,30 @@ Version: 0.1
 
 Last Updated: 2026-09-29
 
-Current Mission: DOCS-OPERATIONAL-CLOSEOUT-REFRESH-001 — documentation-only status update
+Current Mission: DOCS-OPERATIONAL-PILOT-CLOSEOUT-001 — documentation-only pilot closeout
 
-Next Action: final lightweight operational pilot smoke test, subject to separate approval.
+Next Action: remaining small integrity/UX findings, first likely `ORDER-PROPERTY-CLIENT-FILTER-001`, subject to separate approval.
 
 ---
 
 ## Current Pilot Milestone — 2026-09-29
 
-Application baseline: `main` at `a61629e81bf73d95c579761e049d849c9de1dff6`. This documentation refresh remains uncommitted; no implementation or remote mutation is authorized.
+Application baseline: `main` at `fdd89b2008cb275a40c6813e9559f2f8f77e97fe`. Latest functional task: `READY-FULFILLMENT-HANDOFF-001` **COMPLETE / Product Owner UAT PASS**; Product Owner verified staging migration `20260929000200_ready_fulfillment_handoff_001.sql` applied and local/remote history aligned through `20260929000200`. Vercel staging deployment succeeded; production was untouched.
 
 Current operational environment: **staging**. Database + Storage DR are verified; managed Auth and authenticated application recovery remain a **PRE-PRODUCTION blocker**. No public production readiness or go-live is claimed.
 
+**PHOENIX OPERATIONAL PILOT CLOSEOUT = PASS.** Product Owner tested Terminal, normal/direct intake, Quick Drop, Portal intake, inbound pickup and physical receipt, production/assignment/item gates, Warehouse inbound/final placement and exit, customer handoff, outbound delivery, payments, Daily Close and post-close behavior. This is staging acceptance, not public-production readiness.
+
 Near-term sequence, each step subject to separate approval:
 
-1. Final lightweight operational pilot smoke test.
-2. Remaining small integrity/UX findings; first likely `ORDER-PROPERTY-CLIENT-FILTER-001`, still open.
-3. SaaS Productization Baseline.
-4. Clean Demo Tenant onboarding and validation.
-5. `PHX-FISCAL-001` architecture/compliance boundary.
-6. Fiscal provider / VERI*FACTU integration only after architecture approval.
+1. Remaining small integrity/UX findings.
+2. `ORDER-PROPERTY-CLIENT-FILTER-001` as the first likely task, still open.
+3. `DELIVERY-STAGING-AND-TRANSIT-001` design/implementation after focused review.
+4. Remaining small UX findings.
+5. SaaS Productization Baseline.
+6. Clean Demo Tenant onboarding and validation.
+7. `PHX-FISCAL-001` architecture/compliance boundary.
+8. Fiscal provider / VERI*FACTU integration only after architecture approval.
 
 ### Completed operational baseline
 
@@ -34,12 +38,16 @@ Near-term sequence, each step subject to separate approval:
 - **Walk-ins:** new occasional visits reuse one tenant-scoped `WALKIN-SHARED` technical customer; optional visitor name/phone live on the order. Historical legacy walk-in customers and orders remain untouched.
 - **ACCOUNTING-001A/B/C:** implemented Operational Accounting covers sales, collections, refunds, outstanding, expenses, operational result and exports. It is not statutory accounting, a general ledger, double entry, tax filing or fiscal compliance. Billing invoices remain canonical Billing documents and do not replace payments.
 - **Daily Close:** implemented live preview, immutable persisted snapshots, tenant-local business date, organization/location scope, history and exports, with internal post-close gates and Portal after-close intake protection. POS till sessions remain independent; this is not statutory/fiscal closure.
-- **Canonical fulfillment:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Draft logistics is not operational work. Production completion means ready, not fulfilled; open pickup/delivery remains visible and actual customer handoff/completed outbound delivery ends custody. Without delivery, `ready_for_customer_pickup` awaits explicit handoff.
-- **Warehouse:** order-level custody, configured default inbound storage, canonical receipt-driven placement, authorized manual moves and append-only movement history, required final placement on READY, cancelled-return custody and atomic final storage exit on actual return/handoff or completed delivery. Draft creation does not establish custody.
+- **Canonical fulfillment:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Draft logistics is not operational work. Final Warehouse position, package count and storage mode confirmation atomically completes production without a second manual step; production completion means ready, not fulfilled. Without delivery, `ready_for_customer_pickup` awaits explicit handoff; scheduled delivery shows **Ready for delivery**, in-progress **In delivery**, and completed **Completed**. Actual customer handoff/completed outbound delivery ends custody.
+- **Warehouse:** order-level custody, configured default inbound storage, canonical receipt-driven placement, authorized manual moves and append-only movement history, final placement completing production, cancelled-return custody and atomic final storage exit on actual return/handoff or completed delivery. Current pilot retains storage during in-progress delivery; completed delivery records **Warehouse exit - Delivery completed**. Draft creation does not establish custody.
 - **ORDER-ITEMS-LIFECYCLE-GATE-001 — COMPLETE / UAT PASS:** normal manual draft→received needs an active item; only Quick Drop and completed inbound pickup may receive zero-item orders. Zero-item orders cannot enter actual production or final fulfillment; cancellation is allowed and adding an active item restores eligibility.
 - **Production default and Terminal prefill — COMPLETE / UAT PASS:** Shop Terminal preselects the valid configured per-location default (Quality Test in UAT), otherwise Unassigned; a manual override applies to that order and the next new order returns to the location default. There is no first-staff fallback. Separately, an order still unassigned at received→washing may receive the valid default atomically; the resulting assignment now appears in Order detail immediately without a browser refresh (EW-000118/119). Staging migration `20260928000200_production_default_assignee_001.sql` is applied.
 - **OPERATIONAL-CLOSEOUT-FIXES-001 — COMPLETE / UAT PASS:** With an inbound pickup scheduled or in progress, manual draft→received is blocked and Order detail explains that pickup must be completed first. Pickup completion canonically sets received/received_at and establishes inbound Warehouse custody; no open or a cancelled pickup permits normal manual receipt under existing gates. Quick Drop retains its separate receipt path. Product Owner staging UAT passed for EW-000118/119; migration `20260929000100_inbound_pickup_receipt_gate_001.sql` was reported applied to staging `exthnplfokcucaqydney` with local/remote history aligned through `20260929000100`.
-- **Staging Auth signup:** Product Owner reports the Supabase staging Dashboard now has “Allow new users to sign up” OFF and “Confirm email” ON; this was a manual correction, not programmatic verification. Auth disaster recovery and authenticated application recovery remain separate pre-production blockers.
+- **Staging Auth signup:** Product Owner reports the Supabase staging Dashboard now has “Allow new users to sign up” OFF and “Confirm email” ON; `AUTH-CONFIG-DRIFT-001` was resolved operationally by this manual correction, not programmatically verified. Auth disaster recovery and authenticated application recovery remain separate pre-production blockers.
+
+**Future / not implemented — `DELIVERY-STAGING-AND-TRANSIT-001`:** scheduled-delivery goods may wait on a normal shelf or a real Warehouse staging position such as **Delivery Area / Area consegne**. Driver departure should move them into **In transit / In delivery** custody, not a fake shelf; failed delivery should permit return and a new Warehouse position. Only completed delivery is final fulfillment. The accepted pilot retains `order_storage` until completed delivery pending separate design and approval.
+
+**Open small findings:** `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation UX, PDF technical-key cosmetic issue if reproducible, `NETWORK-FAILURE-UX-001`, Portal validation summary/focus improvement and Auth DR. None is implemented by this documentation closeout.
 
 ### Physical item V1 decision
 
