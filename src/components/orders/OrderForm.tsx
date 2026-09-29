@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/Button";
 import type { OrderActionState, Order } from "@/features/orders/types";
 import type { OrderSelectOption, PropertySelectOption } from "@/features/orders/server/queries";
@@ -43,6 +43,11 @@ function fieldClass(hasError: boolean) {
 
 export function OrderForm({ action, customers, initialCustomerId, locations = [], order, properties, text }: OrderFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const [customerId, setCustomerId] = useState(order?.customerId ?? initialCustomerId ?? "");
+  const [propertyId, setPropertyId] = useState(order?.propertyId ?? "");
+  const visibleProperties = order
+    ? properties
+    : properties.filter((property) => property.customerId === customerId);
   const canCreate = Boolean(order) || locations.length > 0;
 
   return (
@@ -51,16 +56,31 @@ export function OrderForm({ action, customers, initialCustomerId, locations = []
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.customer}</span>
-          <select className={fieldClass(Boolean(state.fieldErrors.customerId))} defaultValue={order?.customerId ?? initialCustomerId ?? ""} disabled={Boolean(order)} name="customerId">
+          <select
+            className={fieldClass(Boolean(state.fieldErrors.customerId))}
+            value={customerId}
+            disabled={Boolean(order)}
+            name="customerId"
+            onChange={(event) => {
+              setCustomerId(event.target.value);
+              setPropertyId("");
+            }}
+          >
             <option value="" />
             {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.label}</option>)}
           </select>
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.property}</span>
-          <select className={fieldClass(Boolean(state.fieldErrors.propertyId))} defaultValue={order?.propertyId ?? ""} disabled={Boolean(order)} name="propertyId">
+          <select
+            className={fieldClass(Boolean(state.fieldErrors.propertyId))}
+            value={propertyId}
+            disabled={Boolean(order) || !customerId}
+            name="propertyId"
+            onChange={(event) => setPropertyId(event.target.value)}
+          >
             <option value="" />
-            {properties.map((property) => <option data-customer-id={property.customerId} key={property.id} value={property.id}>{property.label}</option>)}
+            {visibleProperties.map((property) => <option data-customer-id={property.customerId} key={property.id} value={property.id}>{property.label}</option>)}
           </select>
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
