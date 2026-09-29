@@ -5,6 +5,7 @@ import { PrintOrderActions, type PrintActionText } from "@/components/printing/P
 import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
+import { resolveProductionAssignee } from "@/features/shop-terminal/production-assignee";
 import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
 import type { ShopAssignmentOption, ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopDeliveryAddress, ShopDeliveryOptions, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -29,7 +30,7 @@ type ShopTerminalDraft = {
   internalNotes: string;
   items: Array<{ quantity: number; serviceId: string }>;
   delivery: DeliveryDraft;
-  productionAssigneeId: string;
+  productionAssigneeId?: string;
   showSplitPayment: boolean;
   splitCard: number;
   splitCash: number;
@@ -80,6 +81,7 @@ type Props = {
   organizationName: string;
   pendingQuickDrops: PendingQuickDrop[];
   printText: PrintActionText;
+  defaultProductionAssigneeId: string | null;
   productionAssignments: ShopAssignmentOption[];
   quickDropText: QuickDropText;
   quickDropClosed: boolean;
@@ -151,7 +153,7 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
     internalNotes: draft.internalNotes,
     items,
     delivery: parseDeliveryDraft(draft.delivery),
-    productionAssigneeId: typeof draft.productionAssigneeId === "string" ? draft.productionAssigneeId : "",
+    productionAssigneeId: typeof draft.productionAssigneeId === "string" ? draft.productionAssigneeId : undefined,
     showSplitPayment: draft.showSplitPayment,
     splitCard: draft.splitCard,
     splitCash: draft.splitCash,
@@ -188,7 +190,7 @@ function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTermi
   }
 }
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultProductionAssigneeId, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
@@ -210,7 +212,8 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [dueAt, setDueAt] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
-  const [productionAssigneeId, setProductionAssigneeId] = useState(productionAssignments[0]?.id ?? "");
+  const resolvedProductionDefault = resolveProductionAssignee(productionAssignments, defaultProductionAssigneeId);
+  const [productionAssigneeId, setProductionAssigneeId] = useState(resolvedProductionDefault);
   const [delivery, setDelivery] = useState<DeliveryDraft>(() => emptyDeliveryDraft(deliveryAssignments[0]?.id));
   const [deliveryOptions, setDeliveryOptions] = useState<ShopDeliveryOptions | null>(null);
   const [dismissedOrderId, setDismissedOrderId] = useState<string | null>(null);
@@ -337,10 +340,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setDueAt(draft?.dueAt ?? "");
     setCustomerNotes(draft?.customerNotes ?? "");
     setInternalNotes(draft?.internalNotes ?? "");
-    const restoredProductionAssigneeId = draft?.productionAssigneeId ?? "";
-    setProductionAssigneeId(productionAssignments.some((assignment) => assignment.id === restoredProductionAssigneeId)
-      ? restoredProductionAssigneeId
-      : productionAssignments[0]?.id ?? "");
+    setProductionAssigneeId(resolveProductionAssignee(
+      productionAssignments, defaultProductionAssigneeId, draft?.productionAssigneeId,
+    ));
     const restoredDelivery = draft?.delivery ?? emptyDeliveryDraft(deliveryAssignments[0]?.id);
     setDelivery({
       ...restoredDelivery,
@@ -456,7 +458,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setDueAt("");
     setCustomerNotes("");
     setInternalNotes("");
-    setProductionAssigneeId(productionAssignments[0]?.id ?? "");
+    setProductionAssigneeId(resolvedProductionDefault);
     setDelivery(emptyDeliveryDraft(deliveryAssignments[0]?.id));
     setDeliveryOptions(null);
   }

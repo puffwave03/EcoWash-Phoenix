@@ -22,10 +22,9 @@ type ShopPageProps = { params: Promise<{ locale: string }> };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
-  const [access, customers, operationalOptions, session, pendingQuickDrops, entitlements, closeState, t, catalogT, printT, barcodeT, quickDropT, gateT, commonT] = await Promise.all([
+  const [access, customers, session, pendingQuickDrops, entitlements, closeState, t, catalogT, printT, barcodeT, quickDropT, gateT, commonT] = await Promise.all([
     requireShopTerminalAccess(locale),
     listShopCustomers(locale),
-    listShopOperationalOptions(locale),
     getCurrentPosSession(locale),
     listPendingQuickDrops(locale),
     getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
@@ -38,6 +37,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     getTranslations({ locale, namespace: "common.postCloseGate" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
+  const operationalOptions = await listShopOperationalOptions(locale, session?.locationId ?? null);
   const quickDropClosed = closeState.organizationWide || Boolean(
     session?.locationId && closeState.locationIds.includes(session.locationId),
   );
@@ -76,6 +76,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
       operatorName={access.profile.displayName || access.user.email || access.membership.role}
       pendingQuickDrops={pendingQuickDrops}
       deliveryAssignments={operationalOptions.deliveryAssignments}
+      defaultProductionAssigneeId={operationalOptions.defaultProductionAssigneeId}
       productionAssignments={operationalOptions.productionAssignments}
       printText={printT.raw("actions") as PrintActionText}
       quickDropText={{

@@ -56,6 +56,7 @@ export type ShopDeliveryOptions = {
 };
 
 export type ShopOperationalOptions = {
+  defaultProductionAssigneeId: string | null;
   deliveryAssignments: ShopAssignmentOption[];
   productionAssignments: ShopAssignmentOption[];
 };

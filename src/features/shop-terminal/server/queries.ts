@@ -74,19 +74,23 @@ function deliveryAddress(row: {
   };
 }
 
-export async function listShopOperationalOptions(locale: string): Promise<ShopOperationalOptions> {
+export async function listShopOperationalOptions(locale: string, locationId: string | null): Promise<ShopOperationalOptions> {
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
   const [assignments, locations] = await Promise.all([
     listAssignableStaff(locale),
     supabase.from("locations")
-      .select("id", { count: "exact", head: true })
+      .select("id, default_production_assignee_id", { count: "exact" })
       .eq("organization_id", membership.organization.id)
       .eq("is_active", true)
       .is("deleted_at", null),
   ]);
   if (locations.error) console.error("Shop active location count failed", locations.error.code);
+  const location = locations.error ? undefined : locations.data?.find((row) =>
+    locationId ? row.id === locationId : locations.count === 1,
+  );
   return {
+    defaultProductionAssigneeId: location?.default_production_assignee_id ?? null,
     deliveryAssignments: assignments.delivery,
     productionAssignments: !locations.error && locations.count === 1 ? assignments.all : [],
   };

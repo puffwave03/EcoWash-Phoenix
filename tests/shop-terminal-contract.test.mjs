@@ -329,7 +329,7 @@ test("30h session persistence contains draft scalars and service ids, never serv
   assert.match(draftType, /splitCash: number/);
   assert.match(draftType, /splitCard: number/);
   assert.match(draftType, /showSplitPayment: boolean/);
-  assert.match(draftType, /productionAssigneeId: string/);
+  assert.match(draftType, /productionAssigneeId\?: string/);
   assert.match(draftType, /delivery: DeliveryDraft/);
   assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|orderId|paymentId/);
   assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|invoice|supabase/i);
@@ -411,18 +411,18 @@ test("36 production assignment options require active staff production capabilit
   assert.match(assignable, /all: staff[\s\S]*hasOperationalCapability\(\{ capabilities, role \}, "production"\)[\s\S]*map\(\(\{ option \}\) => option\)/);
 });
 
-test("37 single-location Terminal submit atomically assigns the first production-eligible staff member", async () => {
+test("37 single-location Terminal submits the selected location default without first-staff fallback", async () => {
   const [sql, ui, queries] = await Promise.all([
-    source(operationalMigrationPath),
+    source("supabase/migrations/20260928000200_production_default_assignee_001.sql"),
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/features/shop-terminal/server/queries.ts"),
   ]);
 
-  assert.match(sql, /create function public\.submit_shop_terminal_order\(/);
+  assert.match(sql, /create or replace function public\.submit_shop_terminal_order\(/);
   assert.match(sql, /select count\(\*\) into active_location_count[\s\S]*from public\.locations location[\s\S]*location\.organization_id = org_id[\s\S]*location\.is_active[\s\S]*location\.deleted_at is null/);
-  assert.match(sql, /elsif active_location_count = 1 then[\s\S]*membership\.organization_id = org_id[\s\S]*membership\.is_active[\s\S]*membership\.role = 'staff'[\s\S]*'production' = any\(membership\.operational_capabilities::text\[\]\)[\s\S]*order by membership\.profile_id asc[\s\S]*limit 1/);
+  assert.match(sql, /production_assignee := target_production_assignee_id/);
   assert.match(sql, /update public\.orders orders[\s\S]*assigned_to = production_assignee/);
-  assert.match(ui, /productionAssignments\[0\]\?\.id \?\? ""/);
+  assert.doesNotMatch(ui, /productionAssignments\[0\]/);
   assert.match(ui, /setProductionAssigneeId\(event\.target\.value\)/);
   assert.match(queries, /productionAssignments: !locations\.error && locations\.count === 1 \? assignments\.all : \[\]/);
 });
@@ -499,8 +499,7 @@ test("43 operational fields survive A-B-A switching and session remount without 
   const draftType = ui.slice(ui.indexOf("type DeliveryDraft"), ui.indexOf("export type ShopTerminalText"));
   const saveDraft = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function restoreCheckoutDraft"));
   assert.match(saveDraft, /delivery,[\s\S]*productionAssigneeId/);
-  assert.match(ui, /const restoredProductionAssigneeId = draft\?\.productionAssigneeId/);
-  assert.match(ui, /productionAssignments\.some\(\(assignment\) => assignment\.id === restoredProductionAssigneeId\)/);
+  assert.match(ui, /setProductionAssigneeId\(resolveProductionAssignee\(\s+productionAssignments, defaultProductionAssigneeId, draft\?\.productionAssigneeId/);
   assert.match(ui, /const restoredDelivery = draft\?\.delivery/);
   assert.match(ui, /deliveryAssignments\.some\(\(assignment\) => assignment\.id === restoredDelivery\.assignedTo\)/);
   for (const field of ["requested", "propertyId", "scheduledAt", "assignedTo", "notes"]) {
