@@ -1717,6 +1717,7 @@
       "error": "La ligne n'a pas pu être enregistrée."
     },
     "workflow": {
+      "pickupReceiptBlocked": "Terminez la collecte programmée avant de marquer la commande comme reçue.",
       "change": "Changer le statut",
       "history": "Historique des statuts",
       "reason": "Motif"

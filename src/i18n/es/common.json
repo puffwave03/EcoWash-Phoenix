@@ -1717,6 +1717,7 @@
       "error": "No se pudo guardar la línea."
     },
     "workflow": {
+      "pickupReceiptBlocked": "Completa la recogida programada antes de marcar el pedido como recibido.",
       "change": "Cambiar estado",
       "history": "Historial de estados",
       "reason": "Motivo"

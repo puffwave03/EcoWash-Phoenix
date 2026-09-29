@@ -1802,6 +1802,7 @@
       "error": "The item could not be saved."
     },
     "workflow": {
+      "pickupReceiptBlocked": "Complete the scheduled pickup before marking the order as received.",
       "change": "Change status",
       "history": "Status history",
       "reason": "Reason"

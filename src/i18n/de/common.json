@@ -1717,6 +1717,7 @@
       "error": "Die Position konnte nicht gespeichert werden."
     },
     "workflow": {
+      "pickupReceiptBlocked": "Schließen Sie die geplante Abholung ab, bevor Sie den Auftrag als eingegangen markieren.",
       "change": "Status ändern",
       "history": "Statushistorie",
       "reason": "Grund"

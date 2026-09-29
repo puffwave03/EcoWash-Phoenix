@@ -323,6 +323,9 @@ export async function transitionOrderStatusAction(
   });
 
   if (error) {
+    if (targetStatus === "received" && surface === "order" && error.message.includes("inbound_pickup_incomplete")) {
+      redirect(`/${locale}/app/orders/${orderId}?pickup=complete-first#production`);
+    }
     if (error.message.includes("order_items_required")) {
       redirect(itemErrorPath(locale, orderId, surface));
     }

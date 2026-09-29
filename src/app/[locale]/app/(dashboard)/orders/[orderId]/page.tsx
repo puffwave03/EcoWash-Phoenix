@@ -76,7 +76,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; pickup?: string }>;
 };
 
 function SectionShell({
@@ -127,6 +127,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getTranslations({ locale, namespace: "common" }),
   ]);
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
+  const pickupReceiptBlocked = order.productionStatus === "draft"
+    && (logistics.pickup?.status === "scheduled" || logistics.pickup?.status === "in_progress");
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
   const displayStatusLabels = {
     ...statusLabels,
@@ -369,6 +371,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               canConfigureWarehouse={canManageAssignments}
               currentStatus={order.productionStatus}
               history={history}
+              pickupReceiptBlocked={pickupReceiptBlocked}
+              pickupReceiptError={routeSearch.pickup === "complete-first"}
               key={order.productionStatus}
               locale={locale}
               readyError={routeSearch.readyError}
@@ -377,6 +381,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               text={{
                 change: t("workflow.change"),
                 history: t("workflow.history"),
+                pickupReceiptBlocked: t("workflow.pickupReceiptBlocked"),
                 reason: t("workflow.reason"),
                 statusLabels,
               }}
@@ -388,6 +393,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               assignedTo={order.assignedTo}
               assignedToName={order.assignedToName}
               assignments={assignments.all}
+              key={order.assignedTo ?? "unassigned"}
               canAssign={canManageAssignments}
               text={{
                 assignedTo: t("assignment.assignedTo"),

@@ -1760,6 +1760,7 @@
       "error": "La riga non può essere salvata."
     },
     "workflow": {
+      "pickupReceiptBlocked": "Completa il ritiro programmato prima di segnare l’ordine come ricevuto.",
       "change": "Cambia stato",
       "history": "Storico stati",
       "reason": "Motivo"

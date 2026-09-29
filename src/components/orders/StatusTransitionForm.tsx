@@ -11,6 +11,7 @@ import { getAllowedTransitions, requiresReason } from "@/features/orders/workflo
 type StatusTransitionText = {
   change: string;
   history: string;
+  pickupReceiptBlocked: string;
   reason: string;
   statusLabels: Record<ProductionStatus, string>;
 };
@@ -24,6 +25,8 @@ export function StatusTransitionForm({
   canConfigureWarehouse,
   currentStatus,
   history,
+  pickupReceiptBlocked,
+  pickupReceiptError,
   locale,
   readyError,
   readyPlacement,
@@ -34,17 +37,21 @@ export function StatusTransitionForm({
   canConfigureWarehouse: boolean;
   currentStatus: ProductionStatus;
   history: OrderHistory[];
+  pickupReceiptBlocked: boolean;
+  pickupReceiptError: boolean;
   locale: string;
   readyError?: string;
   readyPlacement: ReadyWarehousePlacement;
   readyText: ReadyWarehouseText;
   text: StatusTransitionText;
 }) {
-  const allowed = getAllowedTransitions(currentStatus, previousStatus(history));
+  const allowed = getAllowedTransitions(currentStatus, previousStatus(history))
+    .filter((status) => !(pickupReceiptBlocked && status === "received"));
   const [targetStatus, setTargetStatus] = useState<ProductionStatus>(allowed[0] ?? currentStatus);
 
   return (
     <div className="space-y-4">
+      {(pickupReceiptBlocked || pickupReceiptError) ? <p className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950" role="status">{text.pickupReceiptBlocked}</p> : null}
       {allowed.length > 0 ? (
         <form action={action} className="space-y-3">
           <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
