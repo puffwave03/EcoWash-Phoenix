@@ -320,6 +320,9 @@ export async function transitionDeliveryAction(
   if (transitionLeavesLogisticsSurface(surface, targetStatus)) {
     redirect(logisticsWorkspacePath(locale, "deliveries"));
   }
+  if (surface === "order") {
+    redirect(`/${locale}/app/orders/${orderId}#logistics`);
+  }
 }
 
 export async function returnDeliveryToWarehouseAction(
