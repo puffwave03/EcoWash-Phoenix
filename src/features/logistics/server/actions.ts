@@ -313,6 +313,7 @@ export async function transitionDeliveryAction(
   }
 
   revalidateOrder(locale, orderId);
+  revalidatePath(`/${locale}/app/orders`);
   revalidatePath(`/${locale}/app/work/deliveries/${deliveryId}`);
   revalidatePath(`/${locale}/app/warehouse`);
 
