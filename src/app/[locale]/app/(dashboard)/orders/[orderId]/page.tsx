@@ -412,14 +412,19 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
       {canManageAssignments ? (
         <SectionShell id="warehouse-storage" title={storageT("title")}>
-          {logistics.delivery?.status !== "in_progress" && logistics.delivery?.status !== "completed" ? <OrderStoragePanel
+          {storageAssignment || (logistics.delivery?.status !== "in_progress" && logistics.delivery?.status !== "completed") ? <OrderStoragePanel
             action={saveOrderStorageAssignmentAction.bind(null, locale, order.id)}
             assignment={storageAssignment}
             enteredAt={storageAssignment ? formatOrganizationDateTime(storageAssignment.enteredAt, locale, access.membership.organization.timezone) : null}
             hasOrderLocation={Boolean(order.locationId)}
             positions={activeWarehousePositions}
             text={storageT.raw("labels") as OrderStorageText}
-          /> : null}
+          /> : (
+            <div className="rounded-card border border-border bg-white p-4">
+              <h4 className="font-semibold text-primary">{storageT(logistics.delivery.status === "in_progress" ? "inDeliveryTitle" : "deliveredTitle")}</h4>
+              <p className="mt-2 text-sm text-muted">{storageT(logistics.delivery.status === "in_progress" ? "inDeliveryDescription" : "deliveredDescription")}</p>
+            </div>
+          )}
           <WarehouseMovementHistory
             history={warehouseMovements}
             locale={locale}
