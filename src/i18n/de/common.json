@@ -1790,6 +1790,7 @@
       "refundReason": "Erstattungsgrund",
       "refundSuccess": "Erstattung erfasst.",
       "posRefundRequiresTill": "Öffnen Sie die Kasse, um eine POS-Erstattung zu erfassen.",
+      "manualExternal": {"title": "Verifizierte externe Zahlung", "record": "Externe Zahlung erfassen", "amount": "Betrag", "method": "Methode", "bankTransfer": "Banküberweisung", "other": "Sonstige externe Zahlung", "reference": "Geprüfte Referenz", "notes": "Notizen", "notesRequired": "für Sonstige erforderlich", "required": "Betrag, Referenz und erforderliche Notizen prüfen.", "error": "Die externe Zahlung konnte nicht erfasst werden.", "success": "Externe Zahlung erfasst.", "closedDay": "Der Geschäftstag ist abgeschlossen.", "saving": "Speichern..."},
       "cancelledPaidWarning": "Stornierter Auftrag — {amount} noch vereinnahmt",
       "methods": {
         "cash": "Bar",

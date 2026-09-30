@@ -1833,6 +1833,7 @@
       "refundReason": "Motivo rimborso",
       "refundSuccess": "Rimborso registrato.",
       "posRefundRequiresTill": "Apri la cassa per registrare un rimborso POS.",
+      "manualExternal": {"title": "Pagamento esterno verificato", "record": "Registra pagamento esterno", "amount": "Importo", "method": "Metodo", "bankTransfer": "Bonifico bancario", "other": "Altro pagamento esterno", "reference": "Riferimento verificato", "notes": "Note", "notesRequired": "obbligatorie per Altro", "required": "Controlla importo, riferimento e note richieste.", "error": "Impossibile registrare il pagamento esterno.", "success": "Pagamento esterno registrato.", "closedDay": "La giornata operativa è chiusa.", "saving": "Salvataggio..."},
       "cancelledPaidWarning": "Ordine annullato — {amount} ancora incassati",
       "methods": {
         "cash": "Contanti",

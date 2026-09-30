@@ -1790,6 +1790,7 @@
       "refundReason": "Motif du remboursement",
       "refundSuccess": "Remboursement enregistré.",
       "posRefundRequiresTill": "Ouvrez la caisse pour enregistrer un remboursement POS.",
+      "manualExternal": {"title": "Paiement externe vérifié", "record": "Enregistrer un paiement externe", "amount": "Montant", "method": "Mode", "bankTransfer": "Virement bancaire", "other": "Autre paiement externe", "reference": "Référence vérifiée", "notes": "Notes", "notesRequired": "obligatoires pour Autre", "required": "Vérifiez le montant, la référence et les notes requises.", "error": "Le paiement externe n’a pas pu être enregistré.", "success": "Paiement externe enregistré.", "closedDay": "La journée d’activité est clôturée.", "saving": "Enregistrement..."},
       "cancelledPaidWarning": "Commande annulée — {amount} encore encaissés",
       "methods": {
         "cash": "Espèces",

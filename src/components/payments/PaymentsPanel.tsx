@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { DisclosureSection } from "@/components/DisclosureSection";
+import { ManualExternalPaymentForm, type ManualExternalPaymentText } from "@/components/payments/ManualExternalPaymentForm";
 import { Link } from "@/i18n/navigation";
 import type {
   Payment,
@@ -13,6 +14,7 @@ import type {
 } from "@/features/payments/types";
 import { getNetCollected, getRefundableAmount } from "@/features/payments/refunds";
 import type { PosActionState } from "@/features/pos/types";
+import type { ManualExternalPaymentState } from "@/features/payments/server/manual-external-actions";
 import { formatCurrency } from "@/lib/number-format";
 
 type RefundAction = (state: PosActionState, formData: FormData) => Promise<PosActionState>;
@@ -51,8 +53,10 @@ type PaymentsPanelText = {
 
 type PaymentsPanelProps = {
   actions: {
+    manualExternal: (state: ManualExternalPaymentState, formData: FormData) => Promise<ManualExternalPaymentState>;
     refund: RefundAction;
   };
+  canRecordManualExternal: boolean;
   canManageCorrections: boolean;
   canRecord: boolean;
   currency: string;
@@ -63,6 +67,7 @@ type PaymentsPanelProps = {
   posHref: string;
   summary: PaymentSummary;
   text: PaymentsPanelText;
+  manualExternalText: ManualExternalPaymentText;
   posSessionId: string | null;
 };
 
@@ -116,6 +121,7 @@ function RefundForm({
 
 export function PaymentsPanel({
   actions,
+  canRecordManualExternal,
   canManageCorrections,
   canRecord,
   currency,
@@ -127,6 +133,7 @@ export function PaymentsPanel({
   posSessionId,
   summary,
   text,
+  manualExternalText,
 }: PaymentsPanelProps) {
   const netCollected = getNetCollected(payments);
 
@@ -154,6 +161,10 @@ export function PaymentsPanel({
         <Link className="inline-flex" href={posHref} locale={locale}>
           <Button>{text.record}</Button>
         </Link>
+      ) : null}
+
+      {canRecordManualExternal && !isOrderCancelled && summary.balanceDue > 0 ? (
+        <ManualExternalPaymentForm action={actions.manualExternal} balanceDue={summary.balanceDue} key={summary.balanceDue} text={manualExternalText} />
       ) : null}
 
       <DisclosureSection

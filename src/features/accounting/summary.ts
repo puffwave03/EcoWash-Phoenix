@@ -30,7 +30,7 @@ export type AccountingOrderFact = {
 
 export type AccountingPaymentFact = {
   amount: number;
-  channel: "online" | "order" | "pos";
+  channel: "online" | "order" | "pos" | "manual_external";
   currency: string;
   id: string;
   locationId: string | null;

@@ -38,7 +38,7 @@ export type PosOrderDue = {
 
 export type PosPayment = {
   amount: number;
-  channel: "order" | "pos" | "online";
+  channel: "order" | "pos" | "online" | "manual_external";
   id: string;
   method: PaymentMethod;
   orderId: string;
