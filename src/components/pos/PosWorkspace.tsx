@@ -16,7 +16,7 @@ export type PosText = {
   methods: Record<PaymentMethod, string>;
   orders: { customer: string; empty: string; method: string; notes: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };
   payments: { empty: string; manualCard: string; phoenixRefund: string; reason: string; title: string };
-  session: { cashPayments: string; cashRefunds: string; chooseLocation: string; closed: string; expected: string; noLocations: string; opening: string; openingAmount: string; open: string; selectLocation: string; title: string; transactions: string };
+  session: { cashPayments: string; cashRefunds: string; chooseLocation: string; closed: string; expected: string; noLocations: string; opening: string; openingAmount: string; open: string; paymentRequiresOpen: string; selectLocation: string; title: string; transactions: string };
   statuses: Record<PaymentRecordStatus, string>;
   subtitle: string;
   success: string;
@@ -117,10 +117,11 @@ export function PosWorkspace({ actions, canSeeHistory, currency, history, locale
 
       <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><h3 className="text-xl font-semibold text-primary">{text.orders.title}</h3><form className="flex gap-2"><input className={inputClass} defaultValue={query} name="q" placeholder={text.orders.placeholder} /><Button type="submit" variant="secondary">{text.actions.search}</Button></form></div>
+        {!session ? <p className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950" role="status">{text.session.paymentRequiresOpen}</p> : null}
         <div className="grid gap-4 xl:grid-cols-2">{orders.length === 0 ? <Card><p className="text-sm text-muted">{text.orders.empty}</p></Card> : orders.map((order) => (
           <Card key={order.id}><div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><p className="text-xl font-semibold text-primary">{formatCurrency(order.outstanding, order.currency, locale)}</p></div>
             <dl className="mt-3 grid grid-cols-3 gap-2 text-sm"><div><dt className="text-muted">{text.orders.total}</dt><dd>{formatCurrency(order.total, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.paid}</dt><dd>{formatCurrency(order.totalPaid, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.outstanding}</dt><dd>{formatCurrency(order.outstanding, order.currency, locale)}</dd></div></dl>
-            <PaymentForm action={actions.pay} order={order} session={session} text={text} />
+            {session ? <PaymentForm action={actions.pay} order={order} session={session} text={text} /> : null}
           </Card>
         ))}</div>
       </section>
