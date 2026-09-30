@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { DisclosureSection } from "@/components/DisclosureSection";
 import { ManualExternalPaymentForm, type ManualExternalPaymentText } from "@/components/payments/ManualExternalPaymentForm";
+import { ManualExternalRefundForm, type ManualExternalRefundText } from "@/components/payments/ManualExternalRefundForm";
 import { Link } from "@/i18n/navigation";
 import type {
   Payment,
@@ -15,6 +16,7 @@ import type {
 import { getNetCollected, getRefundableAmount } from "@/features/payments/refunds";
 import type { PosActionState } from "@/features/pos/types";
 import type { ManualExternalPaymentState } from "@/features/payments/server/manual-external-actions";
+import type { ManualExternalRefundState } from "@/features/payments/server/manual-external-refund-actions";
 import { formatCurrency } from "@/lib/number-format";
 
 type RefundAction = (state: PosActionState, formData: FormData) => Promise<PosActionState>;
@@ -54,6 +56,7 @@ type PaymentsPanelText = {
 type PaymentsPanelProps = {
   actions: {
     manualExternal: (state: ManualExternalPaymentState, formData: FormData) => Promise<ManualExternalPaymentState>;
+    manualExternalRefund: (state: ManualExternalRefundState, formData: FormData) => Promise<ManualExternalRefundState>;
     refund: RefundAction;
   };
   canRecordManualExternal: boolean;
@@ -68,6 +71,7 @@ type PaymentsPanelProps = {
   summary: PaymentSummary;
   text: PaymentsPanelText;
   manualExternalText: ManualExternalPaymentText;
+  manualExternalRefundText: ManualExternalRefundText;
   posSessionId: string | null;
 };
 
@@ -134,6 +138,7 @@ export function PaymentsPanel({
   summary,
   text,
   manualExternalText,
+  manualExternalRefundText,
 }: PaymentsPanelProps) {
   const netCollected = getNetCollected(payments);
 
@@ -201,6 +206,15 @@ export function PaymentsPanel({
                     refundableAmount={refundableAmount}
                     sessionId={posSessionId}
                     text={text}
+                  />
+                ) : null}
+                {canRecordManualExternal && payment.channel === "manual_external" && payment.status === "confirmed" && refundableAmount > 0 ? (
+                  <ManualExternalRefundForm
+                    action={actions.manualExternalRefund}
+                    key={`${payment.id}:${refundableAmount}`}
+                    payment={payment}
+                    refundableAmount={refundableAmount}
+                    text={manualExternalRefundText}
                   />
                 ) : null}
               </div>

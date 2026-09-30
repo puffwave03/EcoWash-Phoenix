@@ -50,6 +50,7 @@ import {
 } from "@/features/payments/server/queries";
 import { refundPosPaymentAction } from "@/features/pos/server/actions";
 import { recordManualExternalPaymentAction } from "@/features/payments/server/manual-external-actions";
+import { recordManualExternalRefundAction } from "@/features/payments/server/manual-external-refund-actions";
 import { getCurrentPosSession } from "@/features/pos/server/queries";
 import { listEffectiveServicesForOrder } from "@/features/pricing-segments/server/order-services";
 import { entitlementEnabled, FEATURES } from "@/features/entitlements/feature-catalog";
@@ -518,6 +519,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
           actions={{
             manualExternal: recordManualExternalPaymentAction.bind(null, locale, order.id),
+            manualExternalRefund: recordManualExternalRefundAction.bind(null, locale, order.id),
             refund: refundPosPaymentAction.bind(null, locale),
           }}
           canRecordManualExternal={canManageAssignments}
@@ -532,6 +534,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           posSessionId={posSession?.id ?? null}
           summary={paymentSummary}
           manualExternalText={t.raw("payments.manualExternal")}
+          manualExternalRefundText={t.raw("payments.manualExternalRefund")}
           text={{
             actor: t("payments.actor"),
             amount: t("payments.amount"),

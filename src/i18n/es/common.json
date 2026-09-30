@@ -1791,6 +1791,7 @@
       "refundSuccess": "Reembolso registrado.",
       "posRefundRequiresTill": "Abre la caja para registrar un reembolso POS.",
       "manualExternal": {"title": "Pago externo verificado", "record": "Registrar pago externo", "amount": "Importe", "method": "Método", "bankTransfer": "Transferencia bancaria", "other": "Otro pago externo", "reference": "Referencia verificada", "notes": "Notas", "notesRequired": "obligatorias para Otro", "required": "Revisa el importe, la referencia y las notas obligatorias.", "error": "No se pudo registrar el pago externo.", "success": "Pago externo registrado.", "closedDay": "La jornada operativa está cerrada.", "saving": "Guardando..."},
+      "manualExternalRefund": {"amount": "Importe a reembolsar", "closedDay": "La jornada operativa está cerrada.", "description": "Registra solo un reembolso ya realizado y verificado fuera de Phoenix. Phoenix no transfiere dinero.", "error": "No se pudo registrar el reembolso externo.", "notes": "Notas", "notesRequired": "obligatorias para Otro", "reason": "Motivo del reembolso", "record": "Registrar reembolso externo", "reference": "Referencia del reembolso realizado", "required": "Revisa el importe, el motivo, la referencia y las notas obligatorias.", "saving": "Guardando...", "success": "Reembolso externo registrado."},
       "cancelledPaidWarning": "Pedido cancelado — aún hay {amount} cobrados",
       "methods": {
         "cash": "Efectivo",

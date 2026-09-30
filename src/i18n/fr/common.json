@@ -1791,6 +1791,7 @@
       "refundSuccess": "Remboursement enregistré.",
       "posRefundRequiresTill": "Ouvrez la caisse pour enregistrer un remboursement POS.",
       "manualExternal": {"title": "Paiement externe vérifié", "record": "Enregistrer un paiement externe", "amount": "Montant", "method": "Mode", "bankTransfer": "Virement bancaire", "other": "Autre paiement externe", "reference": "Référence vérifiée", "notes": "Notes", "notesRequired": "obligatoires pour Autre", "required": "Vérifiez le montant, la référence et les notes requises.", "error": "Le paiement externe n’a pas pu être enregistré.", "success": "Paiement externe enregistré.", "closedDay": "La journée d’activité est clôturée.", "saving": "Enregistrement..."},
+      "manualExternalRefund": {"amount": "Montant à rembourser", "closedDay": "La journée d’activité est clôturée.", "description": "Enregistrez uniquement un remboursement déjà effectué et vérifié hors de Phoenix. Phoenix ne transfère pas d’argent.", "error": "Le remboursement externe n’a pas pu être enregistré.", "notes": "Notes", "notesRequired": "obligatoires pour Autre", "reason": "Motif du remboursement", "record": "Enregistrer le remboursement externe", "reference": "Référence du remboursement effectué", "required": "Vérifiez le montant, le motif, la référence et les notes requises.", "saving": "Enregistrement...", "success": "Remboursement externe enregistré."},
       "cancelledPaidWarning": "Commande annulée — {amount} encore encaissés",
       "methods": {
         "cash": "Espèces",

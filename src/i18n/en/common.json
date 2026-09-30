@@ -1876,6 +1876,7 @@
       "refundSuccess": "Refund recorded.",
       "posRefundRequiresTill": "Open the till to record a POS refund.",
       "manualExternal": {"title": "Verified external payment", "record": "Record external payment", "amount": "Amount", "method": "Method", "bankTransfer": "Bank transfer", "other": "Other external payment", "reference": "Verified reference", "notes": "Notes", "notesRequired": "required for Other", "required": "Check the amount, reference and required notes.", "error": "The external payment could not be recorded.", "success": "External payment recorded.", "closedDay": "The business day is closed.", "saving": "Saving..."},
+      "manualExternalRefund": {"amount": "Amount to reimburse", "closedDay": "The business day is closed.", "description": "Record only a reimbursement already completed and verified outside Phoenix. Phoenix does not move money.", "error": "The external reimbursement could not be recorded.", "notes": "Notes", "notesRequired": "required for Other", "reason": "Reimbursement reason", "record": "Record external reimbursement", "reference": "Completed reimbursement reference", "required": "Check the amount, reason, reference and required notes.", "saving": "Saving...", "success": "External reimbursement recorded."},
       "cancelledPaidWarning": "Cancelled order — {amount} still collected",
       "methods": {
         "cash": "Cash",

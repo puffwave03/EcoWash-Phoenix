@@ -1791,6 +1791,7 @@
       "refundSuccess": "Erstattung erfasst.",
       "posRefundRequiresTill": "Öffnen Sie die Kasse, um eine POS-Erstattung zu erfassen.",
       "manualExternal": {"title": "Verifizierte externe Zahlung", "record": "Externe Zahlung erfassen", "amount": "Betrag", "method": "Methode", "bankTransfer": "Banküberweisung", "other": "Sonstige externe Zahlung", "reference": "Geprüfte Referenz", "notes": "Notizen", "notesRequired": "für Sonstige erforderlich", "required": "Betrag, Referenz und erforderliche Notizen prüfen.", "error": "Die externe Zahlung konnte nicht erfasst werden.", "success": "Externe Zahlung erfasst.", "closedDay": "Der Geschäftstag ist abgeschlossen.", "saving": "Speichern..."},
+      "manualExternalRefund": {"amount": "Erstattungsbetrag", "closedDay": "Der Geschäftstag ist abgeschlossen.", "description": "Nur eine bereits außerhalb von Phoenix durchgeführte und geprüfte Erstattung erfassen. Phoenix überweist kein Geld.", "error": "Die externe Erstattung konnte nicht erfasst werden.", "notes": "Notizen", "notesRequired": "für Sonstige erforderlich", "reason": "Grund der Erstattung", "record": "Externe Erstattung erfassen", "reference": "Referenz der erfolgten Erstattung", "required": "Betrag, Grund, Referenz und erforderliche Notizen prüfen.", "saving": "Speichern...", "success": "Externe Erstattung erfasst."},
       "cancelledPaidWarning": "Stornierter Auftrag — {amount} noch vereinnahmt",
       "methods": {
         "cash": "Bar",
