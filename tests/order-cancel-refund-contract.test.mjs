@@ -5,10 +5,12 @@ import { getNetCollected, getRefundableAmount } from "../src/features/payments/r
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migrationPath = "supabase/migrations/20260827000400_pos_001_cash_register_foundation.sql";
+const refundBoundaryPath = "supabase/migrations/20260930000300_pos_refund_channel_session_boundary_001.sql";
 
 function payment(overrides = {}) {
   return {
     amount: 13,
+    channel: "pos",
     createdAt: "2026-09-07T10:00:00.000Z",
     id: "11111111-1111-4111-8111-111111111111",
     method: "card",
@@ -75,25 +77,25 @@ test("F-G refunds remain separate rows and the confirmed source stays immutable"
 test("H refund UI and canonical RPC both cap refunds at the remaining amount", async () => {
   const [panel, sql] = await Promise.all([
     source("src/components/payments/PaymentsPanel.tsx"),
-    source(migrationPath),
+    source(refundBoundaryPath),
   ]);
-  const refund = functionBody(sql, "record_pos_refund", "get_pos_session_summary");
+  const refund = sql;
   assert.match(panel, /max=\{refundableAmount\}/);
   assert.match(panel, /getRefundableAmount\(payment, payments\)/);
   assert.match(refund, /source_payment\.amount - already_refunded/);
   assert.match(refund, /pos_refund_exceeds_refundable/);
 });
 
-test("I cash refunds retain the canonical open POS session requirement", async () => {
+test("I every POS refund requires an open POS session", async () => {
   const [page, panel, sql] = await Promise.all([
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"),
     source("src/components/payments/PaymentsPanel.tsx"),
-    source(migrationPath),
+    source(refundBoundaryPath),
   ]);
-  const refund = functionBody(sql, "record_pos_refund", "get_pos_session_summary");
+  const refund = sql;
   assert.match(page, /getCurrentPosSession\(locale\)/);
-  assert.match(panel, /payment\.method === "cash" && !posSessionId/);
-  assert.match(refund, /source_payment\.method = 'cash'[\s\S]*pos_cash_refund_requires_open_session/);
+  assert.match(panel, /const requiresSession = !posSessionId/);
+  assert.match(refund, /if target_pos_session_id is null then[\s\S]*pos_session_not_open/);
   assert.match(refund, /target_session\.status <> 'open'[\s\S]*pos_session_not_open/);
 });
 
@@ -118,6 +120,6 @@ test("cancelled-paid warning is prominent and translated in all supported locale
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.match(messages.orders.payments.cancelledPaidWarning, /\{amount\}/);
-    assert.equal(typeof messages.orders.payments.cashRefundRequiresTill, "string");
+    assert.equal(typeof messages.orders.payments.posRefundRequiresTill, "string");
   }
 });

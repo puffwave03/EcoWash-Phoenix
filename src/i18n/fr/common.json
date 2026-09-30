@@ -1789,7 +1789,7 @@
       "refund": "Rembourser",
       "refundReason": "Motif du remboursement",
       "refundSuccess": "Remboursement enregistré.",
-      "cashRefundRequiresTill": "Ouvrez une caisse pour rembourser un paiement en espèces.",
+      "posRefundRequiresTill": "Ouvrez la caisse pour enregistrer un remboursement POS.",
       "cancelledPaidWarning": "Commande annulée — {amount} encore encaissés",
       "methods": {
         "cash": "Espèces",

@@ -8,6 +8,7 @@ export type DerivedPaymentStatus = (typeof DERIVED_PAYMENT_STATUSES)[number];
 
 export type Payment = {
   amount: number;
+  channel: "order" | "pos" | "online";
   createdAt: string;
   id: string;
   method: PaymentMethod;

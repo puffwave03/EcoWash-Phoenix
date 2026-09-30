@@ -1789,7 +1789,7 @@
       "refund": "Erstatten",
       "refundReason": "Erstattungsgrund",
       "refundSuccess": "Erstattung erfasst.",
-      "cashRefundRequiresTill": "Öffnen Sie eine Kasse, um eine Barzahlung zu erstatten.",
+      "posRefundRequiresTill": "Öffnen Sie die Kasse, um eine POS-Erstattung zu erfassen.",
       "cancelledPaidWarning": "Stornierter Auftrag — {amount} noch vereinnahmt",
       "methods": {
         "cash": "Bar",

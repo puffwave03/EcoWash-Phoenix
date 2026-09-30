@@ -1874,7 +1874,7 @@
       "refund": "Refund",
       "refundReason": "Refund reason",
       "refundSuccess": "Refund recorded.",
-      "cashRefundRequiresTill": "Open a till to refund a cash payment.",
+      "posRefundRequiresTill": "Open the till to record a POS refund.",
       "cancelledPaidWarning": "Cancelled order — {amount} still collected",
       "methods": {
         "cash": "Cash",

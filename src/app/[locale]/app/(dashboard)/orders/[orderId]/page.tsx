@@ -533,7 +533,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             amount: t("payments.amount"),
             balanceDue: t("payments.balanceDue"),
             cancelledPaidWarning: t("payments.cancelledPaidWarning"),
-            cashRefundRequiresTill: t("payments.cashRefundRequiresTill"),
+            posRefundRequiresTill: t("payments.posRefundRequiresTill"),
             closedDay: gateT("general"),
             date: t("payments.date"),
             empty: t("payments.empty"),

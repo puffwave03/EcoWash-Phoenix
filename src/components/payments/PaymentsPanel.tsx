@@ -25,7 +25,7 @@ type PaymentsPanelText = {
   amount: string;
   balanceDue: string;
   cancelledPaidWarning: string;
-  cashRefundRequiresTill: string;
+  posRefundRequiresTill: string;
   closedDay: string;
   date: string;
   empty: string;
@@ -68,7 +68,7 @@ type PaymentsPanelProps = {
 
 function RefundForm({
   action,
-  cashRequiresSession,
+  requiresSession,
   orderId,
   payment,
   refundableAmount,
@@ -76,7 +76,7 @@ function RefundForm({
   text,
 }: {
   action: RefundAction;
-  cashRequiresSession: boolean;
+  requiresSession: boolean;
   orderId: string;
   payment: Payment;
   refundableAmount: number;
@@ -105,9 +105,9 @@ function RefundForm({
           type="number"
         />
         <input aria-label={text.refundReason} className={inputClass} name="reason" placeholder={text.refundReason} required />
-        <Button disabled={pending || cashRequiresSession} type="submit" variant="secondary">{pending ? text.saving : text.refund}</Button>
+        <Button disabled={pending || requiresSession} type="submit" variant="secondary">{pending ? text.saving : text.refund}</Button>
       </div>
-      {cashRequiresSession ? <p className="text-xs font-medium text-amber-800">{text.cashRefundRequiresTill}</p> : null}
+      {requiresSession ? <p className="text-xs font-medium text-amber-800">{text.posRefundRequiresTill}</p> : null}
       {state.formError ? <p className="text-xs font-medium text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
       {state.success ? <p className="text-xs font-medium text-green-700">{text.refundSuccess}</p> : null}
     </form>
@@ -169,7 +169,7 @@ export function PaymentsPanel({
             <p className="p-4 text-sm text-muted">{text.empty}</p>
           ) : payments.map((payment) => {
             const refundableAmount = getRefundableAmount(payment, payments);
-            const cashRequiresSession = payment.method === "cash" && !posSessionId;
+            const requiresSession = !posSessionId;
             return (
             <div className="grid gap-3 p-4 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-start" key={payment.id}>
               <div>
@@ -180,10 +180,10 @@ export function PaymentsPanel({
               <p className="text-sm text-muted">{text.reference}: {payment.reference || "-"}</p>
               <div className="space-y-2 text-sm text-muted">
                 <p>{text.actor}: {payment.recordedByName || "-"}</p>
-                {canManageCorrections && refundableAmount > 0 ? (
+                {canManageCorrections && payment.channel === "pos" && refundableAmount > 0 ? (
                   <RefundForm
                     action={actions.refund}
-                    cashRequiresSession={cashRequiresSession}
+                    requiresSession={requiresSession}
                     key={`${payment.id}:${refundableAmount}`}
                     orderId={orderId}
                     payment={payment}

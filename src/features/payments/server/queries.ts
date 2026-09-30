@@ -9,6 +9,7 @@ import type {
 
 type PaymentRow = {
   amount: number;
+  channel: Payment["channel"];
   created_at: string;
   id: string;
   method: Payment["method"];
@@ -38,7 +39,7 @@ export async function getOrderPayments(locale: string, orderId: string): Promise
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("payments")
-    .select("id, amount, method, status, paid_at, reference, proof_photo_id, refunded_from_payment_id, created_at, recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
+    .select("id, amount, channel, method, status, paid_at, reference, proof_photo_id, refunded_from_payment_id, created_at, recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
     .eq("organization_id", membership.organization.id)
     .eq("order_id", orderId)
     .order("created_at", { ascending: false })
@@ -51,6 +52,7 @@ export async function getOrderPayments(locale: string, orderId: string): Promise
 
   return data.map((row) => ({
     amount: row.amount,
+    channel: row.channel,
     createdAt: row.created_at,
     id: row.id,
     method: row.method,

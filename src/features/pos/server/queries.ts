@@ -32,6 +32,7 @@ type DueOrderRow = {
 
 type PosPaymentRow = {
   amount: number;
+  channel: PosPayment["channel"];
   id: string;
   method: PosPayment["method"];
   order_id: string;
@@ -104,11 +105,11 @@ export async function listPosSessionPayments(locale: string, sessionId: string):
   const { membership } = await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("payments")
-    .select("id, order_id, amount, method, status, paid_at, provider, refunded_from_payment_id, order:orders!payments_order_same_org(order_number), recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
+    .select("id, order_id, amount, channel, method, status, paid_at, provider, refunded_from_payment_id, order:orders!payments_order_same_org(order_number), recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
     .eq("organization_id", membership.organization.id).eq("pos_session_id", sessionId)
     .order("created_at", { ascending: false }).limit(100).returns<PosPaymentRow[]>();
   if (error) { console.error("POS payments query failed", error.code); return []; }
-  return (data ?? []).map((row) => ({ amount: row.amount, id: row.id, method: row.method, orderId: row.order_id, orderNumber: (Array.isArray(row.order) ? row.order[0] : row.order)?.order_number ?? "", paidAt: row.paid_at, provider: row.provider, recordedByName: name(row.recorded_by_profile), refundedFromPaymentId: row.refunded_from_payment_id, status: row.status }));
+  return (data ?? []).map((row) => ({ amount: row.amount, channel: row.channel, id: row.id, method: row.method, orderId: row.order_id, orderNumber: (Array.isArray(row.order) ? row.order[0] : row.order)?.order_number ?? "", paidAt: row.paid_at, provider: row.provider, recordedByName: name(row.recorded_by_profile), refundedFromPaymentId: row.refunded_from_payment_id, status: row.status }));
 }
 
 export async function listPosSessionHistory(locale: string): Promise<PosSession[]> {

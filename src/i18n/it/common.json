@@ -1832,7 +1832,7 @@
       "refund": "Rimborsa",
       "refundReason": "Motivo rimborso",
       "refundSuccess": "Rimborso registrato.",
-      "cashRefundRequiresTill": "Apri una cassa per rimborsare un pagamento in contanti.",
+      "posRefundRequiresTill": "Apri la cassa per registrare un rimborso POS.",
       "cancelledPaidWarning": "Ordine annullato — {amount} ancora incassati",
       "methods": {
         "cash": "Contanti",
