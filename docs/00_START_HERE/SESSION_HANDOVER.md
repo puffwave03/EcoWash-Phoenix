@@ -4,23 +4,23 @@ Status: Active
 
 Date: 2026-09-30
 
-Session checkpoint: OUTBOUND DELIVERY / WAREHOUSE CUSTODY UAT PASS / POS PAYMENT BOUNDARY REVIEW NEXT / AUTH DR PRE-PRODUCTION BLOCKER
+Session checkpoint: OUTBOUND DELIVERY / WAREHOUSE CUSTODY UAT PASS / POS PAYMENT BOUNDARY UAT PASS / AUTH DR PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Current repository baseline: `9feba00f9a9944c508ecd97911a327a09d33b23b`
+Current repository baseline: `ff4258d768501396d01a5c26e689187976d36b02`
 
-Origin/main status: local `main` and `origin/main` are aligned at `9feba00f9a9944c508ecd97911a327a09d33b23b`.
+Origin/main status: local `main` and `origin/main` are aligned at `ff4258d768501396d01a5c26e689187976d36b02`.
 
 Working tree status at the start of this documentation task: clean.
 
-Latest functional task: `WAREHOUSE-ORDER-DETAIL-CUSTODY-UX-001` — Product Owner staging UAT **PASS** at `9feba00f9a9944c508ecd97911a327a09d33b23b`. `DELIVERY-STAGING-AND-TRANSIT-001B` (`f1226b9cc16d89de179071d48964b01867fbbb0f`) is also **COMPLETE / UAT PASS**: migration `20260930000100_delivery_staging_and_transit_001b.sql` is applied to staging `exthnplfokcucaqydney`; local/remote history is aligned through `20260930000100` and the post-apply dry-run reported the remote database up to date. Production was untouched.
+Latest functional task: `POS-SESSION-PAYMENT-BOUNDARY-001` — **COMPLETE / Product Owner UAT PASS** at `ff4258d768501396d01a5c26e689187976d36b02`. Migration `20260930000200_pos_session_payment_boundary_001.sql` is applied to staging `exthnplfokcucaqydney`; local/remote migration history is aligned through `20260930000200`, and the post-apply dry-run reported “Remote database is up to date.” Production was untouched. Earlier `WAREHOUSE-ORDER-DETAIL-CUSTODY-UX-001` and `DELIVERY-STAGING-AND-TRANSIT-001B` remain complete with Product Owner UAT PASS.
 
-Current Mission: `DOCS-DELIVERY-WAREHOUSE-CLOSEOUT-001` — documentation-only final closeout.
+Current Mission: `DOCS-POS-SESSION-PAYMENT-BOUNDARY-CLOSEOUT-001` — documentation-only final closeout.
 
-Next Action: `POS-SESSION-PAYMENT-BOUNDARY-001` — focused architecture review; not implemented. Auth DR remains a separate public-production blocker.
+Next Action: No next implementation task selected; await separate Product Owner/CTO scope. Auth DR remains a public-production blocker.
 
 ---
 
@@ -36,7 +36,8 @@ Next Action: `POS-SESSION-PAYMENT-BOUNDARY-001` — focused architecture review;
 - **PHOENIX OPERATIONAL PILOT CLOSEOUT — PASS:** Product Owner tested Terminal, normal/direct intake, Quick Drop, Portal intake, inbound pickup and physical receipt, production/assignment/item gates, Warehouse inbound/final placement and exit, customer handoff, outbound delivery, payments, Daily Close and post-close behavior. Fresh-order outbound delivery staging UAT also passed: scheduled→in_progress→completed, exact linked departure movement, no storage after departure, no current Warehouse row, final Completed display and Order detail custody callouts. This is staging acceptance, not public-production readiness.
 - **COMPLETE:** `DELIVERY-STATUS-REFRESH-001` (`016888dc259b78af1f6a972187120b0c55590490`) revalidates the Orders list after successful delivery transitions. `DELIVERY-ORDER-DETAIL-REFRESH-001` (`c131fef0552ee89ed6d587020cffb4d886026083`) revalidates and redirects successful Order-detail delivery transitions to `/${locale}/app/orders/${orderId}#logistics`, clearing stale query parameters without changing workspace behavior. `WAREHOUSE-ORDER-DETAIL-CUSTODY-UX-001` (`9feba00f9a9944c508ecd97911a327a09d33b23b`) keeps real current storage visible when present; without storage it shows out-of-Warehouse/in-delivery or delivered custody, with movement history below. These follow-ups required no DB or migration change.
 - **V1 decision:** catalog/services → commercial `order_items` snapshot → ticket/labels → order-level production → order-level Warehouse → fulfillment. Discrete labels may identify each unit (`PHX1:L:<order UUID>:<order-item UUID>:<unit index>`); two trousers can print `1/2` and `2/2`. This QR identifies an order/item/unit, not a persistent garment or scan event. Operators verify complete orders. Commercial 18 kg laundry and three physical bags remain 18 kg order quantity and `package_count = 3`. Garment/package tracking and partial ready/fulfillment are deferred, not approved.
-- **Next focused review — NOT IMPLEMENTED:** `POS-SESSION-PAYMENT-BOUNDARY-001`. Some non-cash manually recorded POS payments currently work without an open POS session. Review the session boundary without blocking true provider/online payments outside till hours. Payment method and channel are distinct; preserve `pos` / `order` / `online` channels and keep Daily Close separate from POS sessions unless separately approved. Other findings remain open and require their own scope. Later SaaS Productization Baseline, clean Demo Tenant onboarding and `PHX-FISCAL-001` architecture/compliance remain separate decisions; operational receipts remain non-fiscal.
+- **COMPLETE / Product Owner UAT PASS:** `POS-SESSION-PAYMENT-BOUNDARY-001` (`ff4258d768501396d01a5c26e689187976d36b02`). Every new payment recorded with `channel='pos'` requires a valid open POS session, regardless of method (`cash`, `card`, `bank_transfer`, `other`). Payment method and channel remain separate. `record_pos_payment` requires a non-null target session belonging to the same organization with status `open`; existing actor/location checks remain. This is an RPC boundary, not a global table constraint; historical payments were not backfilled or changed. With the till closed, the POS payment form is hidden and explains that the till must be opened; opening the till and payment history remain available. With it open, recording works normally. Shop Terminal paid-now still requires an active session; Pay Later remains available without recording payment. Online/provider payments remain `channel='online'` and independent of till state under existing provider/post-close rules. `record_pos_refund` and cash/non-cash refund session semantics are unchanged. No supported new `channel='order'` manual external write path was added. Daily Close remains separate from POS sessions, with existing blockers/warnings and `non_session_non_cash_activity` semantics unchanged. Staging migration `20260930000200_pos_session_payment_boundary_001.sql` was applied to `exthnplfokcucaqydney`; local/remote history aligns through `20260930000200`, the post-apply dry-run reported “Remote database is up to date,” and production was untouched. Product Owner UAT passed closed-till form/message, open-till recording, Terminal Pay Later without payment, and online payment independence.
+- **Separate open decisions:** POS refund session boundary and a supported manual external/order payment write path remain undecided. Other findings require their own scope. Later SaaS Productization Baseline, clean Demo Tenant onboarding and `PHX-FISCAL-001` architecture/compliance remain separate decisions; operational receipts remain non-fiscal.
 - **BLOCKED for public production:** database and Storage recovery are proven; managed Auth and authenticated application recovery are not. Keep tenant/RLS/auth boundaries and EcoWash La Tejita as first tenant/reference, never product identity. Open findings include `ORDER-PROPERTY-CLIENT-FILTER-001`, >1 MB photo inline validation UX, PDF technical-key cosmetic issue if still present, `NETWORK-FAILURE-UX-001`, Portal validation summary/focus improvement and Auth DR.
 
 The dated closeouts below record earlier checkpoints. Their “next proposed task,” staging-pending and implementation-boundary statements are historical, not the current resume instruction.
@@ -108,7 +109,8 @@ The dated closeouts below record earlier checkpoints. Their “next proposed tas
 
 ## Open Findings
 
-- `POS-SESSION-PAYMENT-BOUNDARY-001` — NOT IMPLEMENTED; focused architecture review required for non-cash manual POS payments without an open session. Preserve provider/online payments outside till hours, payment method versus `pos` / `order` / `online` channel, and the Daily Close/POS-session separation; no final rule is defined.
+- POS refund session boundary — undecided; `record_pos_refund` and existing cash/non-cash refund session semantics were not changed by `POS-SESSION-PAYMENT-BOUNDARY-001`.
+- Manual external/order payment write path — undecided; no supported new `channel='order'` writer was added by `POS-SESSION-PAYMENT-BOUNDARY-001`.
 - `PHX-AUTH-DR-001` — BACKUP-DR-001D rehearsal/decommission is complete and database/Storage recovery are verified; Auth recovery and authenticated application recovery remain a mandatory pre-production blocker before go-live.
 - `AUTH-CONFIG-DRIFT-001` — staging signup was manually disabled in the Supabase Dashboard (Product Owner report; no programmatic verification). This configuration finding is resolved; Auth DR remains open separately.
 - `PORTAL-ORDER-VALIDATION-SUMMARY-001` — provide a visible order-level validation notice/summary when required Portal order fields are incomplete, while preserving field-level validation and guiding the customer to the missing data.
@@ -323,7 +325,7 @@ Customer portal migrations applied on staging:
 
 ## Migration History State
 
-Per Product Owner closeout, staging migration history is aligned through `20260930000100`, including `20260930000100_delivery_staging_and_transit_001b.sql`; the post-apply dry-run reported remote database up to date. Earlier ACCOUNTING-SALES-DOCUMENTS-001 registry and corrective receipt SELECT migrations remain applied.
+Per Product Owner closeout, staging migration history is aligned through `20260930000200`, including `20260930000100_delivery_staging_and_transit_001b.sql` and `20260930000200_pos_session_payment_boundary_001.sql`; the POS post-apply dry-run reported “Remote database is up to date.” Production was untouched. Earlier ACCOUNTING-SALES-DOCUMENTS-001 registry and corrective receipt SELECT migrations remain applied.
 
 During INFRA-001-SMOKE, the corrective SQL for `app_current_organization_id()` and `create_order()` was applied manually in EcoWash Staging through SQL Editor so the smoke test could continue. INFRA-001.1 reconciled the remote migration history so local and remote now both include `20260730000100`.
 
