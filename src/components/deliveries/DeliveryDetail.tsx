@@ -1,11 +1,14 @@
 import { Link } from "@/i18n/navigation";
 import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import type { DeliveryTask } from "@/features/deliveries/types";
+import { DeliveryReturnForm, type DeliveryReturnText } from "@/components/deliveries/DeliveryReturnForm";
+import type { WarehousePosition } from "@/features/warehouse/types";
 
-export type DeliveryDetailText = {
+export type DeliveryDetailText = DeliveryReturnText & {
   address: string;
   assignedTo: string;
   back: string;
+  cancelReason: string;
   complete: string;
   contact: string;
   customer: string;
@@ -25,6 +28,9 @@ export type DeliveryDetailText = {
 
 type DeliveryDetailProps = {
   action: (formData: FormData) => Promise<void>;
+  returnAction: (formData: FormData) => Promise<void>;
+  returnPositions: WarehousePosition[];
+  legacyStorage: boolean;
   isSupervision: boolean;
   locale: string;
   task: DeliveryTask;
@@ -65,6 +71,9 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 
 export function DeliveryDetail({
   action,
+  returnAction,
+  returnPositions,
+  legacyStorage,
   isSupervision,
   locale,
   task,
@@ -143,7 +152,7 @@ export function DeliveryDetail({
           </section>
 
           <div className="space-y-2.5 border-t border-border pt-5">
-            {targetStatus ? (
+            {targetStatus && (targetStatus !== "in_progress" || task.canStart) ? (
               <form action={action}>
                 <input name="recordId" type="hidden" value={task.id} />
                 <input name="targetStatus" type="hidden" value={targetStatus} />
@@ -151,6 +160,24 @@ export function DeliveryDetail({
                   {actionLabel}
                 </button>
               </form>
+            ) : null}
+            {task.status === "scheduled" ? (
+              <form action={action} className="space-y-2">
+                <input name="recordId" type="hidden" value={task.id} />
+                <input name="targetStatus" type="hidden" value="cancelled" />
+                <input className="min-h-11 w-full rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.cancelReason} required />
+                <button className="min-h-11 w-full rounded-control border border-border px-4 text-sm font-semibold text-primary" type="submit">{text.statuses.cancelled}</button>
+              </form>
+            ) : null}
+            {task.status === "in_progress" ? (
+              legacyStorage ? (
+                <form action={action} className="space-y-2">
+                  <input name="recordId" type="hidden" value={task.id} />
+                  <input name="targetStatus" type="hidden" value="cancelled" />
+                  <input className="min-h-11 w-full rounded-control border border-border px-3 text-sm" name="reason" placeholder={text.cancelReason} required />
+                  <button className="min-h-11 w-full rounded-control border border-border px-4 text-sm font-semibold text-primary" type="submit">{text.statuses.cancelled}</button>
+                </form>
+              ) : <DeliveryReturnForm action={returnAction} deliveryId={task.id} positions={returnPositions} text={text} />
             ) : null}
             {isSupervision ? (
               <Link

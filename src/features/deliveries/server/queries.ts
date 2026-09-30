@@ -17,11 +17,13 @@ import {
 } from "@/features/operations/server/helpers";
 import { requireOperationalCapability } from "@/lib/auth/require-capability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { listWarehousePositions } from "@/features/warehouse/server/queries";
 
 type DeliveryOrderRelation = {
   customer: { display_name: string } | { display_name: string }[] | null;
   id: string;
   is_active: boolean;
+  location_id: string | null;
   order_number: string;
   production_status: ProductionStatus;
   property: { name: string } | { name: string }[] | null;
@@ -47,7 +49,7 @@ type DeliveryRow = {
 };
 
 const DELIVERY_WORKSPACE_SELECT =
-  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
+  "id, status, scheduled_at, started_at, completed_at, assigned_to, address_line1, address_line2, city, postal_code, country_code, contact_name, contact_phone, notes, assigned_to_profile:profiles!deliveries_assigned_to_fkey(display_name), order:orders!deliveries_order_same_org!inner(id, location_id, order_number, production_status, is_active, customer:customers!orders_customer_same_organization(display_name), property:properties!orders_property_same_customer(name))";
 const UPCOMING_WINDOW_MS = 2 * 60 * 60 * 1000;
 
 function deliveryPriority(row: DeliveryRow, now: Date): DeliveryPriority {
@@ -94,11 +96,13 @@ function mapDelivery(row: DeliveryRow, now: Date): DeliveryTask | null {
     assignedTo: row.assigned_to,
     assignedToName: relationName(row.assigned_to_profile),
     city: row.city,
+    canStart: order.production_status === "completed",
     contactName: row.contact_name,
     contactPhone: row.contact_phone,
     countryCode: row.country_code,
     customerName: relationName(order.customer) ?? "",
     id: row.id,
+    locationId: order.location_id,
     notes: row.notes,
     orderId: order.id,
     orderNumber: order.order_number,
@@ -255,8 +259,20 @@ export async function getDeliveryWorkspaceTask(locale: string, deliveryId: strin
 
   if (!task) notFound();
 
+  const positions = task.status === "in_progress" && task.locationId
+    ? (await listWarehousePositions(locale, task.locationId)).filter((position) => position.isActive && !position.isDefaultInbound)
+    : [];
+  const { data: storage, error: storageError } = task.status === "in_progress"
+    ? await supabase.from("order_storage").select("id")
+      .eq("organization_id", membership.organization.id)
+      .eq("order_id", task.orderId).maybeSingle<{ id: string }>()
+    : { data: null, error: null };
+  if (storageError) throw new Error(`delivery_storage_read_failed:${storageError.code}`);
+
   return {
     isSupervision,
+    legacyStorage: Boolean(storage),
+    returnPositions: positions,
     task,
     timeZone: membership.organization.timezone,
   };

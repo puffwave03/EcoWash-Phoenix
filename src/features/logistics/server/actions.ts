@@ -314,8 +314,52 @@ export async function transitionDeliveryAction(
 
   revalidateOrder(locale, orderId);
   revalidatePath(`/${locale}/app/work/deliveries/${deliveryId}`);
+  revalidatePath(`/${locale}/app/warehouse`);
 
   if (transitionLeavesLogisticsSurface(surface, targetStatus)) {
     redirect(logisticsWorkspacePath(locale, "deliveries"));
   }
+}
+
+export async function returnDeliveryToWarehouseAction(
+  locale: string,
+  orderId: string,
+  surface: LogisticsTransitionSurface,
+  formData: FormData,
+): Promise<void> {
+  const deliveryId = String(formData.get("recordId") ?? "");
+  const positionId = String(formData.get("positionId") ?? "");
+  const reason = String(formData.get("reason") ?? "").trim();
+  const errorPath = surface === "workspace"
+    ? `/${locale}/app/work/deliveries/${deliveryId}?returnError=1`
+    : `/${locale}/app/orders/${orderId}?returnError=1#logistics`;
+  if (!deliveryId || !positionId || !reason || reason.length > 500) redirect(errorPath);
+
+  const { membership, profile } = await requireOperationalCapability(locale, "delivery");
+  const supabase = await createSupabaseServerClient();
+  const { data: delivery, error: deliveryError } = await supabase.from("deliveries")
+    .select("assigned_to")
+    .eq("organization_id", membership.organization.id)
+    .eq("order_id", orderId)
+    .eq("id", deliveryId)
+    .maybeSingle<{ assigned_to: string | null }>();
+  if (deliveryError || !delivery || (membership.role === "staff" && delivery.assigned_to !== profile.id)) {
+    if (deliveryError) console.error("Delivery return authorization failed", deliveryError.code);
+    redirect(errorPath);
+  }
+
+  const { error } = await supabase.rpc("return_delivery_to_warehouse", {
+    target_delivery_id: deliveryId,
+    target_position_id: positionId,
+    target_reason: reason,
+  });
+  if (error) {
+    console.error("Delivery return failed", error.code);
+    redirect(errorPath);
+  }
+
+  revalidateOrder(locale, orderId);
+  revalidatePath(`/${locale}/app/work/deliveries/${deliveryId}`);
+  revalidatePath(`/${locale}/app/warehouse`);
+  if (surface === "workspace") redirect(logisticsWorkspacePath(locale, "deliveries"));
 }

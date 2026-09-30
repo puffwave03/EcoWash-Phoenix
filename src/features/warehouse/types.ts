@@ -55,7 +55,8 @@ export type WarehouseMovement = {
   actorName: string | null;
   movementType: "entered" | "moved" | "updated" | "exited";
   source: "canonical_receipt" | "manual_assignment" | "manual_move" | "manual_update"
-    | "customer_handoff" | "delivery_completed" | "cancelled_return" | "production_ready";
+    | "customer_handoff" | "delivery_completed" | "cancelled_return" | "production_ready"
+    | "delivery_started" | "delivery_returned";
   fromPositionLabel: string | null;
   toPositionLabel: string | null;
   fromPackageCount: number | null;

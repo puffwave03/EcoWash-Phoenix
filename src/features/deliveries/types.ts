@@ -13,11 +13,13 @@ export type DeliveryTask = {
   assignedTo: string;
   assignedToName: string | null;
   city: string | null;
+  canStart: boolean;
   contactName: string | null;
   contactPhone: string | null;
   countryCode: string | null;
   customerName: string;
   id: string;
+  locationId: string | null;
   notes: string | null;
   orderId: string;
   orderNumber: string;

@@ -17,6 +17,7 @@ import { Link } from "@/i18n/navigation";
 import {
   saveDeliveryAction,
   savePickupAction,
+  returnDeliveryToWarehouseAction,
   transitionDeliveryAction,
   transitionPickupAction,
 } from "@/features/logistics/server/actions";
@@ -76,7 +77,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; pickup?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; pickup?: string; returnError?: string }>;
 };
 
 function SectionShell({
@@ -149,7 +150,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
   const logisticsStatusLabels = t.raw("logistics.statuses") as Record<string, string>;
   const paymentStatusLabels = t.raw("payments.statuses") as Record<string, string>;
   const canManageAssignments = access.membership.role === "owner" || access.membership.role === "manager";
-  const [storageAssignment, warehousePositions] = canManageAssignments
+  const [storageAssignment, warehousePositions] = (canManageAssignments || hasOperationalCapability(access.membership, "delivery"))
     ? await Promise.all([
         getOrderStorageAssignment(locale, order.id),
         order.locationId ? listWarehousePositions(locale, order.locationId) : Promise.resolve([]),
@@ -411,14 +412,14 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
       {canManageAssignments ? (
         <SectionShell id="warehouse-storage" title={storageT("title")}>
-          <OrderStoragePanel
+          {logistics.delivery?.status !== "in_progress" && logistics.delivery?.status !== "completed" ? <OrderStoragePanel
             action={saveOrderStorageAssignmentAction.bind(null, locale, order.id)}
             assignment={storageAssignment}
             enteredAt={storageAssignment ? formatOrganizationDateTime(storageAssignment.enteredAt, locale, access.membership.organization.timezone) : null}
             hasOrderLocation={Boolean(order.locationId)}
             positions={activeWarehousePositions}
             text={storageT.raw("labels") as OrderStorageText}
-          />
+          /> : null}
           <WarehouseMovementHistory
             history={warehouseMovements}
             locale={locale}
@@ -430,11 +431,13 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
       <SectionShell id="logistics" title={t("logistics.title")}>
         {warehouseError ? <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("warehouseInboundUnavailable")}</p> : null}
+        {routeSearch.returnError === "1" ? <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("deliveryWorkspace.returnError")}</p> : null}
         <LogisticsPanel
           actions={{
             saveDelivery: saveDeliveryAction.bind(null, locale, order.id),
             savePickup: savePickupAction.bind(null, locale, order.id),
             transitionDelivery: transitionDeliveryAction.bind(null, locale, order.id, "order"),
+            returnDelivery: returnDeliveryToWarehouseAction.bind(null, locale, order.id, "order"),
             transitionPickup: transitionPickupAction.bind(null, locale, order.id, "order"),
           }}
           assignments={{
@@ -443,6 +446,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           }}
           canAssign={canManageAssignments}
           configurationEnabled={order.isActive && order.productionStatus !== "cancelled"}
+          returnPositions={activeWarehousePositions.filter((position) => !position.isDefaultInbound)}
+          legacyDeliveryStorage={Boolean(storageAssignment)}
+          deliveryStartEnabled={order.isActive && order.productionStatus === "completed"}
           logistics={logistics}
           operationalTransitionsEnabled={isOperationalLogisticsParent({
             isActive: order.isActive,
@@ -461,6 +467,11 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             contactPhone: t("logistics.contactPhone"),
             countryCode: t("logistics.countryCode"),
             delivery: t("logistics.delivery"),
+            returnDelivery: commonT("deliveryWorkspace.returnDelivery"),
+            returnReason: commonT("deliveryWorkspace.returnReason"),
+            returnPosition: commonT("deliveryWorkspace.returnPosition"),
+            noReturnPositions: commonT("deliveryWorkspace.noReturnPositions"),
+            returnError: commonT("deliveryWorkspace.returnError"),
             empty: logisticsStatusLabels.not_required,
             error: t("logistics.error"),
             fee: t("logistics.fee"),

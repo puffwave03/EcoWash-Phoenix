@@ -12,8 +12,10 @@ import type {
 import { formatNumberInput } from "@/lib/number-format";
 import { isoToOrganizationDateTimeLocal } from "@/lib/organization-timezone";
 import type { AssignmentOption } from "@/features/orders/server/queries";
+import { DeliveryReturnForm, type DeliveryReturnText } from "@/components/deliveries/DeliveryReturnForm";
+import type { WarehousePosition } from "@/features/warehouse/types";
 
-type LogisticsPanelText = {
+type LogisticsPanelText = DeliveryReturnText & {
   addressLine1: string;
   addressLine2: string;
   assignedTo: string;
@@ -43,6 +45,7 @@ type LogisticsPanelProps = {
     saveDelivery: (state: LogisticsActionState, formData: FormData) => Promise<LogisticsActionState>;
     savePickup: (state: LogisticsActionState, formData: FormData) => Promise<LogisticsActionState>;
     transitionDelivery: (formData: FormData) => Promise<void>;
+    returnDelivery: (formData: FormData) => Promise<void>;
     transitionPickup: (formData: FormData) => Promise<void>;
   };
   assignments: {
@@ -52,6 +55,9 @@ type LogisticsPanelProps = {
   canAssign: boolean;
   configurationEnabled: boolean;
   logistics: OrderLogistics;
+  returnPositions: WarehousePosition[];
+  legacyDeliveryStorage: boolean;
+  deliveryStartEnabled: boolean;
   operationalTransitionsEnabled: boolean;
   pickupTransitionsEnabled: boolean;
   inboundUnavailable?: boolean;
@@ -188,18 +194,23 @@ function TransitionButtons({
   operationalTransitionsEnabled,
   inboundUnavailable = false,
   record,
+  hideInProgressCancel = false,
+  hideDeliveryStart = false,
   text,
 }: {
   action: (formData: FormData) => Promise<void>;
   operationalTransitionsEnabled: boolean;
   inboundUnavailable?: boolean;
   record: LogisticsRecord | null;
+  hideInProgressCancel?: boolean;
+  hideDeliveryStart?: boolean;
   text: LogisticsPanelText;
 }) {
   const statuses = nextStatuses(record?.status ?? null).filter(
     (status) =>
-      operationalTransitionsEnabled ||
-      !["in_progress", "completed"].includes(status),
+      (operationalTransitionsEnabled || !["in_progress", "completed"].includes(status))
+      && !(hideInProgressCancel && status === "cancelled")
+      && !(hideDeliveryStart && status === "in_progress"),
   );
   if (!record || statuses.length === 0) return null;
 
@@ -228,6 +239,9 @@ export function LogisticsPanel({
   canAssign,
   configurationEnabled,
   logistics,
+  returnPositions,
+  legacyDeliveryStorage,
+  deliveryStartEnabled,
   operationalTransitionsEnabled,
   pickupTransitionsEnabled,
   inboundUnavailable = false,
@@ -244,7 +258,8 @@ export function LogisticsPanel({
         </section>
         <section className="min-w-0 space-y-4 rounded-card border border-border bg-white p-4 sm:p-5" aria-label={text.delivery}>
           <LogisticsForm action={actions.saveDelivery} assignments={assignments.delivery} canAssign={canAssign} editable={configurationEnabled} key={`delivery:${logistics.delivery?.id ?? "new"}:${logistics.delivery?.assignedTo ?? "unassigned"}`} record={logistics.delivery} text={text} timeZone={timeZone} title={text.delivery} />
-          {configurationEnabled ? <TransitionButtons action={actions.transitionDelivery} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} /> : null}
+          {configurationEnabled ? <TransitionButtons action={actions.transitionDelivery} hideInProgressCancel={logistics.delivery?.status === "in_progress" && !legacyDeliveryStorage} hideDeliveryStart={!deliveryStartEnabled} operationalTransitionsEnabled={operationalTransitionsEnabled} record={logistics.delivery} text={text} /> : null}
+          {configurationEnabled && logistics.delivery?.status === "in_progress" && !legacyDeliveryStorage ? <DeliveryReturnForm action={actions.returnDelivery} deliveryId={logistics.delivery.id} positions={returnPositions} text={text} /> : null}
         </section>
       </div>
     </Card>
