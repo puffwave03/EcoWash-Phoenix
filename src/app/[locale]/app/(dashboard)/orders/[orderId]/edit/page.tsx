@@ -2,11 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { OrderForm } from "@/components/orders/OrderForm";
 import { updateOrderAction } from "@/features/orders/server/actions";
-import {
-  getOrderById,
-  listCustomersForOrder,
-  listPropertiesForCustomer,
-} from "@/features/orders/server/queries";
+import { getOrderById } from "@/features/orders/server/queries";
 
 type EditOrderPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -14,10 +10,8 @@ type EditOrderPageProps = {
 
 export default async function EditOrderPage({ params }: EditOrderPageProps) {
   const { locale, orderId } = await params;
-  const [order, customers, properties, t, gateT] = await Promise.all([
+  const [order, t, gateT] = await Promise.all([
     getOrderById(locale, orderId),
-    listCustomersForOrder(locale),
-    listPropertiesForCustomer(locale),
     getTranslations({ locale, namespace: "common.orders.form" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
@@ -27,9 +21,9 @@ export default async function EditOrderPage({ params }: EditOrderPageProps) {
       <h2 className="text-2xl font-semibold text-primary">{t("editTitle")}</h2>
       <OrderForm
         action={updateOrderAction.bind(null, locale, orderId)}
-        customers={customers}
+        customers={[]}
         order={order}
-        properties={properties}
+        properties={[]}
         text={{
           customer: t("customer"),
           customerNotes: t("customerNotes"),

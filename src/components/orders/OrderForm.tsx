@@ -45,44 +45,56 @@ export function OrderForm({ action, customers, initialCustomerId, locations = []
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [customerId, setCustomerId] = useState(order?.customerId ?? initialCustomerId ?? "");
   const [propertyId, setPropertyId] = useState(order?.propertyId ?? "");
-  const visibleProperties = order
-    ? properties
-    : properties.filter((property) => property.customerId === customerId);
+  const visibleProperties = properties.filter((property) => property.customerId === customerId);
   const canCreate = Boolean(order) || locations.length > 0;
 
   return (
     <form action={formAction} className="space-y-6">
       {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.customer}</span>
-          <select
-            className={fieldClass(Boolean(state.fieldErrors.customerId))}
-            value={customerId}
-            disabled={Boolean(order)}
-            name="customerId"
-            onChange={(event) => {
-              setCustomerId(event.target.value);
-              setPropertyId("");
-            }}
-          >
-            <option value="" />
-            {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.label}</option>)}
-          </select>
-        </label>
-        <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.property}</span>
-          <select
-            className={fieldClass(Boolean(state.fieldErrors.propertyId))}
-            value={propertyId}
-            disabled={Boolean(order) || !customerId}
-            name="propertyId"
-            onChange={(event) => setPropertyId(event.target.value)}
-          >
-            <option value="" />
-            {visibleProperties.map((property) => <option data-customer-id={property.customerId} key={property.id} value={property.id}>{property.label}</option>)}
-          </select>
-        </label>
+        {order ? (
+          <>
+            <div className="space-y-2 text-sm font-semibold text-primary">
+              <span>{text.customer}</span>
+              <div className={fieldClass(false)}>{order.customerName}</div>
+            </div>
+            <div className="space-y-2 text-sm font-semibold text-primary">
+              <span>{text.property}</span>
+              <div className={fieldClass(false)}>{order.propertyId ? order.propertyName ?? "-" : "-"}</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <label className="space-y-2 text-sm font-semibold text-primary">
+              <span>{text.customer}</span>
+              <select
+                className={fieldClass(Boolean(state.fieldErrors.customerId))}
+                value={customerId}
+                name="customerId"
+                onChange={(event) => {
+                  setCustomerId(event.target.value);
+                  setPropertyId("");
+                }}
+              >
+                <option value="" />
+                {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.label}</option>)}
+              </select>
+            </label>
+            <label className="space-y-2 text-sm font-semibold text-primary">
+              <span>{text.property}</span>
+              <select
+                className={fieldClass(Boolean(state.fieldErrors.propertyId))}
+                value={propertyId}
+                disabled={!customerId}
+                name="propertyId"
+                onChange={(event) => setPropertyId(event.target.value)}
+              >
+                <option value="" />
+                {visibleProperties.map((property) => <option data-customer-id={property.customerId} key={property.id} value={property.id}>{property.label}</option>)}
+              </select>
+            </label>
+          </>
+        )}
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.priority}</span>
           <select className={fieldClass(false)} defaultValue={order?.priority ?? "normal"} name="priority">
