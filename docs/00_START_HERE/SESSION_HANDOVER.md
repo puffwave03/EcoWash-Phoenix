@@ -4,31 +4,31 @@ Status: Active
 
 Date: 2026-10-01
 
-Session checkpoint: ORDER-PROPERTY-CLIENT-FILTER-001 STAGING APPLIED / PRODUCT OWNER UAT PENDING / AUTH DR PRE-PRODUCTION BLOCKER
+Session checkpoint: ORDER-PROPERTY-CLIENT-FILTER-001 / PROPERTY-LIFECYCLE-REACTIVATE-UX-001 PRODUCT OWNER UAT PASS / AUTH DR PRE-PRODUCTION BLOCKER
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Current repository baseline: `8f00346e2e1108f3c56be287d5fce009b874047e`
+Current repository baseline: `7857d217cce0556b16c84a882fd0c937f321faa7`
 
-Origin/main status at the start of this documentation checkpoint: local `main` and `origin/main` were aligned at `8f00346e2e1108f3c56be287d5fce009b874047e`.
+Origin/main status at the start of this documentation closeout: local `main` and `origin/main` were aligned at `7857d217cce0556b16c84a882fd0c937f321faa7`.
 
 Working tree status at the start of this documentation task: clean.
 
-Latest functional task: `ORDER-PROPERTY-CLIENT-FILTER-001` — **IMPLEMENTED / STAGING MIGRATION APPLIED / READY FOR PRODUCT OWNER UAT** at `8f00346e2e1108f3c56be287d5fce009b874047e`. The Product Owner reports zero historical order/property customer or tenant mismatches; migration `20261001000100_order_property_client_filter_001.sql` is applied to staging `exthnplfokcucaqydney`, local/remote history is aligned through `20261001000100`, and the post-apply dry-run reported “Remote database is up to date.” Production was untouched.
+Latest functional tasks: `ORDER-PROPERTY-CLIENT-FILTER-001` (`8f00346e2e1108f3c56be287d5fce009b874047e`) and `PROPERTY-LIFECYCLE-REACTIVATE-UX-001` (`7857d217cce0556b16c84a882fd0c937f321faa7`) — **COMPLETE / Product Owner UAT PASS**. UAT-ready documentation checkpoint: `6980de4dac53a8892a074d197e795f537e0d607e`. The Product Owner verified zero historical order/property customer or tenant mismatches; migration `20261001000100_order_property_client_filter_001.sql` is applied to staging `exthnplfokcucaqydney`, local/remote history is aligned through `20261001000100`, and the final dry-run reported “Remote database is up to date.” Production was untouched.
 
 Previous functional closeout: `MANUAL-EXTERNAL-REFUND-001` — **COMPLETE / Product Owner UAT PASS**. Core implementation `c7676d21bde29bc28002f727427317b1d0439b5a`; UAT-ready checkpoint `fd279d18ebd422fe8e526008aaada835427e6f48`; UX follow-up `90a02c3c6cb03bb3eb5a0bb4af30f0c6c6569005` is complete. Migration `20260930000500_manual_external_refund_001.sql` is applied to staging `exthnplfokcucaqydney`; local/remote migration history is aligned through `20260930000500`, and the post-apply dry-run reported “Remote database is up to date.” Production was untouched. Earlier manual external payment, POS payment/refund, Warehouse custody and outbound delivery UAT passes remain complete.
 
-Current Mission: `ORDER-PROPERTY-CLIENT-FILTER-001` — READY FOR PRODUCT OWNER UAT.
+Current Mission: No active implementation mission.
 
-Next Action: Product Owner staging UAT for `ORDER-PROPERTY-CLIENT-FILTER-001`. Auth DR remains a public-production blocker.
+Next Action: CTO/Product Owner review of remaining open findings and selection of the next narrow task. Auth DR remains a public-production blocker.
 
 ---
 
 ## Current Handover — 2026-10-01
 
-- **IMPLEMENTED / STAGING MIGRATION APPLIED / PRODUCT OWNER UAT PENDING:** A Phoenix Property permanently belongs to the Customer under which it was created; `properties.customer_id` is immutable. If a real-world property moves to another Customer, preserve the existing record and historical Order references, deactivate it when appropriate, and create a new Property for the new Customer. New Orders still require an active Customer; Property is optional and, when selected, must be active and belong to the selected Customer and tenant. Changing Customer clears Property; server/database checks remain authoritative. Order edit shows canonical `order.customerName` and `order.propertyName` as read-only values, including an inactive historical Property. Shop Terminal, Quick Drop, Portal, pricing, logistics, payments, Accounting, Daily Close and fiscal behavior are unchanged.
+- **COMPLETE / Product Owner UAT PASS:** `ORDER-PROPERTY-CLIENT-FILTER-001` and `PROPERTY-LIFECYCLE-REACTIVATE-UX-001`. A Phoenix Property permanently belongs to the Customer under which it was created; `properties.customer_id` is immutable. If a real-world property moves to another Customer, preserve the old record and historical Order references, deactivate it when appropriate, and create a new Property for the new Customer. New Orders require an active Customer; Property remains optional and, when selected, must be active and belong to the selected Customer and tenant. Changing Customer clears Property; `create_order` and `validate_order_relationships` remain authoritative. Order edit shows canonical `order.customerName` and `order.propertyName` read-only, including an inactive historical Property, with no reassignment workflow. Active Properties can be deactivated; inactive Properties remain reachable and can be explicitly reactivated. Ordinary editing of an inactive Property does not reactivate it. Tenant isolation and RLS are preserved; no historical Order rewrite, backfill or new composite FK was introduced. Shop Terminal, Quick Drop, Portal, pricing/segments, logistics, payments, Accounting, Daily Close and fiscal behavior are unchanged.
 - **COMPLETE / UAT PASS:** `ORDER-ITEMS-LIFECYCLE-GATE-001` and `PRODUCTION-DEFAULT-ASSIGNEE-001`. The latter uses staging migration `20260928000200_production_default_assignee_001.sql`. Normal manual draft→received requires an active order item; only Quick Drop and completed inbound pickup may receive without one. All zero-item orders are blocked from actual production and final fulfillment until an active item is added; cancellation is allowed. No placeholders or backfill.
 - **COMPLETE / UAT PASS:** inbound pickup is customer→EcoWash; outbound delivery is EcoWash→customer. Confirming final Warehouse position, package count and storage mode atomically completes production without a second manual status step. Production completion is not final fulfillment. Without delivery, `ready_for_customer_pickup` awaits explicit customer handoff. Scheduled delivery shows **Ready for delivery**, in-progress delivery **In delivery**, and completed delivery **Completed**. Payment/receipt is not physical handoff.
 - **COMPLETE:** Daily Close has live preview, immutable saved snapshot, tenant-local business date, organization/location scope, history/exports, internal post-close operational/financial gate and Portal after-close intake protection. POS sessions remain independent. It is operational, not statutory/fiscal close.
@@ -48,13 +48,12 @@ Next Action: Product Owner staging UAT for `ORDER-PROPERTY-CLIENT-FILTER-001`. A
 
 The dated closeouts below record earlier checkpoints. Their “next proposed task,” staging-pending and implementation-boundary statements are historical, not the current resume instruction.
 
-### ORDER-PROPERTY-CLIENT-FILTER-001 — Product Owner staging UAT pending
+### ORDER-PROPERTY-CLIENT-FILTER-001 / PROPERTY-LIFECYCLE-REACTIVATE-UX-001 — Product Owner staging UAT PASS
 
-1. Customer A shows only Customer A's active Properties; changing to Customer B clears the selected Property.
-2. A Customer without Properties can create an Order without one.
-3. Existing Order edit shows Customer and Property as read-only, with the correct Property name, including when that historical Property is inactive.
-4. Normal Property detail edits and activation/deactivation still work; attempted Customer reassignment is rejected.
-5. Shop Terminal, Quick Drop and Portal remain unchanged.
+1. New Order Property is optional; Customer A shows only Customer A's active Properties, changing to Customer B clears the selection, and a Customer without Properties can still create an Order. Cross-customer manipulation remains server/database protected.
+2. Existing Order edit shows Customer and Property read-only using the canonical Order names; the correct historical Property remains visible after deactivation, with no reassignment workflow.
+3. Property deactivation succeeds; the inactive Property stays reachable, shows Reactivate, and returns to Active and the Deactivate action after explicit reactivation. Ordinary editing while inactive does not reactivate it; normal detail edits still work and Customer ownership cannot change.
+4. Shop Terminal, Quick Drop and Portal regressions passed; pricing/segments, logistics, payments, Accounting, Daily Close and fiscal behavior remain unchanged.
 
 ### MANUAL-EXTERNAL-REFUND-001 — Product Owner staging UAT PASS
 
