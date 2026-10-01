@@ -4,5 +4,8 @@ import { issueOperationalReceipt } from "@/features/sales-documents/server/actio
 export default async function OrderReceiptPrintPage({ params }: { params: Promise<{ locale: string; orderId: string }> }) {
   const { locale, orderId } = await params;
   const receipt = await issueOperationalReceipt(locale, orderId);
+  if (receipt.status === "items_required") {
+    redirect(`/${locale}/app/orders/${orderId}?itemsError=1#items`);
+  }
   redirect(`/${locale}/app/accounting/documents/receipts/${receipt.id}/print`);
 }

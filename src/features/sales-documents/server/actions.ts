@@ -14,8 +14,11 @@ export async function issueOperationalReceipt(locale: string, orderId: string) {
   await requirePrintAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("issue_operational_receipt", { target_order_id: orderId }).single<IssuedReceiptRow>();
+  if (error?.code === "22023" && error.message === "operational_receipt_items_required") {
+    return { status: "items_required" } as const;
+  }
   if (error || !data) throw new Error(`operational_receipt_issue_failed:${error?.code ?? "unknown"}`);
-  return { id: data.receipt_id, receiptNumber: data.receipt_number };
+  return { status: "issued", id: data.receipt_id, receiptNumber: data.receipt_number } as const;
 }
 
 export async function cancelOperationalReceiptAction(locale: string, receiptId: string, formData: FormData) {
