@@ -1856,6 +1856,12 @@
       "title": "Foto ordine",
       "file": "Foto",
       "fileHelp": "JPEG, PNG o WebP fino a 1 MB.",
+      "photoErrors": {
+        "required": "Seleziona un'immagine.",
+        "size": "L'immagine non può superare 1 MB.",
+        "mime": "Sono accettate solo immagini JPEG, PNG o WebP.",
+        "signature": "Il file selezionato non è un'immagine valida supportata."
+      },
       "category": "Categoria",
       "caption": "Didascalia",
       "upload": "Carica foto",

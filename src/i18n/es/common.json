@@ -1813,6 +1813,12 @@
       "title": "Fotos del pedido",
       "file": "Foto",
       "fileHelp": "JPEG, PNG o WebP hasta 1 MB.",
+      "photoErrors": {
+        "required": "Selecciona una imagen.",
+        "size": "La imagen no puede superar 1 MB.",
+        "mime": "Solo se aceptan imágenes JPEG, PNG o WebP.",
+        "signature": "El archivo seleccionado no es una imagen válida compatible."
+      },
       "category": "Categoría",
       "caption": "Descripción",
       "upload": "Subir foto",

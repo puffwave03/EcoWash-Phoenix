@@ -21,6 +21,7 @@ type OrderPhotosPanelText = {
   error: string;
   file: string;
   fileHelp: string;
+  photoErrors: Record<"required" | "size" | "mime" | "signature", string>;
   inactive: string;
   title: string;
   upload: string;
@@ -48,6 +49,17 @@ function formatSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+function photoErrorMessage(code: string | undefined, text: OrderPhotosPanelText) {
+  switch (code) {
+    case undefined: return null;
+    case "required": return text.photoErrors.required;
+    case "size": return text.photoErrors.size;
+    case "mime": return text.photoErrors.mime;
+    case "signature": return text.photoErrors.signature;
+    default: return text.error;
+  }
+}
+
 export function OrderPhotosPanel({
   action,
   canManageCustomerVisibility = false,
@@ -57,6 +69,7 @@ export function OrderPhotosPanel({
   text,
 }: OrderPhotosPanelProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const photoError = photoErrorMessage(state.fieldErrors.photo, text);
 
   return (
     <Card className="space-y-5">
@@ -65,8 +78,16 @@ export function OrderPhotosPanel({
         {state.formError ? <p className="md:col-span-3 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.file}</span>
-          <input accept="image/jpeg,image/png,image/webp" className={fieldClass(Boolean(state.fieldErrors.photo))} name="photo" type="file" />
-          <span className="block text-xs font-normal text-muted">{text.fileHelp}</span>
+          <input
+            accept="image/jpeg,image/png,image/webp"
+            aria-describedby={photoError ? "order-photo-help order-photo-error" : "order-photo-help"}
+            aria-invalid={Boolean(photoError)}
+            className={fieldClass(Boolean(photoError))}
+            name="photo"
+            type="file"
+          />
+          {photoError ? <span className="block text-sm font-normal text-red-700" id="order-photo-error" role="alert">{photoError}</span> : null}
+          <span className="block text-xs font-normal text-muted" id="order-photo-help">{text.fileHelp}</span>
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.category}</span>

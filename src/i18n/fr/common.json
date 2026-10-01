@@ -1813,6 +1813,12 @@
       "title": "Photos de la commande",
       "file": "Photo",
       "fileHelp": "JPEG, PNG ou WebP jusqu'à 1 Mo.",
+      "photoErrors": {
+        "required": "Sélectionnez une image.",
+        "size": "L’image ne peut pas dépasser 1 Mo.",
+        "mime": "Seules les images JPEG, PNG ou WebP sont acceptées.",
+        "signature": "Le fichier sélectionné n’est pas une image valide prise en charge."
+      },
       "category": "Catégorie",
       "caption": "Légende",
       "upload": "Importer la photo",

@@ -1813,6 +1813,12 @@
       "title": "Auftragsfotos",
       "file": "Foto",
       "fileHelp": "JPEG, PNG oder WebP bis 1 MB.",
+      "photoErrors": {
+        "required": "Wählen Sie ein Bild aus.",
+        "size": "Das Bild darf 1 MB nicht überschreiten.",
+        "mime": "Es werden nur JPEG-, PNG- oder WebP-Bilder akzeptiert.",
+        "signature": "Die ausgewählte Datei ist kein gültiges unterstütztes Bild."
+      },
       "category": "Kategorie",
       "caption": "Beschriftung",
       "upload": "Foto hochladen",

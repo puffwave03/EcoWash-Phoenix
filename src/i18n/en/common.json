@@ -1898,6 +1898,12 @@
       "title": "Order photos",
       "file": "Photo",
       "fileHelp": "JPEG, PNG or WebP up to 1 MB.",
+      "photoErrors": {
+        "required": "Select an image.",
+        "size": "The image cannot exceed 1 MB.",
+        "mime": "Only JPEG, PNG, or WebP images are accepted.",
+        "signature": "The selected file is not a valid supported image."
+      },
       "category": "Category",
       "caption": "Caption",
       "upload": "Upload photo",

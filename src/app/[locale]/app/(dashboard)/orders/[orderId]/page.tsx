@@ -584,6 +584,12 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             error: t("photos.error"),
             file: t("photos.file"),
             fileHelp: t("photos.fileHelp"),
+            photoErrors: {
+              required: t("photos.photoErrors.required"),
+              size: t("photos.photoErrors.size"),
+              mime: t("photos.photoErrors.mime"),
+              signature: t("photos.photoErrors.signature"),
+            },
             inactive: t("photos.inactive"),
             title: t("photos.title"),
             upload: t("photos.upload"),
