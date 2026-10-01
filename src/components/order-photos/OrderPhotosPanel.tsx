@@ -1,9 +1,10 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useActionState } from "react";
+import { useActionState, useState, type ChangeEvent, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { MAX_ORDER_PHOTO_BYTES } from "@/features/order-photos/validation";
 import type {
   OrderPhoto,
   PhotoActionState,
@@ -60,6 +61,10 @@ function photoErrorMessage(code: string | undefined, text: OrderPhotosPanelText)
   }
 }
 
+function photoExceedsLimit(file: File | undefined) {
+  return Boolean(file && file.size > MAX_ORDER_PHOTO_BYTES);
+}
+
 export function OrderPhotosPanel({
   action,
   canManageCustomerVisibility = false,
@@ -69,12 +74,27 @@ export function OrderPhotosPanel({
   text,
 }: OrderPhotosPanelProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const photoError = photoErrorMessage(state.fieldErrors.photo, text);
+  const [clientPhotoTooLarge, setClientPhotoTooLarge] = useState(false);
+  const photoError = clientPhotoTooLarge
+    ? text.photoErrors.size
+    : photoErrorMessage(state.fieldErrors.photo, text);
+
+  function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
+    setClientPhotoTooLarge(photoExceedsLimit(event.currentTarget.files?.[0]));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const photoInput = event.currentTarget.elements.namedItem("photo") as HTMLInputElement | null;
+    if (photoExceedsLimit(photoInput?.files?.[0])) {
+      event.preventDefault();
+      setClientPhotoTooLarge(true);
+    }
+  }
 
   return (
     <Card className="space-y-5">
       <h3 className="text-xl font-semibold text-primary">{text.title}</h3>
-      <form action={formAction} className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+      <form action={formAction} className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end" onSubmit={handleSubmit}>
         {state.formError ? <p className="md:col-span-3 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{text.error}</p> : null}
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.file}</span>
@@ -84,6 +104,7 @@ export function OrderPhotosPanel({
             aria-invalid={Boolean(photoError)}
             className={fieldClass(Boolean(photoError))}
             name="photo"
+            onChange={handlePhotoChange}
             type="file"
           />
           {photoError ? <span className="block text-sm font-normal text-red-700" id="order-photo-error" role="alert">{photoError}</span> : null}
