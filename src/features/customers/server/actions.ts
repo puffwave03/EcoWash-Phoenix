@@ -236,16 +236,29 @@ export async function updatePropertyAction(
   redirect(`/${locale}/app/properties/${propertyId}`);
 }
 
-export async function deactivatePropertyAction(locale: string, propertyId: string) {
+async function setPropertyActive(locale: string, propertyId: string, isActive: boolean) {
   const { membership, user } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("properties")
-    .update({ is_active: false, updated_by: user.id })
+    .update({ is_active: isActive, updated_by: user.id })
     .eq("organization_id", membership.organization.id)
-    .eq("id", propertyId);
+    .eq("id", propertyId)
+    .select("customer_id")
+    .maybeSingle<{ customer_id: string }>();
 
-  if (error) console.error("Property deactivate failed", error.code);
+  if (error) console.error("Property lifecycle update failed", error.code);
 
   revalidateCustomers(locale);
+  revalidatePath(`/${locale}/app/properties`);
+  revalidatePath(`/${locale}/app/properties/${propertyId}`);
+  if (data) revalidatePath(`/${locale}/app/customers/${data.customer_id}`);
+}
+
+export async function deactivatePropertyAction(locale: string, propertyId: string) {
+  return setPropertyActive(locale, propertyId, false);
+}
+
+export async function reactivatePropertyAction(locale: string, propertyId: string) {
+  return setPropertyActive(locale, propertyId, true);
 }

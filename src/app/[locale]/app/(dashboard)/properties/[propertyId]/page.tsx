@@ -3,7 +3,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { DeactivateButton } from "@/components/customers/DeactivateButton";
 import { Link } from "@/i18n/navigation";
-import { deactivatePropertyAction } from "@/features/customers/server/actions";
+import { deactivatePropertyAction, reactivatePropertyAction } from "@/features/customers/server/actions";
 import { getPropertyById } from "@/features/customers/server/queries";
 
 type PropertyDetailPageProps = {
@@ -42,7 +42,14 @@ export default async function PropertyDetailPage({
               label={t("deactivate")}
               pendingLabel={t("deactivating")}
             />
-          ) : null}
+          ) : (
+            <DeactivateButton
+              action={reactivatePropertyAction.bind(null, locale, property.id)}
+              confirmLabel={t("confirmReactivate")}
+              label={t("reactivate")}
+              pendingLabel={t("reactivating")}
+            />
+          )}
         </div>
       </div>
 
