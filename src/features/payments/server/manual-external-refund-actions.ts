@@ -8,7 +8,7 @@ import { parseManualExternalRefund } from "@/features/payments/manual-external-r
 
 export type ManualExternalRefundState = {
   fieldErrors: Record<string, string>;
-  formError: "closedDay" | "generic" | null;
+  formError: "closedDay" | "referenceNotDistinct" | "generic" | null;
   success: boolean;
 };
 
@@ -46,7 +46,15 @@ export async function recordManualExternalRefundAction(
   });
   if (error) {
     console.error("Manual external refund failed", error.code);
-    return { fieldErrors: {}, formError: isBusinessDayClosedError(error) ? "closedDay" : "generic", success: false };
+    return {
+      fieldErrors: {},
+      formError: isBusinessDayClosedError(error)
+        ? "closedDay"
+        : error.message?.includes("manual_external_refund_reference_not_distinct")
+          ? "referenceNotDistinct"
+          : "generic",
+      success: false,
+    };
   }
   revalidatePath(`/${locale}/app/orders/${orderId}`);
   revalidatePath(`/${locale}/app/daily-close`);

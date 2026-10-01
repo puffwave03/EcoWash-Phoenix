@@ -117,3 +117,23 @@ test("Daily Close, accounting, POS, provider and receipt boundaries stay intact"
     }
   }
 });
+
+test("duplicate reimbursement reference has its own localized error and other failures stay generic", async () => {
+  const [action, form, sql] = await Promise.all([
+    source("src/features/payments/server/manual-external-refund-actions.ts"),
+    source("src/components/payments/ManualExternalRefundForm.tsx"),
+    source(migration),
+  ]);
+  assert.match(action, /error\.message\?\.includes\("manual_external_refund_reference_not_distinct"\)\s+\? "referenceNotDistinct"\s+: "generic"/);
+  assert.match(action, /isBusinessDayClosedError\(error\)\s+\? "closedDay"/);
+  assert.match(form, /state\.formError === "referenceNotDistinct" \? text\.referenceNotDistinct : text\.error/);
+  assert.match(sql, /normalized_reference = source_payment\.reference[\s\S]*manual_external_refund_reference_not_distinct/);
+  assert.match(sql, /normalized_amount > round\(source_payment\.amount - already_refunded, 2\)/);
+  for (const locale of ["it", "es", "en", "fr", "de"]) {
+    const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    const copy = messages.orders.payments.manualExternalRefund;
+    assert.equal(typeof copy.referenceNotDistinct, "string");
+    assert.ok(copy.referenceNotDistinct.length > 30);
+    assert.notEqual(copy.referenceNotDistinct, copy.error);
+  }
+});

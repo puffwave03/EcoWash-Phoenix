@@ -18,6 +18,7 @@ export type ManualExternalRefundText = {
   reason: string;
   record: string;
   reference: string;
+  referenceNotDistinct: string;
   required: string;
   saving: string;
   success: string;
@@ -57,7 +58,7 @@ export function ManualExternalRefundForm({
       </label>
       <Button disabled={pending} type="submit" variant="secondary">{pending ? text.saving : text.record}</Button>
       {Object.keys(state.fieldErrors).length > 0 ? <p className="text-xs text-red-700" role="alert">{text.required}</p> : null}
-      {state.formError ? <p className="text-xs text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
+      {state.formError ? <p className="text-xs text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : state.formError === "referenceNotDistinct" ? text.referenceNotDistinct : text.error}</p> : null}
       {state.success ? <p className="text-xs text-green-700" role="status">{text.success}</p> : null}
     </form>
   );
