@@ -1863,6 +1863,8 @@
     "openOrder": "Abrir pedido",
     "pendingDetail": "Pendiente de detallar",
     "pendingList": "Depósitos por detallar",
+    "showAllPending": "Mostrar todos ({count})",
+    "showFewerPending": "Mostrar menos",
     "productionBlocked": "Completa los artículos del pedido antes de iniciar la producción.",
     "qrAria": "Código QR del pedido recibido por depósito rápido",
     "received": "Recibido",

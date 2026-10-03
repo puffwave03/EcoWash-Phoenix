@@ -1863,6 +1863,8 @@
     "openOrder": "Ouvrir la commande",
     "pendingDetail": "À détailler",
     "pendingList": "Dépôts à détailler",
+    "showAllPending": "Tout afficher ({count})",
+    "showFewerPending": "Afficher moins",
     "productionBlocked": "Complétez les articles de la commande avant de démarrer la production.",
     "qrAria": "Code QR de la commande reçue en dépôt rapide",
     "received": "Reçu",

@@ -101,6 +101,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
         openOrder: quickDropT("openOrder"),
         pendingDetail: quickDropT("pendingDetail"),
         pendingList: quickDropT("pendingList"),
+        showAllPending: quickDropT("showAllPending", { count: pendingQuickDrops.length }),
+        showFewerPending: quickDropT("showFewerPending"),
         qrAria: quickDropT("qrAria"),
         received: quickDropT("received"),
         success: quickDropT("success"),

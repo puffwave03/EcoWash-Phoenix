@@ -168,13 +168,15 @@ test("16 immediate Quick Drop output is stable order QR plus ticket only", async
 });
 
 test("17 pending Quick Drops are tenant-scoped and discoverable from Terminal", async () => {
-  const [query, panel] = await Promise.all([
+  const [query, panel, pendingRpc] = await Promise.all([
     source("src/features/quick-drop/server/queries.ts"),
     source("src/components/quick-drop/QuickDropTerminalPanel.tsx"),
+    source("supabase/migrations/20261003000200_data_retention_scale_001d_quick_drop_pending_completeness.sql"),
   ]);
   assert.match(query, /listPendingQuickDrops/);
-  assert.match(query, /eq\("organization_id", organizationId\)/g);
-  assert.match(query, /detailedIds[\s\S]*!detailedIds\.has\(order\.id\)/);
+  assert.match(query, /rpc\("list_pending_quick_drops"\)/);
+  assert.match(pendingRpc, /orders\.organization_id = org_id/);
+  assert.match(pendingRpc, /not exists \([\s\S]*from public\.order_items item/);
   assert.match(panel, /pendingList/);
   assert.match(panel, /href=\{`\/app\/orders\/\$\{order\.id\}#items`\}/);
 });
@@ -236,7 +238,7 @@ test("21 client and database both protect against duplicate receipt submission",
 });
 
 test("22 all five locales expose the complete Quick Drop UX vocabulary", async () => {
-  const expectedKeys = ["action", "cancel", "confirm", "confirming", "detailBeforeFinancial", "detailOrder", "dueAt", "errorGeneric", "errorValidation", "help", "labelsDeferred", "locationRequired", "newOrder", "newQuickDrop", "note", "notePlaceholder", "openOrder", "pendingDetail", "pendingList", "productionBlocked", "qrAria", "received", "success", "unpriced"];
+  const expectedKeys = ["action", "cancel", "confirm", "confirming", "detailBeforeFinancial", "detailOrder", "dueAt", "errorGeneric", "errorValidation", "help", "labelsDeferred", "locationRequired", "newOrder", "newQuickDrop", "note", "notePlaceholder", "openOrder", "pendingDetail", "pendingList", "productionBlocked", "qrAria", "received", "showAllPending", "showFewerPending", "success", "unpriced"];
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.deepEqual(Object.keys(messages.quickDrop).sort(), [...expectedKeys].sort());

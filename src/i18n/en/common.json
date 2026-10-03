@@ -1948,6 +1948,8 @@
     "openOrder": "Open order",
     "pendingDetail": "Pending detail",
     "pendingList": "Quick Drops to detail",
+    "showAllPending": "Show all ({count})",
+    "showFewerPending": "Show fewer",
     "productionBlocked": "Complete the order items before starting production.",
     "qrAria": "QR code for the received Quick Drop order",
     "received": "Received",

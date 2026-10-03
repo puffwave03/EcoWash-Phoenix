@@ -1863,6 +1863,8 @@
     "openOrder": "Auftrag öffnen",
     "pendingDetail": "Zu detaillieren",
     "pendingList": "Zu detaillierende Schnellannahmen",
+    "showAllPending": "Alle anzeigen ({count})",
+    "showFewerPending": "Weniger anzeigen",
     "productionBlocked": "Vervollständigen Sie die Auftragspositionen, bevor Sie die Produktion starten.",
     "qrAria": "QR-Code des per Schnellannahme erfassten Auftrags",
     "received": "Angenommen",

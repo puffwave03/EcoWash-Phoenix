@@ -77,60 +77,28 @@ export async function getQuickDropOrder(locale: string, orderId: string): Promis
 }
 
 type PendingOrderRow = {
-  customer: { customer_code: string | null; display_name: string } | { customer_code: string | null; display_name: string }[] | null;
+  customer_code: string | null;
+  display_name: string;
   id: string;
   order_number: string;
-  received_at: string | null;
+  received_at: string;
   walk_in_name: string | null;
 };
 
 export async function listPendingQuickDrops(locale: string): Promise<PendingQuickDrop[]> {
-  const { membership } = await requireShopTerminalAccess(locale);
+  await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const organizationId = membership.organization.id;
-  const { data: sources, error: sourceError } = await supabase.from("order_status_history")
-    .select("order_id")
-    .eq("organization_id", organizationId)
-    .contains("metadata", { source: "quick_drop" })
-    .order("changed_at", { ascending: false })
-    .limit(50)
-    .returns<{ order_id: string }[]>();
-  if (sourceError || !sources?.length) {
-    if (sourceError) console.error("Pending Quick Drop source query failed", sourceError.code);
+  const { data, error } = await supabase.rpc("list_pending_quick_drops").returns<PendingOrderRow[]>();
+  if (error || !Array.isArray(data)) {
+    console.error("Pending Quick Drop list query failed", error?.code ?? "invalid_response");
     return [];
   }
 
-  const orderIds = [...new Set(sources.map((source) => source.order_id))];
-  const [ordersResult, itemsResult] = await Promise.all([
-    supabase.from("orders")
-      .select("id, order_number, received_at, walk_in_name, customer:customers!orders_customer_same_organization!inner(customer_code, display_name)")
-      .eq("organization_id", organizationId)
-      .eq("is_active", true)
-      .eq("production_status", "received")
-      .in("id", orderIds)
-      .order("received_at", { ascending: false })
-      .returns<PendingOrderRow[]>(),
-    supabase.from("order_items")
-      .select("order_id")
-      .eq("organization_id", organizationId)
-      .eq("is_active", true)
-      .in("order_id", orderIds)
-      .returns<{ order_id: string }[]>(),
-  ]);
-  if (ordersResult.error || itemsResult.error) {
-    console.error("Pending Quick Drop list query failed", ordersResult.error?.code ?? itemsResult.error?.code);
-    return [];
-  }
-
-  const detailedIds = new Set((itemsResult.data ?? []).map((item) => item.order_id));
   const t = await getTranslations({ locale, namespace: "common.shopTerminal.labels" });
-  return (ordersResult.data ?? []).filter((order) => order.received_at && !detailedIds.has(order.id)).map((order) => {
-    const customer = Array.isArray(order.customer) ? order.customer[0] : order.customer;
-    return {
-      customerName: order.walk_in_name ?? (customer?.customer_code === "WALKIN-SHARED" ? t("occasionalCustomer") : customer?.display_name ?? ""),
-      id: order.id,
-      orderNumber: order.order_number,
-      receivedAt: order.received_at!,
-    };
-  });
+  return data.map((order) => ({
+    customerName: order.walk_in_name ?? (order.customer_code === "WALKIN-SHARED" ? t("occasionalCustomer") : order.display_name),
+    id: order.id,
+    orderNumber: order.order_number,
+    receivedAt: order.received_at,
+  }));
 }

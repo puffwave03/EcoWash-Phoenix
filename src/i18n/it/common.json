@@ -1906,6 +1906,8 @@
     "openOrder": "Apri ordine",
     "pendingDetail": "Da dettagliare",
     "pendingList": "Depositi da dettagliare",
+    "showAllPending": "Mostra tutti ({count})",
+    "showFewerPending": "Mostra meno",
     "productionBlocked": "Completa gli articoli dell’ordine prima di avviare la lavorazione.",
     "qrAria": "Codice QR dell’ordine ricevuto con deposito rapido",
     "received": "Ricevuto",
