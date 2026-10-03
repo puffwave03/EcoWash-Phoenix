@@ -17,6 +17,13 @@ import {
   type OrderListEntry,
 } from "@/features/orders/display-status";
 import type { FulfillmentStatus } from "@/features/logistics/types";
+import {
+  decodeOrderCursor,
+  orderCursorBoundary,
+  ORDERS_PAGE_SIZE,
+  paginateOrderRows,
+  type OrderPagination,
+} from "@/features/orders/pagination";
 
 type OrderRow = {
   assigned_to: string | null;
@@ -74,6 +81,7 @@ type OrderHandoffRow = { order_id: string };
 
 export type OrderListData = {
   orders: OrderListEntry[];
+  pagination: OrderPagination;
   timeZone: string;
 };
 
@@ -191,15 +199,18 @@ function mapHistory(row: HistoryRow): OrderHistory {
 export async function listOrders(
   locale: string,
   filters: OrderListFilters,
+  cursorInput?: string,
 ): Promise<OrderListData> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const cursor = decodeOrderCursor(cursorInput, filters);
+  const ascending = cursor?.direction === "newer";
   let query = supabase
     .from("orders")
     .select(ORDER_SELECT)
     .eq("organization_id", membership.organization.id)
-    .order("created_at", { ascending: false })
-    .limit(100);
+    .order("created_at", { ascending })
+    .order("id", { ascending });
 
   if (filters.status !== "all") query = query.eq("production_status", filters.status);
   if (filters.priority !== "all") query = query.eq("priority", filters.priority);
@@ -207,8 +218,10 @@ export async function listOrders(
   if (filters.active === "cancelled") query = query.eq("production_status", "cancelled");
   if (filters.query) {
     const search = filters.query.replaceAll("%", "").replaceAll(",", " ");
-    query = query.or(`order_number.ilike.%${search}%`);
+    query = query.ilike("order_number", `%${search}%`);
   }
+  if (cursor) query = query.or(orderCursorBoundary(cursor));
+  query = query.limit(ORDERS_PAGE_SIZE + 1);
 
   const [{ data, error }, t] = await Promise.all([
     query.returns<OrderRow[]>(),
@@ -217,10 +230,12 @@ export async function listOrders(
 
   if (error || !data) {
     console.error("Order list query failed", error?.code);
-    return { orders: [], timeZone: membership.organization.timezone };
+    return { orders: [], pagination: paginateOrderRows([], null, filters).pagination, timeZone: membership.organization.timezone };
   }
 
-  const orderIds = data.map((row) => row.id);
+  if (cursor && data.length === 0) return listOrders(locale, filters);
+  const { visible, pagination } = paginateOrderRows(data, cursor, filters);
+  const orderIds = visible.map((row) => row.id);
   const [pickupsResult, deliveriesResult, handoffsResult] = orderIds.length ? await Promise.all([
     supabase.from("pickups").select("order_id, status")
       .eq("organization_id", membership.organization.id).in("order_id", orderIds)
@@ -246,7 +261,7 @@ export async function listOrders(
   const handoffOrderIds = new Set((handoffsResult.data ?? []).map((row) => row.order_id));
 
   return {
-    orders: data.map((row) => {
+    orders: visible.map((row) => {
       const order = mapOrder(row, t("occasionalCustomer"));
 
       return {
@@ -265,6 +280,7 @@ export async function listOrders(
         }),
       };
     }),
+    pagination,
     timeZone: membership.organization.timezone,
   };
 }

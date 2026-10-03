@@ -7,11 +7,12 @@ import { Link } from "@/i18n/navigation";
 import { listOrders } from "@/features/orders/server/queries";
 import type { OrderDisplayStatus } from "@/features/orders/display-status";
 import { parseOrderFilters } from "@/features/orders/validation";
+import { orderHistoryHref } from "@/features/orders/pagination";
 import { requireMembership } from "@/lib/auth/require-membership";
 
 type OrdersPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ active?: string; priority?: string; q?: string; status?: string }>;
+  searchParams: Promise<{ active?: string; cursor?: string; priority?: string; q?: string; status?: string }>;
 };
 
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
@@ -19,7 +20,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   const rawFilters = await searchParams;
   const filters = parseOrderFilters(rawFilters);
   const [orderData, t, navT, access] = await Promise.all([
-    listOrders(locale, filters),
+    listOrders(locale, filters, rawFilters.cursor),
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.auth.dashboard" }),
     requireMembership(locale),
@@ -38,7 +39,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
       />
 
       <Card className="bg-white/95">
-        <form className="grid gap-4 md:grid-cols-[1fr_12rem_12rem_12rem_auto]">
+        <form action={`/${locale}/app/orders`} className="grid gap-4 md:grid-cols-[1fr_12rem_12rem_12rem_auto]" method="get">
           <label className="space-y-2 text-sm font-semibold text-primary">
             <span>{t("search")}</span>
             <input className="min-h-11 w-full rounded-control border border-border bg-white px-3 text-sm shadow-sm transition-standard focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-soft" defaultValue={filters.query} name="q" placeholder={t("searchPlaceholder")} />
@@ -92,6 +93,19 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
         }}
         timeZone={orderData.timeZone}
       />
+      {orderData.pagination.hasNewer || orderData.pagination.hasOlder ? (
+        <nav aria-label={t("historyNavigation")} className="flex flex-wrap items-center gap-3">
+          {orderData.pagination.newerCursor ? (
+            <Link className="inline-flex min-h-11 items-center rounded-control border border-border bg-white px-4 text-sm font-semibold text-primary hover:bg-primary-soft" href={orderHistoryHref(filters, orderData.pagination.newerCursor)} locale={locale}>{t("newerOrders")}</Link>
+          ) : null}
+          {orderData.pagination.olderCursor ? (
+            <Link className="inline-flex min-h-11 items-center rounded-control border border-border bg-white px-4 text-sm font-semibold text-primary hover:bg-primary-soft" href={orderHistoryHref(filters, orderData.pagination.olderCursor)} locale={locale}>{t("olderOrders")}</Link>
+          ) : null}
+          {rawFilters.cursor ? (
+            <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" href={orderHistoryHref(filters)} locale={locale}>{t("latestOrders")}</Link>
+          ) : null}
+        </nav>
+      ) : null}
     </div>
   );
 }
