@@ -114,9 +114,15 @@ test("J order refunds use record_pos_refund and expose no legacy refund or void 
 });
 
 test("cancelled-paid warning is prominent and translated in all supported locales", async () => {
-  const panel = await source("src/components/payments/PaymentsPanel.tsx");
+  const [page, panel] = await Promise.all([
+    source("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"),
+    source("src/components/payments/PaymentsPanel.tsx"),
+  ]);
+  assert.match(page, /cancelledPaidWarning: t\.raw\("payments\.cancelledPaidWarning"\)/);
+  assert.doesNotMatch(page, /cancelledPaidWarning: t\("payments\.cancelledPaidWarning"\)/);
   assert.match(panel, /isOrderCancelled && netCollected > 0/);
   assert.match(panel, /role="alert"/);
+  assert.match(panel, /text\.cancelledPaidWarning\.replace\("\{amount\}", formatCurrency\(netCollected, currency, locale\)\)/);
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.match(messages.orders.payments.cancelledPaidWarning, /\{amount\}/);

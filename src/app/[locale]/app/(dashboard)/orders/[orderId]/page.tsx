@@ -539,7 +539,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             actor: t("payments.actor"),
             amount: t("payments.amount"),
             balanceDue: t("payments.balanceDue"),
-            cancelledPaidWarning: t("payments.cancelledPaidWarning"),
+            cancelledPaidWarning: t.raw("payments.cancelledPaidWarning"),
             posRefundRequiresTill: t("payments.posRefundRequiresTill"),
             closedDay: gateT("general"),
             date: t("payments.date"),
