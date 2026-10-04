@@ -83,6 +83,7 @@ async function Receipt({ context, locale, profile }: { context: PrintOrderContex
 
 async function Ticket({ context, locale }: { context: PrintOrderContext; locale: string }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
+  const quickDropT = await getTranslations({ locale, namespace: "common.quickDrop" });
   const codeT = await getTranslations({ locale, namespace: "common.barcode.print" });
   const logistics = [["pickup", context.logistics.pickup], ["delivery", context.logistics.delivery]] as const;
   return (
@@ -98,7 +99,7 @@ async function Ticket({ context, locale }: { context: PrintOrderContext; locale:
         <div><dt>{t("fields.created")}</dt><dd>{formatDate(context.order.createdAt, locale, context.timezone, true)}</dd></div>
         <div><dt>{t("fields.expectedReady")}</dt><dd>{formatDate(context.order.dueAt, locale, context.timezone, true)}</dd></div>
         {context.createdByName ? <div><dt>{t("fields.operator")}</dt><dd>{context.createdByName}</dd></div> : null}
-        <div><dt>{t("fields.paymentStatus")}</dt><dd>{t(`paymentStatuses.${context.paymentSummary.paymentStatus}`)}</dd></div>
+        <div><dt>{t("fields.paymentStatus")}</dt><dd>{context.quickDropFinancialState === "unpriced" ? quickDropT("unpriced") : t(`paymentStatuses.${context.paymentSummary.paymentStatus}`)}</dd></div>
       </dl>
       <table className="print-items-table print-ticket-items"><thead><tr><th>{t("fields.service")}</th><th>{t("fields.quantity")}</th><th>{t("fields.unit")}</th><th>{t("fields.itemNotes")}</th></tr></thead><tbody>{context.items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{formatQuantity(item.quantity, locale)}</td><td>{t(`units.${item.unitType}`)}</td><td>{item.notes || "—"}</td></tr>)}</tbody></table>
       {(context.order.customerNotes || context.order.internalNotes) ? <section className="print-ticket-notes"><h3>{t("fields.treatmentNotes")}</h3>{context.order.customerNotes ? <p>{context.order.customerNotes}</p> : null}{context.order.internalNotes ? <p>{context.order.internalNotes}</p> : null}</section> : null}

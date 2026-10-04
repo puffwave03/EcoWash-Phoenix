@@ -2,6 +2,7 @@ import type { TenantBrandingExperience } from "@/features/branding/types";
 import type { OrderLogistics } from "@/features/logistics/types";
 import type { Order, OrderItem } from "@/features/orders/types";
 import type { Payment, PaymentSummary } from "@/features/payments/types";
+import type { QuickDropFinancialState } from "@/features/quick-drop/types";
 import type { PrinterProfileDefaults } from "@/features/printer-settings/types";
 
 export type PrintOrderContext = {
@@ -16,6 +17,7 @@ export type PrintOrderContext = {
   order: Order;
   payments: Payment[];
   paymentSummary: PaymentSummary;
+  quickDropFinancialState: QuickDropFinancialState | null;
   printerProfiles: PrinterProfileDefaults;
   timezone: string;
 };

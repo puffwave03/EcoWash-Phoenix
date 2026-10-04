@@ -5,6 +5,7 @@ import { getTenantBranding } from "@/features/branding/server/queries";
 import { getOrderLogistics } from "@/features/logistics/server/queries";
 import { getOrderById, listOrderItems } from "@/features/orders/server/queries";
 import { getOrderPayments, getOrderPaymentSummary } from "@/features/payments/server/queries";
+import { getQuickDropOrderOrNull } from "@/features/quick-drop/server/queries";
 import { requirePrintAccess } from "@/features/printing/server/access";
 import type { PrintOrderContext } from "@/features/printing/types";
 import { getDefaultPrinterProfiles } from "@/features/printer-settings/server/queries";
@@ -31,11 +32,12 @@ export async function getPrintOrderContext(locale: string, orderId: string): Pro
     .eq("organization_id", access.membership.organization.id)
     .eq("id", orderId)
     .maybeSingle<MetadataRow>();
-  const [order, items, payments, paymentSummary, logistics, branding, barcodeEnabled, metadataResult] = await Promise.all([
+  const [order, items, payments, paymentSummary, quickDrop, logistics, branding, barcodeEnabled, metadataResult] = await Promise.all([
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
     getOrderPayments(locale, orderId),
     getOrderPaymentSummary(locale, orderId),
+    getQuickDropOrderOrNull(locale, orderId),
     getOrderLogistics(locale, orderId),
     getTenantBranding(access.membership.organization.id),
     hasEntitlement(locale, FEATURES.barcode),
@@ -58,6 +60,7 @@ export async function getPrintOrderContext(locale: string, orderId: string): Pro
     order,
     payments,
     paymentSummary,
+    quickDropFinancialState: quickDrop?.financialState ?? null,
     printerProfiles,
     timezone: access.membership.organization.timezone,
   };
