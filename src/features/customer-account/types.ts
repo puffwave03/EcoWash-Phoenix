@@ -54,4 +54,10 @@ export type CustomerAccountFinancials = {
   orders: CustomerAccountOrder[];
   payments: CustomerAccountPayment[];
   summaries: CustomerAccountSummary[];
+  pagination: {
+    orderCursor: string | null;
+    paymentCursor: string | null;
+    orders: { olderCursor: string | null; newerCursor: string | null };
+    payments: { olderCursor: string | null; newerCursor: string | null };
+  };
 };

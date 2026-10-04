@@ -9,6 +9,7 @@ import type {
 } from "@/features/customer-account/types";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { CUSTOMER_ACCOUNT_PAGE_SIZE, decodeAccountOrderCursor, decodeAccountPaymentCursor, paginateAccountRows } from "@/features/customer-account/pagination";
 
 type SummaryRow = {
   average_order_value: number;
@@ -50,12 +51,10 @@ type PaymentRow = {
   refunded_from_payment_id: string | null;
   status: CustomerAccountPayment["status"];
 };
+type PaymentPageRow = PaymentRow & { created_at: string };
 
-const PERIOD_LIMITS: Record<CustomerAccountPeriod, { orders: number; payments: number }> = {
-  all: { orders: 100, payments: 100 },
-  recent: { orders: 8, payments: 12 },
-  year: { orders: 50, payments: 50 },
-};
+const RECENT_LIMITS = { orders: 8, payments: 12 };
+const EMPTY_NAVIGATION = { olderCursor: null, newerCursor: null };
 
 function number(value: number | string | null) {
   const parsed = Number(value ?? 0);
@@ -114,43 +113,63 @@ export async function getCustomerAccountFinancials(
   locale: string,
   customerId: string,
   period: CustomerAccountPeriod,
+  rawOrderCursor?: string,
+  rawPaymentCursor?: string,
 ): Promise<CustomerAccountFinancials> {
   await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
-  const limits = PERIOD_LIMITS[period];
+  const orderCursor = decodeAccountOrderCursor(rawOrderCursor, customerId, period);
+  const paymentCursor = decodeAccountPaymentCursor(rawPaymentCursor, customerId, period);
   const [summaryResult, ordersResult, paymentsResult] = await Promise.all([
     supabase
       .rpc("get_customer_account_summary", { target_customer_id: customerId })
       .returns<SummaryRow[]>(),
-    supabase
-      .rpc("list_customer_account_orders", {
-        target_customer_id: customerId,
-        target_limit: limits.orders,
-        target_period: period,
-      })
-      .returns<OrderRow[]>(),
-    supabase
-      .rpc("list_customer_account_payments", {
-        target_customer_id: customerId,
-        target_limit: limits.payments,
-        target_period: period,
-      })
-      .returns<PaymentRow[]>(),
+    (period === "recent" ? supabase.rpc("list_customer_account_orders", {
+      target_customer_id: customerId, target_limit: RECENT_LIMITS.orders, target_period: period,
+    }) : supabase.rpc("list_customer_account_orders_page", {
+      target_customer_id: customerId, target_period: period,
+      target_cursor_created_at: orderCursor?.createdAt ?? null,
+      target_cursor_id: orderCursor?.id ?? null,
+      target_direction: orderCursor?.direction ?? "older",
+      target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
+    })).returns<OrderRow[]>(),
+    (period === "recent" ? supabase.rpc("list_customer_account_payments", {
+      target_customer_id: customerId, target_limit: RECENT_LIMITS.payments, target_period: period,
+    }) : supabase.rpc("list_customer_account_payments_page", {
+      target_customer_id: customerId, target_period: period,
+      target_cursor_paid_at: paymentCursor?.paidAt ?? null,
+      target_cursor_created_at: paymentCursor?.createdAt ?? null,
+      target_cursor_id: paymentCursor?.id ?? null,
+      target_direction: paymentCursor?.direction ?? "older",
+      target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
+    })).returns<PaymentRow[]>(),
   ]);
 
   const error = summaryResult.error || ordersResult.error || paymentsResult.error;
   if (error) {
     console.error("Customer account financial query failed", error.code ?? "unknown");
-    return { orders: [], payments: [], summaries: [] };
+    return { orders: [], payments: [], summaries: [], pagination: { orderCursor: null, paymentCursor: null, orders: EMPTY_NAVIGATION, payments: EMPTY_NAVIGATION } };
   }
 
   const orderRows = Array.isArray(ordersResult.data) ? ordersResult.data as OrderRow[] : [];
   const paymentRows = Array.isArray(paymentsResult.data) ? paymentsResult.data as PaymentRow[] : [];
   const summaryRows = Array.isArray(summaryResult.data) ? summaryResult.data as SummaryRow[] : [];
 
+  const orderPage = period === "recent" ? { items: orderRows, navigation: EMPTY_NAVIGATION }
+    : paginateAccountRows(orderRows, orderCursor,
+      (row, direction) => ({ createdAt: row.created_at, id: row.id, direction }), customerId, period);
+  const paymentPage = period === "recent" ? { items: paymentRows, navigation: EMPTY_NAVIGATION }
+    : paginateAccountRows(paymentRows as PaymentPageRow[], paymentCursor,
+      (row, direction) => ({ paidAt: row.paid_at, createdAt: row.created_at, id: row.id, direction }), customerId, period);
   return {
-    orders: orderRows.map(mapOrder),
-    payments: paymentRows.map(mapPayment),
+    orders: orderPage.items.map(mapOrder),
+    payments: paymentPage.items.map(mapPayment),
     summaries: summaryRows.map(mapSummary),
+    pagination: {
+      orderCursor: orderCursor ? rawOrderCursor ?? null : null,
+      paymentCursor: paymentCursor ? rawPaymentCursor ?? null : null,
+      orders: orderPage.navigation,
+      payments: paymentPage.navigation,
+    },
   };
 }

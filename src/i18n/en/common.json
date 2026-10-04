@@ -1172,6 +1172,7 @@
   },
   "customers": {
     "title": "Customers",
+    "pagination": {"navigation": "Customer navigation", "previous": "Previous", "next": "Next", "first": "Back to first"},
     "description": "Manage customer records and linked properties for the active organization.",
     "newCustomer": "New customer",
     "newProperty": "New property",
@@ -1313,7 +1314,7 @@
       "grossValue": "Order value", "netPaid": "Net paid", "orders": "Orders", "averageOrder": "Average order", "refunds": "Refunds",
       "confirmedPayments": "Confirmed payments", "outstandingValue": "Value of orders with balance"
     },
-    "history": {"filterLabel": "History period", "periods": {"recent": "Recent", "year": "Current year", "all": "All"}, "boundedNote": "Lists are bounded to keep the account fast; use the period filter to widen the context."},
+    "history": {"filterLabel": "History period", "periods": {"recent": "Recent", "year": "Current year", "all": "All"}, "boundedNote": "Recent shows a compact snapshot; choose Current year or All to browse history.", "pagination": {"navigation": "History navigation", "older": "Older", "newer": "Newer", "latest": "Back to latest"}},
     "orders": {"title": "Order history", "description": "Operational and payment status together, from the same source of truth.", "empty": "No orders in this period.", "noProperty": "No property", "total": "Total", "paid": "Paid", "outstanding": "Outstanding", "open": "Open order"},
     "payments": {"title": "Payment history", "description": "Actual payment records, including refunds and void entries.", "empty": "No payments in this period.", "method": "Method", "order": "Order"},
     "properties": {"title": "Properties", "description": "{count} properties linked to this customer."},

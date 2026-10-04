@@ -1148,6 +1148,7 @@
   },
   "customers": {
     "title": "Clients",
+    "pagination": {"navigation": "Navigation des clients", "previous": "Précédents", "next": "Suivants", "first": "Retour au début"},
     "description": "Gérez les clients et les propriétés liées pour l'organisation active.",
     "newCustomer": "Nouveau client",
     "newProperty": "Nouvelle propriété",
@@ -1266,7 +1267,7 @@
     "notAvailable": "Non disponible", "customerCode": "Code client", "segment": "Segment", "noSegment": "Aucun segment", "lastActivity": "Dernière activité",
     "actions": {"createOrder": "Créer une commande", "addProperty": "Ajouter une propriété", "accountAdmin": "Paramètres du compte"},
     "financial": {"eyebrow": "Relation commerciale", "title": "Résumé financier", "description": "Données réelles des commandes et paiements issues des registres opérationnels actuels.", "empty": "Aucune commande éligible pour le moment.", "currencyGroup": "Montants en {currency}", "outstanding": "Solde dû", "outstandingOrders": "{count} commandes avec solde", "grossValue": "Valeur des commandes", "netPaid": "Net payé", "orders": "Commandes", "averageOrder": "Commande moyenne", "refunds": "Remboursements", "confirmedPayments": "Paiements confirmés", "outstandingValue": "Valeur des commandes avec solde"},
-    "history": {"filterLabel": "Période de l’historique", "periods": {"recent": "Récent", "year": "Année en cours", "all": "Tout"}, "boundedNote": "Les listes sont limitées pour préserver les performances ; utilisez le filtre de période pour élargir le contexte."},
+    "history": {"filterLabel": "Période de l’historique", "periods": {"recent": "Récent", "year": "Année en cours", "all": "Tout"}, "boundedNote": "La vue Récents présente un aperçu compact ; choisissez Année en cours ou Tous pour parcourir l’historique.", "pagination": {"navigation": "Navigation de l’historique", "older": "Plus anciens", "newer": "Plus récents", "latest": "Retour aux plus récents"}},
     "orders": {"title": "Historique des commandes", "description": "Statuts opérationnel et de paiement réunis, depuis la même source de vérité.", "empty": "Aucune commande sur cette période.", "noProperty": "Aucune propriété", "total": "Total", "paid": "Payé", "outstanding": "Solde dû", "open": "Ouvrir la commande"},
     "payments": {"title": "Historique des paiements", "description": "Paiements réels, remboursements et écritures annulées inclus.", "empty": "Aucun paiement sur cette période.", "method": "Mode", "order": "Commande"},
     "properties": {"title": "Propriétés", "description": "{count} propriétés liées à ce client."},

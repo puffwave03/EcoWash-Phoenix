@@ -73,7 +73,7 @@ test("order financial statuses cover paid, partial, unpaid, refund and void trut
   assert.match(orders, /void_count > 0/);
 });
 
-test("order and payment histories are bounded and support recent, year and all", async () => {
+test("legacy history RPCs stay bounded; recent remains compact and year/all use page RPCs", async () => {
   const [migration, validation, queries] = await Promise.all([
     source(migrationPath),
     source("src/features/customer-account/validation.ts"),
@@ -85,7 +85,9 @@ test("order and payment histories are bounded and support recent, year and all",
   assert.match(migration, /target_period not in \('recent', 'year', 'all'\)/);
   assert.match(migration, /date_trunc\('year'/);
   assert.match(validation, /CUSTOMER_ACCOUNT_PERIODS/);
-  assert.match(queries, /all: \{ orders: 100, payments: 100 \}/);
+  assert.match(queries, /RECENT_LIMITS = \{ orders: 8, payments: 12 \}/);
+  assert.match(queries, /list_customer_account_orders_page/);
+  assert.match(queries, /list_customer_account_payments_page/);
 });
 
 test("payment history exposes safe business fields and omits provider internals", async () => {

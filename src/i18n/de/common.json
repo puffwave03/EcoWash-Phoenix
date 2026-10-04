@@ -1148,6 +1148,7 @@
   },
   "customers": {
     "title": "Kunden",
+    "pagination": {"navigation": "Kundennavigation", "previous": "Zurück", "next": "Weiter", "first": "Zur ersten Seite"},
     "description": "Verwalten Sie Kunden und verknüpfte Objekte für die aktive Organisation.",
     "newCustomer": "Neuer Kunde",
     "newProperty": "Neues Objekt",
@@ -1266,7 +1267,7 @@
     "notAvailable": "Nicht verfügbar", "customerCode": "Kundencode", "segment": "Segment", "noSegment": "Kein Segment", "lastActivity": "Letzte Aktivität",
     "actions": {"createOrder": "Auftrag erstellen", "addProperty": "Objekt hinzufügen", "accountAdmin": "Kontoeinstellungen"},
     "financial": {"eyebrow": "Geschäftsbeziehung", "title": "Finanzübersicht", "description": "Reale Auftrags- und Zahlungsdaten aus den aktuellen Betriebsunterlagen.", "empty": "Noch keine geeigneten Aufträge.", "currencyGroup": "Beträge in {currency}", "outstanding": "Offen", "outstandingOrders": "{count} Aufträge mit Saldo", "grossValue": "Auftragswert", "netPaid": "Netto bezahlt", "orders": "Aufträge", "averageOrder": "Durchschnittsauftrag", "refunds": "Erstattungen", "confirmedPayments": "Bestätigte Zahlungen", "outstandingValue": "Wert der Aufträge mit Saldo"},
-    "history": {"filterLabel": "Zeitraum", "periods": {"recent": "Aktuell", "year": "Laufendes Jahr", "all": "Alle"}, "boundedNote": "Die Listen sind für eine schnelle Kontoansicht begrenzt; erweitern Sie den Kontext über den Zeitraumfilter."},
+    "history": {"filterLabel": "Zeitraum", "periods": {"recent": "Aktuell", "year": "Laufendes Jahr", "all": "Alle"}, "boundedNote": "Die Ansicht Neueste zeigt eine kompakte Übersicht; wählen Sie Aktuelles Jahr oder Alle, um den Verlauf zu durchsuchen.", "pagination": {"navigation": "Verlaufsnavigation", "older": "Ältere", "newer": "Neuere", "latest": "Zur neuesten Seite"}},
     "orders": {"title": "Auftragshistorie", "description": "Betriebs- und Zahlungsstatus gemeinsam aus derselben Datenquelle.", "empty": "Keine Aufträge in diesem Zeitraum.", "noProperty": "Kein Objekt", "total": "Gesamt", "paid": "Bezahlt", "outstanding": "Offen", "open": "Auftrag öffnen"},
     "payments": {"title": "Zahlungshistorie", "description": "Tatsächliche Zahlungen einschließlich Erstattungen und stornierter Einträge.", "empty": "Keine Zahlungen in diesem Zeitraum.", "method": "Methode", "order": "Auftrag"},
     "properties": {"title": "Objekte", "description": "{count} Objekte sind mit diesem Kunden verknüpft."},

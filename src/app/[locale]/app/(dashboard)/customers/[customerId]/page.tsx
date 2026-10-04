@@ -16,7 +16,7 @@ import { hasEntitlement } from "@/features/entitlements/server/resolver";
 
 type CustomerDetailPageProps = {
   params: Promise<{ customerId: string; locale: string }>;
-  searchParams: Promise<{ period?: string }>;
+  searchParams: Promise<{ period?: string; orderCursor?: string; paymentCursor?: string }>;
 };
 
 export default async function CustomerDetailPage({
@@ -31,7 +31,7 @@ export default async function CustomerDetailPage({
     getCustomerById(locale, customerId),
     billingEnabled ? getCustomerBillingOverview(locale, customerId) : null,
     getCustomerLifecycleEligibility(locale, customerId),
-    getCustomerAccountFinancials(locale, customerId, period),
+    getCustomerAccountFinancials(locale, customerId, period, rawSearchParams.orderCursor, rawSearchParams.paymentCursor),
     getCustomerPortalAccessSummary(locale, customerId),
     listPropertiesByCustomer(locale, customerId),
     getCustomerSegmentAssignment(locale, customerId),

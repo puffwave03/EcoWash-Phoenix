@@ -3,6 +3,7 @@ import "server-only";
 import { notFound } from "next/navigation";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { customerPage, decodeCustomerCursor, CUSTOMER_PAGE_SIZE, type CustomerPage } from "@/features/customers/pagination";
 import {
   type Customer,
   type CustomerListFilters,
@@ -28,6 +29,7 @@ type CustomerRow = {
   notes: string | null;
   phone: string | null;
   preferred_locale: string | null;
+  property_count?: number;
   tax_id: string | null;
   updated_at: string;
 };
@@ -114,47 +116,26 @@ function mapProperty(row: PropertyRow): Property {
 export async function listCustomers(
   locale: string,
   filters: CustomerListFilters,
-): Promise<Customer[]> {
-  const { membership } = await requireMembership(locale);
+  rawCursor?: string,
+): Promise<CustomerPage<Customer>> {
+  await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  let query = supabase
-    .from("customers")
-    .select(CUSTOMER_SELECT)
-    .eq("organization_id", membership.organization.id)
-    .order("display_name", { ascending: true })
-    .limit(100);
+  const cursor = decodeCustomerCursor(rawCursor, filters);
+  const { data, error } = await supabase.rpc("list_customers_page", {
+    target_query: filters.query.replaceAll("%", "").replaceAll(",", " "),
+    target_status: filters.status,
+    target_cursor_name: cursor?.displayName ?? null,
+    target_cursor_id: cursor?.id ?? null,
+    target_direction: cursor?.direction ?? "next",
+    target_limit: CUSTOMER_PAGE_SIZE + 1,
+  }).returns<CustomerRow[]>();
 
-  if (filters.status !== "all") {
-    query = query.eq("is_active", filters.status === "active");
+  if (error || !Array.isArray(data)) {
+    console.error("Customer list query failed", error?.code);
+    return { items: [], nextCursor: null, previousCursor: null };
   }
 
-  if (filters.query) {
-    const search = filters.query.replaceAll("%", "").replaceAll(",", " ");
-    query = query.or(
-      `display_name.ilike.%${search}%,company_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,customer_code.ilike.%${search}%`,
-    );
-  }
-
-  const [{ data, error }, { data: properties }] = await Promise.all([
-    query.returns<CustomerRow[]>(),
-    supabase
-      .from("properties")
-      .select("customer_id")
-      .eq("organization_id", membership.organization.id)
-      .returns<{ customer_id: string }[]>(),
-  ]);
-
-  if (error || !data) {
-    console.error("Customer list query failed", error?.message);
-    return [];
-  }
-
-  const counts = new Map<string, number>();
-  properties?.forEach((property) => {
-    counts.set(property.customer_id, (counts.get(property.customer_id) ?? 0) + 1);
-  });
-
-  return data.map((customer) => mapCustomer(customer, counts.get(customer.id) ?? 0));
+  return customerPage((data as CustomerRow[]).map((row) => mapCustomer(row, row.property_count ?? 0)), cursor, filters);
 }
 
 export async function getCustomerById(locale: string, customerId: string) {

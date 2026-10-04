@@ -41,6 +41,24 @@ import {
 } from "@/features/portal/server/actions";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
+import { accountHistoryHref, type AccountNavigation } from "@/features/customer-account/pagination";
+
+function HistoryPagination({ customerId, period, orderCursor, paymentCursor, navigation, kind, locale, text, title }: {
+  customerId: string; period: CustomerAccountPeriod; orderCursor: string | null; paymentCursor: string | null;
+  navigation: AccountNavigation; kind: "orders" | "payments"; locale: string;
+  text: { navigation: string; older: string; newer: string; latest: string }; title: string;
+}) {
+  if (period === "recent") return null;
+  const href = (cursor: string | null) => `${accountHistoryHref(customerId, period,
+    kind === "orders" ? cursor : orderCursor, kind === "payments" ? cursor : paymentCursor)}#customer-${kind}`;
+  const current = kind === "orders" ? orderCursor : paymentCursor;
+  if (!navigation.olderCursor && !navigation.newerCursor && !current) return null;
+  return <nav aria-label={`${text.navigation} ${title}`} className="flex flex-wrap gap-2 border-t border-border pt-3 text-sm font-semibold">
+    {navigation.newerCursor ? <Link className="rounded-control border border-border px-3 py-2 text-primary" href={href(navigation.newerCursor)} locale={locale}>{text.newer}</Link> : null}
+    {navigation.olderCursor ? <Link className="rounded-control border border-border px-3 py-2 text-primary" href={href(navigation.olderCursor)} locale={locale}>{text.older}</Link> : null}
+    {current ? <Link className="rounded-control border border-border px-3 py-2 text-primary" href={href(null)} locale={locale}>{text.latest}</Link> : null}
+  </nav>;
+}
 
 function formatDate(value: string | null, locale: string, withTime = false) {
   if (!value) return "-";
@@ -239,7 +257,7 @@ export async function CustomerAccountView({
       <DisclosureSection
         contentClassName="space-y-4"
         count={financials.orders.length}
-        defaultOpen={financials.orders.length <= 3}
+        defaultOpen={period !== "recent" || financials.orders.length <= 3}
         id="customer-orders"
         summary={financials.orders[0]
           ? `${formatDate(financials.orders[0].createdAt, locale)} · ${formatCurrency(financials.orders[0].total, financials.orders[0].currency, locale)}`
@@ -271,12 +289,13 @@ export async function CustomerAccountView({
             ))}
           </div>
         )}
+        <HistoryPagination customerId={customer.id} period={period} orderCursor={financials.pagination.orderCursor} paymentCursor={financials.pagination.paymentCursor} navigation={financials.pagination.orders} kind="orders" locale={locale} text={t.raw("history.pagination")} title={t("orders.title")} />
       </DisclosureSection>
 
       <DisclosureSection
         contentClassName="space-y-4"
         count={financials.payments.length}
-        defaultOpen={financials.payments.length <= 3}
+        defaultOpen={period !== "recent" || financials.payments.length <= 3}
         id="customer-payments"
         summary={financials.payments[0]
           ? `${formatDate(financials.payments[0].paidAt, locale, true)} · ${formatCurrency(financials.payments[0].amount, financials.payments[0].currency, locale)}`
@@ -307,7 +326,8 @@ export async function CustomerAccountView({
             ))}
           </div>
         )}
-        <p className="text-xs leading-5 text-muted">{t("history.boundedNote")}</p>
+        <HistoryPagination customerId={customer.id} period={period} orderCursor={financials.pagination.orderCursor} paymentCursor={financials.pagination.paymentCursor} navigation={financials.pagination.payments} kind="payments" locale={locale} text={t.raw("history.pagination")} title={t("payments.title")} />
+        {period === "recent" ? <p className="text-xs leading-5 text-muted">{t("history.boundedNote")}</p> : null}
       </DisclosureSection>
 
       <DisclosureSection

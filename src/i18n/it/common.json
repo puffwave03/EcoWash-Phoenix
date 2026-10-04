@@ -1172,6 +1172,7 @@
   },
   "customers": {
     "title": "Clienti",
+    "pagination": {"navigation": "Navigazione clienti", "previous": "Precedenti", "next": "Successivi", "first": "Torna all’inizio"},
     "description": "Gestisci clienti e proprietà collegate per l'organizzazione attiva.",
     "newCustomer": "Nuovo cliente",
     "newProperty": "Nuova proprietà",
@@ -1299,7 +1300,7 @@
       "grossValue": "Valore ordini", "netPaid": "Pagato netto", "orders": "Ordini", "averageOrder": "Ordine medio", "refunds": "Rimborsi",
       "confirmedPayments": "Pagamenti confermati", "outstandingValue": "Valore ordini con saldo"
     },
-    "history": {"filterLabel": "Periodo storico", "periods": {"recent": "Recenti", "year": "Anno corrente", "all": "Tutti"}, "boundedNote": "Le liste sono limitate per mantenere l’account veloce; usa il filtro periodo per ampliare il contesto."},
+    "history": {"filterLabel": "Periodo storico", "periods": {"recent": "Recenti", "year": "Anno corrente", "all": "Tutti"}, "boundedNote": "La vista Recenti mostra un riepilogo compatto; scegli Anno corrente o Tutti per sfogliare lo storico.", "pagination": {"navigation": "Navigazione storico", "older": "Più vecchi", "newer": "Più recenti", "latest": "Torna ai più recenti"}},
     "orders": {"title": "Storico ordini", "description": "Stato operativo e dei pagamenti insieme, dalla stessa fonte dati.", "empty": "Nessun ordine nel periodo.", "noProperty": "Nessuna proprietà", "total": "Totale", "paid": "Pagato", "outstanding": "Da incassare", "open": "Apri ordine"},
     "payments": {"title": "Storico pagamenti", "description": "Pagamenti reali, inclusi rimborsi e registrazioni annullate.", "empty": "Nessun pagamento nel periodo.", "method": "Metodo", "order": "Ordine"},
     "properties": {"title": "Proprietà", "description": "{count} proprietà collegate a questo cliente."},
