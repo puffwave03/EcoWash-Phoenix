@@ -1560,6 +1560,7 @@
     "payments": {"title": "Session activity", "empty": "No transactions in this till yet.", "reason": "Refund reason", "manualCard": "Manual card result recorded in Phoenix; no provider refund or card data is implied.", "phoenixRefund": "This records the refund in Phoenix only."},
     "close": {"title": "Close and reconcile", "description": "Count the cash physically present. Phoenix stores expected, counted and the difference.", "counted": "Counted cash", "difference": "Difference", "notes": "Closing note"},
     "history": {"title": "Till history", "empty": "No till sessions yet.", "expected": "Expected", "counted": "Counted", "difference": "Difference"},
+    "pagination": {"navigation": "History navigation", "older": "Older", "newer": "Newer", "latest": "Back to latest"},
     "methods": {"cash": "Cash", "card": "Card (manual)", "bank_transfer": "Bank transfer", "other": "Other"},
     "statuses": {"pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
     "errors": {"generic": "The POS operation could not be completed.", "validation": "Check the entered values.", "alreadyOpen": "A till is already open for this location.", "closedDay": "The operating day is already closed. New operations will be available on the next day.", "closedDayOpen": "The till cannot be opened because the operating day is already closed.", "payment": "The payment was rejected. Check the balance and current till.", "refund": "The refund was rejected. Check the refundable amount and current till.", "close": "The till could not be closed."}

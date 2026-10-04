@@ -2,6 +2,7 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requirePosAccess } from "@/features/pos/server/access";
+import { encodePosPaymentCursor, encodePosSessionCursor, paginatePosRows, posCursorBoundary, POS_HISTORY_PAGE_SIZE, type PosPage, type PosPageCursor, type PosPaymentCursor } from "@/features/pos/pagination";
 import type { PosLocation, PosOrderDue, PosPayment, PosSession, PosSessionSummary } from "@/features/pos/types";
 
 type SessionRow = {
@@ -33,6 +34,7 @@ type DueOrderRow = {
 type PosPaymentRow = {
   amount: number;
   channel: PosPayment["channel"];
+  created_at: string;
   id: string;
   method: PosPayment["method"];
   order_id: string;
@@ -101,25 +103,38 @@ export async function listPosOrdersDue(locale: string, query = ""): Promise<PosO
   return rows.map((row) => ({ currency: row.currency, customerName: row.customer_name, id: row.id, locationId: row.location_id, orderNumber: row.order_number, outstanding: row.outstanding, productionStatus: row.production_status, total: row.total, totalPaid: row.total_paid }));
 }
 
-export async function listPosSessionPayments(locale: string, sessionId: string): Promise<PosPayment[]> {
+export async function listPosSessionPayments(locale: string, sessionId: string, cursor: PosPaymentCursor | null): Promise<PosPage<PosPayment>> {
   const { membership } = await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("payments")
-    .select("id, order_id, amount, channel, method, status, paid_at, provider, refunded_from_payment_id, order:orders!payments_order_same_org(order_number), recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
+  const ascending = cursor?.direction === "newer";
+  let query = supabase.from("payments")
+    .select("id, order_id, amount, channel, method, status, created_at, paid_at, provider, refunded_from_payment_id, order:orders!payments_order_same_org(order_number), recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
     .eq("organization_id", membership.organization.id).eq("pos_session_id", sessionId)
-    .order("created_at", { ascending: false }).limit(100).returns<PosPaymentRow[]>();
-  if (error) { console.error("POS payments query failed", error.code); return []; }
-  return (data ?? []).map((row) => ({ amount: row.amount, channel: row.channel, id: row.id, method: row.method, orderId: row.order_id, orderNumber: (Array.isArray(row.order) ? row.order[0] : row.order)?.order_number ?? "", paidAt: row.paid_at, provider: row.provider, recordedByName: name(row.recorded_by_profile), refundedFromPaymentId: row.refunded_from_payment_id, status: row.status }));
+    .order("created_at", { ascending }).order("id", { ascending });
+  if (cursor) query = query.or(posCursorBoundary("created_at", cursor));
+  const { data, error } = await query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<PosPaymentRow[]>();
+  if (error) { console.error("POS payments query failed", error.code); return { items: [], pagination: { newerCursor: null, olderCursor: null } }; }
+  const page = paginatePosRows(data ?? [], cursor, (row) => row.created_at,
+    (position, direction) => encodePosPaymentCursor(position, direction, sessionId));
+  return {
+    items: page.items.map((row) => ({ amount: row.amount, channel: row.channel, id: row.id, method: row.method, orderId: row.order_id, orderNumber: (Array.isArray(row.order) ? row.order[0] : row.order)?.order_number ?? "", paidAt: row.paid_at, provider: row.provider, recordedByName: name(row.recorded_by_profile), refundedFromPaymentId: row.refunded_from_payment_id, status: row.status })),
+    pagination: page.pagination,
+  };
 }
 
-export async function listPosSessionHistory(locale: string): Promise<PosSession[]> {
+export async function listPosSessionHistory(locale: string, cursor: PosPageCursor | null): Promise<PosPage<PosSession>> {
   const { membership } = await requirePosAccess(locale);
-  if (membership.role === "staff") return [];
+  if (membership.role === "staff") return { items: [], pagination: { newerCursor: null, olderCursor: null } };
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("pos_sessions").select(SESSION_SELECT)
-    .eq("organization_id", membership.organization.id).order("opened_at", { ascending: false }).limit(25).returns<SessionRow[]>();
-  if (error) { console.error("POS history query failed", error.code); return []; }
-  return (data ?? []).map(mapSession);
+  const ascending = cursor?.direction === "newer";
+  let query = supabase.from("pos_sessions").select(SESSION_SELECT)
+    .eq("organization_id", membership.organization.id)
+    .order("opened_at", { ascending }).order("id", { ascending });
+  if (cursor) query = query.or(posCursorBoundary("opened_at", cursor));
+  const { data, error } = await query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<SessionRow[]>();
+  if (error) { console.error("POS history query failed", error.code); return { items: [], pagination: { newerCursor: null, olderCursor: null } }; }
+  const page = paginatePosRows(data ?? [], cursor, (row) => row.opened_at, encodePosSessionCursor);
+  return { items: page.items.map(mapSession), pagination: page.pagination };
 }
 
 export async function listPosLocations(locale: string): Promise<PosLocation[]> {
