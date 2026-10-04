@@ -48,6 +48,7 @@ export type ShopTerminalText = {
   outstanding: string; paid: string; payLater: string; payNow: string; payment: string;
   paymentCard: string; paymentCash: string; paymentSplit: string; priceFrom: string; printerSettings: string;
   quantity: string; recentCustomers: string; regularCustomer: string; regularHelp: string; remove: string;
+  searchingCustomers: string; noCustomerMatches: string;
   saveCustomer: string; saving: string; searchServices: string; segmentPrice: string; selectCustomer: string;
   segmentCatalog: string;
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
@@ -66,6 +67,7 @@ type Props = {
     loadServices: (customerId: string, locationId: string | null) => Promise<ShopCatalogSelection>;
     createQuickDrop: (formData: FormData) => Promise<QuickDropCreateResult>;
     resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
+    searchCustomers: (rawQuery: string) => Promise<ShopCustomer[]>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
   };
   canConfigurePrinters: boolean;
@@ -194,6 +196,9 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const router = useRouter();
   const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
+  const [recentCustomers, setRecentCustomers] = useState(initialCustomers);
+  const [customerSearchResults, setCustomerSearchResults] = useState<{ query: string; customers: ShopCustomer[] }>({ query: "", customers: [] });
+  const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
   const [customerId, setCustomerId] = useState("");
   const [isCustomerPickerOpen, setIsCustomerPickerOpen] = useState(true);
   const [customerMode, setCustomerMode] = useState<CustomerMode>(null);
@@ -226,6 +231,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     const result = await actions.createCustomer(state, formData);
     if (result.customer) {
       setCustomers((current) => [result.customer!, ...current.filter((customer) => customer.id !== result.customer!.id)]);
+      if (!result.customer.isWalkIn) setRecentCustomers((current) => [result.customer!, ...current.filter((customer) => customer.id !== result.customer!.id)].slice(0, 8));
       selectCustomer(result.customer.id);
       setCustomerMode(null);
       setCustomerQuery("");
@@ -238,6 +244,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const catalogCustomerRef = useRef<string | null>(null);
   const selectedCustomerIdRef = useRef("");
   const deliveryRequestRef = useRef(0);
+  const customerSearchRequestRef = useRef(0);
   const customerDraftsRef = useRef(new Map<string, ShopTerminalDraft>());
   const hydratedDraftStorageKeyRef = useRef<string | null>(null);
   const mobileCartCloseRef = useRef<HTMLButtonElement>(null);
@@ -253,11 +260,10 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const canDiscount = role === "owner" || role === "manager";
   const cartByServiceId = useMemo(() => new Map(cart.map((line) => [line.service.id, line])), [cart]);
 
-  const filteredCustomers = useMemo(() => {
-    const query = customerQuery.trim().toLocaleLowerCase(locale);
-    return customers.filter((customer) => !customer.isWalkIn && (!query || [customer.name, customer.phone, customer.email]
-      .some((value) => value?.toLocaleLowerCase(locale).includes(query)))).slice(0, 8);
-  }, [customerQuery, customers, locale]);
+  const normalizedCustomerQuery = customerQuery.trim();
+  const filteredCustomers = normalizedCustomerQuery
+    ? !isSearchingCustomers && customerSearchResults.query === normalizedCustomerQuery ? customerSearchResults.customers : []
+    : recentCustomers;
   const categories = useMemo(() => {
     const options = new Map<string, string>();
     for (const service of services) {
@@ -277,6 +283,28 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     customerDraftsRef.current = loadCustomerDrafts(draftStorageKey);
     hydratedDraftStorageKeyRef.current = draftStorageKey;
   }, [draftStorageKey]);
+
+  useEffect(() => {
+    if (!normalizedCustomerQuery) return;
+    const requestId = ++customerSearchRequestRef.current;
+    const timer = window.setTimeout(async () => {
+      try {
+        const results = await actions.searchCustomers(normalizedCustomerQuery);
+        if (customerSearchRequestRef.current !== requestId) return;
+        setCustomerSearchResults({ query: normalizedCustomerQuery, customers: results });
+      } catch {
+        if (customerSearchRequestRef.current === requestId) {
+          setCustomerSearchResults({ query: normalizedCustomerQuery, customers: [] });
+        }
+      } finally {
+        if (customerSearchRequestRef.current === requestId) setIsSearchingCustomers(false);
+      }
+    }, 250);
+    return () => {
+      window.clearTimeout(timer);
+      customerSearchRequestRef.current += 1;
+    };
+  }, [actions, normalizedCustomerQuery]);
 
   useEffect(() => {
     if (!customerId || catalogCustomerRef.current !== customerId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
@@ -393,7 +421,8 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     });
   }
 
-  function selectCustomer(nextCustomerId: string) {
+  function selectCustomer(nextCustomerId: string, foundCustomer?: ShopCustomer) {
+    if (foundCustomer) setCustomers((current) => [foundCustomer, ...current.filter((customer) => customer.id !== foundCustomer.id)]);
     if (nextCustomerId === customerId) {
       setCustomerMode(null);
       setIsCustomerPickerOpen(false);
@@ -628,11 +657,11 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
             {!selectedCustomer || isCustomerPickerOpen ? (
             <div className="min-w-0 space-y-1.5">
               <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] gap-1.5">
-                <label><span className="sr-only">{text.customerSearch}</span><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-[#f8faf8] px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" onChange={(event) => setCustomerQuery(event.target.value)} placeholder={text.customerSearch} type="search" value={customerQuery} /></label>
+                <label><span className="sr-only">{text.customerSearch}</span><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-[#f8faf8] px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" onChange={(event) => { customerSearchRequestRef.current += 1; setCustomerQuery(event.target.value); setIsSearchingCustomers(Boolean(event.target.value.trim())); }} placeholder={text.customerSearch} type="search" value={customerQuery} /></label>
                 <button aria-pressed={customerMode === "regular"} className={`min-h-10 rounded-control border px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "regular" ? "border-primary bg-primary text-white" : "border-primary/25 text-primary"}`} onClick={() => setCustomerMode(customerMode === "regular" ? null : "regular")} type="button">+ {text.regularCustomer}</button>
                 <button aria-pressed={customerMode === "walk_in"} className={`min-h-10 rounded-control px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "walk_in" ? "bg-primary text-white" : "bg-primary-soft text-primary"}`} onClick={() => setCustomerMode(customerMode === "walk_in" ? null : "walk_in")} type="button">{text.occasionalCustomer}</button>
               </div>
-              {!customerMode ? <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto pb-0.5">{!customerQuery ? <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-[0.08em] text-muted">{text.recentCustomers}</span> : null}{filteredCustomers.map((customer) => <button className="min-h-9 shrink-0 rounded-full border border-border bg-white px-3 text-left hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" key={customer.id} onClick={() => selectCustomer(customer.id)} type="button"><strong className="block max-w-44 truncate text-xs text-primary">{customer.name}</strong></button>)}</div> : <form action={createCustomer} className="grid gap-2 border-l-4 border-primary bg-[#f8faf8] p-2 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><button className="inline-flex min-h-10 items-center rounded-control px-3 text-sm font-bold text-primary underline underline-offset-4 md:col-span-4 md:justify-self-start" onClick={() => setCustomerMode(null)} type="button">← {text.recentCustomers}</button><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="displayName" placeholder={text.customerName} required={customerMode === "regular"} /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="phone" placeholder={text.customerPhone} /></label>{customerMode === "regular" ? <label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="email" placeholder={text.customerEmail} type="email" /></label> : null}<button className="min-h-10 rounded-control bg-primary px-4 text-sm font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
+              {!customerMode ? <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto pb-0.5">{!normalizedCustomerQuery ? <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-[0.08em] text-muted">{text.recentCustomers}</span> : null}{filteredCustomers.map((customer) => <button className="min-h-9 shrink-0 rounded-full border border-border bg-white px-3 text-left hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" key={customer.id} onClick={() => selectCustomer(customer.id, normalizedCustomerQuery ? customer : undefined)} type="button"><strong className="block max-w-44 truncate text-xs text-primary">{customer.name}</strong></button>)}{normalizedCustomerQuery && isSearchingCustomers ? <span className="self-center text-xs text-muted" role="status">{text.searchingCustomers}</span> : null}{normalizedCustomerQuery && !isSearchingCustomers && filteredCustomers.length === 0 ? <span className="self-center text-xs text-muted" role="status">{text.noCustomerMatches}</span> : null}</div> : <form action={createCustomer} className="grid gap-2 border-l-4 border-primary bg-[#f8faf8] p-2 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><button className="inline-flex min-h-10 items-center rounded-control px-3 text-sm font-bold text-primary underline underline-offset-4 md:col-span-4 md:justify-self-start" onClick={() => setCustomerMode(null)} type="button">← {text.recentCustomers}</button><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="displayName" placeholder={text.customerName} required={customerMode === "regular"} /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="phone" placeholder={text.customerPhone} /></label>{customerMode === "regular" ? <label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="email" placeholder={text.customerEmail} type="email" /></label> : null}<button className="min-h-10 rounded-control bg-primary px-4 text-sm font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
             </div>
             ) : null}
           </div>

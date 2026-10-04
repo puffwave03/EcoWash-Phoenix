@@ -139,7 +139,7 @@ export async function loadShopDeliveryOptions(locale: string, customerId: string
   };
 }
 
-export async function listShopCustomers(locale: string): Promise<ShopCustomer[]> {
+export async function listShopRecentCustomers(locale: string): Promise<ShopCustomer[]> {
   const { membership } = await requireShopTerminalAccess(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("customers")
@@ -148,11 +148,46 @@ export async function listShopCustomers(locale: string): Promise<ShopCustomer[]>
     .eq("is_active", true)
     .or("customer_code.is.null,customer_code.not.like.WALKIN-%")
     .order("updated_at", { ascending: false })
-    .limit(80)
+    .order("id", { ascending: false })
+    .limit(8)
     .returns<{ customer_code: string | null; display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
 
   if (error) {
     console.error("Shop customer query failed", error.code);
+    return [];
+  }
+
+  return (data ?? []).map((customer) => ({
+    email: customer.email,
+    id: customer.id,
+    isWalkIn: false,
+    name: customer.display_name,
+    phone: customer.phone,
+    updatedAt: customer.updated_at,
+  }));
+}
+
+export async function searchShopCustomers(locale: string, rawQuery: string): Promise<ShopCustomer[]> {
+  const { membership } = await requireShopTerminalAccess(locale);
+  const search = (typeof rawQuery === "string" ? rawQuery : "").trim().slice(0, 80)
+    .replace(/[^\p{L}\p{N}\s@.+\-']/gu, " ")
+    .replace(/\s+/g, " ").trim();
+  if (!search) return [];
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("customers")
+    .select("id, customer_code, display_name, email, phone, updated_at")
+    .eq("organization_id", membership.organization.id)
+    .eq("is_active", true)
+    .or("customer_code.is.null,customer_code.not.like.WALKIN-%")
+    .or(`display_name.ilike.%${search}%,phone.ilike.%${search}%,email.ilike.%${search}%`)
+    .order("updated_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(8)
+    .returns<{ display_name: string; email: string | null; id: string; phone: string | null; updated_at: string }[]>();
+
+  if (error) {
+    console.error("Shop customer search failed", error.code);
     return [];
   }
 

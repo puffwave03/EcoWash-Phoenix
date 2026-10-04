@@ -36,7 +36,7 @@ test("3 Terminal picker hides every technical or legacy walk-in", async () => {
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
   ]);
   assert.match(query, /customer_code\.not\.like\.WALKIN-%/);
-  assert.match(workspace, /!customer\.isWalkIn/);
+  assert.match(workspace, /if \(!result\.customer\.isWalkIn\) setRecentCustomers/);
   assert.match(workspace, /required=\{customerMode === "regular"\}/);
   assert.match(workspace, /customerMode === "regular" \? <label[\s\S]*customerEmail/);
 });

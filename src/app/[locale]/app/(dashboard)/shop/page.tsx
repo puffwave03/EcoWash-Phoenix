@@ -9,10 +9,11 @@ import {
   loadShopDeliveryOptionsAction,
   loadShopServicesAction,
   resolveShopCodeAction,
+  searchShopCustomersAction,
   submitShopOrderAction,
 } from "@/features/shop-terminal/server/actions";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import { listShopCustomers, listShopOperationalOptions } from "@/features/shop-terminal/server/queries";
+import { listShopRecentCustomers, listShopOperationalOptions } from "@/features/shop-terminal/server/queries";
 import { createQuickDropAction } from "@/features/quick-drop/server/actions";
 import { listPendingQuickDrops } from "@/features/quick-drop/server/queries";
 import type { QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
@@ -24,7 +25,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
   const { locale } = await params;
   const [access, customers, session, pendingQuickDrops, entitlements, closeState, t, catalogT, printT, barcodeT, quickDropT, gateT, commonT] = await Promise.all([
     requireShopTerminalAccess(locale),
-    listShopCustomers(locale),
+    listShopRecentCustomers(locale),
     getCurrentPosSession(locale),
     listPendingQuickDrops(locale),
     getCurrentEntitlements(locale, [FEATURES.printing, FEATURES.billingInvoicing, FEATURES.barcode]),
@@ -62,6 +63,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         loadDeliveryOptions: loadShopDeliveryOptionsAction.bind(null, locale),
         loadServices: loadShopServicesAction.bind(null, locale),
         resolveCode: resolveShopCodeAction.bind(null, locale),
+        searchCustomers: searchShopCustomersAction.bind(null, locale),
         submit: submitShopOrderAction.bind(null, locale),
       }}
       canPrint={entitlementEnabled(entitlements, FEATURES.printing)}

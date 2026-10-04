@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
-import { loadShopDeliveryOptions as queryShopDeliveryOptions, listShopServices } from "@/features/shop-terminal/server/queries";
-import type { ShopCatalogSelection, ShopCustomerState, ShopDeliveryOptions, ShopSubmitState } from "@/features/shop-terminal/types";
+import { loadShopDeliveryOptions as queryShopDeliveryOptions, listShopServices, searchShopCustomers } from "@/features/shop-terminal/server/queries";
+import type { ShopCatalogSelection, ShopCustomer, ShopCustomerState, ShopDeliveryOptions, ShopSubmitState } from "@/features/shop-terminal/types";
 import type { ShopCodeResolveResult } from "@/features/shop-terminal/types";
 import { parsePhoenixCode } from "@/features/barcode/payload";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
@@ -76,6 +76,10 @@ export async function loadShopServicesAction(
 export async function loadShopDeliveryOptionsAction(locale: string, customerId: string): Promise<ShopDeliveryOptions> {
   if (!UUID.test(customerId)) return { billing: null, properties: [] };
   return queryShopDeliveryOptions(locale, customerId);
+}
+
+export async function searchShopCustomersAction(locale: string, rawQuery: string): Promise<ShopCustomer[]> {
+  return searchShopCustomers(locale, rawQuery);
 }
 
 export async function createShopCustomerAction(
