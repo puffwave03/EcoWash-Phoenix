@@ -143,3 +143,15 @@ export type CustomerBillingOverview = {
   recentInvoices: BillingInvoice[];
   summaries: CustomerBillingSummary[];
 };
+
+export type BillingInvoiceListEntry = Pick<BillingInvoice,
+  "id" | "createdAt" | "invoiceNumber" | "customerName" | "issueDate" | "currency" |
+  "total" | "paidTotal" | "outstanding" | "paymentStatus" | "orderNumbers">;
+
+export type BillingHistorySummary = {
+  invoiceCount: number;
+  draftCount: number;
+  currency: string;
+  issuedTotal: number;
+  outstanding: number;
+};

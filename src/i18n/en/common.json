@@ -1268,6 +1268,12 @@
     }
   },
   "billing": {
+    "pagination": {
+      "label": "Invoice pages",
+      "older": "Older",
+      "newer": "Newer",
+      "latest": "Back to latest"
+    },
     "eyebrow": "Commercial documents",
     "title": "Billing",
     "description": "Create, issue and review tenant-scoped invoices without changing order or payment history.",
@@ -1388,6 +1394,12 @@
     }
   },
   "salesDocuments": {
+    "pagination": {
+      "label": "Document pages",
+      "older": "Older",
+      "newer": "Newer",
+      "latest": "Back to latest"
+    },
     "eyebrow": "Document control", "title": "Sales documents", "description": "Persistent operational receipts and canonical issued or cancelled invoices.",
     "back": "Back to documents", "print": "Print / Save PDF", "receipt": "Operational receipt", "customer": "Customer", "order": "Order", "descriptionLabel": "Description", "descriptionCompact": "DESC.", "quantity": "Quantity", "quantityCompact": "QTY.", "unitPrice": "Unit price", "unitPriceCompact": "UNIT", "subtotal": "Subtotal", "discount": "Discount", "total": "Total", "totalCompact": "TOT.", "paid": "Paid", "outstanding": "Outstanding", "paymentMethods": "Payment methods", "notes": "Customer notes", "thanks": "Thank you", "notFiscal": "Operational order/payment document. This is not an invoice or fiscal receipt.",
     "methods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"},

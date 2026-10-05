@@ -1,4 +1,5 @@
 import "server-only";
+import { BILLING_PAGE_SIZE, billingPage, decodeBillingCursor, normalizeBillingFilters, type BillingFilters } from "@/features/billing/pagination";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
@@ -8,6 +9,8 @@ import type {
   BillingCustomerFiscalField,
   BillingDocumentStatus,
   BillingInvoice,
+  BillingInvoiceListEntry,
+  BillingHistorySummary,
   BillingInvoiceDetail,
   BillingInvoiceItem,
   BillingPayment,
@@ -352,27 +355,53 @@ export async function getBillingCustomerContext(locale: string, customerId: stri
   };
 }
 
-export async function listBillingInvoices(locale: string): Promise<BillingInvoice[]> {
-  const { membership } = await requireOwnerOrManager(locale);
+type BillingListRow = {
+  id: string; created_at: string; invoice_number: string | null; customer_name: string;
+  issue_date: string; currency: string; total: number; paid_total: number;
+  outstanding: number; payment_status: BillingPaymentStatus; order_numbers: string[];
+};
+
+export async function listBillingInvoices(locale: string, filters: BillingFilters, rawCursor?: string) {
+  await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("invoices")
-    .select(INVOICE_SELECT)
-    .eq("organization_id", membership.organization.id)
-    .order("created_at", { ascending: false })
-    .limit(100)
-    .returns<InvoiceRow[]>();
-  if (error) {
-    console.error("Billing invoice list failed", error.code);
-    return [];
+  const normalized = normalizeBillingFilters(filters.q, filters.status);
+  let cursor = decodeBillingCursor(rawCursor, normalized);
+  const load = async () => {
+    const result = await supabase.rpc("list_billing_invoices_page", {
+      target_query: normalized.q, target_status: normalized.status,
+      target_cursor_created_at: cursor?.createdAt ?? null, target_cursor_id: cursor?.id ?? null,
+      target_direction: cursor?.direction ?? "older", target_limit: BILLING_PAGE_SIZE + 1,
+    }).returns<BillingListRow[]>();
+    if (result.error) throw result.error;
+    if (!Array.isArray(result.data)) throw new Error("billing_history_invalid_response");
+    return result.data as BillingListRow[];
+  };
+  let data = await load();
+  if (!data.length && cursor) {
+    cursor = null;
+    data = await load();
   }
-  try {
-    return await hydrateInvoices(supabase, data ?? []);
-  } catch (hydrateError) {
-    console.error("Billing invoice hydration failed", hydrateError);
-    return [];
-  }
+  const rows: BillingInvoiceListEntry[] = data.map((row) => ({
+    id: row.id, createdAt: row.created_at, invoiceNumber: row.invoice_number,
+    customerName: row.customer_name, issueDate: row.issue_date, currency: row.currency,
+    total: number(row.total), paidTotal: number(row.paid_total), outstanding: number(row.outstanding),
+    paymentStatus: row.payment_status, orderNumbers: row.order_numbers,
+  }));
+  return billingPage(rows, cursor, normalized);
+}
+
+export async function getBillingHistorySummary(locale: string): Promise<BillingHistorySummary> {
+  await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("get_billing_history_summary").single<{
+    invoice_count: number; draft_count: number; currency: string; issued_total: number; outstanding: number;
+  }>();
+  if (error) throw error;
+  if (!data) throw new Error("billing_summary_missing");
+  return { invoiceCount: number(data.invoice_count), draftCount: number(data.draft_count),
+    currency: data.currency, issuedTotal: number(data.issued_total), outstanding: number(data.outstanding) };
 }
 
 export async function getBillingInvoice(locale: string, invoiceId: string): Promise<BillingInvoiceDetail> {
@@ -454,25 +483,26 @@ export async function listEligibleBillingOrders(locale: string, customerId?: str
 }
 
 export async function getCustomerBillingOverview(locale: string, customerId: string): Promise<CustomerBillingOverview> {
-  const [invoices, eligibleOrders] = await Promise.all([
-    listBillingInvoices(locale),
-    listEligibleBillingOrders(locale, customerId),
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const supabase = await createSupabaseServerClient();
+  const [recent, summary] = await Promise.all([
+    supabase.from("invoices").select(INVOICE_SELECT)
+      .eq("organization_id", membership.organization.id).eq("customer_id", customerId)
+      .order("created_at", { ascending: false }).order("id", { ascending: false })
+      .limit(5).returns<InvoiceRow[]>(),
+    supabase.rpc("get_customer_billing_history_summary", { target_customer_id: customerId })
+      .returns<Pick<CustomerBillingOverview, "eligibleOrderCount" | "summaries">>(),
   ]);
-  const customerInvoices = invoices.filter((invoice) => invoice.customerId === customerId);
-  const currencies = [...new Set(customerInvoices.map((invoice) => invoice.currency))];
-
+  if (recent.error) throw recent.error;
+  if (summary.error) throw summary.error;
+  if (!summary.data || !("summaries" in summary.data) || !Array.isArray(summary.data.summaries)) throw new Error("customer_billing_summary_missing");
   return {
-    eligibleOrderCount: eligibleOrders.length,
-    recentInvoices: customerInvoices.slice(0, 5),
-    summaries: currencies.map((currency) => {
-      const rows = customerInvoices.filter((invoice) => invoice.currency === currency && invoice.documentStatus !== "cancelled");
-      return {
-        currency,
-        invoiceCount: rows.length,
-        issuedTotal: Math.round(rows.filter((invoice) => invoice.documentStatus === "issued").reduce((sum, invoice) => sum + invoice.total, 0) * 100) / 100,
-        outstanding: Math.round(rows.filter((invoice) => invoice.documentStatus === "issued").reduce((sum, invoice) => sum + invoice.outstanding, 0) * 100) / 100,
-        paidTotal: Math.round(rows.filter((invoice) => invoice.documentStatus === "issued").reduce((sum, invoice) => sum + invoice.paidTotal, 0) * 100) / 100,
-      };
-    }),
+    eligibleOrderCount: number(summary.data.eligibleOrderCount),
+    recentInvoices: await hydrateInvoices(supabase, recent.data ?? []),
+    summaries: summary.data.summaries.map((row) => ({
+      currency: row.currency, invoiceCount: number(row.invoiceCount), issuedTotal: number(row.issuedTotal),
+      paidTotal: number(row.paidTotal), outstanding: number(row.outstanding),
+    })),
   };
 }

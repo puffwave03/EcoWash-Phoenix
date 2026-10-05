@@ -118,8 +118,10 @@ test("15-16 registry combines receipts with canonical invoices without copying i
     source(migrationPath),
   ]);
   assert.match(queries, /from\("operational_receipts"\)/);
-  assert.match(queries, /from\("invoices"\)/);
-  assert.match(queries, /\.in\("document_status", \["issued", "cancelled"\]\)/);
+  assert.match(queries, /rpc\("list_sales_documents_page"/);
+  const historySql = await source("supabase/migrations/20261004000300_data_retention_scale_001h_billing_sales_document_history.sql");
+  assert.match(historySql, /from public\.operational_receipts[\s\S]*union all[\s\S]*from public\.invoices/);
+  assert.match(historySql, /i\.document_status in \('issued', 'cancelled'\)/);
   assert.doesNotMatch(sql, /create table public\.sales_documents/);
   assert.doesNotMatch(functionBody(sql, "issue_operational_receipt", "cancel_operational_receipt"), /from public\.invoices/);
 });

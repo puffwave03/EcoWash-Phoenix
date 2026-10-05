@@ -1,4 +1,5 @@
 import "server-only";
+import { SALES_DOCUMENT_PAGE_SIZE, decodeSalesDocumentCursor, salesDocumentPage } from "@/features/sales-documents/pagination";
 
 import { notFound } from "next/navigation";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
@@ -27,26 +28,7 @@ type ReceiptRow = {
   snapshot_version: number;
 };
 
-type InvoiceRow = {
-  currency: string;
-  customer_name: string;
-  document_status: "issued" | "cancelled";
-  id: string;
-  invoice_number: string;
-  issued_at: string;
-  total: number;
-};
-
-type InvoiceOrderRow = {
-  invoice_id: string;
-  order: { order_number: string } | { order_number: string }[] | null;
-};
-
 const RECEIPT_SELECT = "id, order_id, customer_id, receipt_number, series, sequence_year, sequence_number, document_status, issued_at, cancelled_at, cancellation_reason, currency, amount, snapshot_version, snapshot, customer:customers!operational_receipts_customer_same_org(display_name)";
-
-function relation<T>(value: T | T[] | null) {
-  return Array.isArray(value) ? value[0] ?? null : value;
-}
 
 function mapReceipt(row: ReceiptRow, timeZone: string, logoUrl?: string | null): OperationalReceipt {
   return {
@@ -83,40 +65,36 @@ export async function getOperationalReceipt(locale: string, receiptId: string): 
   return mapReceipt(data, membership.organization.timezone, logoUrl);
 }
 
-export async function listSalesDocuments(locale: string): Promise<SalesDocument[]> {
-  const { membership } = await requireOwnerOrManager(locale);
+type SalesDocumentRow = {
+  id: string; kind: SalesDocument["kind"]; document_number: string; status: SalesDocument["status"];
+  issued_at: string; customer: string; order_numbers: string[]; amount: number; currency: string;
+};
+
+export async function listSalesDocuments(locale: string, rawCursor?: string) {
+  await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.printing);
   const supabase = await createSupabaseServerClient();
-  const [receiptResult, invoiceResult] = await Promise.all([
-    supabase.from("operational_receipts").select(RECEIPT_SELECT).eq("organization_id", membership.organization.id)
-      .order("issued_at", { ascending: false }).limit(100).returns<ReceiptRow[]>(),
-    supabase.from("invoices").select("id, invoice_number, document_status, issued_at, customer_name, total, currency")
-      .eq("organization_id", membership.organization.id).in("document_status", ["issued", "cancelled"])
-      .order("issued_at", { ascending: false }).limit(100).returns<InvoiceRow[]>(),
-  ]);
-  if (receiptResult.error || invoiceResult.error) throw new Error("sales_documents_query_failed");
-  const invoiceIds = (invoiceResult.data ?? []).map((invoice) => invoice.id);
-  const { data: orderLinks, error: orderLinksError } = invoiceIds.length
-    ? await supabase.from("invoice_orders").select("invoice_id, order:orders!invoice_orders_order_same_organization(order_number)")
-      .eq("organization_id", membership.organization.id).in("invoice_id", invoiceIds).returns<InvoiceOrderRow[]>()
-    : { data: [] as InvoiceOrderRow[], error: null };
-  if (orderLinksError) throw new Error("sales_documents_orders_query_failed");
-  const invoiceOrders = new Map<string, string[]>();
-  for (const link of orderLinks ?? []) {
-    const orderNumber = relation(link.order)?.order_number;
-    if (orderNumber) invoiceOrders.set(link.invoice_id, [...(invoiceOrders.get(link.invoice_id) ?? []), orderNumber]);
+  let cursor = decodeSalesDocumentCursor(rawCursor);
+  const load = async () => {
+    const result = await supabase.rpc("list_sales_documents_page", {
+      target_cursor_issued_at: cursor?.issuedAt ?? null,
+      target_cursor_document_number: cursor?.documentNumber ?? null,
+      target_cursor_kind: cursor?.kind ?? null, target_cursor_id: cursor?.id ?? null,
+      target_direction: cursor?.direction ?? "older", target_limit: SALES_DOCUMENT_PAGE_SIZE + 1,
+    }).returns<SalesDocumentRow[]>();
+    if (result.error) throw result.error;
+    if (!Array.isArray(result.data)) throw new Error("sales_documents_history_invalid_response");
+    return result.data as SalesDocumentRow[];
+  };
+  let data = await load();
+  if (!data.length && cursor) {
+    cursor = null;
+    data = await load();
   }
-
-  return [
-    ...(receiptResult.data ?? []).map<SalesDocument>((receipt) => ({
-      amount: Number(receipt.amount), currency: receipt.currency, customer: relation(receipt.customer)?.display_name ?? "",
-      documentNumber: receipt.receipt_number, id: receipt.id, issuedAt: receipt.issued_at, kind: "receipt",
-      orderNumbers: [receipt.snapshot.order.orderNumber], status: receipt.document_status,
-    })),
-    ...(invoiceResult.data ?? []).map<SalesDocument>((invoice) => ({
-      amount: Number(invoice.total), currency: invoice.currency, customer: invoice.customer_name,
-      documentNumber: invoice.invoice_number, id: invoice.id, issuedAt: invoice.issued_at, kind: "invoice",
-      orderNumbers: invoiceOrders.get(invoice.id) ?? [], status: invoice.document_status,
-    })),
-  ].sort((left, right) => right.issuedAt.localeCompare(left.issuedAt) || left.documentNumber.localeCompare(right.documentNumber));
+  const rows: SalesDocument[] = data.map((row) => ({
+    id: row.id, kind: row.kind, documentNumber: row.document_number, status: row.status,
+    issuedAt: row.issued_at, customer: row.customer, orderNumbers: row.order_numbers,
+    amount: Number(row.amount), currency: row.currency,
+  }));
+  return salesDocumentPage(rows, cursor);
 }

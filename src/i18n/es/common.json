@@ -1244,6 +1244,12 @@
     }
   },
   "billing": {
+    "pagination": {
+      "label": "Páginas de facturas",
+      "older": "Más antiguos",
+      "newer": "Más recientes",
+      "latest": "Volver a los más recientes"
+    },
     "eyebrow": "Documentos comerciales", "title": "Facturación", "description": "Crea, emite y revisa facturas del tenant sin modificar el historial de pedidos o pagos.", "saved": "Cambios de facturación guardados.", "draftNumber": "Borrador · número asignado al emitir", "empty": "No hay facturas para esta vista.",
     "actions": {"create": "Crear factura", "printView": "Vista imprimible", "print": "Imprimir / Guardar PDF", "saveDraft": "Guardar borrador", "issue": "Emitir factura", "deleteDraft": "Eliminar borrador", "cancel": "Anular factura"},
     "summary": {"invoices": "Facturas", "drafts": "Borradores", "issued": "Importe emitido", "outstanding": "Pendiente"},
@@ -1333,6 +1339,12 @@
     }
   },
   "salesDocuments": {
+    "pagination": {
+      "label": "Páginas de documentos",
+      "older": "Más antiguos",
+      "newer": "Más recientes",
+      "latest": "Volver a los más recientes"
+    },
     "eyebrow": "Control documental", "title": "Documentos de venta", "description": "Recibos operativos persistentes y facturas canónicas emitidas o canceladas.",
     "back": "Volver a documentos", "print": "Imprimir / Guardar PDF", "receipt": "Recibo operativo", "customer": "Cliente", "order": "Pedido", "descriptionLabel": "Descripción", "descriptionCompact": "DESC.", "quantity": "Cantidad", "quantityCompact": "CANT.", "unitPrice": "Precio unitario", "unitPriceCompact": "P.UNIT.", "subtotal": "Subtotal", "discount": "Descuento", "total": "Total", "totalCompact": "TOT.", "paid": "Pagado", "outstanding": "Pendiente", "paymentMethods": "Métodos de pago", "notes": "Notas del cliente", "thanks": "Gracias", "notFiscal": "Documento operativo de pedido/pago. No es una factura ni un recibo fiscal.",
     "methods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia", "other": "Otro"},

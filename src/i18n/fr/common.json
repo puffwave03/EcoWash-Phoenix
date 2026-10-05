@@ -1244,6 +1244,12 @@
     }
   },
   "billing": {
+    "pagination": {
+      "label": "Pages des factures",
+      "older": "Plus anciens",
+      "newer": "Plus récents",
+      "latest": "Revenir aux plus récents"
+    },
     "eyebrow": "Documents commerciaux", "title": "Facturation", "description": "Créez, émettez et consultez des factures propres au tenant sans modifier l’historique des commandes ou paiements.", "saved": "Modifications de facturation enregistrées.", "draftNumber": "Brouillon · numéro attribué à l’émission", "empty": "Aucune facture ne correspond à cette vue.",
     "actions": {"create": "Créer une facture", "printView": "Vue imprimable", "print": "Imprimer / Enregistrer en PDF", "saveDraft": "Enregistrer le brouillon", "issue": "Émettre la facture", "deleteDraft": "Supprimer le brouillon", "cancel": "Annuler la facture"},
     "summary": {"invoices": "Factures", "drafts": "Brouillons", "issued": "Montant émis", "outstanding": "À encaisser"},
@@ -1333,6 +1339,12 @@
     }
   },
   "salesDocuments": {
+    "pagination": {
+      "label": "Pages des documents",
+      "older": "Plus anciens",
+      "newer": "Plus récents",
+      "latest": "Revenir aux plus récents"
+    },
     "eyebrow": "Contrôle documentaire", "title": "Documents de vente", "description": "Reçus opérationnels persistants et factures canoniques émises ou annulées.",
     "back": "Retour aux documents", "print": "Imprimer / Enregistrer PDF", "receipt": "Reçu opérationnel", "customer": "Client", "order": "Commande", "descriptionLabel": "Description", "descriptionCompact": "DESC.", "quantity": "Quantité", "quantityCompact": "QTÉ", "unitPrice": "Prix unitaire", "unitPriceCompact": "P.UNIT.", "subtotal": "Sous-total", "discount": "Remise", "total": "Total", "totalCompact": "TOT.", "paid": "Payé", "outstanding": "Restant", "paymentMethods": "Modes de paiement", "notes": "Notes client", "thanks": "Merci", "notFiscal": "Document opérationnel de commande/paiement. Ce n’est ni une facture ni un reçu fiscal.",
     "methods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement", "other": "Autre"},

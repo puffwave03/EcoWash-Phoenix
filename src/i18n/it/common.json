@@ -1268,6 +1268,12 @@
     }
   },
   "billing": {
+    "pagination": {
+      "label": "Pagine delle fatture",
+      "older": "Più vecchi",
+      "newer": "Più recenti",
+      "latest": "Torna ai più recenti"
+    },
     "eyebrow": "Documenti commerciali", "title": "Fatturazione", "description": "Crea, emetti e consulta fatture tenant-scoped senza modificare lo storico di ordini o pagamenti.", "saved": "Modifiche di fatturazione salvate.", "draftNumber": "Bozza · numero assegnato all’emissione", "empty": "Nessuna fattura corrisponde a questa vista.",
     "actions": {"create": "Crea fattura", "printView": "Vista stampabile", "print": "Stampa / Salva PDF", "saveDraft": "Salva bozza", "issue": "Emetti fattura", "deleteDraft": "Elimina bozza", "cancel": "Annulla fattura"},
     "summary": {"invoices": "Fatture", "drafts": "Bozze", "issued": "Importo emesso", "outstanding": "Da incassare"},
@@ -1374,6 +1380,12 @@
     }
   },
   "salesDocuments": {
+    "pagination": {
+      "label": "Pagine dei documenti",
+      "older": "Più vecchi",
+      "newer": "Più recenti",
+      "latest": "Torna ai più recenti"
+    },
     "eyebrow": "Controllo documenti", "title": "Documenti di vendita", "description": "Ricevute operative persistenti e fatture canoniche emesse o annullate.",
     "back": "Torna ai documenti", "print": "Stampa / Salva PDF", "receipt": "Ricevuta operativa", "customer": "Cliente", "order": "Ordine", "descriptionLabel": "Descrizione", "descriptionCompact": "DESC.", "quantity": "Quantità", "quantityCompact": "Q.TÀ", "unitPrice": "Prezzo unitario", "unitPriceCompact": "P.UNIT.", "subtotal": "Subtotale", "discount": "Sconto", "total": "Totale", "totalCompact": "TOT.", "paid": "Pagato", "outstanding": "Residuo", "paymentMethods": "Metodi di pagamento", "notes": "Note cliente", "thanks": "Grazie", "notFiscal": "Documento operativo di ordine/pagamento. Non è una fattura né una ricevuta fiscale.",
     "methods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"},

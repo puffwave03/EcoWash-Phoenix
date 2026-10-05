@@ -1244,6 +1244,12 @@
     }
   },
   "billing": {
+    "pagination": {
+      "label": "Rechnungsseiten",
+      "older": "Ältere",
+      "newer": "Neuere",
+      "latest": "Zurück zu den neuesten"
+    },
     "eyebrow": "Geschäftsdokumente", "title": "Abrechnung", "description": "Mandantenbezogene Rechnungen erstellen, ausstellen und prüfen, ohne Auftrags- oder Zahlungshistorie zu verändern.", "saved": "Abrechnungsänderungen gespeichert.", "draftNumber": "Entwurf · Nummer bei Ausstellung", "empty": "Keine Rechnungen für diese Ansicht.",
     "actions": {"create": "Rechnung erstellen", "printView": "Druckansicht", "print": "Drucken / Als PDF speichern", "saveDraft": "Entwurf speichern", "issue": "Rechnung ausstellen", "deleteDraft": "Entwurf löschen", "cancel": "Rechnung stornieren"},
     "summary": {"invoices": "Rechnungen", "drafts": "Entwürfe", "issued": "Ausgestellter Betrag", "outstanding": "Offen"},
@@ -1333,6 +1339,12 @@
     }
   },
   "salesDocuments": {
+    "pagination": {
+      "label": "Dokumentseiten",
+      "older": "Ältere",
+      "newer": "Neuere",
+      "latest": "Zurück zu den neuesten"
+    },
     "eyebrow": "Dokumentenkontrolle", "title": "Verkaufsdokumente", "description": "Dauerhafte operative Belege und kanonische ausgestellte oder stornierte Rechnungen.",
     "back": "Zurück zu Dokumenten", "print": "Drucken / PDF speichern", "receipt": "Operativer Beleg", "customer": "Kunde", "order": "Auftrag", "descriptionLabel": "Beschreibung", "descriptionCompact": "BESCHR.", "quantity": "Menge", "quantityCompact": "MENGE", "unitPrice": "Einzelpreis", "unitPriceCompact": "STK.", "subtotal": "Zwischensumme", "discount": "Rabatt", "total": "Gesamt", "totalCompact": "GES.", "paid": "Bezahlt", "outstanding": "Offen", "paymentMethods": "Zahlungsarten", "notes": "Kundennotizen", "thanks": "Vielen Dank", "notFiscal": "Operatives Auftrags-/Zahlungsdokument. Es ist keine Rechnung oder Steuerquittung.",
     "methods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Überweisung", "other": "Andere"},
