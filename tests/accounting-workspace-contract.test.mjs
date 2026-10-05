@@ -58,21 +58,24 @@ test("4 CSV is UTF-8, quoted and formula-injection safe", () => {
   assert.match(csv, /"800"/);
 });
 
-test("5 workspace and exports remain canonical, tenant guarded and anti-double-count", async () => {
-  const [queries, salesExport, expenseExport] = await Promise.all([
+test("5 workspace and streamed exports remain canonical, tenant guarded and anti-double-count", async () => {
+  const [queries, salesExport, expenseExport, readers] = await Promise.all([
     source("src/features/accounting/server/workspace-queries.ts"),
     source("src/app/[locale]/app/(dashboard)/accounting/export/sales/route.ts"),
     source("src/app/[locale]/app/(dashboard)/accounting/export/expenses/route.ts"),
+    source("src/features/accounting/server/export-readers.ts"),
   ]);
   assert.match(queries, /requireOwnerOrManager\(locale\)/);
   assert.match(queries, /\.eq\("organization_id", organizationId\)/);
   assert.match(queries, /getAccountingSummary/);
   assert.match(queries, /getExpenseSummary/);
   assert.doesNotMatch(queries, /from\("invoices"\)|online_payment_attempts|general_ledger|journal/);
-  assert.match(salesExport, /buildUtf8Csv/);
-  assert.match(expenseExport, /buildUtf8Csv/);
-  assert.match(salesExport, /text\/csv; charset=utf-8/);
-  assert.match(expenseExport, /tax_amount/);
+  assert.doesNotMatch(salesExport, /getAccountingWorkspace/);
+  assert.doesNotMatch(expenseExport, /getAccountingWorkspace/);
+  assert.match(salesExport, /accountingSalesCsvChunks/);
+  assert.match(expenseExport, /accountingExpensesCsvChunks/);
+  assert.match(readers, /"Content-Type": "text\/csv; charset=utf-8"/);
+  assert.match(readers, /tax_amount/);
 });
 
 test("6 navigation and UI preserve Owner, Manager and Staff boundaries", async () => {
