@@ -55,7 +55,7 @@ test("Sales reader preserves canonical Order, Quick Drop, payment, and currency 
 
 test("Expenses traversal is tenant-scoped, keyset ordered, bounded, and includes all lifecycle states", async () => {
   const readers = await read("src/features/accounting/server/export-readers.ts");
-  const expenseReader = readers.slice(readers.indexOf("async function* expenseRows"));
+  const expenseReader = readers.slice(readers.indexOf("export async function* accountingExpensePages"), readers.indexOf("async function* expenseRows"));
   assert.match(expenseReader, /from\("expenses"\)/);
   assert.match(expenseReader, /\.eq\("organization_id", organizationId\)/);
   assert.match(expenseReader, /\.gte\("expense_date", period\.startDate\)/);
@@ -65,21 +65,24 @@ test("Expenses traversal is tenant-scoped, keyset ordered, bounded, and includes
   assert.match(expenseReader, /expense_date\.gt\.\$\{cursor\.date\}.*id\.gt\.\$\{cursor\.id\}/);
   assert.match(expenseReader, /\.limit\(EXPORT_PAGE_SIZE\)/);
   assert.doesNotMatch(expenseReader, /\.range\(|from\("orders"\)|from\("payments"\)|from\("pos_sessions"\)/);
-  assert.doesNotMatch(expenseReader, /\.eq\("status", "posted"\)/);
+  assert.match(expenseReader, /if \(postedOnly\) query = query\.eq\("status", "posted"\)/);
+  assert.match(readers, /expenseRows\(supabase, organizationId, period, locationId, false\)/);
   assert.match(readers, /"draft" \| "posted" \| "void"/);
 });
 
 test("explicit location scope is validated directly and fails closed", async () => {
-  const [readers, salesRoute, expensesRoute, migration] = await Promise.all([
+  const [readers, salesRoute, expensesRoute, request, migration] = await Promise.all([
     read("src/features/accounting/server/export-readers.ts"),
     read("src/app/[locale]/app/(dashboard)/accounting/export/sales/route.ts"),
     read("src/app/[locale]/app/(dashboard)/accounting/export/expenses/route.ts"),
+    read("src/features/accounting/server/export-request.ts"),
     read(migrationPath),
   ]);
   assert.match(readers, /requireOwnerOrManager\(locale\)/);
   assert.match(readers, /\.eq\("organization_id", organizationId\)[\s\S]*?\.eq\("id", requestedLocationId\)[\s\S]*?\.eq\("is_active", true\)[\s\S]*?\.is\("deleted_at", null\)/);
-  assert.match(salesRoute, /InvalidAccountingExportLocationError[\s\S]*?status: 400/);
-  assert.match(expensesRoute, /InvalidAccountingExportLocationError[\s\S]*?status: 400/);
+  assert.match(request, /InvalidAccountingExportLocationError[\s\S]*?status: 400/);
+  assert.match(salesRoute, /accountingExportRequest/);
+  assert.match(expensesRoute, /accountingExportRequest/);
   assert.match(migration, /public\.app_current_organization_id\(\)/);
   assert.match(migration, /has_organization_role\(org_id, array\['owner', 'manager'\]/);
   assert.match(migration, /accounting_export_location_invalid/);

@@ -1,32 +1,14 @@
 import {
   accountingCsvResponse,
   accountingSalesCsvChunks,
-  getAccountingExportContext,
-  InvalidAccountingExportLocationError,
 } from "@/features/accounting/server/export-readers";
-import { resolveAccountingPeriod } from "@/features/accounting/workspace";
+import { accountingExportRequest } from "@/features/accounting/server/export-request";
 
 export async function GET(request: Request, { params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const url = new URL(request.url);
-  let context;
-  try {
-    context = await getAccountingExportContext(locale, url.searchParams.get("location"));
-  } catch (error) {
-    if (error instanceof InvalidAccountingExportLocationError) return new Response("Invalid accounting location", { status: 400 });
-    throw error;
-  }
-  let selection;
-  try {
-    selection = resolveAccountingPeriod(
-      url.searchParams.get("preset") ?? undefined,
-      url.searchParams.get("start") ?? undefined,
-      url.searchParams.get("end") ?? undefined,
-      context.timezone,
-    );
-  } catch {
-    return new Response("Invalid accounting period", { status: 400 });
-  }
+  const resolved = await accountingExportRequest(request, locale);
+  if (resolved instanceof Response) return resolved;
+  const { context, selection } = resolved;
   return accountingCsvResponse(
     accountingSalesCsvChunks(context.supabase, selection.period, context.timezone, context.locationId),
     `accounting-sales-${selection.period.startDate}-${selection.endDate}.csv`,

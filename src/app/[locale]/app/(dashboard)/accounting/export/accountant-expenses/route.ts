@@ -1,8 +1,6 @@
-import {
-  accountingCsvResponse,
-  accountingExpensesCsvChunks,
-} from "@/features/accounting/server/export-readers";
+import { accountingCsvResponse, accountantExpensesCsvChunks } from "@/features/accounting/server/export-readers";
 import { accountingExportRequest } from "@/features/accounting/server/export-request";
+import { accountingExportPeriodLabel } from "@/features/accounting/workspace";
 
 export async function GET(request: Request, { params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -10,7 +8,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ loca
   if (resolved instanceof Response) return resolved;
   const { context, selection } = resolved;
   return accountingCsvResponse(
-    accountingExpensesCsvChunks(context.supabase, context.organizationId, selection.period, context.locationId),
-    `accounting-expenses-${selection.period.startDate}-${selection.endDate}.csv`,
+    accountantExpensesCsvChunks(context.supabase, context.organizationId, selection.period, context.locationId),
+    `accounting-expenses-${accountingExportPeriodLabel(selection)}.csv`,
   );
 }

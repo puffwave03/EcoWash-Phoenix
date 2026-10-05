@@ -10,8 +10,9 @@ const CSV_CHUNK_ROWS = 64;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SALES_HEADERS = ["date", "type", "order_reference", "customer", "location", "payment_method", "amount", "currency"];
 const EXPENSE_HEADERS = ["expense_date", "supplier", "category", "description", "reference", "location", "gross", "tax_amount", "tax_rate", "currency", "status"];
+const ACCOUNTANT_EXPENSE_HEADERS = ["expense_date", "document_date", "supplier", "category", "description", "reference", "location", "gross", "tax_amount", "tax_rate", "currency", "payment_status", "paid_date", "payment_method", "status"];
 
-type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
+export type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 export class InvalidAccountingExportLocationError extends Error {
   constructor() {
@@ -47,7 +48,7 @@ function line(values: unknown[]) {
   return `${values.map(csvValue).join(",")}\r\n`;
 }
 
-async function* csvChunks(headers: string[], rows: AsyncIterable<unknown[]>): AsyncGenerator<string> {
+export async function* csvChunks(headers: string[], rows: AsyncIterable<unknown[]>): AsyncGenerator<string> {
   yield `\uFEFF${line(headers)}`;
   let buffer = "";
   let bufferedRows = 0;
@@ -90,7 +91,7 @@ export function accountingCsvResponse(chunks: AsyncIterable<string>, filename: s
   });
 }
 
-type SalesEvent = {
+export type SalesEvent = {
   amount: number | string;
   currency: string;
   customer: string;
@@ -102,12 +103,12 @@ type SalesEvent = {
   payment_method: string | null;
 };
 
-async function* salesRows(
+export async function* accountingSalesPages(
   supabase: SupabaseServerClient,
   period: AccountingPeriod,
   timezone: string,
   locationId: string | null,
-): AsyncGenerator<unknown[]> {
+): AsyncGenerator<SalesEvent[]> {
   const bounds = accountingPeriodBounds(period, timezone);
   let cursor: { date: string; id: string; type: SalesEvent["event_type"] } | null = null;
   for (;;) {
@@ -122,12 +123,23 @@ async function* salesRows(
     }).returns<SalesEvent[]>() as unknown as { data: SalesEvent[] | null; error: { code?: string } | null };
     if (result.error) throw new Error(`accounting_sales_export_failed:${result.error.code}`);
     const rows: SalesEvent[] = result.data ?? [];
-    for (const row of rows) {
-      yield [row.event_date, row.event_type, row.order_reference, row.customer, row.location, row.payment_method, Number(row.amount).toFixed(2), row.currency];
-    }
+    if (rows.length) yield rows;
     if (rows.length < EXPORT_PAGE_SIZE) return;
     const last = rows[rows.length - 1];
     cursor = { date: last.event_date, id: last.event_id, type: last.event_type };
+  }
+}
+
+async function* salesRows(
+  supabase: SupabaseServerClient,
+  period: AccountingPeriod,
+  timezone: string,
+  locationId: string | null,
+): AsyncGenerator<unknown[]> {
+  for await (const page of accountingSalesPages(supabase, period, timezone, locationId)) {
+    for (const row of page) {
+      yield [row.event_date, row.event_type, row.order_reference, row.customer, row.location, row.payment_method, Number(row.amount).toFixed(2), row.currency];
+    }
   }
 }
 
@@ -140,14 +152,18 @@ export async function* accountingSalesCsvChunks(
   yield* csvChunks(SALES_HEADERS, salesRows(supabase, period, timezone, locationId));
 }
 
-type ExpenseExportRow = {
+export type ExpenseExportRow = {
   category_id: string;
   currency: string;
   description: string;
+  document_date: string | null;
   expense_date: string;
   gross_amount: number | string;
   id: string;
   location_id: string | null;
+  paid_date: string | null;
+  payment_method: string | null;
+  payment_status: string;
   status: "draft" | "posted" | "void";
   supplier_id: string | null;
   supplier_reference: string | null;
@@ -179,16 +195,17 @@ async function suppliersById(supabase: SupabaseServerClient, organizationId: str
   return new Map((data ?? []).map((row) => [row.id, row.display_name]));
 }
 
-async function* expenseRows(
+export async function* accountingExpensePages(
   supabase: SupabaseServerClient,
   organizationId: string,
   period: AccountingPeriod,
   locationId: string | null,
-): AsyncGenerator<unknown[]> {
+  postedOnly = false,
+): AsyncGenerator<ExpenseExportRow[]> {
   let cursor: { date: string; id: string } | null = null;
   for (;;) {
     let query = supabase.from("expenses")
-      .select("id, expense_date, supplier_id, category_id, description, supplier_reference, location_id, gross_amount, tax_amount, tax_rate, currency, status")
+      .select("id, expense_date, document_date, supplier_id, category_id, description, supplier_reference, location_id, gross_amount, tax_amount, tax_rate, currency, payment_status, paid_date, payment_method, status")
       .eq("organization_id", organizationId)
       .gte("expense_date", period.startDate)
       .lt("expense_date", period.endDateExclusive)
@@ -196,11 +213,27 @@ async function* expenseRows(
       .order("id", { ascending: true })
       .limit(EXPORT_PAGE_SIZE);
     if (locationId) query = query.eq("location_id", locationId);
+    if (postedOnly) query = query.eq("status", "posted");
     if (cursor) query = query.or(`expense_date.gt.${cursor.date},and(expense_date.eq.${cursor.date},id.gt.${cursor.id})`);
     const { data, error } = await query.returns<ExpenseExportRow[]>();
     if (error) throw new Error(`accounting_expenses_export_failed:${error.code}`);
     const rows = data ?? [];
     if (!rows.length) return;
+    yield rows;
+    if (rows.length < EXPORT_PAGE_SIZE) return;
+    const last = rows[rows.length - 1];
+    cursor = { date: last.expense_date, id: last.id };
+  }
+}
+
+async function* expenseRows(
+  supabase: SupabaseServerClient,
+  organizationId: string,
+  period: AccountingPeriod,
+  locationId: string | null,
+  postedOnly: boolean,
+): AsyncGenerator<unknown[]> {
+  for await (const rows of accountingExpensePages(supabase, organizationId, period, locationId, postedOnly)) {
 
     const categoryIds = [...new Set(rows.map((row) => row.category_id))];
     const supplierIds = [...new Set(rows.flatMap((row) => row.supplier_id ? [row.supplier_id] : []))];
@@ -211,7 +244,7 @@ async function* expenseRows(
       namesById<NamedRow>(supabase, "locations", organizationId, locationIds),
     ]);
     for (const row of rows) {
-      yield [
+      const common = [
         row.expense_date,
         row.supplier_id ? suppliers.get(row.supplier_id) ?? "" : "",
         categories.get(row.category_id) ?? "",
@@ -222,12 +255,11 @@ async function* expenseRows(
         row.tax_amount === null ? "" : Number(row.tax_amount).toFixed(2),
         row.tax_rate === null ? "" : Number(row.tax_rate).toFixed(4),
         row.currency,
-        row.status,
       ];
+      yield postedOnly
+        ? [row.expense_date, row.document_date ?? "", ...common.slice(1), row.payment_status, row.paid_date ?? "", row.payment_method ?? "", row.status]
+        : [...common, row.status];
     }
-    if (rows.length < EXPORT_PAGE_SIZE) return;
-    const last = rows[rows.length - 1];
-    cursor = { date: last.expense_date, id: last.id };
   }
 }
 
@@ -237,5 +269,14 @@ export async function* accountingExpensesCsvChunks(
   period: AccountingPeriod,
   locationId: string | null,
 ): AsyncGenerator<string> {
-  yield* csvChunks(EXPENSE_HEADERS, expenseRows(supabase, organizationId, period, locationId));
+  yield* csvChunks(EXPENSE_HEADERS, expenseRows(supabase, organizationId, period, locationId, false));
+}
+
+export async function* accountantExpensesCsvChunks(
+  supabase: SupabaseServerClient,
+  organizationId: string,
+  period: AccountingPeriod,
+  locationId: string | null,
+): AsyncGenerator<string> {
+  yield* csvChunks(ACCOUNTANT_EXPENSE_HEADERS, expenseRows(supabase, organizationId, period, locationId, true));
 }

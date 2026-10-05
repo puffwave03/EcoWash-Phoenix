@@ -1322,11 +1322,13 @@
   "accountingWorkspace": {
     "eyebrow": "Control financiero operativo", "title": "Contabilidad", "description": "Consulta ventas, cobros, saldos pendientes y gastos desde fuentes operativas canónicas.", "documentsLink": "Documentos de venta",
     "filters": {"period": "Periodo", "start": "Desde", "end": "Hasta", "location": "Sede", "allLocations": "Todas las sedes", "apply": "Aplicar"},
-    "presets": {"today": "Hoy", "week": "Esta semana", "month": "Este mes", "previousMonth": "Mes anterior", "custom": "Personalizado"},
+    "presets": {"today": "Hoy", "week": "Esta semana", "month": "Este mes", "previousMonth": "Mes anterior", "quarter": "Trimestre", "custom": "Personalizado"},
     "summary": {"netSales": "Ventas netas", "collected": "Cobrado", "outstanding": "Pendiente", "refunds": "Reembolsos", "expenses": "Gastos", "operationalResult": "Resultado operativo", "netCollected": "Cobro neto", "online": "Online"},
     "sections": {"sales": "Ventas", "cashflow": "Flujo de caja", "expenses": "Gastos", "byCategory": "Por categoría", "bySupplier": "Por proveedor", "byLocation": "Por sede", "activity": "Actividad financiera"},
     "activityTypes": {"sale": "Venta", "payment": "Pago", "refund": "Reembolso", "expense": "Gasto"},
     "exports": {"sales": "Exportar ventas y cobros CSV", "expenses": "Exportar gastos CSV", "disclaimer": "Exportación operativa, no declaración fiscal oficial."},
+    "quarter": {"year": "Año", "quarter": "Trimestre"},
+    "accountantSupport": {"title": "Documentos para el asesor contable", "postedExpenses": "Gastos registrados CSV", "summary": "Resumen del período CSV", "dailyCloseRegister": "Registro de cierres diarios CSV", "disclaimer": "Exportaciones de apoyo contable, no declaraciones ni envíos fiscales. Las monedas no se convierten.", "dailyCloseNote": "Los cierres diarios son operativos y no fiscales; no se deben sumar filas de ámbitos distintos."},
     "empty": {"summary": "No hay movimientos financieros en el periodo.", "expenses": "No hay gastos contabilizados.", "activity": "No hay actividad financiera en el periodo."},
     "mixedCurrencies": "Monedas separadas", "invalidPeriod": "El periodo no era válido; se muestra el mes actual.", "queryError": "Los datos contables no están disponibles. No se han sustituido por ceros engañosos.", "boundary": "Espacio operativo basado en pedidos, pagos y gastos canónicos. No es contabilidad legal certificada, estados financieros ni declaración fiscal.",
     "management": {

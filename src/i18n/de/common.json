@@ -1322,11 +1322,13 @@
   "accountingWorkspace": {
     "eyebrow": "Operative Finanzkontrolle", "title": "Buchhaltung", "description": "Verkäufe, Einnahmen, offene Beträge und Ausgaben aus kanonischen operativen Quellen prüfen.", "documentsLink": "Verkaufsdokumente",
     "filters": {"period": "Zeitraum", "start": "Von", "end": "Bis", "location": "Standort", "allLocations": "Alle Standorte", "apply": "Anwenden"},
-    "presets": {"today": "Heute", "week": "Diese Woche", "month": "Dieser Monat", "previousMonth": "Vorheriger Monat", "custom": "Benutzerdefiniert"},
+    "presets": {"today": "Heute", "week": "Diese Woche", "month": "Dieser Monat", "previousMonth": "Vorheriger Monat", "quarter": "Quartal", "custom": "Benutzerdefiniert"},
     "summary": {"netSales": "Nettoumsatz", "collected": "Eingenommen", "outstanding": "Offen", "refunds": "Erstattungen", "expenses": "Ausgaben", "operationalResult": "Operatives Ergebnis", "netCollected": "Nettoeinnahmen", "online": "Online"},
     "sections": {"sales": "Verkäufe", "cashflow": "Zahlungsfluss", "expenses": "Ausgaben", "byCategory": "Nach Kategorie", "bySupplier": "Nach Lieferant", "byLocation": "Nach Standort", "activity": "Finanzaktivität"},
     "activityTypes": {"sale": "Verkauf", "payment": "Zahlung", "refund": "Erstattung", "expense": "Ausgabe"},
     "exports": {"sales": "Verkäufe und Einnahmen als CSV", "expenses": "Ausgaben als CSV", "disclaimer": "Operativer Export, keine offizielle Steuererklärung."},
+    "quarter": {"year": "Jahr", "quarter": "Quartal"},
+    "accountantSupport": {"title": "Unterlagen für die Buchhaltung", "postedExpenses": "Gebuchte Ausgaben CSV", "summary": "Periodenübersicht CSV", "dailyCloseRegister": "Tagesabschlussregister CSV", "disclaimer": "Buchhaltungsunterlagen, keine Steuererklärungen oder steuerlichen Einreichungen. Währungen werden nicht umgerechnet.", "dailyCloseNote": "Tagesabschlüsse sind betrieblich und nicht steuerlich; Zeilen verschiedener Geltungsbereiche dürfen nicht addiert werden."},
     "empty": {"summary": "Keine Finanzbewegungen im gewählten Zeitraum.", "expenses": "Keine gebuchten Ausgaben.", "activity": "Keine Finanzaktivität im Zeitraum."},
     "mixedCurrencies": "Währungen getrennt", "invalidPeriod": "Der Zeitraum war ungültig; angezeigt wird der aktuelle Monat.", "queryError": "Buchhaltungsdaten sind nicht verfügbar. Fehlende Daten wurden nicht durch irreführende Nullen ersetzt.", "boundary": "Operativer Arbeitsbereich auf Basis kanonischer Aufträge, Zahlungen und Ausgaben. Keine zertifizierte gesetzliche Buchhaltung, kein Abschluss und keine Steuererklärung.",
     "management": {

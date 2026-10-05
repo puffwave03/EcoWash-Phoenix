@@ -1322,11 +1322,13 @@
   "accountingWorkspace": {
     "eyebrow": "Contrôle financier opérationnel", "title": "Comptabilité", "description": "Consultez ventes, encaissements, créances et dépenses depuis les sources opérationnelles canoniques.", "documentsLink": "Documents de vente",
     "filters": {"period": "Période", "start": "Du", "end": "Au", "location": "Site", "allLocations": "Tous les sites", "apply": "Appliquer"},
-    "presets": {"today": "Aujourd’hui", "week": "Cette semaine", "month": "Ce mois", "previousMonth": "Mois précédent", "custom": "Personnalisé"},
+    "presets": {"today": "Aujourd’hui", "week": "Cette semaine", "month": "Ce mois", "previousMonth": "Mois précédent", "quarter": "Trimestre", "custom": "Personnalisé"},
     "summary": {"netSales": "Ventes nettes", "collected": "Encaissé", "outstanding": "À encaisser", "refunds": "Remboursements", "expenses": "Dépenses", "operationalResult": "Résultat opérationnel", "netCollected": "Encaissement net", "online": "En ligne"},
     "sections": {"sales": "Ventes", "cashflow": "Flux de trésorerie", "expenses": "Dépenses", "byCategory": "Par catégorie", "bySupplier": "Par fournisseur", "byLocation": "Par site", "activity": "Activité financière"},
     "activityTypes": {"sale": "Vente", "payment": "Paiement", "refund": "Remboursement", "expense": "Dépense"},
     "exports": {"sales": "Exporter ventes et encaissements CSV", "expenses": "Exporter dépenses CSV", "disclaimer": "Export opérationnel, pas une déclaration fiscale officielle."},
+    "quarter": {"year": "Année", "quarter": "Trimestre"},
+    "accountantSupport": {"title": "Documents pour le comptable", "postedExpenses": "Dépenses comptabilisées CSV", "summary": "Résumé de période CSV", "dailyCloseRegister": "Registre des clôtures journalières CSV", "disclaimer": "Exports de support comptable, ni déclarations ni dépôts fiscaux. Les devises ne sont pas converties.", "dailyCloseNote": "Les clôtures journalières sont opérationnelles et non fiscales ; ne cumulez pas les lignes de périmètres différents."},
     "empty": {"summary": "Aucun mouvement financier sur la période.", "expenses": "Aucune dépense comptabilisée.", "activity": "Aucune activité financière sur la période."},
     "mixedCurrencies": "Devises séparées", "invalidPeriod": "La période était invalide ; le mois courant est affiché.", "queryError": "Les données comptables sont indisponibles. Elles n’ont pas été remplacées par des zéros trompeurs.", "boundary": "Espace opérationnel fondé sur les commandes, paiements et dépenses canoniques. Il ne constitue ni une comptabilité légale certifiée, ni des états financiers, ni une déclaration fiscale.",
     "management": {

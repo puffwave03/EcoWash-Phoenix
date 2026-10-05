@@ -1,13 +1,15 @@
 import type { ExpenseSummary } from "@/features/accounting/expenses";
 import type { AccountingPeriod, AccountingSummary } from "@/features/accounting/summary";
 
-export const ACCOUNTING_PERIOD_PRESETS = ["today", "week", "month", "previousMonth", "custom"] as const;
+export const ACCOUNTING_PERIOD_PRESETS = ["today", "week", "month", "previousMonth", "quarter", "custom"] as const;
 export type AccountingPeriodPreset = (typeof ACCOUNTING_PERIOD_PRESETS)[number];
 
 export type AccountingPeriodSelection = {
   endDate: string;
   period: AccountingPeriod;
   preset: AccountingPeriodPreset;
+  quarter?: number;
+  year?: number;
 };
 
 export type OperationalCurrencySummary = {
@@ -52,6 +54,7 @@ export function resolveAccountingPeriod(
   endInput: string | undefined,
   timezone: string,
   now = new Date(),
+  quarterInput?: { quarter?: string; year?: string },
 ): AccountingPeriodSelection {
   const preset = ACCOUNTING_PERIOD_PRESETS.includes(presetInput as AccountingPeriodPreset)
     ? presetInput as AccountingPeriodPreset
@@ -70,6 +73,17 @@ export function resolveAccountingPeriod(
     const [year, month] = today.split("-").map(Number);
     endDate = new Date(Date.UTC(year, month - 1, 0)).toISOString().slice(0, 10);
     startDate = `${endDate.slice(0, 8)}01`;
+  } else if (preset === "quarter") {
+    const yearValue = quarterInput?.year;
+    const quarterValue = quarterInput?.quarter;
+    if (!yearValue || !/^[1-9]\d{3}$/.test(yearValue) || Number(yearValue) > 9998
+      || !quarterValue || !/^[1-4]$/.test(quarterValue)) throw new Error("accounting_period_invalid");
+    const year = Number(yearValue);
+    const quarter = Number(quarterValue);
+    const startMonth = (quarter - 1) * 3 + 1;
+    const endMonth = startMonth + 2;
+    startDate = `${yearValue}-${String(startMonth).padStart(2, "0")}-01`;
+    endDate = new Date(Date.UTC(year, endMonth, 0)).toISOString().slice(0, 10);
   } else if (preset === "custom") {
     if (!startInput || !endInput || !DATE.test(startInput) || !DATE.test(endInput) || endInput < startInput) {
       throw new Error("accounting_period_invalid");
@@ -82,7 +96,14 @@ export function resolveAccountingPeriod(
     endDate,
     period: { endDateExclusive: addLocalDays(endDate, 1), startDate },
     preset,
+    ...(preset === "quarter" ? { quarter: Number(quarterInput?.quarter), year: Number(quarterInput?.year) } : {}),
   };
+}
+
+export function accountingExportPeriodLabel(selection: AccountingPeriodSelection) {
+  return selection.preset === "quarter"
+    ? `${selection.year}-Q${selection.quarter}`
+    : `${selection.period.startDate}-${selection.endDate}`;
 }
 
 export function buildOperationalCurrencySummaries(

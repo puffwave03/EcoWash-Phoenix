@@ -34,16 +34,20 @@ export default async function AccountingPage({ params, searchParams }: {
   let invalidPeriod = false;
   let selection;
   try {
-    selection = resolveAccountingPeriod(one(query.preset), one(query.start), one(query.end), context.timezone);
+    selection = resolveAccountingPeriod(one(query.preset), one(query.start), one(query.end), context.timezone, undefined, {
+      quarter: one(query.quarter),
+      year: one(query.year),
+    });
   } catch {
     invalidPeriod = true;
     selection = resolveAccountingPeriod("month", undefined, undefined, context.timezone);
   }
   const requestedLocation = one(query.location) || null;
   const locationId = requestedLocation && context.locations.some((value) => value.id === requestedLocation) ? requestedLocation : null;
+  const invalidLocation = requestedLocation !== null && locationId === null;
   let data: Awaited<ReturnType<typeof getAccountingWorkspace>> | null = null;
   try {
-    data = await getAccountingWorkspace(locale, selection.period, locationId);
+    if (!invalidLocation) data = await getAccountingWorkspace(locale, selection.period, locationId);
   } catch (error) {
     console.error("Accounting workspace query failed", error instanceof Error ? error.message : "unknown");
   }
@@ -52,6 +56,7 @@ export default async function AccountingPage({ params, searchParams }: {
     end: selection.endDate,
     preset: selection.preset,
     start: selection.period.startDate,
+    ...(selection.preset === "quarter" ? { year: String(selection.year), quarter: String(selection.quarter) } : {}),
     ...(locationId ? { location: locationId } : {}),
   }).toString();
   const summaryText = t.raw("summary") as Record<string, string>;
@@ -64,22 +69,34 @@ export default async function AccountingPage({ params, searchParams }: {
 
     <form className="rounded-card border border-border bg-white p-4 shadow-sm" method="get">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.3fr_1fr_1fr_1fr_auto] xl:items-end">
-        <fieldset><legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted">{t("filters.period")}</legend><div className="flex flex-wrap gap-2">{["today", "week", "month", "previousMonth", "custom"].map((preset) => <button className={`min-h-11 rounded-control border px-3 text-sm font-semibold ${selection.preset === preset ? "border-primary bg-primary-soft text-primary" : "border-border bg-white text-muted"}`} key={preset} name="preset" type="submit" value={preset}>{t(`presets.${preset}`)}</button>)}</div></fieldset>
+        <fieldset><legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted">{t("filters.period")}</legend><div className="flex flex-wrap gap-2">{["today", "week", "month", "previousMonth", "quarter", "custom"].map((preset) => <button className={`min-h-11 rounded-control border px-3 text-sm font-semibold ${selection.preset === preset ? "border-primary bg-primary-soft text-primary" : "border-border bg-white text-muted"}`} key={preset} name="preset" type="submit" value={preset}>{t(`presets.${preset}`)}</button>)}</div></fieldset>
         <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{t("filters.start")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={selection.period.startDate} name="start" type="date" /></label>
         <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{t("filters.end")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={selection.endDate} name="end" type="date" /></label>
         <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{t("filters.location")}</span><select className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue={locationId ?? ""} name="location"><option value="">{t("filters.allLocations")}</option>{context.locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select></label>
         <button className="min-h-11 rounded-control bg-primary px-4 text-sm font-semibold text-white" name="preset" type="submit" value="custom">{t("filters.apply")}</button>
+      </div>
+      <div className="mt-3 flex flex-wrap items-end gap-3">
+        <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{t("quarter.year")}</span><input className="min-h-11 w-28 rounded-control border border-border px-3" defaultValue={selection.year ?? Number(selection.period.startDate.slice(0, 4))} max="9998" min="1000" name="year" required type="number" /></label>
+        <label className="space-y-1.5 text-sm font-semibold text-primary"><span>{t("quarter.quarter")}</span><select className="min-h-11 rounded-control border border-border bg-white px-3" defaultValue={selection.quarter ?? Math.ceil(Number(selection.period.startDate.slice(5, 7)) / 3)} name="quarter">{[1, 2, 3, 4].map((value) => <option key={value} value={value}>Q{value}</option>)}</select></label>
+        <button className="min-h-11 rounded-control border border-primary px-4 text-sm font-semibold text-primary" name="preset" type="submit" value="quarter">{t("filters.apply")}</button>
       </div>
       <p className="mt-3 text-xs text-muted">{selection.period.startDate} — {selection.endDate} · {context.timezone}</p>
       {invalidPeriod ? <p className="mt-2 text-sm text-amber-800" role="alert">{t("invalidPeriod")}</p> : null}
     </form>
 
     {!data ? <Card className="border-red-200 bg-red-50"><p className="text-sm text-red-800" role="alert">{t("queryError")}</p></Card> : <>
-      <div className="flex flex-wrap gap-3">
-        <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/sales?${exportQuery}`}>{t("exports.sales")}</a>
-        <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/expenses?${exportQuery}`}>{t("exports.expenses")}</a>
-        <p className="self-center text-xs text-muted">{t("exports.disclaimer")}</p>
-      </div>
+      <section className="rounded-card border border-border bg-white p-4 shadow-sm">
+        <h2 className="text-xl font-semibold text-primary">{t("accountantSupport.title")}</h2>
+        <p className="mt-1 text-sm text-muted">{t("accountantSupport.disclaimer")}</p>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/sales?${exportQuery}`}>{t("exports.sales")}</a>
+          <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/accountant-expenses?${exportQuery}`}>{t("accountantSupport.postedExpenses")}</a>
+          <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/summary?${exportQuery}`}>{t("accountantSupport.summary")}</a>
+          <a className="inline-flex min-h-11 items-center rounded-control border border-primary px-4 text-sm font-semibold !text-primary" href={`/${locale}/app/accounting/export/daily-close-register?${exportQuery}`}>{t("accountantSupport.dailyCloseRegister")}</a>
+        </div>
+        <p className="mt-3 text-xs text-muted">{t("accountantSupport.dailyCloseNote")}</p>
+      </section>
+      <div><a className="text-sm font-semibold text-primary underline" href={`/${locale}/app/accounting/export/expenses?${exportQuery}`}>{t("exports.expenses")}</a></div>
 
       {data.operational.length === 0 ? <EmptyState>{t("empty.summary")}</EmptyState> : data.operational.map((currency) => {
         const expense = data.expenseSummary.currencies.find((value) => value.currency === currency.currency);
