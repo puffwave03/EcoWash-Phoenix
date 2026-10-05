@@ -5,6 +5,14 @@ import type {
   PersistedDailyCloseHistoryItem,
   PersistedDailyCloseWithScope,
 } from "@/features/daily-close/persisted-types";
+import {
+  DAILY_CLOSE_HISTORY_PAGE_SIZE,
+  dailyCloseHistoryKeyset,
+  dailyCloseHistoryPage,
+  decodeDailyCloseHistoryCursor,
+  normalizeDailyCloseHistoryFilters,
+  type DailyCloseHistoryFilters,
+} from "@/features/daily-close/pagination";
 import { resolveDailyCloseBusinessDay } from "@/features/daily-close/preview";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
@@ -41,14 +49,16 @@ type DailyCloseDetailRow = DailyCloseRow & {
   location: { name: string } | { name: string }[] | null;
 };
 
-export type DailyCloseHistoryFilters = {
-  businessDate?: string;
-  locationId?: string | "organization";
-};
+export type { DailyCloseHistoryFilters } from "@/features/daily-close/pagination";
 
 export type DailyCloseHistoryScope = {
   id: string;
   name: string;
+};
+
+type DailyCloseHistoryScopeResult = {
+  hasOrganizationScope: boolean;
+  scopes: DailyCloseHistoryScope[];
 };
 
 function locationName(value: DailyCloseHistoryRow["location"]) {
@@ -124,42 +134,34 @@ export async function getPersistedDailyClose(
 export async function listPersistedDailyCloses(
   locale: string,
   filters: DailyCloseHistoryFilters = {},
+  rawCursor?: string,
 ): Promise<{
   closes: PersistedDailyCloseHistoryItem[];
+  pagination: { newerCursor: string | null; olderCursor: string | null };
   hasOrganizationScope: boolean;
   scopes: DailyCloseHistoryScope[];
 }> {
   const { membership } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
+  const normalized = normalizeDailyCloseHistoryFilters(filters);
+  let cursor = decodeDailyCloseHistoryCursor(rawCursor, normalized);
   const select = "id, business_date, location_id, closed_at, close_note, snapshot_hash, tenant_timezone, location:locations!daily_closes_location_same_org(name)";
-  let historyQuery = supabase.from("daily_closes").select(select)
-    .eq("organization_id", membership.organization.id)
-    .order("business_date", { ascending: false })
-    .order("closed_at", { ascending: false })
-    .limit(100);
-  if (filters.businessDate) historyQuery = historyQuery.eq("business_date", filters.businessDate);
-  if (filters.locationId === "organization") historyQuery = historyQuery.is("location_id", null);
-  else if (filters.locationId) historyQuery = historyQuery.eq("location_id", filters.locationId);
-
-  const [historyResult, scopeResult] = await Promise.all([
-    historyQuery.returns<DailyCloseHistoryRow[]>(),
-    supabase.from("daily_closes").select("location_id, location:locations!daily_closes_location_same_org(name)")
-      .eq("organization_id", membership.organization.id)
-      .order("business_date", { ascending: false })
-      .limit(500)
-      .returns<Pick<DailyCloseHistoryRow, "location" | "location_id">[]>(),
-  ]);
-  if (historyResult.error) throw new Error(`daily_close_history_read_failed:${historyResult.error.code}`);
-  if (scopeResult.error) throw new Error(`daily_close_history_scope_read_failed:${scopeResult.error.code}`);
-
-  const scopeMap = new Map<string, string>();
-  for (const row of scopeResult.data ?? []) {
-    const name = locationName(row.location);
-    if (row.location_id && name) scopeMap.set(row.location_id, name);
-  }
-
-  return {
-    closes: (historyResult.data ?? []).map((row) => ({
+  const loadHistory = async () => {
+    let query = supabase.from("daily_closes").select(select)
+      .eq("organization_id", membership.organization.id);
+    if (normalized.businessDate) query = query.eq("business_date", normalized.businessDate);
+    if (normalized.locationId === "organization") query = query.is("location_id", null);
+    else if (normalized.locationId) query = query.eq("location_id", normalized.locationId);
+    if (cursor) query = query.or(dailyCloseHistoryKeyset(cursor));
+    const ascending = cursor?.direction === "newer";
+    const { data, error } = await query
+      .order("business_date", { ascending })
+      .order("closed_at", { ascending })
+      .order("id", { ascending })
+      .limit(DAILY_CLOSE_HISTORY_PAGE_SIZE + 1)
+      .returns<DailyCloseHistoryRow[]>();
+    if (error) throw new Error(`daily_close_history_read_failed:${error.code}`);
+    return (data ?? []).map((row): PersistedDailyCloseHistoryItem => ({
       businessDate: row.business_date,
       closeNote: row.close_note,
       closedAt: row.closed_at,
@@ -168,9 +170,29 @@ export async function listPersistedDailyCloses(
       locationName: locationName(row.location),
       snapshotHash: row.snapshot_hash,
       tenantTimezone: row.tenant_timezone,
-    })),
-    hasOrganizationScope: (scopeResult.data ?? []).some((row) => row.location_id === null),
-    scopes: [...scopeMap].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name)),
+    }));
+  };
+
+  const [initialRows, scopeResult] = await Promise.all([
+    loadHistory(),
+    supabase.rpc("list_daily_close_history_scopes"),
+  ]);
+  if (scopeResult.error) throw new Error(`daily_close_history_scope_read_failed:${scopeResult.error.code}`);
+  const scopes = scopeResult.data as DailyCloseHistoryScopeResult | null;
+  if (!scopes || !Array.isArray(scopes.scopes)
+    || typeof scopes.hasOrganizationScope !== "boolean") throw new Error("daily_close_history_scope_invalid_response");
+  let rows = initialRows;
+  if (!rows.length && cursor) {
+    cursor = null;
+    rows = await loadHistory();
+  }
+  const page = dailyCloseHistoryPage(rows, cursor, normalized);
+
+  return {
+    closes: page.items,
+    pagination: { newerCursor: page.newerCursor, olderCursor: page.olderCursor },
+    hasOrganizationScope: scopes.hasOrganizationScope,
+    scopes: scopes.scopes.sort((a, b) => a.name.localeCompare(b.name)),
   };
 }
 

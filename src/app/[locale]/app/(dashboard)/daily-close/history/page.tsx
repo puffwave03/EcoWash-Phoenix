@@ -1,11 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { PageHeader } from "@/components/operational/OperationalUi";
+import { dailyCloseHistoryHref, normalizeDailyCloseHistoryFilters } from "@/features/daily-close/pagination";
 import { listPersistedDailyCloses } from "@/features/daily-close/server/persisted-queries";
 import { Link } from "@/i18n/navigation";
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function formatDateTime(value: string, locale: string, timeZone: string) {
   return new Intl.DateTimeFormat(locale, {
@@ -17,18 +15,15 @@ function formatDateTime(value: string, locale: string, timeZone: string) {
 
 export default async function DailyCloseHistoryPage({ params, searchParams }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ date?: string; scope?: string }>;
+  searchParams: Promise<{ cursor?: string; date?: string; scope?: string }>;
 }) {
   const { locale } = await params;
   const [query, t] = await Promise.all([
     searchParams,
     getTranslations({ locale, namespace: "common.dailyClose.history" }),
   ]);
-  const businessDate = DATE_PATTERN.test(query.date ?? "") ? query.date : undefined;
-  const locationId = query.scope === "organization" || UUID_PATTERN.test(query.scope ?? "")
-    ? query.scope as string
-    : undefined;
-  const history = await listPersistedDailyCloses(locale, { businessDate, locationId });
+  const filters = normalizeDailyCloseHistoryFilters({ businessDate: query.date, locationId: query.scope });
+  const history = await listPersistedDailyCloses(locale, filters, query.cursor);
 
   return (
     <div className="space-y-6">
@@ -41,11 +36,11 @@ export default async function DailyCloseHistoryPage({ params, searchParams }: {
         <form className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end" method="get">
           <label className="space-y-2 text-sm font-semibold text-primary">
             <span>{t("businessDate")}</span>
-            <input className="min-h-12 w-full rounded-control border border-border bg-white px-3" defaultValue={businessDate} name="date" type="date" />
+            <input className="min-h-12 w-full rounded-control border border-border bg-white px-3" defaultValue={filters.businessDate} name="date" type="date" />
           </label>
           <label className="space-y-2 text-sm font-semibold text-primary">
             <span>{t("scope")}</span>
-            <select className="min-h-12 w-full rounded-control border border-border bg-white px-3" defaultValue={locationId ?? ""} name="scope">
+            <select className="min-h-12 w-full rounded-control border border-border bg-white px-3" defaultValue={filters.locationId ?? ""} name="scope">
               <option value="">{t("allScopes")}</option>
               {history.hasOrganizationScope ? <option value="organization">{t("organizationWide")}</option> : null}
               {history.scopes.map((scope) => <option key={scope.id} value={scope.id}>{scope.name}</option>)}
@@ -75,6 +70,11 @@ export default async function DailyCloseHistoryPage({ params, searchParams }: {
           ))}
         </div>
       )}
+      <nav aria-label={t("navigation")} className="flex flex-wrap gap-3">
+        {history.pagination.newerCursor ? <Link className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold" href={dailyCloseHistoryHref(filters, history.pagination.newerCursor)} locale={locale}>{t("newer")}</Link> : null}
+        {history.pagination.olderCursor ? <Link className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold" href={dailyCloseHistoryHref(filters, history.pagination.olderCursor)} locale={locale}>{t("older")}</Link> : null}
+        {query.cursor ? <Link className="inline-flex min-h-11 items-center px-4 text-sm font-semibold underline" href={dailyCloseHistoryHref(filters)} locale={locale}>{t("latest")}</Link> : null}
+      </nav>
     </div>
   );
 }

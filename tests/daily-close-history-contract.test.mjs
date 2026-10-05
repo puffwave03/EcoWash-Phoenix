@@ -7,20 +7,22 @@ const listPagePath = "src/app/[locale]/app/(dashboard)/daily-close/history/page.
 const detailPagePath = "src/app/[locale]/app/(dashboard)/daily-close/history/[closeId]/page.tsx";
 const queryPath = "src/features/daily-close/server/persisted-queries.ts";
 
-test("1 history list reads only persisted daily closes with bounded ordering", async () => {
+test("1 history list reads persisted closes with deterministic keyset ordering", async () => {
   const query = await source(queryPath);
   const history = query.slice(query.indexOf("export async function listPersistedDailyCloses"), query.indexOf("export async function getPersistedDailyCloseById"));
   assert.match(history, /from\("daily_closes"\)/g);
-  assert.match(history, /order\("business_date", \{ ascending: false \}\)/);
-  assert.match(history, /\.limit\(100\)/);
-  assert.doesNotMatch(history, /getDailyCloseData|calculate_daily_close_snapshot|\.rpc\(/);
+  assert.match(history, /\.order\("business_date", \{ ascending \}\)/);
+  assert.match(history, /\.order\("closed_at", \{ ascending \}\)/);
+  assert.match(history, /\.order\("id", \{ ascending \}\)/);
+  assert.match(history, /\.limit\(DAILY_CLOSE_HISTORY_PAGE_SIZE \+ 1\)/);
+  assert.doesNotMatch(history, /\.limit\(100\)|\.limit\(500\)|getDailyCloseData|calculate_daily_close_snapshot/);
 });
 
 test("2 history filters use business date and persisted location scope", async () => {
   const query = await source(queryPath);
-  assert.match(query, /filters\.businessDate[\s\S]*\.eq\("business_date", filters\.businessDate\)/);
-  assert.match(query, /filters\.locationId === "organization"[\s\S]*\.is\("location_id", null\)/);
-  assert.match(query, /\.eq\("location_id", filters\.locationId\)/);
+  assert.match(query, /normalized\.businessDate[\s\S]*\.eq\("business_date", normalized\.businessDate\)/);
+  assert.match(query, /normalized\.locationId === "organization"[\s\S]*\.is\("location_id", null\)/);
+  assert.match(query, /\.eq\("location_id", normalized\.locationId\)/);
 });
 
 test("3 detail lookup is tenant isolated and opens one persisted close", async () => {
@@ -62,7 +64,8 @@ test("6 history remains read-only while exposing export and print actions", asyn
     source(detailPagePath),
   ]);
   const historySource = `${query.slice(query.indexOf("export async function listPersistedDailyCloses"))}\n${listPage}\n${detailPage}`;
-  assert.doesNotMatch(historySource, /\.insert\(|\.update\(|\.delete\(|\.rpc\(|requestDailyCloseAction/);
+  assert.match(historySource, /\.rpc\("list_daily_close_history_scopes"\)/);
+  assert.doesNotMatch(historySource, /\.insert\(|\.update\(|\.delete\(|\.rpc\("(?:close_daily_close|calculate_daily_close_snapshot)"\)|requestDailyCloseAction/);
   assert.doesNotMatch(historySource, /reopen|deleteAction/i);
 });
 
