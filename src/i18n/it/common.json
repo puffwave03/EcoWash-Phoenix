@@ -964,6 +964,7 @@
     "navigationLabel": "Navigazione portale cliente",
     "overview": "Panoramica",
     "orders": "I miei ordini",
+    "pagination": {"navigation": "Navigazione storico ordini", "older": "Più vecchi", "newer": "Più recenti", "latest": "Torna ai più recenti"},
     "assistance": "Assistenza",
     "profile": "Profilo",
     "activeOrders": "Ordini attivi",

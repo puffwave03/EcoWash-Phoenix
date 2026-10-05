@@ -38,6 +38,13 @@ export type CustomerPortalOrderFinancial = {
   totalPaid: number;
 };
 
+export type CustomerPortalAccountSummary = {
+  balanceDue: number;
+  currency: string;
+  totalPaid: number;
+  totalValue: number;
+};
+
 export type CustomerPortalPayment = {
   amount: number;
   currency: string;

@@ -942,6 +942,7 @@
     "navigationLabel": "Navegación del portal cliente",
     "overview": "Resumen",
     "orders": "Mis pedidos",
+    "pagination": {"navigation": "Navegación del historial de pedidos", "older": "Más antiguos", "newer": "Más recientes", "latest": "Volver a los más recientes"},
     "assistance": "Ayuda",
     "profile": "Perfil",
     "activeOrders": "Pedidos activos",

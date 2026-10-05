@@ -5,9 +5,12 @@ import {
   type PortalFinanceText,
 } from "@/components/portal/CustomerPortalViews";
 import {
+  countCustomerPortalOrders,
+  getCustomerPortalAccountSummary,
+  getCustomerPortalCurrentOrder,
   getCustomerPortalOrderRequestOptions,
   getNextCustomerPortalTask,
-  listCustomerPortalOrders,
+  listCustomerPortalOrdersPage,
   requireCustomerPortalAccess,
 } from "@/features/portal/server/queries";
 import type { ProductionStatus } from "@/features/orders/types";
@@ -22,8 +25,11 @@ export default async function CustomerPortalPage({
 }: CustomerPortalPageProps) {
   const { locale } = await params;
   const access = await requireCustomerPortalAccess(locale);
-  const [orders, nextTask, options, branding, t, catalogT] = await Promise.all([
-    listCustomerPortalOrders(locale),
+  const [currentOrder, recentPage, accountSummaries, completeOrderCount, nextTask, options, branding, t, catalogT] = await Promise.all([
+    getCustomerPortalCurrentOrder(locale),
+    listCustomerPortalOrdersPage(locale, undefined, 5),
+    getCustomerPortalAccountSummary(locale),
+    countCustomerPortalOrders(locale),
     getNextCustomerPortalTask(locale),
     getCustomerPortalOrderRequestOptions(locale),
     getTenantBranding(access.organizationId),
@@ -31,7 +37,10 @@ export default async function CustomerPortalPage({
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
   const statusLabels = t.raw("statuses") as Record<ProductionStatus, string>;
-  const activeOrders = orders.filter((order) => !["completed", "cancelled"].includes(order.productionStatus));
+  const recentOrders = recentPage.orders
+    .filter((order) => order.id !== currentOrder?.id)
+    .slice(0, 4);
+  const accountSummary = accountSummaries.length === 1 ? accountSummaries[0] : null;
 
   return (
     <CustomerPortalShell
@@ -50,12 +59,14 @@ export default async function CustomerPortalPage({
       }}
     >
       <CustomerPortalOverview
-        activeOrders={activeOrders}
+        accountSummary={accountSummary}
         branding={branding}
+        completeOrderCount={completeOrderCount}
+        currentOrder={currentOrder}
         customerName={access.customerName}
         locale={locale}
         nextTask={nextTask}
-        orders={orders}
+        recentOrders={recentOrders}
         segment={options.segment}
         services={options.services}
         statusLabels={statusLabels}

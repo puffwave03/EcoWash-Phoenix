@@ -942,6 +942,7 @@
     "navigationLabel": "Navigation du portail client",
     "overview": "Vue d'ensemble",
     "orders": "Mes commandes",
+    "pagination": {"navigation": "Navigation de l’historique des commandes", "older": "Plus anciens", "newer": "Plus récents", "latest": "Retour aux plus récents"},
     "assistance": "Assistance",
     "profile": "Profil",
     "activeOrders": "Commandes actives",

@@ -942,6 +942,7 @@
     "navigationLabel": "Navigation im Kundenportal",
     "overview": "Übersicht",
     "orders": "Meine Aufträge",
+    "pagination": {"navigation": "Navigation der Auftragshistorie", "older": "Ältere", "newer": "Neuere", "latest": "Zurück zu den neuesten"},
     "assistance": "Hilfe",
     "profile": "Profil",
     "activeOrders": "Aktive Aufträge",

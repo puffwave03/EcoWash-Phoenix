@@ -7,6 +7,7 @@ import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { OrderPhoto } from "@/features/order-photos/types";
 import type {
+  CustomerPortalAccountSummary,
   CustomerPortalLogistics,
   CustomerPortalNextTask,
   CustomerPortalOrder,
@@ -87,13 +88,15 @@ type PortalCommonText = {
 };
 
 type PortalOverviewProps = {
-  activeOrders: CustomerPortalOrder[];
+  accountSummary: CustomerPortalAccountSummary | null;
+  completeOrderCount: number;
+  currentOrder: CustomerPortalOrder | null;
   customerName: string;
   branding?: TenantBrandingExperience;
   locale: string;
   media?: PortalMediaRegistry;
   nextTask: CustomerPortalNextTask | null;
-  orders: CustomerPortalOrder[];
+  recentOrders: CustomerPortalOrder[];
   segment: CustomerPortalSegment | null;
   services: CustomerPortalOrderService[];
   statusLabels: StatusText;
@@ -129,10 +132,23 @@ type PortalOverviewProps = {
 };
 
 type PortalOrderListProps = {
+  completeOrderCount: number;
   locale: string;
   orders: CustomerPortalOrder[];
+  pagination: {
+    backToLatestHref: string | null;
+    newerHref: string | null;
+    olderHref: string | null;
+  };
   statusLabels: StatusText;
-  text: PortalCommonText;
+  text: PortalCommonText & {
+    pagination: {
+      latest: string;
+      navigation: string;
+      newer: string;
+      older: string;
+    };
+  };
 };
 
 type PortalOrderDetailProps = {
@@ -392,34 +408,26 @@ function PhotoGrid({
 }
 
 export function CustomerPortalOverview({
-  activeOrders,
+  accountSummary,
   branding,
+  completeOrderCount,
+  currentOrder,
   customerName,
   locale,
   media = branding?.media ?? DEFAULT_PORTAL_MEDIA,
   nextTask,
-  orders,
+  recentOrders,
   segment,
   services,
   statusLabels,
   text,
 }: PortalOverviewProps) {
-  const currentOrder = activeOrders[0] ?? null;
   const currentTask = currentOrder && nextTask?.orderId === currentOrder.id ? nextTask : null;
-  const recentOrders = orders.filter((order) => order.id !== currentOrder?.id).slice(0, 4);
   const currentStatus = currentOrder
     ? currentTask?.kind === "delivery" && currentTask.status === "in_progress"
       ? text.inDelivery
       : statusLabels[currentOrder.productionStatus]
     : null;
-  const financials = orders.flatMap((order) => order.financial ? [order.financial] : []);
-  const summaryCurrencies = new Set(financials.map((financial) => financial.currency));
-  const summaryCurrency = summaryCurrencies.size === 1 ? financials[0]?.currency ?? null : null;
-  const accountSummary = summaryCurrency ? {
-    balanceDue: financials.reduce((total, financial) => total + financial.balanceDue, 0),
-    totalPaid: financials.reduce((total, financial) => total + financial.totalPaid, 0),
-    totalValue: financials.reduce((total, financial) => total + financial.totalDue, 0),
-  } : null;
   const featuredCategories = groupServicesByCategory(services.filter((service) => service.portalFeatured || service.categoryFeatured));
   const segmentCategories = groupServicesByCategory(
     services
@@ -552,15 +560,17 @@ export function CustomerPortalOverview({
         </section>
       ) : null}
 
-      {accountSummary && summaryCurrency ? (
+      {completeOrderCount > 0 ? (
         <section className="space-y-4" aria-labelledby="portal-account-summary">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl" id="portal-account-summary">{text.finance.title}</h2>
           <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {[
-              [text.finance.ordersCount, String(orders.length)],
-              [text.finance.totalValue, formatCurrency(accountSummary.totalValue, summaryCurrency, locale)],
-              [text.finance.totalPaid, formatCurrency(accountSummary.totalPaid, summaryCurrency, locale)],
-              [text.finance.balanceDue, formatCurrency(accountSummary.balanceDue, summaryCurrency, locale)],
+              [text.finance.ordersCount, String(completeOrderCount)],
+              ...(accountSummary ? [
+                [text.finance.totalValue, formatCurrency(accountSummary.totalValue, accountSummary.currency, locale)],
+                [text.finance.totalPaid, formatCurrency(accountSummary.totalPaid, accountSummary.currency, locale)],
+                [text.finance.balanceDue, formatCurrency(accountSummary.balanceDue, accountSummary.currency, locale)],
+              ] : []),
             ].map(([label, value]) => (
               <div className="relative overflow-hidden rounded-card border border-border bg-white p-4 shadow-[0_6px_20px_rgb(15_59_46_/_0.035)]" key={label}>
                 <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-secondary/70" />
@@ -687,8 +697,10 @@ export function CustomerPortalOverview({
 }
 
 export function CustomerPortalOrderList({
+  completeOrderCount,
   locale,
   orders,
+  pagination,
   statusLabels,
   text,
 }: PortalOrderListProps) {
@@ -697,7 +709,7 @@ export function CustomerPortalOrderList({
       <header className="rounded-[1.5rem] border border-primary/10 bg-[linear-gradient(135deg,var(--color-primary-soft),white)] p-5 sm:p-7">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{text.history}</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{text.orders}</h1>
-        <p className="mt-2 text-sm text-muted">{orders.length} {text.orders.toLocaleLowerCase()}</p>
+        <p className="mt-2 text-sm text-muted">{completeOrderCount} {text.orders.toLocaleLowerCase()}</p>
       </header>
       {orders.length === 0 ? (
         <p className="rounded-card border border-border bg-white p-4 text-sm text-muted">{text.emptyOrders}</p>
@@ -708,6 +720,27 @@ export function CustomerPortalOrderList({
           ))}
         </div>
       )}
+      {(pagination.olderHref || pagination.newerHref || pagination.backToLatestHref) ? (
+        <nav aria-label={text.pagination.navigation} className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white p-4">
+          <div className="flex flex-wrap gap-2">
+            {pagination.newerHref ? (
+              <Link className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold !text-primary hover:bg-primary-soft" href={pagination.newerHref} locale={locale}>
+                {text.pagination.newer}
+              </Link>
+            ) : null}
+            {pagination.olderHref ? (
+              <Link className="inline-flex min-h-11 items-center rounded-control border border-border px-4 text-sm font-semibold !text-primary hover:bg-primary-soft" href={pagination.olderHref} locale={locale}>
+                {text.pagination.older}
+              </Link>
+            ) : null}
+          </div>
+          {pagination.backToLatestHref ? (
+            <Link className="inline-flex min-h-11 items-center text-sm font-semibold !text-primary hover:underline" href={pagination.backToLatestHref} locale={locale}>
+              {text.pagination.latest}
+            </Link>
+          ) : null}
+        </nav>
+      ) : null}
     </div>
   );
 }

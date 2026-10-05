@@ -11,6 +11,7 @@ import type { ProductionStatus } from "@/features/orders/types";
 import type {
   CustomerPortalAccess,
   CustomerPortalAccessSummary,
+  CustomerPortalAccountSummary,
   CustomerPortalLogisticsRecord,
   CustomerPortalNextTask,
   CustomerPortalOrder,
@@ -19,6 +20,11 @@ import type {
   CustomerPortalPayment,
   CustomerPortalOrderRequestOptions,
 } from "@/features/portal/types";
+import {
+  decodePortalOrderCursor,
+  paginatePortalOrderRows,
+  PORTAL_ORDER_FETCH_SIZE,
+} from "@/features/portal/pagination";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { loadCatalogPresentation } from "@/features/catalog-productization/server/queries";
 import { sortCatalogPresentation } from "@/features/catalog-productization/presentation";
@@ -50,6 +56,15 @@ type PortalFinancialRow = {
   subtotal: number;
   total_due: number;
   total_paid: number;
+};
+
+type PortalOrderPageRow = PortalOrderRow & Omit<PortalFinancialRow, "order_id">;
+
+type PortalAccountSummaryRow = {
+  balance_due: number;
+  currency: string;
+  total_paid: number;
+  total_value: number;
 };
 
 type PortalPaymentRow = {
@@ -191,6 +206,10 @@ function mapPortalOrder(
   };
 }
 
+function mapHydratedPortalOrder(row: PortalOrderPageRow): CustomerPortalOrder {
+  return mapPortalOrder(row, mapFinancial({ ...row, order_id: row.id }));
+}
+
 function mapItem(row: PortalItemRow): CustomerPortalOrderDetail["items"][number] {
   return {
     description: row.description,
@@ -276,33 +295,73 @@ export async function requireCustomerPortalAccess(locale: string): Promise<Custo
   };
 }
 
-export async function listCustomerPortalOrders(locale: string): Promise<CustomerPortalOrder[]> {
+export async function listCustomerPortalOrdersPage(
+  locale: string,
+  rawCursor?: string,
+  targetLimit = PORTAL_ORDER_FETCH_SIZE,
+) {
+  const cursor = decodePortalOrderCursor(rawCursor);
   await requireCustomerPortalAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const [ordersResult, financialResult] = await Promise.all([
-    supabase.rpc("list_customer_portal_orders").returns<PortalOrderRow[]>(),
-    supabase.rpc("list_customer_portal_order_financials").returns<PortalFinancialRow[]>(),
-  ]);
+  const { data, error } = await supabase
+    .rpc("list_customer_portal_orders_page", {
+      target_cursor_created_at: cursor?.createdAt ?? null,
+      target_cursor_id: cursor?.id ?? null,
+      target_direction: cursor?.direction ?? "older",
+      target_limit: targetLimit,
+    })
+    .returns<PortalOrderPageRow[]>();
 
-  if (ordersResult.error || !ordersResult.data) {
-    console.error("Portal order list failed", ordersResult.error?.code);
-    return [];
-  }
+  if (error) console.error("Portal order page failed", error.code);
 
-  if (financialResult.error) {
-    console.error("Portal order financials failed", financialResult.error.code);
-  }
+  const page = paginatePortalOrderRows((data ?? []) as PortalOrderPageRow[], cursor);
+  return {
+    orders: page.visible.map(mapHydratedPortalOrder),
+    pagination: page.pagination,
+  };
+}
 
-  const financials = new Map(
-    ((financialResult.data ?? []) as PortalFinancialRow[]).map((row) => {
-      const financial = mapFinancial(row);
-      return [financial.orderId, financial] as const;
-    }),
-  );
+export async function countCustomerPortalOrders(locale: string): Promise<number> {
+  await requireCustomerPortalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("count_customer_portal_orders");
 
-  return (ordersResult.data as PortalOrderRow[]).map((row) => (
-    mapPortalOrder(row, financials.get(row.id) ?? null)
-  ));
+  if (error) console.error("Portal order count failed", error.code);
+
+  return Number(data ?? 0);
+}
+
+export async function getCustomerPortalCurrentOrder(
+  locale: string,
+): Promise<CustomerPortalOrder | null> {
+  await requireCustomerPortalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .rpc("get_customer_portal_current_order")
+    .maybeSingle<PortalOrderPageRow>();
+
+  if (error) console.error("Portal current order failed", error.code);
+
+  return data ? mapHydratedPortalOrder(data) : null;
+}
+
+export async function getCustomerPortalAccountSummary(
+  locale: string,
+): Promise<CustomerPortalAccountSummary[]> {
+  await requireCustomerPortalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .rpc("get_customer_portal_account_summary")
+    .returns<PortalAccountSummaryRow[]>();
+
+  if (error) console.error("Portal account summary failed", error.code);
+
+  return ((data ?? []) as PortalAccountSummaryRow[]).map((row) => ({
+    balanceDue: Number(row.balance_due),
+    currency: row.currency,
+    totalPaid: Number(row.total_paid),
+    totalValue: Number(row.total_value),
+  }));
 }
 
 function mapPortalTask(row: PortalTaskRow): CustomerPortalNextTask | null {
@@ -359,8 +418,8 @@ export async function getCustomerPortalOrderDetail(
       .rpc("list_customer_portal_order_photos", { target_order_id: orderId })
       .returns<PortalPhotoRow[]>(),
     supabase
-      .rpc("list_customer_portal_order_financials")
-      .returns<PortalFinancialRow[]>(),
+      .rpc("get_customer_portal_order_financial", { target_order_id: orderId })
+      .maybeSingle<PortalFinancialRow>(),
     supabase
       .rpc("list_customer_portal_order_payments", { target_order_id: orderId })
       .returns<PortalPaymentRow[]>(),
@@ -379,9 +438,7 @@ export async function getCustomerPortalOrderDetail(
   return {
     ...mapPortalOrder(
       order,
-      ((financialResult.data ?? []) as PortalFinancialRow[])
-        .filter((row) => row.order_id === orderId)
-        .map(mapFinancial)[0] ?? null,
+      financialResult.data ? mapFinancial(financialResult.data) : null,
     ),
     history: ((historyResult.data ?? []) as PortalHistoryRow[]).map(mapHistory),
     items: ((itemsResult.data ?? []) as PortalItemRow[]).map(mapItem),
