@@ -43,7 +43,7 @@
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.9",
     "archiver": "^8.0.0",
-    "next": "16.2.11",
+    "next": "16.3.8",
     "next-intl": "^4.13.4",
     "qrcode": "^1.5.4",
     "react": "^19.2.8",
@@ -58,7 +58,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.11",
+    "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
