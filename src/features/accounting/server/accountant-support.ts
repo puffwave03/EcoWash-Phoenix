@@ -10,6 +10,7 @@ import {
   accountingExpensePages,
   accountingSalesPages,
   csvChunks,
+  type SalesPageReader,
   type SupabaseServerClient,
 } from "@/features/accounting/server/export-readers";
 
@@ -29,9 +30,11 @@ async function* summaryRows(
   endDate: string,
   timezone: string,
   locationId: string | null,
+  workerPageReader?: SalesPageReader,
+  currencies?: string[],
 ): AsyncGenerator<unknown[]> {
   const totals = new Map<string, AccountantCurrencyTotals>();
-  for await (const page of accountingSalesPages(supabase, period, timezone, locationId)) {
+  for await (const page of accountingSalesPages(supabase, period, timezone, locationId, workerPageReader)) {
     const paymentIds = page.filter((event) => event.event_type === "payment").map((event) => event.event_id);
     const channels = new Map<string, string>();
     if (paymentIds.length) {
@@ -56,6 +59,7 @@ async function* summaryRows(
 
   const generatedAt = new Date().toISOString();
   for (const [currency, total] of [...totals].sort(([left], [right]) => left.localeCompare(right))) {
+    currencies?.push(currency);
     yield [
       "accounting_support_non_fiscal", generatedAt, period.startDate, endDate, timezone,
       locationId ?? "all", currency, total.orderCount, (total.salesNet / 100).toFixed(2),
@@ -77,6 +81,8 @@ export async function* accountingSummaryCsvChunks(
   endDate: string,
   timezone: string,
   locationId: string | null,
+  workerPageReader?: SalesPageReader,
+  metrics?: { rowCount: number; currencies?: string[] },
 ): AsyncGenerator<string> {
-  yield* csvChunks(SUMMARY_HEADERS, summaryRows(supabase, organizationId, period, endDate, timezone, locationId));
+  yield* csvChunks(SUMMARY_HEADERS, summaryRows(supabase, organizationId, period, endDate, timezone, locationId, workerPageReader, metrics?.currencies), metrics);
 }

@@ -149,12 +149,11 @@ test("Daily Close register reads persisted snapshots with keyset and one row per
   assert.doesNotMatch(source, /getDailyCloseData|getAccountingWorkspace|from\("orders"\)|from\("payments"\)|\.range\(/);
 });
 
-test("All new downloads stay private, streamed and non-fiscal with no database or async infrastructure", async () => {
-  const [readers, summary, register, files] = await Promise.all([
+test("Standalone 001K-B downloads stay private, streamed and non-fiscal", async () => {
+  const [readers, summary, register] = await Promise.all([
     read("src/features/accounting/server/export-readers.ts"),
     read("src/features/accounting/server/accountant-support.ts"),
     read("src/features/accounting/server/daily-close-register.ts"),
-    import("node:fs/promises").then((fs) => fs.readdir(new URL("../supabase/migrations/", import.meta.url))),
   ]);
   assert.match(readers, /"Cache-Control": "private, no-store"/);
   assert.match(readers, /"Content-Disposition": `attachment; filename=/);
@@ -163,6 +162,5 @@ test("All new downloads stay private, streamed and non-fiscal with no database o
   assert.match(readers, /new ReadableStream/);
   assert.match(summary, /yield\* csvChunks/);
   assert.match(register, /yield\* csvChunks/);
-  assert.equal(files.some((file) => file.startsWith("20261005000500")), false);
   assert.doesNotMatch(summary + register, /taxable|IGIC|IVA|VAT|Modelo|verifactu|export_jobs|ZIP|archive/i);
 });

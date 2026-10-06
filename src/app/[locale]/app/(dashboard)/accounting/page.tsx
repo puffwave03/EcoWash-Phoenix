@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AccountingManagement, type AccountingManagementText } from "@/components/accounting/AccountingManagement";
+import { AccountantPackPanel, type AccountantPackText } from "@/components/accounting/AccountantPackPanel";
 import { Card } from "@/components/Card";
 import { EmptyState, PageHeader, SummaryCard } from "@/components/operational/OperationalUi";
 import { getAccountingPeriodContext, getAccountingWorkspace } from "@/features/accounting/server/workspace-queries";
@@ -96,6 +97,9 @@ export default async function AccountingPage({ params, searchParams }: {
         </div>
         <p className="mt-3 text-xs text-muted">{t("accountantSupport.dailyCloseNote")}</p>
       </section>
+      <AccountantPackPanel locale={locale} locationId={locationId} text={t.raw("accountantPack") as AccountantPackText}
+        selection={{ preset: selection.preset, start: selection.period.startDate, end: selection.endDate,
+          year: selection.year?.toString(), quarter: selection.quarter?.toString() }} />
       <div><a className="text-sm font-semibold text-primary underline" href={`/${locale}/app/accounting/export/expenses?${exportQuery}`}>{t("exports.expenses")}</a></div>
 
       {data.operational.length === 0 ? <EmptyState>{t("empty.summary")}</EmptyState> : data.operational.map((currency) => {

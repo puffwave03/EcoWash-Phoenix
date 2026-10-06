@@ -48,11 +48,12 @@ function line(values: unknown[]) {
   return `${values.map(csvValue).join(",")}\r\n`;
 }
 
-export async function* csvChunks(headers: string[], rows: AsyncIterable<unknown[]>): AsyncGenerator<string> {
+export async function* csvChunks(headers: string[], rows: AsyncIterable<unknown[]>, metrics?: { rowCount: number }): AsyncGenerator<string> {
   yield `\uFEFF${line(headers)}`;
   let buffer = "";
   let bufferedRows = 0;
   for await (const row of rows) {
+    if (metrics) metrics.rowCount += 1;
     buffer += line(row);
     bufferedRows += 1;
     if (bufferedRows >= CSV_CHUNK_ROWS) {
@@ -103,16 +104,25 @@ export type SalesEvent = {
   payment_method: string | null;
 };
 
+export type SalesPageReader = (args: {
+  start: string;
+  endExclusive: string;
+  locationId: string | null;
+  cursor: { date: string; id: string; type: SalesEvent["event_type"] } | null;
+  limit: number;
+}) => Promise<SalesEvent[]>;
+
 export async function* accountingSalesPages(
   supabase: SupabaseServerClient,
   period: AccountingPeriod,
   timezone: string,
   locationId: string | null,
+  workerPageReader?: SalesPageReader,
 ): AsyncGenerator<SalesEvent[]> {
   const bounds = accountingPeriodBounds(period, timezone);
   let cursor: { date: string; id: string; type: SalesEvent["event_type"] } | null = null;
   for (;;) {
-    const result = await supabase.rpc("list_accounting_sales_export_page", {
+    const result = workerPageReader ? null : await supabase.rpc("list_accounting_sales_export_page", {
       target_cursor_event_date: cursor?.date ?? null,
       target_cursor_event_id: cursor?.id ?? null,
       target_cursor_event_type: cursor?.type ?? null,
@@ -121,8 +131,10 @@ export async function* accountingSalesPages(
       target_location_id: locationId,
       target_start: bounds.start,
     }).returns<SalesEvent[]>() as unknown as { data: SalesEvent[] | null; error: { code?: string } | null };
-    if (result.error) throw new Error(`accounting_sales_export_failed:${result.error.code}`);
-    const rows: SalesEvent[] = result.data ?? [];
+    if (result?.error) throw new Error(`accounting_sales_export_failed:${result.error.code}`);
+    const rows: SalesEvent[] = workerPageReader
+      ? await workerPageReader({ start: bounds.start, endExclusive: bounds.end, locationId, cursor, limit: EXPORT_PAGE_SIZE })
+      : result?.data ?? [];
     if (rows.length) yield rows;
     if (rows.length < EXPORT_PAGE_SIZE) return;
     const last = rows[rows.length - 1];
@@ -135,8 +147,9 @@ async function* salesRows(
   period: AccountingPeriod,
   timezone: string,
   locationId: string | null,
+  workerPageReader?: SalesPageReader,
 ): AsyncGenerator<unknown[]> {
-  for await (const page of accountingSalesPages(supabase, period, timezone, locationId)) {
+  for await (const page of accountingSalesPages(supabase, period, timezone, locationId, workerPageReader)) {
     for (const row of page) {
       yield [row.event_date, row.event_type, row.order_reference, row.customer, row.location, row.payment_method, Number(row.amount).toFixed(2), row.currency];
     }
@@ -148,8 +161,10 @@ export async function* accountingSalesCsvChunks(
   period: AccountingPeriod,
   timezone: string,
   locationId: string | null,
+  workerPageReader?: SalesPageReader,
+  metrics?: { rowCount: number },
 ): AsyncGenerator<string> {
-  yield* csvChunks(SALES_HEADERS, salesRows(supabase, period, timezone, locationId));
+  yield* csvChunks(SALES_HEADERS, salesRows(supabase, period, timezone, locationId, workerPageReader), metrics);
 }
 
 export type ExpenseExportRow = {
@@ -277,6 +292,7 @@ export async function* accountantExpensesCsvChunks(
   organizationId: string,
   period: AccountingPeriod,
   locationId: string | null,
+  metrics?: { rowCount: number },
 ): AsyncGenerator<string> {
-  yield* csvChunks(ACCOUNTANT_EXPENSE_HEADERS, expenseRows(supabase, organizationId, period, locationId, true));
+  yield* csvChunks(ACCOUNTANT_EXPENSE_HEADERS, expenseRows(supabase, organizationId, period, locationId, true), metrics);
 }

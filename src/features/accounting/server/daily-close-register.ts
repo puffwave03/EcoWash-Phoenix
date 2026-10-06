@@ -115,6 +115,7 @@ export async function* dailyCloseRegisterCsvChunks(
   organizationId: string,
   period: AccountingPeriod,
   locationId: string | null,
+  metrics?: { rowCount: number },
 ): AsyncGenerator<string> {
-  yield* csvChunks(HEADERS, registerRows(supabase, organizationId, period, locationId));
+  yield* csvChunks(HEADERS, registerRows(supabase, organizationId, period, locationId), metrics);
 }
