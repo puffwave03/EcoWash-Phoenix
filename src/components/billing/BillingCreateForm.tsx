@@ -9,7 +9,9 @@ function formatDate(value: string, locale: string) {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value));
 }
 
-export function BillingCreateForm({ locale, orders, selectedOrderId, settings, text }: {
+export function BillingCreateForm({ emptyMessage, hasMore, locale, orders, selectedOrderId, settings, text }: {
+  emptyMessage?: string;
+  hasMore: boolean;
   locale: string;
   orders: EligibleBillingOrder[];
   selectedOrderId?: string;
@@ -23,7 +25,7 @@ export function BillingCreateForm({ locale, orders, selectedOrderId, settings, t
   }
 
   if (groups.size === 0) {
-    return <Card className="border-dashed bg-[#fafbfa] text-center text-sm text-muted">{text.empty}</Card>;
+    return <Card className="border-dashed bg-[#fafbfa] text-center text-sm text-muted">{emptyMessage ?? text.empty}</Card>;
   }
 
   return (
@@ -40,7 +42,7 @@ export function BillingCreateForm({ locale, orders, selectedOrderId, settings, t
                   <h2 className="mt-1 text-xl font-semibold text-primary">{first.customerName}</h2>
                   {!first.customerActive ? <p className="mt-1 text-sm font-semibold text-amber-800">{text.inactiveNote}</p> : null}
                 </div>
-                <span className="rounded-full border border-border bg-[#f7f9f7] px-3 py-1 text-xs font-semibold text-muted">{text.available.replace("{count}", String(group.length))}</span>
+                <span className="rounded-full border border-border bg-[#f7f9f7] px-3 py-1 text-xs font-semibold text-muted">{(hasMore ? text.shown : text.available).replace("{count}", String(group.length))}</span>
               </div>
               <div className="mt-5 divide-y divide-border overflow-hidden rounded-control border border-border">
                 {group.map((order) => (

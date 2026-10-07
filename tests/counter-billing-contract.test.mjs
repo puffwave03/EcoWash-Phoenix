@@ -69,11 +69,11 @@ test("7 Billing route resolves and preselects the exact completed order", async 
     source("src/features/billing/server/queries.ts"),
     source("src/components/billing/BillingCreateForm.tsx"),
   ]);
-  assert.match(page, /listEligibleBillingOrders\(locale, query\.customerId, query\.orderId\)/);
+  assert.match(page, /listEligibleBillingOrders\(locale, query\.customerId, query\.orderId, search\)/);
   assert.match(page, /getBillingCustomerContext\(locale, query\.customerId\)/);
   assert.match(page, /!customerContext \|\| customerContext\.isFiscalReady/);
-  assert.match(queries, /if \(customerId\) query = query\.eq\("customer_id", customerId\)/);
-  assert.match(queries, /if \(orderId\) query = query\.eq\("id", orderId\)/);
+  assert.match(queries, /target_customer_id: customerId \|\| null/);
+  assert.match(queries, /target_order_id: orderId \|\| null/);
   assert.match(form, /defaultChecked=\{order\.id === selectedOrderId\}/);
 });
 

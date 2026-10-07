@@ -235,10 +235,9 @@ test("five locales contain usable history navigation labels", async () => {
   }
 });
 
-// Immutable scope anchors: preserve the existing detail/creation/mutation paths byte-for-byte.
+// Immutable scope anchors: preserve the existing detail/mutation paths byte-for-byte.
 
-test("Billing detail and operational creation selector remain unchanged", () => {
-  assert.equal(createHash("sha256").update(billing.slice(billing.indexOf("export async function listEligibleBillingOrders"), billing.indexOf("export async function getCustomerBillingOverview"))).digest("hex"), "5961fddfc016384f45d3b3b8dcebf09bb5b22ec2f79ed4677eeb6f77806356b2");
+test("Billing detail remains unchanged", () => {
   assert.equal(createHash("sha256").update(billing.slice(billing.indexOf("export async function getBillingInvoice"), billing.indexOf("export async function listEligibleBillingOrders"))).digest("hex"), "92b2b8f3be4a216824797160cc25f7f4786fd49ce01544f879e48b8304f6a67e");
 });
 

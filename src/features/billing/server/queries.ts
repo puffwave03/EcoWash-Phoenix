@@ -113,8 +113,9 @@ type BillingCustomerRow = {
 type EligibleOrderRow = {
   created_at: string;
   currency: string;
-  customer: { customer_code: string | null; display_name: string; is_active: boolean } | { customer_code: string | null; display_name: string; is_active: boolean }[] | null;
+  customer_active: boolean;
   customer_id: string;
+  customer_name: string;
   id: string;
   order_number: string;
   total: number;
@@ -142,10 +143,6 @@ const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1,
 function number(value: number | string | null) {
   const parsed = Number(value ?? 0);
   return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function relation<T>(value: T | T[] | null) {
-  return Array.isArray(value) ? value[0] ?? null : value;
 }
 
 function present(value: string | null | undefined) {
@@ -448,38 +445,33 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
   };
 }
 
-export async function listEligibleBillingOrders(locale: string, customerId?: string, orderId?: string): Promise<EligibleBillingOrder[]> {
-  const { membership } = await requireOwnerOrManager(locale);
+export async function listEligibleBillingOrders(locale: string, customerId?: string, orderId?: string, search = ""): Promise<{ orders: EligibleBillingOrder[]; hasMore: boolean }> {
+  await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
-  const linksResult = await supabase.from("invoice_orders").select("order_id").eq("organization_id", membership.organization.id).eq("is_active", true).returns<{ order_id: string }[]>();
-  const linked = new Set((linksResult.data ?? []).map((row) => row.order_id));
-  let query = supabase
-    .from("orders")
-    .select("id, order_number, customer_id, created_at, currency, total, customer:customers!orders_customer_same_organization!inner(customer_code, display_name, is_active)")
-    .eq("organization_id", membership.organization.id)
-    .eq("is_active", true)
-    .neq("production_status", "cancelled")
-    .order("created_at", { ascending: false })
-    .limit(100);
-  if (customerId) query = query.eq("customer_id", customerId);
-  if (orderId) query = query.eq("id", orderId);
-  const { data, error } = await query.returns<EligibleOrderRow[]>();
-  if (error) return [];
+  const { data, error } = await supabase.rpc("list_eligible_billing_orders", {
+    target_query: orderId ? "" : search.trim().slice(0, 100),
+    target_customer_id: customerId || null,
+    target_order_id: orderId || null,
+    target_limit: 101,
+  }).returns<EligibleOrderRow[]>();
+  if (error) throw error;
+  if (!Array.isArray(data)) throw new Error("billing_eligible_orders_invalid_response");
 
-  return (data ?? []).filter((row) => !linked.has(row.id) && relation(row.customer)?.customer_code !== "WALKIN-SHARED").map((row) => {
-    const customer = relation(row.customer);
-    return {
+  const rows = data as EligibleOrderRow[];
+  return {
+    hasMore: rows.length > 100,
+    orders: rows.slice(0, 100).map((row) => ({
       createdAt: row.created_at,
       currency: row.currency,
-      customerActive: customer?.is_active ?? false,
+      customerActive: row.customer_active,
       customerId: row.customer_id,
-      customerName: customer?.display_name ?? "",
+      customerName: row.customer_name,
       id: row.id,
       orderNumber: row.order_number,
       total: number(row.total),
-    };
-  });
+    })),
+  };
 }
 
 export async function getCustomerBillingOverview(locale: string, customerId: string): Promise<CustomerBillingOverview> {
