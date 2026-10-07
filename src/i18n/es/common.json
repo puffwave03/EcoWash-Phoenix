@@ -1068,6 +1068,7 @@
       "closeCart": "Cerrar pedido",
       "review": "Revisar solicitud",
       "reviewIntro": "Comprueba los servicios, la dirección y el horario solicitado antes de confirmar.",
+      "validationSummary": "Revisa los campos resaltados antes de continuar.",
       "back": "Editar solicitud",
       "confirm": "Confirmar pedido y recogida",
       "submitting": "Confirmando...",

@@ -1092,6 +1092,7 @@
       "closeCart": "Close order",
       "review": "Review request",
       "reviewIntro": "Check the services, address and requested pickup time before confirming.",
+      "validationSummary": "Please check the highlighted fields before continuing.",
       "back": "Edit request",
       "confirm": "Confirm order and pickup",
       "submitting": "Confirming...",

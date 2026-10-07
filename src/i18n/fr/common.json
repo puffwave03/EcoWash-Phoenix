@@ -1068,6 +1068,7 @@
       "closeCart": "Fermer la commande",
       "review": "Vérifier la demande",
       "reviewIntro": "Vérifiez les services, l'adresse et l'horaire demandé avant de confirmer.",
+      "validationSummary": "Vérifiez les champs signalés avant de continuer.",
       "back": "Modifier la demande",
       "confirm": "Confirmer la commande et la collecte",
       "submitting": "Confirmation...",

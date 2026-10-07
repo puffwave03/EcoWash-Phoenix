@@ -1092,6 +1092,7 @@
       "closeCart": "Chiudi ordine",
       "review": "Rivedi la richiesta",
       "reviewIntro": "Controlla servizi, indirizzo e orario richiesto prima di confermare.",
+      "validationSummary": "Controlla i campi evidenziati prima di continuare.",
       "back": "Modifica richiesta",
       "confirm": "Conferma ordine e ritiro",
       "submitting": "Conferma in corso...",

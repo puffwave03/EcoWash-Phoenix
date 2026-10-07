@@ -121,6 +121,7 @@ export default async function CustomerOrderRequestPage({
               requestedPickupAt: t("request.requestedPickupAt"),
               review: t("request.review"),
               reviewIntro: t("request.reviewIntro"),
+              validationSummary: t("request.validationSummary"),
               remove: catalogT("remove"),
               search: catalogT("search"),
               searchPlaceholder: catalogT("searchPlaceholder"),

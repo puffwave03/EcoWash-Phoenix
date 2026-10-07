@@ -63,6 +63,7 @@ type CustomerOrderRequestText = {
   requestedPickupAt: string;
   review: string;
   reviewIntro: string;
+  validationSummary: string;
   remove: string;
   search: string;
   searchPlaceholder: string;
@@ -137,10 +138,15 @@ export function CustomerOrderRequestForm({
 }: CustomerOrderRequestFormProps) {
   const actionInFlightRef = useRef(false);
   const cartCloseRef = useRef<HTMLButtonElement>(null);
+  const validationSummaryRef = useRef<HTMLDivElement>(null);
+  const serviceHeadingRef = useRef<HTMLHeadingElement>(null);
+  const propertySelectRef = useRef<HTMLSelectElement>(null);
+  const pickupInputRef = useRef<HTMLInputElement>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [isSubmitLocked, setIsSubmitLocked] = useState(false);
   const [reviewing, setReviewing] = useState(false);
-  const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
+  const [validationAttempted, setValidationAttempted] = useState(false);
+  const [validationFocusRequest, setValidationFocusRequest] = useState(0);
   const [quantities, setQuantities] = useState<Record<string, string>>({});
   const [propertyId, setPropertyId] = useState("");
   const [requestedPickupAt, setRequestedPickupAt] = useState("");
@@ -196,6 +202,10 @@ export function CustomerOrderRequestForm({
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [cartOpen]);
 
+  useEffect(() => {
+    if (validationFocusRequest > 0) validationSummaryRef.current?.focus();
+  }, [validationFocusRequest]);
+
   async function guardedAction(
     currentState: CustomerPortalOrderRequestState,
     formData: FormData,
@@ -250,7 +260,7 @@ export function CustomerOrderRequestForm({
     setReviewing(false);
   }
 
-  function validateReview() {
+  function reviewErrors() {
     const errors: Record<string, string> = {};
 
     if (selectedItems.length === 0) errors.items = text.errors.services;
@@ -268,11 +278,21 @@ export function CustomerOrderRequestForm({
       errors.requestedPickupAt = text.errors.pickupPast;
     }
 
-    setClientErrors(errors);
+    return errors;
+  }
+
+  const clientErrors = validationAttempted ? reviewErrors() : {};
+
+  function validateReview() {
+    const errors = reviewErrors();
+    setValidationAttempted(true);
 
     if (Object.keys(errors).length === 0) {
+      setValidationAttempted(false);
       setReviewing(true);
       window.scrollTo({ behavior: "smooth", top: 0 });
+    } else {
+      setValidationFocusRequest((request) => request + 1);
     }
   }
 
@@ -383,10 +403,20 @@ export function CustomerOrderRequestForm({
 
   return (
     <div className="space-y-6">
-      <section className="space-y-4" aria-labelledby="portal-request-services">
+      {Object.keys(clientErrors).length > 0 ? (
+        <div ref={validationSummaryRef} className="scroll-mt-24 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 focus:outline-none focus:ring-2 focus:ring-red-600" role="alert" tabIndex={-1}>
+          <p className="font-semibold">{text.validationSummary}</p>
+          <ul className="mt-2 list-inside list-disc space-y-1">
+            {clientErrors.items ? <li><button className="text-left underline underline-offset-2" onClick={() => serviceHeadingRef.current?.focus()} type="button">{text.serviceSelection}: {clientErrors.items}</button></li> : null}
+            {clientErrors.propertyId ? <li><button className="text-left underline underline-offset-2" onClick={() => propertySelectRef.current?.focus()} type="button">{text.property}: {clientErrors.propertyId}</button></li> : null}
+            {clientErrors.requestedPickupAt ? <li><button className="text-left underline underline-offset-2" onClick={() => pickupInputRef.current?.focus()} type="button">{text.requestedPickupAt}: {clientErrors.requestedPickupAt}</button></li> : null}
+          </ul>
+        </div>
+      ) : null}
+      <section className="space-y-4" aria-labelledby="portal-request-services" aria-describedby={clientErrors.items ? "portal-request-services-error" : undefined}>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-secondary">1</p>
-          <h2 className="text-2xl font-semibold text-primary" id="portal-request-services">
+          <h2 ref={serviceHeadingRef} className="scroll-mt-24 text-2xl font-semibold text-primary" id="portal-request-services" tabIndex={-1}>
             {text.serviceSelection}
           </h2>
         </div>
@@ -554,7 +584,7 @@ export function CustomerOrderRequestForm({
             })}
           </div>
         )}
-        {clientErrors.items ? <p className="text-sm text-red-700" role="alert">{clientErrors.items}</p> : null}
+        {clientErrors.items ? <p className="text-sm text-red-700" id="portal-request-services-error" role="alert">{clientErrors.items}</p> : null}
       </section>
 
       <section className="space-y-4" aria-labelledby="portal-request-property">
@@ -573,6 +603,9 @@ export function CustomerOrderRequestForm({
             <label className="block space-y-2 text-sm font-semibold text-primary">
               <span>{text.selectProperty}</span>
               <select
+                ref={propertySelectRef}
+                aria-describedby={clientErrors.propertyId ? "portal-request-property-error" : undefined}
+                aria-invalid={Boolean(clientErrors.propertyId)}
                 className={fieldClass(Boolean(clientErrors.propertyId))}
                 onChange={(event) => {
                   setPropertyId(event.target.value);
@@ -596,7 +629,7 @@ export function CustomerOrderRequestForm({
             ) : null}
           </Card>
         )}
-        {clientErrors.propertyId ? <p className="text-sm text-red-700" role="alert">{clientErrors.propertyId}</p> : null}
+        {clientErrors.propertyId ? <p className="text-sm text-red-700" id="portal-request-property-error" role="alert">{clientErrors.propertyId}</p> : null}
       </section>
 
       <section className="space-y-4" aria-labelledby="portal-request-pickup">
@@ -610,6 +643,9 @@ export function CustomerOrderRequestForm({
           <label className="block space-y-2 text-sm font-semibold text-primary">
             <span>{text.requestedPickupAt}</span>
             <input
+              ref={pickupInputRef}
+              aria-describedby={clientErrors.requestedPickupAt ? "portal-request-pickup-error" : undefined}
+              aria-invalid={Boolean(clientErrors.requestedPickupAt)}
               className={fieldClass(Boolean(clientErrors.requestedPickupAt))}
               min={minimumPickupAt}
               onChange={(event) => {
@@ -635,7 +671,7 @@ export function CustomerOrderRequestForm({
             />
           </label>
         </Card>
-        {clientErrors.requestedPickupAt ? <p className="text-sm text-red-700" role="alert">{clientErrors.requestedPickupAt}</p> : null}
+        {clientErrors.requestedPickupAt ? <p className="text-sm text-red-700" id="portal-request-pickup-error" role="alert">{clientErrors.requestedPickupAt}</p> : null}
       </section>
 
       {selectedItems.length > 0 ? (
