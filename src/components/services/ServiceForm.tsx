@@ -23,6 +23,7 @@ type ServiceFormText = {
 
 type ServiceFormProps = {
   action: (state: ServiceActionState, formData: FormData) => Promise<ServiceActionState>;
+  defaultCurrency: string;
   service?: Service;
   text: ServiceFormText;
 };
@@ -39,7 +40,7 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function ServiceForm({ action, service, text }: ServiceFormProps) {
+export function ServiceForm({ action, defaultCurrency, service, text }: ServiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -75,7 +76,7 @@ export function ServiceForm({ action, service, text }: ServiceFormProps) {
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.currency}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.currency))} defaultValue={service?.currency ?? "EUR"} name="currency" />
+          <input className={fieldClass(Boolean(state.fieldErrors.currency))} defaultValue={service?.currency ?? defaultCurrency} name="currency" />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.validFrom}</span>

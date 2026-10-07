@@ -34,6 +34,8 @@ type CustomerFormText = {
 type CustomerFormProps = {
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   customer?: Customer;
+  defaultCountryCode?: string | null;
+  defaultLocale?: string;
   text: CustomerFormText;
 };
 
@@ -74,7 +76,7 @@ function Field({
   );
 }
 
-export function CustomerForm({ action, customer, text }: CustomerFormProps) {
+export function CustomerForm({ action, customer, defaultCountryCode, defaultLocale, text }: CustomerFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -122,8 +124,8 @@ export function CustomerForm({ action, customer, text }: CustomerFormProps) {
         <Field autoComplete="address-line2" defaultValue={customer?.billingAddressLine2} label={text.billingAddressLine2} name="billingAddressLine2" />
         <Field defaultValue={customer?.billingCity} label={text.billingCity} name="billingCity" />
         <Field defaultValue={customer?.billingPostalCode} label={text.billingPostalCode} name="billingPostalCode" />
-        <Field defaultValue={customer?.billingCountryCode ?? "ES"} error={state.fieldErrors.billingCountryCode} label={text.billingCountryCode} name="billingCountryCode" />
-        <Field defaultValue={customer?.preferredLocale ?? "es"} error={state.fieldErrors.preferredLocale} label={text.preferredLocale} name="preferredLocale" />
+        <Field defaultValue={customer ? customer.billingCountryCode : defaultCountryCode} error={state.fieldErrors.billingCountryCode} label={text.billingCountryCode} name="billingCountryCode" />
+        <Field defaultValue={customer ? customer.preferredLocale : defaultLocale} error={state.fieldErrors.preferredLocale} label={text.preferredLocale} name="preferredLocale" />
       </div>
 
       <label className="space-y-2 text-sm font-semibold text-primary">

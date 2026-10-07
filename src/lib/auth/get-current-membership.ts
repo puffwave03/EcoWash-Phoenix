@@ -13,6 +13,9 @@ import {
 } from "@/lib/auth/capabilities";
 
 type RawOrganization = {
+  default_country_code: string | null;
+  default_currency: string;
+  default_locale: string;
   id: string;
   name: string;
   status: "active" | "inactive";
@@ -51,7 +54,7 @@ export async function getCurrentMembership(
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("organization_memberships")
-    .select("id, role, is_active, operational_capabilities, organization:organizations!inner(id, name, status, timezone)")
+    .select("id, role, is_active, operational_capabilities, organization:organizations!inner(id, name, status, timezone, default_currency, default_locale, default_country_code)")
     .eq("profile_id", profileId)
     .eq("is_active", true)
     .returns<RawMembership[]>();
@@ -87,7 +90,15 @@ export async function getCurrentMembership(
         (row.operational_capabilities ?? []).filter(isOperationalCapability),
       ),
       id: row.id,
-      organization,
+      organization: {
+        defaultCountryCode: organization.default_country_code,
+        defaultCurrency: organization.default_currency,
+        defaultLocale: organization.default_locale,
+        id: organization.id,
+        name: organization.name,
+        status: organization.status,
+        timezone: organization.timezone,
+      },
       role: row.role,
     },
   };

@@ -53,10 +53,10 @@ export async function createServiceAction(
 ) {
   void _state;
 
-  const { input, fieldErrors, valid } = parseServiceForm(formData);
+  const { membership, user } = await requireOwnerOrManager(locale);
+  const { input, fieldErrors, valid } = parseServiceForm(formData, membership.organization.defaultCurrency);
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("services")
@@ -109,10 +109,10 @@ export async function updateServiceAction(
 ) {
   void _state;
 
-  const { input, fieldErrors, valid } = parseServiceForm(formData);
+  const { membership, user } = await requireOwnerOrManager(locale);
+  const { input, fieldErrors, valid } = parseServiceForm(formData, membership.organization.defaultCurrency);
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireOwnerOrManager(locale);
   const supabase = await createSupabaseServerClient();
   const [{ data: currentService, error: currentServiceError }, { data: currentPrices, error: currentPricesError }] = await Promise.all([
     supabase.from("services")

@@ -19,6 +19,9 @@ export type CurrentMembership = {
   capabilities: OperationalCapability[];
   id: string;
   organization: {
+    defaultCountryCode: string | null;
+    defaultCurrency: string;
+    defaultLocale: string;
     id: string;
     name: string;
     status: "active" | "inactive";

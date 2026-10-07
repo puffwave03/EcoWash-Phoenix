@@ -11,8 +11,8 @@ type EditServicePageProps = {
 
 export default async function EditServicePage({ params }: EditServicePageProps) {
   const { locale, serviceId } = await params;
-  await requireOwnerOrManager(locale);
-  const [service, t, catalogT] = await Promise.all([
+  const [access, service, t, catalogT] = await Promise.all([
+    requireOwnerOrManager(locale),
     getServiceById(locale, serviceId),
     getTranslations({ locale, namespace: "common.services.form" }),
     getTranslations({ locale, namespace: "common.catalog" }),
@@ -23,6 +23,7 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
       <h2 className="text-2xl font-semibold text-primary">{t("editTitle")}</h2>
       <ServiceForm
         action={updateServiceAction.bind(null, locale, serviceId)}
+        defaultCurrency={access.membership.organization.defaultCurrency}
         service={service}
         text={{
           amount: t("amount"),

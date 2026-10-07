@@ -71,6 +71,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
       canInvoice={entitlementEnabled(entitlements, FEATURES.billingInvoicing) && access.membership.role !== "staff"}
       canConfigurePrinters={entitlementEnabled(entitlements, FEATURES.printing) && access.membership.role !== "staff"}
       categoryLabels={catalogT.raw("categories") as Record<string, string>}
+      defaultCountryCode={access.membership.organization.defaultCountryCode}
+      defaultCurrency={access.membership.organization.defaultCurrency}
       customers={customers}
       locale={locale}
       organizationId={access.membership.organization.id}

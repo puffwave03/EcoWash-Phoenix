@@ -57,7 +57,7 @@ export async function getSegmentPricingSettings(locale: string): Promise<Segment
 
   if (!catalog.available || pricesResult.error || locationsResult.error || organizationResult.error) {
     console.error("Segment pricing administration query unavailable", pricesResult.error?.code ?? locationsResult.error?.code ?? organizationResult.error?.code ?? "catalog");
-    return { ...catalog, available: false, currency: "EUR", locations: [], prices: [], today: currentDate };
+    return { ...catalog, available: false, currency: membership.organization.defaultCurrency, locations: [], prices: [], today: currentDate };
   }
 
   const prices: SegmentPrice[] = (pricesResult.data ?? []).map((price) => ({

@@ -3,6 +3,7 @@ import { Card } from "@/components/Card";
 import { PropertyForm } from "@/components/properties/PropertyForm";
 import { createPropertyAction } from "@/features/customers/server/actions";
 import { getCustomerById } from "@/features/customers/server/queries";
+import { requireMembership } from "@/lib/auth/require-membership";
 
 type NewPropertyPageProps = {
   params: Promise<{ customerId: string; locale: string }>;
@@ -37,9 +38,10 @@ function formText(t: Awaited<ReturnType<typeof getTranslations>>) {
 
 export default async function NewPropertyPage({ params }: NewPropertyPageProps) {
   const { customerId, locale } = await params;
-  const [customer, t] = await Promise.all([
+  const [customer, t, access] = await Promise.all([
     getCustomerById(locale, customerId),
     getTranslations({ locale, namespace: "common.properties.form" }),
+    requireMembership(locale),
   ]);
 
   return (
@@ -51,6 +53,7 @@ export default async function NewPropertyPage({ params }: NewPropertyPageProps) 
       <PropertyForm
         action={createPropertyAction.bind(null, locale, customerId)}
         customerId={customerId}
+        defaultCountryCode={access.membership.organization.defaultCountryCode}
         text={formText(t)}
       />
     </Card>

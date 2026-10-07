@@ -75,6 +75,8 @@ type Props = {
   canPrint: boolean;
   canScan: boolean;
   categoryLabels: Record<string, string>;
+  defaultCountryCode: string | null;
+  defaultCurrency: string;
   customers: ShopCustomer[];
   deliveryAssignments: ShopAssignmentOption[];
   locale: string;
@@ -97,7 +99,7 @@ const initialSubmitState: ShopSubmitState = { error: null, result: null };
 const terminalDraftStoragePrefix = "ecowash:shop-terminal-drafts:v1";
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
-function emptyDeliveryDraft(defaultAssignee = ""): DeliveryDraft {
+function emptyDeliveryDraft(defaultAssignee = "", defaultCountryCode = ""): DeliveryDraft {
   return {
     addressLine1: "",
     addressLine2: "",
@@ -105,7 +107,7 @@ function emptyDeliveryDraft(defaultAssignee = ""): DeliveryDraft {
     city: "",
     contactName: "",
     contactPhone: "",
-    countryCode: "ES",
+    countryCode: defaultCountryCode,
     notes: "",
     postalCode: "",
     propertyId: "",
@@ -192,7 +194,7 @@ function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTermi
   }
 }
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultProductionAssigneeId, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
+export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultCountryCode, defaultCurrency, defaultProductionAssigneeId, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
   const router = useRouter();
   const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
   const [customers, setCustomers] = useState(initialCustomers);
@@ -219,7 +221,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [internalNotes, setInternalNotes] = useState("");
   const resolvedProductionDefault = resolveProductionAssignee(productionAssignments, defaultProductionAssigneeId);
   const [productionAssigneeId, setProductionAssigneeId] = useState(resolvedProductionDefault);
-  const [delivery, setDelivery] = useState<DeliveryDraft>(() => emptyDeliveryDraft(deliveryAssignments[0]?.id));
+  const [delivery, setDelivery] = useState<DeliveryDraft>(() => emptyDeliveryDraft(deliveryAssignments[0]?.id, defaultCountryCode ?? ""));
   const [deliveryOptions, setDeliveryOptions] = useState<ShopDeliveryOptions | null>(null);
   const [dismissedOrderId, setDismissedOrderId] = useState<string | null>(null);
   const [isLoading, startLoading] = useTransition();
@@ -253,7 +255,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const selectedCustomerName = selectedCustomer?.isWalkIn
     ? selectedCustomer.name || text.occasionalCustomer
     : selectedCustomer?.name ?? null;
-  const currency = services[0]?.currency ?? "EUR";
+  const currency = services[0]?.currency ?? defaultCurrency;
   const subtotal = roundMoney(cart.reduce((sum, line) => sum + line.quantity * line.service.amount, 0));
   const safeDiscount = Math.min(Math.max(roundMoney(discount || 0), 0), subtotal);
   const total = roundMoney(subtotal - safeDiscount);
@@ -371,7 +373,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setProductionAssigneeId(resolveProductionAssignee(
       productionAssignments, defaultProductionAssigneeId, draft?.productionAssigneeId,
     ));
-    const restoredDelivery = draft?.delivery ?? emptyDeliveryDraft(deliveryAssignments[0]?.id);
+    const restoredDelivery = draft?.delivery ?? emptyDeliveryDraft(deliveryAssignments[0]?.id, defaultCountryCode ?? "");
     setDelivery({
       ...restoredDelivery,
       assignedTo: deliveryAssignments.some((assignment) => assignment.id === restoredDelivery.assignedTo)
@@ -488,7 +490,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     setCustomerNotes("");
     setInternalNotes("");
     setProductionAssigneeId(resolvedProductionDefault);
-    setDelivery(emptyDeliveryDraft(deliveryAssignments[0]?.id));
+    setDelivery(emptyDeliveryDraft(deliveryAssignments[0]?.id, defaultCountryCode ?? ""));
     setDeliveryOptions(null);
   }
 

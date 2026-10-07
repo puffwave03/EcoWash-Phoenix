@@ -32,6 +32,7 @@ type PropertyFormText = {
 type PropertyFormProps = {
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   customerId: string;
+  defaultCountryCode?: string | null;
   property?: Property;
   text: PropertyFormText;
 };
@@ -70,6 +71,7 @@ function Field({
 export function PropertyForm({
   action,
   customerId,
+  defaultCountryCode,
   property,
   text,
 }: PropertyFormProps) {
@@ -111,7 +113,7 @@ export function PropertyForm({
         <Field defaultValue={property?.addressLine2} label={text.addressLine2} name="addressLine2" />
         <Field defaultValue={property?.city} label={text.city} name="city" />
         <Field defaultValue={property?.postalCode} label={text.postalCode} name="postalCode" />
-        <Field defaultValue={property?.countryCode ?? "ES"} error={state.fieldErrors.countryCode} label={text.countryCode} name="countryCode" />
+        <Field defaultValue={property ? property.countryCode : defaultCountryCode} error={state.fieldErrors.countryCode} label={text.countryCode} name="countryCode" />
         <Field defaultValue={property?.contactName} label={text.contactName} name="contactName" />
         <Field defaultValue={property?.contactPhone} error={state.fieldErrors.contactPhone} label={text.contactPhone} name="contactPhone" />
       </div>

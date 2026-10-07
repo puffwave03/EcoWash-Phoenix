@@ -30,13 +30,13 @@ export function parseServiceStatusFilter(value: string | null): ServiceStatusFil
     : "active";
 }
 
-export function parseServiceForm(formData: FormData) {
+export function parseServiceForm(formData: FormData, defaultCurrency: string) {
   const fieldErrors: Record<string, string> = {};
   const name = requiredName(formData);
   const unitType = text(formData, "unitType", 24);
   const amountText = text(formData, "amount", 24);
   const amount = Number(amountText);
-  const currency = (text(formData, "currency", 3) || "EUR").toUpperCase();
+  const currency = (text(formData, "currency", 3) || defaultCurrency).toUpperCase();
   const validFrom = text(formData, "validFrom", 10);
   const validTo = text(formData, "validTo", 10);
 

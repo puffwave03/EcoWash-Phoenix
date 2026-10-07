@@ -69,7 +69,7 @@ function deliveryAddress(row: {
     city: row.city ?? "",
     contactName: row.contact_name ?? "",
     contactPhone: row.contact_phone ?? "",
-    countryCode: row.country_code ?? "ES",
+    countryCode: row.country_code ?? "",
     postalCode: row.postal_code ?? "",
   };
 }

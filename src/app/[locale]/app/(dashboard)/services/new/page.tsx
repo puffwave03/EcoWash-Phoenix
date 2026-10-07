@@ -10,8 +10,8 @@ type NewServicePageProps = {
 
 export default async function NewServicePage({ params }: NewServicePageProps) {
   const { locale } = await params;
-  await requireOwnerOrManager(locale);
-  const [t, catalogT] = await Promise.all([
+  const [access, t, catalogT] = await Promise.all([
+    requireOwnerOrManager(locale),
     getTranslations({ locale, namespace: "common.services.form" }),
     getTranslations({ locale, namespace: "common.catalog" }),
   ]);
@@ -21,6 +21,7 @@ export default async function NewServicePage({ params }: NewServicePageProps) {
       <h2 className="text-2xl font-semibold text-primary">{t("newTitle")}</h2>
       <ServiceForm
         action={createServiceAction.bind(null, locale)}
+        defaultCurrency={access.membership.organization.defaultCurrency}
         text={{
           amount: t("amount"),
           category: t("category"),

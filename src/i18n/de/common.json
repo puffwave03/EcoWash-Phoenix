@@ -1299,6 +1299,7 @@
     "paymentStatuses": {"unpaid": "Unbezahlt", "partially_paid": "Teilweise bezahlt", "paid": "Bezahlt", "pending": "Ausstehend", "confirmed": "Bestätigt", "void": "Storniert", "refunded": "Erstattet"},
     "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Banküberweisung", "other": "Andere"}
   },
+  "organizationSettings": {"eyebrow": "Verwaltung", "title": "Organisationseinstellungen", "description": "Internen Namen und Standardwerte für neue Daten festlegen. Bestehende Transaktionen bleiben unverändert.", "name": "Organisationsname", "currency": "Standardwährung", "currencyHelp": "Die Währung kann nur vor Preis- oder Finanzdaten geändert werden.", "currencyLocked": "Die Währung kann nach Preisen oder Finanzaktivität nicht mehr geändert werden.", "timezone": "Zeitzone (IANA)", "timezoneLocked": "Die Zeitzone kann nach operativer oder finanzieller Aktivität nicht mehr geändert werden.", "locale": "Standardsprache", "country": "Standard-Ländercode", "countryHelp": "Optionaler zweistelliger Code für neue Kunden und Objekte.", "save": "Einstellungen speichern", "saving": "Speichern…", "saved": "Einstellungen gespeichert.", "invalid": "Organisationseinstellungen prüfen.", "unavailable": "Einstellungen konnten nicht gespeichert werden."},
   "settings": {
     "eyebrow": "Verwaltung",
     "title": "Einstellungen",
@@ -1310,6 +1311,7 @@
       "people": {"title": "Personen und Zugriffe", "description": "Verwalten Sie, wer auf die Organisation zugreifen darf und was möglich ist."}
     },
     "items": {
+      "organization": {"title": "Organisation", "description": "Name und Standardwerte für neue Daten festlegen."},
       "billingIssuer": {"title": "Steuer- und Rechnungsdaten", "description": "Prüfen Sie die rechtliche und steuerliche Identität auf Rechnungen."},
       "brandPortal": {"title": "Marke und Kundenportal", "description": "Verwalten Sie Marke, Portalinhalte und Supportkontakte."},
       "catalog": {"title": "Kundenkatalog", "description": "Steuern Sie die Sichtbarkeit und kundenseitige Darstellung von Leistungen."},

@@ -34,12 +34,16 @@ export default async function SettingsPage({ params }: {
     {
       description: t("groups.company.description"),
       id: "company",
-      items: isOwner && entitlementEnabled(entitlements, FEATURES.billingInvoicing)
+      items: isOwner
         ? [{
+            description: t("items.organization.description"),
+            href: "/app/settings/organization",
+            title: t("items.organization.title"),
+          }, ...(entitlementEnabled(entitlements, FEATURES.billingInvoicing) ? [{
             description: t("items.billingIssuer.description"),
             href: "/app/billing#issuer-settings",
             title: t("items.billingIssuer.title"),
-          }]
+          }] : [])]
         : [],
       title: t("groups.company.title"),
     },

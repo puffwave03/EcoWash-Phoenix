@@ -1332,6 +1332,7 @@
     "paymentStatuses": {"unpaid": "Non pagato", "partially_paid": "Parzialmente pagato", "paid": "Pagato", "pending": "In attesa", "confirmed": "Confermato", "void": "Stornato", "refunded": "Rimborsato"},
     "paymentMethods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"}
   },
+  "organizationSettings": {"eyebrow": "Amministrazione", "title": "Impostazioni organizzazione", "description": "Imposta il nome interno e i valori predefiniti per i nuovi dati. Le transazioni esistenti non cambiano.", "name": "Nome organizzazione", "currency": "Valuta predefinita", "currencyHelp": "La valuta può cambiare solo prima che esistano prezzi o dati finanziari.", "currencyLocked": "La valuta non può cambiare dopo la configurazione dei prezzi o l'attività finanziaria.", "timezone": "Fuso orario (IANA)", "timezoneLocked": "Il fuso orario non può cambiare dopo l'inizio dell'attività operativa o finanziaria.", "locale": "Lingua predefinita", "country": "Codice paese predefinito", "countryHelp": "Codice facoltativo di due lettere per nuovi clienti e proprietà.", "save": "Salva impostazioni", "saving": "Salvataggio…", "saved": "Impostazioni salvate.", "invalid": "Controlla le impostazioni dell'organizzazione.", "unavailable": "Impossibile salvare le impostazioni."},
   "settings": {
     "eyebrow": "Amministrazione",
     "title": "Impostazioni",
@@ -1343,6 +1344,7 @@
       "people": {"title": "Persone e accessi", "description": "Gestisci chi può accedere all'organizzazione e cosa può fare."}
     },
     "items": {
+      "organization": {"title": "Organizzazione", "description": "Imposta il nome e i valori predefiniti per i nuovi dati."},
       "billingIssuer": {"title": "Dati fiscali e fatturazione", "description": "Verifica l'identità legale e fiscale usata nelle fatture."},
       "brandPortal": {"title": "Brand e Portale Cliente", "description": "Gestisci il brand, i contenuti del Portale e i contatti di assistenza."},
       "catalog": {"title": "Catalogo cliente", "description": "Controlla la visibilità dei servizi e la presentazione al cliente."},

@@ -1346,6 +1346,7 @@
     "paymentStatuses": {"unpaid": "Unpaid", "partially_paid": "Partially paid", "paid": "Paid", "pending": "Pending", "confirmed": "Confirmed", "void": "Void", "refunded": "Refunded"},
     "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"}
   },
+  "organizationSettings": {"eyebrow": "Administration", "title": "Organization settings", "description": "Set the internal organization name and defaults for future records. Existing transactions are unchanged.", "name": "Organization name", "currency": "Default currency", "currencyHelp": "Currency can change only before prices or financial records exist.", "currencyLocked": "Currency cannot change after prices or financial activity exist.", "timezone": "Timezone (IANA)", "timezoneLocked": "Timezone cannot change after operational or financial activity exists.", "locale": "Default language", "country": "Default country code", "countryHelp": "Optional two-letter code for new customers and properties.", "save": "Save settings", "saving": "Saving…", "saved": "Settings saved.", "invalid": "Check the organization settings.", "unavailable": "Settings could not be saved."},
   "settings": {
     "eyebrow": "Administration",
     "title": "Settings",
@@ -1357,6 +1358,7 @@
       "people": {"title": "People & Access", "description": "Manage who can access the organization and what they can do."}
     },
     "items": {
+      "organization": {"title": "Organization", "description": "Set the organization name and defaults for new data."},
       "billingIssuer": {"title": "Billing issuer", "description": "Review the legal and fiscal identity used on invoices."},
       "brandPortal": {"title": "Brand & Customer Portal", "description": "Manage brand presentation, Portal content and support contacts."},
       "catalog": {"title": "Customer catalog", "description": "Control service visibility and customer-facing presentation."},

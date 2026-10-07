@@ -33,10 +33,13 @@ export async function createCustomerAction(
 ) {
   void _state;
 
-  const { input, fieldErrors, valid } = parseCustomerForm(formData);
+  const { membership, user } = await requireMembership(locale);
+  const { input, fieldErrors, valid } = parseCustomerForm(formData, {
+    countryCode: membership.organization.defaultCountryCode,
+    locale: membership.organization.defaultLocale,
+  });
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("customers")
@@ -83,10 +86,12 @@ export async function updateCustomerAction(
 ) {
   void _state;
 
-  const { input, fieldErrors, valid } = parseCustomerForm(formData);
+  const { membership, user } = await requireMembership(locale);
+  const { input, fieldErrors, valid } = parseCustomerForm(formData, {
+    locale: membership.organization.defaultLocale,
+  });
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("customers")
@@ -155,10 +160,10 @@ export async function createPropertyAction(
   void _state;
 
   formData.set("customerId", lockedCustomerId);
-  const { input, fieldErrors, valid } = parsePropertyForm(formData);
+  const { membership, user } = await requireMembership(locale);
+  const { input, fieldErrors, valid } = parsePropertyForm(formData, membership.organization.defaultCountryCode);
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("properties")
@@ -201,10 +206,10 @@ export async function updatePropertyAction(
 ) {
   void _state;
 
+  const { membership, user } = await requireMembership(locale);
   const { input, fieldErrors, valid } = parsePropertyForm(formData);
   if (!valid) return fail(null, fieldErrors);
 
-  const { membership, user } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("properties")

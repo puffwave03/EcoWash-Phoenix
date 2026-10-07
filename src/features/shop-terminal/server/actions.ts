@@ -117,7 +117,7 @@ export async function createShopCustomerAction(
   }
 
   const { data, error } = await supabase.from("customers").insert({
-    billing_country_code: "ES",
+    billing_country_code: membership.organization.defaultCountryCode,
     created_by: user.id,
     customer_code: null,
     customer_type: "individual",
@@ -127,7 +127,8 @@ export async function createShopCustomerAction(
     notes: null,
     organization_id: membership.organization.id,
     phone: phone || null,
-    preferred_locale: routing.locales.includes(locale as (typeof routing.locales)[number]) ? locale : "es",
+    preferred_locale: routing.locales.includes(locale as (typeof routing.locales)[number])
+      ? locale : membership.organization.defaultLocale,
     updated_by: user.id,
   }).select("id, customer_code, display_name, email, phone, updated_at").single<{
     customer_code: string | null; display_name: string; email: string | null; id: string; phone: string | null; updated_at: string;

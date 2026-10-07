@@ -149,9 +149,5 @@ export async function listPosLocations(locale: string): Promise<PosLocation[]> {
 
 export async function getPosCurrency(locale: string): Promise<string> {
   const { membership } = await requirePosAccess(locale);
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("organizations").select("default_currency")
-    .eq("id", membership.organization.id).single<{ default_currency: string }>();
-  if (error || !data) { console.error("POS currency query failed", error?.code); return "EUR"; }
-  return data.default_currency;
+  return membership.organization.defaultCurrency;
 }

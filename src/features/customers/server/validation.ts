@@ -45,7 +45,7 @@ export function optionalDbValue(value: string) {
   return nullable(value);
 }
 
-export function parseCustomerForm(formData: FormData) {
+export function parseCustomerForm(formData: FormData, defaults: { countryCode?: string | null; locale: string }) {
   const fieldErrors: Record<string, string> = {};
   const customerType = text(formData, "customerType", 32);
   const displayName = text(formData, "displayName", 160);
@@ -53,7 +53,7 @@ export function parseCustomerForm(formData: FormData) {
   const phone = text(formData, "phone", 40);
   const alternatePhone = text(formData, "alternatePhone", 40);
   const billingCountryCode = text(formData, "billingCountryCode", 2).toUpperCase();
-  const preferredLocale = text(formData, "preferredLocale", 2) || "es";
+  const preferredLocale = text(formData, "preferredLocale", 2) || defaults.locale;
 
   if (!isCustomerType(customerType)) fieldErrors.customerType = "invalid";
   if (!displayName) fieldErrors.displayName = "required";
@@ -62,7 +62,7 @@ export function parseCustomerForm(formData: FormData) {
   if (alternatePhone && !PHONE_PATTERN.test(alternatePhone)) {
     fieldErrors.alternatePhone = "invalid";
   }
-  if (billingCountryCode && billingCountryCode.length !== 2) {
+  if (billingCountryCode && !/^[A-Z]{2}$/.test(billingCountryCode)) {
     fieldErrors.billingCountryCode = "invalid";
   }
   if (!routing.locales.includes(preferredLocale as (typeof routing.locales)[number])) {
@@ -74,7 +74,7 @@ export function parseCustomerForm(formData: FormData) {
     billingAddressLine1: text(formData, "billingAddressLine1", 180),
     billingAddressLine2: text(formData, "billingAddressLine2", 180),
     billingCity: text(formData, "billingCity", 100),
-    billingCountryCode: billingCountryCode || "ES",
+    billingCountryCode: billingCountryCode || defaults.countryCode || "",
     billingPostalCode: text(formData, "billingPostalCode", 24),
     companyName: text(formData, "companyName", 160),
     customerCode: text(formData, "customerCode", 80),
@@ -93,7 +93,7 @@ export function parseCustomerForm(formData: FormData) {
   return { fieldErrors, input, valid: Object.keys(fieldErrors).length === 0 };
 }
 
-export function parsePropertyForm(formData: FormData) {
+export function parsePropertyForm(formData: FormData, defaultCountryCode?: string | null) {
   const fieldErrors: Record<string, string> = {};
   const customerId = text(formData, "customerId", 80);
   const propertyType = text(formData, "propertyType", 40);
@@ -107,7 +107,7 @@ export function parsePropertyForm(formData: FormData) {
   if (contactPhone && !PHONE_PATTERN.test(contactPhone)) {
     fieldErrors.contactPhone = "invalid";
   }
-  if (countryCode && countryCode.length !== 2) fieldErrors.countryCode = "invalid";
+  if (countryCode && !/^[A-Z]{2}$/.test(countryCode)) fieldErrors.countryCode = "invalid";
 
   const input: PropertyFormInput = {
     accessInstructions: text(formData, "accessInstructions", 1200),
@@ -116,7 +116,7 @@ export function parsePropertyForm(formData: FormData) {
     city: text(formData, "city", 100),
     contactName: text(formData, "contactName", 120),
     contactPhone,
-    countryCode: countryCode || "ES",
+    countryCode: countryCode || defaultCountryCode || "",
     customerId,
     isActive: formData.get("isActive") !== "false",
     name,

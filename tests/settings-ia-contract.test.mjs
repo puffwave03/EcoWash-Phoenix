@@ -23,12 +23,13 @@ test("Settings hub groups only existing routes without duplicating forms", async
   ]);
 
   for (const route of [
+    "/app/settings/organization",
     "/app/billing#issuer-settings",
     "/app/settings/branding",
     "/app/settings/catalog",
     "/app/settings/printers",
     "/app/staff",
-  ]) assert.equal((settings.match(new RegExp(route.replaceAll("/", "\\/"), "g")) ?? []).length, 1);
+  ]) assert.equal((settings.match(new RegExp(`href: "${route.replaceAll("/", "\\/")}"`, "g")) ?? []).length, 1);
   assert.match(billing, /<BillingSettingsPanel/);
   assert.match(billingPanel, /id="issuer-settings"/);
   assert.doesNotMatch(settings, /BillingSettingsPanel|BrandingSettingsForm|PrinterSettingsWorkspace|StaffManagement/);
@@ -43,7 +44,7 @@ test("Settings visibility preserves route roles and premium feature gates", asyn
   ]);
 
   assert.match(settings, /requireOwnerOrManager\(locale\)/);
-  assert.match(settings, /isOwner && entitlementEnabled\(entitlements, FEATURES\.billingInvoicing\)/);
+  assert.match(settings, /items: isOwner[\s\S]*href: "\/app\/settings\/organization"[\s\S]*entitlementEnabled\(entitlements, FEATURES\.billingInvoicing\)/);
   assert.match(settings, /isOwner && entitlementEnabled\(entitlements, FEATURES\.fullWhiteLabel\)/);
   assert.match(settings, /entitlementEnabled\(entitlements, FEATURES\.printing\)/);
   assert.match(branding, /requireOwner\(locale\)/);

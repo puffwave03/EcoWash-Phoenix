@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { CustomerForm } from "@/components/customers/CustomerForm";
 import { createCustomerAction } from "@/features/customers/server/actions";
+import { requireMembership } from "@/lib/auth/require-membership";
 
 type NewCustomerPageProps = {
   params: Promise<{ locale: string }>;
@@ -9,13 +10,18 @@ type NewCustomerPageProps = {
 
 export default async function NewCustomerPage({ params }: NewCustomerPageProps) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "common.customers.form" });
+  const [t, access] = await Promise.all([
+    getTranslations({ locale, namespace: "common.customers.form" }),
+    requireMembership(locale),
+  ]);
 
   return (
     <Card className="space-y-6">
       <h2 className="text-2xl font-semibold text-primary">{t("newTitle")}</h2>
       <CustomerForm
         action={createCustomerAction.bind(null, locale)}
+        defaultCountryCode={access.membership.organization.defaultCountryCode}
+        defaultLocale={access.membership.organization.defaultLocale}
         text={{
           active: t("active"),
           alternatePhone: t("alternatePhone"),
