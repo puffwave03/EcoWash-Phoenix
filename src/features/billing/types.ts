@@ -80,6 +80,7 @@ export type BillingInvoice = {
   outstanding: number;
   paidTotal: number;
   paymentStatus: BillingPaymentStatus;
+  pricesIncludeTax: boolean;
   sequenceNumber: number | null;
   series: string;
   subtotal: number;
