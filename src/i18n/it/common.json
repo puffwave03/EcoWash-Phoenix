@@ -1407,6 +1407,7 @@
     "import": "Importa / Aggiorna catalogo",
     "importError": "Impossibile validare o applicare il file catalogo. Controlla i dettagli dell’anteprima.",
     "importHelp": "Usa un CSV catalogo Phoenix. L’anteprima è obbligatoria; le righe mancanti non eliminano né archiviano servizi.",
+    "importSizeError": "L’importazione supporta al massimo 500 righe di servizi. Nessuna modifica è stata apportata.",
     "importSuccess": "Importazione catalogo applicata correttamente.",
     "modes": { "alphabetical_asc": "Alfabetico A–Z", "alphabetical_desc": "Alfabetico Z–A", "manual": "Manuale" },
     "ordering": "Ordine dei servizi",

@@ -1366,6 +1366,7 @@
     "import": "Importer / Mettre à jour le catalogue",
     "importError": "Le fichier catalogue n’a pas pu être validé ou appliqué. Vérifiez les détails de l’aperçu.",
     "importHelp": "Utilisez un CSV catalogue Phoenix. L’aperçu est obligatoire ; les lignes absentes ne suppriment ni n’archivent aucun service.",
+    "importSizeError": "L’import accepte au maximum 500 lignes de services. Aucune modification n’a été effectuée.",
     "importSuccess": "Import du catalogue appliqué avec succès.",
     "modes": { "alphabetical_asc": "Alphabétique A–Z", "alphabetical_desc": "Alphabétique Z–A", "manual": "Manuel" },
     "ordering": "Ordre des services",

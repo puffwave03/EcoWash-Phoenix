@@ -46,7 +46,7 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
           orderModeAction={setCatalogOrderModeAction.bind(null, locale)}
           previewAction={previewCatalogImportAction.bind(null, locale)}
           text={{
-            applyImport: toolsT("applyImport"), cancelHelp: toolsT("cancelHelp"), confirmImport: toolsT("confirmImport"), export: toolsT("export"), exportHelp: toolsT("exportHelp"), import: toolsT("import"), importError: toolsT("importError"), importHelp: toolsT("importHelp"), importSuccess: toolsT("importSuccess"), modes: toolsT.raw("modes"), ordering: toolsT("ordering"), orderingHelp: toolsT("orderingHelp"), preview: toolsT("preview"), previewSummary: toolsT.raw("previewSummary") as string, save: toolsT("save"), saved: toolsT("saved"), title: toolsT("title"),
+            applyImport: toolsT("applyImport"), cancelHelp: toolsT("cancelHelp"), confirmImport: toolsT("confirmImport"), export: toolsT("export"), exportHelp: toolsT("exportHelp"), import: toolsT("import"), importError: toolsT("importError"), importHelp: toolsT("importHelp"), importSizeError: toolsT("importSizeError"), importSuccess: toolsT("importSuccess"), modes: toolsT.raw("modes"), ordering: toolsT("ordering"), orderingHelp: toolsT("orderingHelp"), preview: toolsT("preview"), previewSummary: toolsT.raw("previewSummary") as string, save: toolsT("save"), saved: toolsT("saved"), title: toolsT("title"),
           }}
         />
         <CatalogManagement

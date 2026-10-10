@@ -1421,6 +1421,7 @@
     "import": "Import / Update catalog",
     "importError": "The catalog file could not be validated or applied. Review the preview details.",
     "importHelp": "Use a Phoenix catalog CSV. Preview is mandatory; missing rows never delete or archive services.",
+    "importSizeError": "Import supports at most 500 service rows. No changes were made.",
     "importSuccess": "Catalog import applied successfully.",
     "modes": { "alphabetical_asc": "Alphabetical A–Z", "alphabetical_desc": "Alphabetical Z–A", "manual": "Manual" },
     "ordering": "Service ordering",

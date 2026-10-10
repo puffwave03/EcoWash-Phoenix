@@ -1366,6 +1366,7 @@
     "import": "Importar / Actualizar catálogo",
     "importError": "No se pudo validar o aplicar el archivo del catálogo. Revisa los detalles de la vista previa.",
     "importHelp": "Usa un CSV de catálogo Phoenix. La vista previa es obligatoria; las filas ausentes nunca eliminan ni archivan servicios.",
+    "importSizeError": "La importación admite como máximo 500 filas de servicios. No se realizó ningún cambio.",
     "importSuccess": "Importación del catálogo aplicada correctamente.",
     "modes": { "alphabetical_asc": "Alfabético A–Z", "alphabetical_desc": "Alfabético Z–A", "manual": "Manual" },
     "ordering": "Orden de servicios",

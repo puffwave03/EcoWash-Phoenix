@@ -13,6 +13,7 @@ type Text = {
   import: string;
   importError: string;
   importHelp: string;
+  importSizeError: string;
   importSuccess: string;
   modes: Record<CatalogOrderMode, string>;
   ordering: string;
@@ -58,7 +59,7 @@ export function CatalogTools({ confirmAction, exportHref, orderMode, orderModeAc
           <button className="mt-3 min-h-11 rounded-control bg-primary px-4 text-sm font-semibold text-white disabled:opacity-50" disabled={previewPending} type="submit">{text.preview}</button>
         </form>
       </div>
-      {previewState.error ? <p className="mt-4 text-sm text-red-700" role="alert">{text.importError}</p> : null}
+      {previewState.error ? <p className="mt-4 text-sm text-red-700" role="alert">{previewState.error === "rows" ? text.importSizeError : text.importError}</p> : null}
       {previewState.preview ? <div className="mt-4 rounded-card border border-border bg-white p-4">
         <h3 className="font-semibold text-primary">{text.preview}</h3>
         <p className="mt-1 text-sm text-muted">{text.previewSummary.replace("{unchanged}", String(previewState.preview.unchanged)).replace("{updates}", String(previewState.preview.updates)).replace("{creates}", String(previewState.preview.creates)).replace("{errors}", String(previewState.preview.errors)).replace("{archives}", String(previewState.preview.archives))}</p>
@@ -66,7 +67,7 @@ export function CatalogTools({ confirmAction, exportHref, orderMode, orderModeAc
         <p className="mt-3 text-xs text-muted">{text.cancelHelp}</p>
         {previewState.payload ? <form action={runConfirm} className="mt-3"><input name="payload" type="hidden" value={previewState.payload} /><button className="min-h-11 rounded-control bg-primary px-4 text-sm font-semibold text-white disabled:opacity-50" disabled={confirmPending} type="submit">{text.confirmImport}</button></form> : null}
       </div> : null}
-      {confirmState.success ? <p className="mt-4 text-sm font-semibold text-emerald-700" role="status">{text.importSuccess}</p> : confirmState.error ? <p className="mt-4 text-sm text-red-700" role="alert">{text.importError}</p> : null}
+      {confirmState.success ? <p className="mt-4 text-sm font-semibold text-emerald-700" role="status">{text.importSuccess}</p> : confirmState.error ? <p className="mt-4 text-sm text-red-700" role="alert">{confirmState.error === "rows" ? text.importSizeError : text.importError}</p> : null}
     </section>
   );
 }

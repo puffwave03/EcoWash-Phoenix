@@ -144,8 +144,9 @@ export async function confirmCatalogImportAction(locale: string, _state: Catalog
   let rows: CatalogImportRow[];
   try {
     rows = JSON.parse(String(formData.get("payload") ?? ""));
-    if (!Array.isArray(rows) || rows.length > 500) throw new Error("invalid");
+    if (!Array.isArray(rows)) throw new Error("invalid");
   } catch { return { ...initialState, error: "payload" }; }
+  if (rows.length > 500) return { ...initialState, error: "rows" };
   const records = rows.map((row, index) => parseRow({
     service_id: row.serviceId, service_code: row.serviceCode, canonical_name: row.canonicalName,
     canonical_description: row.canonicalDescription, category_key: row.categoryKey, unit_type: row.unitType,

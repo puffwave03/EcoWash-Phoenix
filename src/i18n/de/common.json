@@ -1366,6 +1366,7 @@
     "import": "Katalog importieren / aktualisieren",
     "importError": "Die Katalogdatei konnte nicht validiert oder angewendet werden. Prüfen Sie die Vorschaudetails.",
     "importHelp": "Verwenden Sie eine Phoenix-Katalog-CSV. Die Vorschau ist Pflicht; fehlende Zeilen löschen oder archivieren keine Services.",
+    "importSizeError": "Der Import unterstützt höchstens 500 Servicezeilen. Es wurden keine Änderungen vorgenommen.",
     "importSuccess": "Katalogimport erfolgreich angewendet.",
     "modes": { "alphabetical_asc": "Alphabetisch A–Z", "alphabetical_desc": "Alphabetisch Z–A", "manual": "Manuell" },
     "ordering": "Service-Reihenfolge",
