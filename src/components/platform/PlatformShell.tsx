@@ -13,6 +13,7 @@ export function PlatformShell({ children, locale, operatorName, tenantName, text
     logout: string;
     navigationLabel: string;
     organizations: string;
+    onboarding: string;
     overview: string;
     product: string;
     role: string;
@@ -23,6 +24,7 @@ export function PlatformShell({ children, locale, operatorName, tenantName, text
   const items = [
     { href: "/platform", label: text.overview },
     { href: "/platform/organizations", label: text.organizations },
+    { href: "/platform/organizations/new", label: text.onboarding },
   ];
 
   return (
@@ -42,7 +44,9 @@ export function PlatformShell({ children, locale, operatorName, tenantName, text
           {items.map((item) => {
             const active = item.href === "/platform"
               ? pathname === item.href
-              : pathname.startsWith(item.href);
+              : item.href === "/platform/organizations"
+                ? pathname === item.href || (pathname.startsWith(`${item.href}/`) && pathname !== `${item.href}/new`)
+                : pathname.startsWith(item.href);
             return (
               <Link
                 className={`block min-h-11 whitespace-nowrap rounded-control px-4 py-3 text-sm font-semibold transition-standard ${active ? "bg-primary !text-white" : "text-primary hover:bg-primary-soft"}`}

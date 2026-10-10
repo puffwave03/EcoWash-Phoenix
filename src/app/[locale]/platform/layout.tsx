@@ -23,6 +23,7 @@ export default async function PlatformLayout({ children, params }: {
         logout: t("shell.logout"),
         navigationLabel: t("shell.navigationLabel"),
         organizations: t("shell.organizations"),
+        onboarding: t("shell.onboarding"),
         overview: t("shell.overview"),
         product: t("shell.product"),
         role: t("shell.role"),

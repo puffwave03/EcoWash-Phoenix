@@ -17,9 +17,12 @@ export default async function PlatformOrganizationsPage({ params, searchParams }
   const formatDate = (value: string) => new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(value));
   return (
     <div className="mx-auto max-w-7xl space-y-7">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary">{t("organizations.eyebrow")}</p>
-        <h1 className="mt-2 text-3xl font-semibold text-primary">{t("organizations.title")}</h1>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary">{t("organizations.eyebrow")}</p>
+          <h1 className="mt-2 text-3xl font-semibold text-primary">{t("organizations.title")}</h1>
+        </div>
+        <Link className="inline-flex min-h-11 items-center rounded-control bg-primary px-4 py-2 text-sm font-semibold text-white" href="/platform/organizations/new" locale={locale}>{t("shell.onboarding")}</Link>
       </header>
       <Card className="bg-white">
         <form className="grid gap-3 sm:grid-cols-[1fr_220px_auto]" method="get">
