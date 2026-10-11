@@ -88,6 +88,7 @@ export async function bootstrapTenantAction(
       target_idempotency_key: key,
       target_name: input.name,
       target_slug: input.slug,
+      target_order_prefix: input.orderPrefix,
       target_default_currency: input.currency,
       target_timezone: input.timezone,
       target_default_locale: input.locale,

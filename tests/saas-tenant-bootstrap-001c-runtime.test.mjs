@@ -128,12 +128,12 @@ async function harness() {
     if (flags.rpcError) return { data: null, error: { message: flags.rpcError } };
     const prior = receipts.get(input.target_idempotency_key);
     if (prior) {
-      if (prior.slug !== input.target_slug) return { data: null, error: { message: "platform_tenant_bootstrap_idempotency_conflict" } };
+      if (prior.slug !== input.target_slug || prior.prefix !== input.target_order_prefix) return { data: null, error: { message: "platform_tenant_bootstrap_idempotency_conflict" } };
       return { data: [{ organization_id: prior.id, organization_slug: prior.slug, replayed: true }], error: null };
     }
     if (slugs.has(input.target_slug)) return { data: null, error: { message: "platform_tenant_bootstrap_slug_conflict" } };
     const id = randomUUID();
-    receipts.set(input.target_idempotency_key, { id, slug: input.target_slug });
+    receipts.set(input.target_idempotency_key, { id, slug: input.target_slug, prefix: input.target_order_prefix });
     slugs.add(input.target_slug);
     return { data: [{ organization_id: id, organization_slug: input.target_slug, replayed: false }], error: null };
   } };
@@ -172,7 +172,7 @@ async function harness() {
   const form = (overrides = {}) => {
     const data = new FormData();
     const fields = {
-      name: "Test Laundry", slug: "test-laundry", currency: "USD", timezone: "UTC", locale: "en",
+      name: "Test Laundry", slug: "test-laundry", orderPrefix: "TL", currency: "USD", timezone: "UTC", locale: "en",
       country: "US", location: "First site", ownerEmail: "owner@example.test", ownerMode: "invite", ownerId: "", ...overrides,
     };
     for (const [key, value] of Object.entries(fields)) data.set(key, value);
@@ -361,4 +361,23 @@ test("non-Platform Admin is denied before Auth Admin or RPC work", async () => {
   await assert.rejects(h.action("en", h.initial(), h.form()), /denied/);
   assert.equal(h.calls.invites, 0);
   assert.equal(h.calls.rpc, 0);
+});
+
+test("order prefix is required before invitation and is stable on bootstrap retry", async () => {
+  const h = await harness();
+  for (const orderPrefix of ["", "A", "TOO-LONG", "ABCDEFG", "ÉW", "p2"]) {
+    const invalid = await h.action("en", h.initial(), h.form({ orderPrefix }));
+    assert.equal(invalid.fieldErrors.orderPrefix, "invalidPrefix");
+  }
+  assert.equal(h.calls.invites, 0);
+  assert.equal(h.calls.rpc, 0);
+
+  const first = await h.action("en", h.initial(), h.form({ orderPrefix: "P2" }));
+  assert.ok(first.success?.organizationId);
+  const replay = await h.action("en", first, h.form({ orderPrefix: "P2" }));
+  assert.equal(replay.success?.replayed, true);
+  assert.equal(h.calls.invites, 1);
+  const changed = await h.action("en", first, h.form({ orderPrefix: "P3" }));
+  assert.notEqual(changed.key, first.key);
+  assert.equal(changed.error, "slugConflict");
 });

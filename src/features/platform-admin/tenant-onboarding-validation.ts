@@ -4,6 +4,7 @@ export type OwnerMode = "invite" | "existing";
 export type TenantOnboardingInput = {
   name: string;
   slug: string;
+  orderPrefix: string;
   currency: string;
   timezone: string;
   locale: string;
@@ -30,6 +31,7 @@ export function normalizeTenantOnboarding(formData: FormData): TenantOnboardingI
   return {
     name: value("name"),
     slug: value("slug"),
+    orderPrefix: value("orderPrefix"),
     currency: value("currency").toUpperCase(),
     timezone: value("timezone"),
     locale: value("locale"),
@@ -49,6 +51,7 @@ export function validateTenantOnboarding(input: TenantOnboardingInput): TenantOn
   const errors: TenantOnboardingFieldErrors = {};
   if (!input.name || input.name.length > 160) errors.name = "requiredName";
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(input.slug) || input.slug.length > 80) errors.slug = "invalidSlug";
+  if (!/^[A-Z0-9]{2,6}$/.test(input.orderPrefix)) errors.orderPrefix = "invalidPrefix";
   if (!/^[A-Z]{3}$/.test(input.currency)) errors.currency = "invalidCurrency";
   if (!input.timezone || input.timezone.length > 100) errors.timezone = "invalidTimezone";
   else {

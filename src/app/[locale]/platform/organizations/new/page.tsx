@@ -14,7 +14,7 @@ export default async function NewPlatformOrganizationPage({ params }: {
   const text = {
     title: t("title"), description: t("description"), back: t("back"),
     fields: {
-      name: t("fields.name"), slug: t("fields.slug"), currency: t("fields.currency"),
+      name: t("fields.name"), slug: t("fields.slug"), orderPrefix: t("fields.orderPrefix"), currency: t("fields.currency"),
       timezone: t("fields.timezone"), locale: t("fields.locale"), country: t("fields.country"),
       location: t("fields.location"), ownerEmail: t("fields.ownerEmail"), ownerId: t("fields.ownerId"),
     },
@@ -36,7 +36,7 @@ export default async function NewPlatformOrganizationPage({ params }: {
       slugConflict: t("errors.slugConflict"), ownerMembershipConflict: t("errors.ownerMembershipConflict"),
       ownerPortalConflict: t("errors.ownerPortalConflict"), ownerIdentityInvalid: t("errors.ownerIdentityInvalid"),
       invalidInput: t("errors.invalidInput"), unknown: t("errors.unknown"),
-      requiredName: t("errors.requiredName"), invalidSlug: t("errors.invalidSlug"),
+      requiredName: t("errors.requiredName"), invalidSlug: t("errors.invalidSlug"), invalidPrefix: t("errors.invalidPrefix"),
       invalidCurrency: t("errors.invalidCurrency"), invalidTimezone: t("errors.invalidTimezone"),
       invalidLocale: t("errors.invalidLocale"), invalidCountry: t("errors.invalidCountry"),
       requiredLocation: t("errors.requiredLocation"), invalidEmail: t("errors.invalidEmail"),

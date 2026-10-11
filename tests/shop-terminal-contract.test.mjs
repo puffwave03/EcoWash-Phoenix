@@ -531,8 +531,9 @@ test("45 Terminal lookup accepts order numbers and UUIDs without weakening Phoen
   const resolve = actions.slice(actions.indexOf("export async function resolveShopCodeAction"), actions.indexOf("export async function loadShopServicesAction"));
   const orderLookup = resolve.slice(resolve.indexOf("const orderQuery"), resolve.indexOf("if (parsed?.kind"));
 
-  assert.match(actions, /const ORDER_NUMBER = \/\^\[a-z\]\{2,12\}-\\d\{1,12\}\$\/i/);
-  assert.match("EW-000068", /^[a-z]{2,12}-\d{1,12}$/i);
+  assert.match(actions, /const ORDER_NUMBER = \/\^\[a-z0-9\]\{2,12\}-\\d\{1,12\}\$\/i/);
+  assert.match("EW-000068", /^[a-z0-9]{2,12}-\d{1,12}$/i);
+  assert.match("P2-000001", /^[a-z0-9]{2,12}-\d{1,12}$/i);
   assert.match(actions, /const ORDER_ID = \/\^\[0-9a-f\]\{8\}-/);
   assert.match(resolve, /const input = raw\.trim\(\)/);
   assert.match(resolve, /ORDER_NUMBER\.test\(input\) \? input\.toUpperCase\(\) : null/);

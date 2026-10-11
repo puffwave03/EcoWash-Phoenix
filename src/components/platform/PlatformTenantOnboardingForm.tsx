@@ -10,7 +10,7 @@ import type { TenantOnboardingError, TenantOnboardingState } from "@/features/pl
 
 type Text = {
   title: string; description: string; back: string;
-  fields: Record<"name" | "slug" | "currency" | "timezone" | "locale" | "country" | "location" | "ownerEmail" | "ownerId", string>;
+  fields: Record<"name" | "slug" | "orderPrefix" | "currency" | "timezone" | "locale" | "country" | "location" | "ownerEmail" | "ownerId", string>;
   helpers: Record<"slug" | "defaults" | "owner" | "recovery", string>;
   modes: Record<"invite" | "existing", string>;
   placeholders: Record<"currency" | "timezone" | "country", string>;
@@ -32,6 +32,7 @@ export function PlatformTenantOnboardingForm({ action, initialKey, locale, text 
   } satisfies TenantOnboardingState);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [orderPrefix, setOrderPrefix] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
   const [modeOverride, setModeOverride] = useState<"invite" | "existing" | null>(null);
   const [ownerIdOverride, setOwnerIdOverride] = useState<string | null>(null);
@@ -79,6 +80,11 @@ export function PlatformTenantOnboardingForm({ action, initialKey, locale, text 
             <span>{text.fields.currency}</span>
             <input className={inputClass} maxLength={3} name="currency" onChange={(event) => setCurrency(event.target.value)} placeholder={text.placeholders.currency} required value={currency} />
             {fieldError("currency")}
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-primary">
+            <span>{text.fields.orderPrefix}</span>
+            <input className={inputClass} maxLength={6} name="orderPrefix" onChange={(event) => setOrderPrefix(event.target.value.toUpperCase())} required value={orderPrefix} />
+            {fieldError("orderPrefix")}
           </label>
           <label className="space-y-1 text-sm font-semibold text-primary">
             <span>{text.fields.timezone}</span>
