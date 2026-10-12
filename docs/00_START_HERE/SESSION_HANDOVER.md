@@ -4,13 +4,19 @@ Status: Active
 
 Date: 2026-10-12
 
-Session checkpoint: SAAS-DEMO-TENANT-PROOF-001E COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS; SAAS-DEMO-TENANT-ISOLATION-001F COMPLETE / TECHNICAL PASS. The next major phase is ECOWASH REAL PILOT DATA / OPERATIONAL READINESS. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: ECOWASH-PILOT-SIMPLE-ONBOARDING-001C COMPLETE / CTO FINAL REVIEW PASS / PRODUCT OWNER UAT PASS. The new pilot tenant was created through standard SaaS onboarding on staging. Next planned work is standard pilot organization configuration, catalog/pricing setup and onboarding UX review. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Repository baseline before this documentation closeout: `aabf8f4deff8b3041db22dc8872bf674ac089673` on local `main`, `origin/main` and remote `main`; working tree clean. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+Repository baseline before this documentation closeout: `7d8f1303e685d1d65d09db47eb8d9ca732a385d1` on local `main` and `origin/main`; working tree clean. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## ECOWASH-PILOT-SIMPLE-ONBOARDING-001C Closeout
+
+**COMPLETE / CTO FINAL REVIEW PASS / PRODUCT OWNER UAT PASS.** Standard Platform Admin SaaS onboarding created the staging pilot organization **EcoWash La Tejita Tenerife** (`5f9df6bc-ec65-4a03-96f6-a4e23e851a8c`, slug `ecowash-la-tejita-tenerife`) with one active Owner, first location **EcoWash La Tejita** (`aefb7c3d-833c-40aa-a0f5-06020f2c6f97`), EUR / Atlantic/Canary / es / ES defaults, and organization-wide order prefix `ELT` with next number `1` (`ELT-000001` for the first future order). The approved staging-only correction changed the organization and location country values from `SP` to `ES`; independent read-only checks verified both persisted as `ES`. No product code, schema or migration changed.
+
+Owner `ecowash.tenerife+phoenixpilot@gmail.com` (`375e3f75-e081-4012-9891-6d0bfc0a22d4`) has an active Owner membership. The invitation arrived in Spam, and normal incognito Owner login passed: `/es/app` loaded, the correct organization and Owner role appeared, Settings worked, and **Pedidos** and **Clientes** were empty with no foreign tenant records observed. Password authentication UAT also passed: the Owner used Forgot Password, opened the recovery flow, set a new password and signed in successfully with it. No credential or recovery link is recorded. Staging verification found no operational records or Portal grants; old EcoWash, Phoenix Demo and Phoenix UAT remained unchanged. No production launch or fiscal approval is implied. `ONBOARDING-COUNTRY-VALIDATION-001` remains **OPEN / NON-BLOCKING** because the form accepted `SP`; address it separately during onboarding UX review. The Product Owner will configure the pilot through normal supported SaaS interfaces; future catalog, pricing and customer configuration has not started. No real transactions, fiscal issuance or live payments are approved by this closeout.
 
 ## SAAS-DEMO-TENANT-PROOF-001E / SAAS-DEMO-TENANT-ISOLATION-001F Closeout
 
@@ -124,7 +130,7 @@ Previous functional task: `DATA-RETENTION-AND-SCALE-001G` (`db7c2bf4dbadcd033f0e
 
 Current Mission: No active implementation mission.
 
-Next Action: CTO scope for **ECOWASH REAL PILOT DATA / OPERATIONAL READINESS**, beginning with explicit REAL / TEST / CORRECT classification before broader real-world pilot use. Accounting 100-location selector and Printer 100-location picker remain separate later work. `CATALOG-LARGE-IMPORT-001` is future/not active; the 500-row import limit is intentional. Reliability/failure-mode hardening, backup/restore/DR evidence, Supabase Pro and AUTH-DR-001C remain later pre-production work; Production Readiness Review and fiscal architecture follow under their established gates. Phoenix is not public-production ready.
+Next Action: CTO scope for standard **EcoWash La Tejita Tenerife pilot organization configuration**, catalog/pricing setup and onboarding UX review; the Product Owner will use supported SaaS interfaces. Accounting 100-location selector and Printer 100-location picker remain separate later work. `CATALOG-LARGE-IMPORT-001` is future/not active; the 500-row import limit is intentional. Reliability/failure-mode hardening, backup/restore/DR evidence, Supabase Pro and AUTH-DR-001C remain later pre-production work; Production Readiness Review and fiscal architecture follow under their established gates. Phoenix is not public-production ready.
 
 ---
 
