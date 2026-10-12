@@ -1347,6 +1347,7 @@
     "paymentMethods": {"cash": "Cash", "card": "Card", "bank_transfer": "Bank transfer", "other": "Other"}
   },
   "organizationSettings": {"eyebrow": "Administration", "title": "Organization settings", "description": "Set the internal organization name and defaults for future records. Existing transactions are unchanged.", "name": "Organization name", "currency": "Default currency", "currencyHelp": "Currency can change only before prices or financial records exist.", "currencyLocked": "Currency cannot change after prices or financial activity exist.", "timezone": "Timezone (IANA)", "timezoneLocked": "Timezone cannot change after operational or financial activity exists.", "locale": "Default language", "country": "Default country code", "countryHelp": "Optional two-letter code for new customers and properties.", "save": "Save settings", "saving": "Saving…", "saved": "Settings saved.", "invalid": "Check the organization settings.", "unavailable": "Settings could not be saved."},
+  "locationSettings": {"eyebrow": "Administration", "title": "Locations", "description": "Select an existing location to edit its business details.", "editDescription": "Edit this location's existing details.", "back": "Settings", "backToLocations": "Locations", "empty": "No locations found.", "active": "Active", "inactive": "Inactive", "fields": {"name": "Location name", "addressLine1": "Address line 1", "addressLine2": "Address line 2", "city": "City", "region": "Region", "postalCode": "Postal code", "countryCode": "Country code (ISO 3166-1 alpha-2)", "phone": "Phone"}, "save": "Save location", "saving": "Saving…", "saved": "Location saved.", "invalid": "Check the location details and use a valid country code.", "unavailable": "Location could not be saved or is unavailable.", "failure": "The location could not be saved because of a server error. Try again later."},
   "settings": {
     "eyebrow": "Administration",
     "title": "Settings",
@@ -1359,6 +1360,7 @@
     },
     "items": {
       "organization": {"title": "Organization", "description": "Set the organization name and defaults for new data."},
+      "locations": {"title": "Locations", "description": "Edit the names, addresses and contact numbers of existing locations."},
       "billingIssuer": {"title": "Billing issuer", "description": "Review the legal and fiscal identity used on invoices."},
       "brandPortal": {"title": "Brand & Customer Portal", "description": "Manage brand presentation, Portal content and support contacts."},
       "catalog": {"title": "Customer catalog", "description": "Control service visibility and customer-facing presentation."},

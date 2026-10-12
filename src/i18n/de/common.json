@@ -1300,6 +1300,7 @@
     "paymentMethods": {"cash": "Bar", "card": "Karte", "bank_transfer": "Banküberweisung", "other": "Andere"}
   },
   "organizationSettings": {"eyebrow": "Verwaltung", "title": "Organisationseinstellungen", "description": "Internen Namen und Standardwerte für neue Daten festlegen. Bestehende Transaktionen bleiben unverändert.", "name": "Organisationsname", "currency": "Standardwährung", "currencyHelp": "Die Währung kann nur vor Preis- oder Finanzdaten geändert werden.", "currencyLocked": "Die Währung kann nach Preisen oder Finanzaktivität nicht mehr geändert werden.", "timezone": "Zeitzone (IANA)", "timezoneLocked": "Die Zeitzone kann nach operativer oder finanzieller Aktivität nicht mehr geändert werden.", "locale": "Standardsprache", "country": "Standard-Ländercode", "countryHelp": "Optionaler zweistelliger Code für neue Kunden und Objekte.", "save": "Einstellungen speichern", "saving": "Speichern…", "saved": "Einstellungen gespeichert.", "invalid": "Organisationseinstellungen prüfen.", "unavailable": "Einstellungen konnten nicht gespeichert werden."},
+  "locationSettings": {"eyebrow": "Verwaltung", "title": "Standorte", "description": "Wählen Sie einen bestehenden Standort zum Bearbeiten aus.", "editDescription": "Bearbeiten Sie die Daten dieses Standorts.", "back": "Einstellungen", "backToLocations": "Standorte", "empty": "Keine Standorte gefunden.", "active": "Aktiv", "inactive": "Inaktiv", "fields": {"name": "Standortname", "addressLine1": "Adresszeile 1", "addressLine2": "Adresszeile 2", "city": "Stadt", "region": "Region", "postalCode": "Postleitzahl", "countryCode": "Ländercode (ISO 3166-1 Alpha-2)", "phone": "Telefon"}, "save": "Standort speichern", "saving": "Speichern…", "saved": "Standort gespeichert.", "invalid": "Prüfen Sie die Standortdaten und verwenden Sie einen gültigen Ländercode.", "unavailable": "Standort konnte nicht gespeichert werden oder ist nicht verfügbar.", "failure": "Der Standort konnte wegen eines Serverfehlers nicht gespeichert werden. Versuche es später erneut."},
   "settings": {
     "eyebrow": "Verwaltung",
     "title": "Einstellungen",
@@ -1312,6 +1313,7 @@
     },
     "items": {
       "organization": {"title": "Organisation", "description": "Name und Standardwerte für neue Daten festlegen."},
+      "locations": {"title": "Standorte", "description": "Namen, Adressen und Telefonnummern bestehender Standorte bearbeiten."},
       "billingIssuer": {"title": "Steuer- und Rechnungsdaten", "description": "Prüfen Sie die rechtliche und steuerliche Identität auf Rechnungen."},
       "brandPortal": {"title": "Marke und Kundenportal", "description": "Verwalten Sie Marke, Portalinhalte und Supportkontakte."},
       "catalog": {"title": "Kundenkatalog", "description": "Steuern Sie die Sichtbarkeit und kundenseitige Darstellung von Leistungen."},

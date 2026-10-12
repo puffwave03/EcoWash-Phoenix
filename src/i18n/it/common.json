@@ -1333,6 +1333,7 @@
     "paymentMethods": {"cash": "Contanti", "card": "Carta", "bank_transfer": "Bonifico", "other": "Altro"}
   },
   "organizationSettings": {"eyebrow": "Amministrazione", "title": "Impostazioni organizzazione", "description": "Imposta il nome interno e i valori predefiniti per i nuovi dati. Le transazioni esistenti non cambiano.", "name": "Nome organizzazione", "currency": "Valuta predefinita", "currencyHelp": "La valuta può cambiare solo prima che esistano prezzi o dati finanziari.", "currencyLocked": "La valuta non può cambiare dopo la configurazione dei prezzi o l'attività finanziaria.", "timezone": "Fuso orario (IANA)", "timezoneLocked": "Il fuso orario non può cambiare dopo l'inizio dell'attività operativa o finanziaria.", "locale": "Lingua predefinita", "country": "Codice paese predefinito", "countryHelp": "Codice facoltativo di due lettere per nuovi clienti e proprietà.", "save": "Salva impostazioni", "saving": "Salvataggio…", "saved": "Impostazioni salvate.", "invalid": "Controlla le impostazioni dell'organizzazione.", "unavailable": "Impossibile salvare le impostazioni."},
+  "locationSettings": {"eyebrow": "Amministrazione", "title": "Sedi", "description": "Seleziona una sede esistente per modificarne i dati.", "editDescription": "Modifica i dati di questa sede.", "back": "Impostazioni", "backToLocations": "Sedi", "empty": "Nessuna sede trovata.", "active": "Attiva", "inactive": "Inattiva", "fields": {"name": "Nome sede", "addressLine1": "Indirizzo 1", "addressLine2": "Indirizzo 2", "city": "Città", "region": "Regione", "postalCode": "CAP", "countryCode": "Codice paese (ISO 3166-1 alpha-2)", "phone": "Telefono"}, "save": "Salva sede", "saving": "Salvataggio…", "saved": "Sede salvata.", "invalid": "Controlla i dati della sede e usa un codice paese valido.", "unavailable": "Impossibile salvare la sede o sede non disponibile.", "failure": "La sede non è stata salvata a causa di un errore del server. Riprova più tardi."},
   "settings": {
     "eyebrow": "Amministrazione",
     "title": "Impostazioni",
@@ -1345,6 +1346,7 @@
     },
     "items": {
       "organization": {"title": "Organizzazione", "description": "Imposta il nome e i valori predefiniti per i nuovi dati."},
+      "locations": {"title": "Sedi", "description": "Modifica nomi, indirizzi e numeri di contatto delle sedi esistenti."},
       "billingIssuer": {"title": "Dati fiscali e fatturazione", "description": "Verifica l'identità legale e fiscale usata nelle fatture."},
       "brandPortal": {"title": "Brand e Portale Cliente", "description": "Gestisci il brand, i contenuti del Portale e i contatti di assistenza."},
       "catalog": {"title": "Catalogo cliente", "description": "Controlla la visibilità dei servizi e la presentazione al cliente."},

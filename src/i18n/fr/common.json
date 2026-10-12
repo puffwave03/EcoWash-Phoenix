@@ -1300,6 +1300,7 @@
     "paymentMethods": {"cash": "Espèces", "card": "Carte", "bank_transfer": "Virement bancaire", "other": "Autre"}
   },
   "organizationSettings": {"eyebrow": "Administration", "title": "Paramètres de l'organisation", "description": "Définissez le nom interne et les valeurs pour les nouvelles données. Les transactions existantes ne changent pas.", "name": "Nom de l'organisation", "currency": "Devise par défaut", "currencyHelp": "La devise ne peut changer qu'avant la création de prix ou de données financières.", "currencyLocked": "La devise ne peut plus changer après la création de prix ou le début de l'activité financière.", "timezone": "Fuseau horaire (IANA)", "timezoneLocked": "Le fuseau horaire ne peut plus changer après le début de l'activité opérationnelle ou financière.", "locale": "Langue par défaut", "country": "Code pays par défaut", "countryHelp": "Code facultatif à deux lettres pour les nouveaux clients et propriétés.", "save": "Enregistrer", "saving": "Enregistrement…", "saved": "Paramètres enregistrés.", "invalid": "Vérifiez les paramètres de l'organisation.", "unavailable": "Impossible d'enregistrer les paramètres."},
+  "locationSettings": {"eyebrow": "Administration", "title": "Sites", "description": "Sélectionnez un site existant pour modifier ses coordonnées.", "editDescription": "Modifiez les coordonnées de ce site.", "back": "Paramètres", "backToLocations": "Sites", "empty": "Aucun site trouvé.", "active": "Actif", "inactive": "Inactif", "fields": {"name": "Nom du site", "addressLine1": "Adresse 1", "addressLine2": "Adresse 2", "city": "Ville", "region": "Région", "postalCode": "Code postal", "countryCode": "Code pays (ISO 3166-1 alpha-2)", "phone": "Téléphone"}, "save": "Enregistrer le site", "saving": "Enregistrement…", "saved": "Site enregistré.", "invalid": "Vérifiez les données du site et utilisez un code pays valide.", "unavailable": "Impossible d’enregistrer le site ou site indisponible.", "failure": "Le site n’a pas pu être enregistré en raison d’une erreur du serveur. Réessayez plus tard."},
   "settings": {
     "eyebrow": "Administration",
     "title": "Paramètres",
@@ -1312,6 +1313,7 @@
     },
     "items": {
       "organization": {"title": "Organisation", "description": "Définir le nom et les valeurs par défaut pour les nouvelles données."},
+      "locations": {"title": "Sites", "description": "Modifier les noms, adresses et numéros de contact des sites existants."},
       "billingIssuer": {"title": "Données fiscales et facturation", "description": "Vérifiez l'identité légale et fiscale utilisée sur les factures."},
       "brandPortal": {"title": "Marque et Portail Client", "description": "Gérez la marque, le contenu du Portail et les contacts d'assistance."},
       "catalog": {"title": "Catalogue client", "description": "Contrôlez la visibilité des services et leur présentation au client."},

@@ -43,7 +43,11 @@ export default async function SettingsPage({ params }: {
             description: t("items.billingIssuer.description"),
             href: "/app/billing#issuer-settings",
             title: t("items.billingIssuer.title"),
-          }] : [])]
+          }] : []), {
+            description: t("items.locations.description"),
+            href: "/app/settings/locations",
+            title: t("items.locations.title"),
+          }]
         : [],
       title: t("groups.company.title"),
     },

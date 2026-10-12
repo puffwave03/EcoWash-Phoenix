@@ -1300,6 +1300,7 @@
     "paymentMethods": {"cash": "Efectivo", "card": "Tarjeta", "bank_transfer": "Transferencia bancaria", "other": "Otro"}
   },
   "organizationSettings": {"eyebrow": "Administración", "title": "Configuración de la organización", "description": "Configura el nombre interno y los valores para datos futuros. Las transacciones existentes no cambian.", "name": "Nombre de la organización", "currency": "Moneda predeterminada", "currencyHelp": "La moneda solo puede cambiar antes de crear precios o registros financieros.", "currencyLocked": "La moneda no puede cambiar después de configurar precios o iniciar actividad financiera.", "timezone": "Zona horaria (IANA)", "timezoneLocked": "La zona horaria no puede cambiar después de iniciar actividad operativa o financiera.", "locale": "Idioma predeterminado", "country": "Código de país predeterminado", "countryHelp": "Código opcional de dos letras para nuevos clientes y propiedades.", "save": "Guardar configuración", "saving": "Guardando…", "saved": "Configuración guardada.", "invalid": "Revisa la configuración de la organización.", "unavailable": "No se pudo guardar la configuración."},
+  "locationSettings": {"eyebrow": "Administración", "title": "Sedes", "description": "Selecciona una sede existente para editar sus datos.", "editDescription": "Edita los datos de esta sede.", "back": "Configuración", "backToLocations": "Sedes", "empty": "No hay sedes.", "active": "Activa", "inactive": "Inactiva", "fields": {"name": "Nombre de la sede", "addressLine1": "Dirección 1", "addressLine2": "Dirección 2", "city": "Ciudad", "region": "Región", "postalCode": "Código postal", "countryCode": "Código de país (ISO 3166-1 alfa-2)", "phone": "Teléfono"}, "save": "Guardar sede", "saving": "Guardando…", "saved": "Sede guardada.", "invalid": "Revisa los datos de la sede y usa un código de país válido.", "unavailable": "No se pudo guardar la sede o no está disponible.", "failure": "No se pudo guardar la sede por un error del servidor. Inténtalo más tarde."},
   "settings": {
     "eyebrow": "Administración",
     "title": "Configuración",
@@ -1312,6 +1313,7 @@
     },
     "items": {
       "organization": {"title": "Organización", "description": "Configura el nombre y los valores predeterminados para datos nuevos."},
+      "locations": {"title": "Sedes", "description": "Edita los nombres, direcciones y teléfonos de las sedes existentes."},
       "billingIssuer": {"title": "Datos fiscales y facturación", "description": "Revisa la identidad legal y fiscal utilizada en las facturas."},
       "brandPortal": {"title": "Marca y Portal del Cliente", "description": "Gestiona la marca, el contenido del Portal y los contactos de soporte."},
       "catalog": {"title": "Catálogo cliente", "description": "Controla la visibilidad de servicios y su presentación al cliente."},
