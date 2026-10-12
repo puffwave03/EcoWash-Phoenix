@@ -2,23 +2,31 @@
 
 Status: Active
 
-Date: 2026-10-10
+Date: 2026-10-12
 
-Session checkpoint: CATALOG-CSV-COMPLETENESS-001 COMPLETE / CTO REVIEW PASS / PRODUCT OWNER UAT PASS / DEDICATED STAGING VALIDATION PASS. Demo Tenant proof remains a separate unstarted mission. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: SAAS-ORDER-REFERENCE-TENANT-SCOPING-001B COMPLETE / CTO PASS / STAGING PASS / PRODUCT OWNER UAT PASS. Live authenticated Demo/EcoWash tenant-isolation proof remains the next major technical gate for SAAS-DEMO-TENANT-PROOF-001E. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Functional commit before this documentation closeout: `75f81fc134c3c4bfde5c69bf37db799fa0106dab` (`CATALOG-CSV-COMPLETENESS-001`).
+Functional commit before this documentation closeout: `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7` (`SAAS-ORDER-REFERENCE-TENANT-SCOPING-001B`).
 
-Origin/main after the catalog functional push: local `main` and `origin/main` aligned at `75f81fc134c3c4bfde5c69bf37db799fa0106dab`.
+Origin/main after the 001B functional push: local `main`, `origin/main` and remote `main` aligned at `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
 
 Working tree after the functional push: clean; only this canonical documentation closeout follows.
 
 **Current Auth DR handover:** AUTH-DR-001B3 repaired one malformed staging Auth row in place and closed the Auth record integrity gate with a documented legacy test exception: 13 readable Auth users match 13 profiles, 12 normal email identities and one historical test user without identity or active access. AUTH-DR-001B4 captured a fresh `COMPLETE` Storage set (229 objects / 25,060,061 bytes, stable listings, 229/229 disk SHA-256 passes), a protected Auth inventory, a non-secret Auth configuration manifest and a clone-containment plan. Staging signup is verified disabled; no DB cron/pg_net/HTTP webhook trigger, Auth Hook or Edge Function was found. The existing Accountant Pack Cron belongs to Vercel and does not retarget on a Supabase DB clone. Evidence set: `AUTH-DR-001B4-20261006T162233Z`; manifest hashes and recovery details are in `docs/05_DEVELOPMENT/Recovery_Runbook.md`.
 
 **Cost and release decision:** current Supabase Free has no available physical backup. Pro daily physical backups suffice for the future isolated Auth rehearsal; PITR is optional. The Product Owner/CTO deliberately **deferred the Pro upgrade until pre-production**, when the tenant/application state is near final. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**: it requires an eligible completed backup and must prove Auth UUID/identity and login continuity, authenticated RLS/tenant isolation and Storage privacy. `ENCRYPTED OFF-DEVICE COPY PENDING` is a separate pre-production custody finding. No next implementation mission has started.
+
+## SAAS-ORDER-REFERENCE-TENANT-SCOPING-001B Closeout
+
+**COMPLETE / CTO PASS / STAGING PASS / PRODUCT OWNER UAT PASS.** Functional commit `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7` closes the productization gap in which hardcoded `EW` references shared one global sequence across tenants: EcoWash `EW-000139` → Demo `EW-000140`/`EW-000141` → EcoWash `EW-000142`. This was visible cross-tenant sequence sharing, not a direct tenant-isolation defect. Migration `20261010000100_saas_order_reference_tenant_scoping_001b.sql` is applied and aligned on staging Supabase `exthnplfokcucaqydney`; dedicated staging deployment `dpl_FtaWJdLSRMHCkJQpimrAAA9jmkeV` is READY at `https://ecowash-phoenix-staging.vercel.app`. Real production was untouched.
+
+Future references use one atomic organization-wide counter and a stable trusted prefix: EcoWash `EW`, Phoenix Demo Laundry — Staging `PD`, Phoenix UAT Tenant 001C `PU`. New Platform Admin tenant onboarding requires an explicit 2–6-character uppercase ASCII letter/digit prefix; spaces, embedded hyphens and silent arbitrary derivation are rejected. References render as `PREFIX-NNNNNN`. There is no location or annual reset, ordinary tenant-user edit, application-side counter, runtime `MAX()+1`, or per-tenant PostgreSQL sequence. Staff and Portal order creation share the allocator; Terminal and Quick Drop inherit it through `create_order`. Human-reference lookups remain organization-scoped, and Shop parsing accepts the approved format. Historical references and UUIDs are unchanged, including Demo `EW-000140`/`EW-000141`; `(organization_id, order_number)` uniqueness remains. Legacy `public.order_number_sequence` remains present but is no longer authoritative for new creation.
+
+Product Owner authenticated staging UAT created Demo `PD-000001`, EcoWash `EW-000143`, Demo `PD-000002`, EcoWash `EW-000144`. The two counters advanced independently; `EW-000144` came through the EcoWash Customer Portal, proving the live Portal path alongside staff creation. No payment, POS, logistics, fiscal processing or production progression was needed. Post-UAT numbering was EW/145, PD/3 and PU/1, with historical reference fingerprints unchanged. Related findings: `DEMO-READY-STORAGE-MODE-001` remains **OPEN / NON-BLOCKING** after controlled `EW-000141` Piegato → folded persistence did not reproduce the reported issue, so no product fix is justified now; `AUTH-INVITE-DELIVERY-001` is **INVALIDATED / OWNER EMAIL TYPO**; `AUTH-INVITE-RECOVERY-001` remains **OPEN / NON-BLOCKING PRODUCTIZATION**. Next major gate: **LIVE AUTHENTICATED TENANT ISOLATION** for Demo/EcoWash user contexts before `SAAS-DEMO-TENANT-PROOF-001E` can receive full technical pass. No implementation of that gate has started.
 
 ## CATALOG-CSV-COMPLETENESS-001 Closeout
 
@@ -104,7 +112,7 @@ Previous functional task: `DATA-RETENTION-AND-SCALE-001G` (`db7c2bf4dbadcd033f0e
 
 Current Mission: No active implementation mission.
 
-Next Action: CTO scope for a separately approved mission; none has started after catalog CSV completeness closeout. Accounting 100-location selector, Printer 100-location picker and Demo Tenant proof remain separate later work. `CATALOG-LARGE-IMPORT-001` is future/not active; the 500-row import limit is intentional. Supabase Pro and AUTH-DR-001C remain deferred pre-production gates. Fiscal architecture remains planning-only; Phoenix is not public-production ready.
+Next Action: CTO scope for the separate live authenticated Demo/EcoWash tenant-isolation proof required before `SAAS-DEMO-TENANT-PROOF-001E` full technical pass; that work has not started. Accounting 100-location selector and Printer 100-location picker remain separate later work. `CATALOG-LARGE-IMPORT-001` is future/not active; the 500-row import limit is intentional. Supabase Pro and AUTH-DR-001C remain deferred pre-production gates. Fiscal architecture remains planning-only; Phoenix is not public-production ready.
 
 ---
 
