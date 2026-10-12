@@ -4,13 +4,25 @@ Status: Active
 
 Date: 2026-10-12
 
-Session checkpoint: ECOWASH-PILOT-SIMPLE-ONBOARDING-001C COMPLETE / CTO FINAL REVIEW PASS / PRODUCT OWNER UAT PASS. The new pilot tenant was created through standard SaaS onboarding on staging. Next planned work is standard pilot organization configuration, catalog/pricing setup and onboarding UX review. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: SAAS-OWNER-LOCATION-SETTINGS-001A COMPLETE / CTO PASS / PRODUCT OWNER UAT PASS. The pilot Owner can edit existing tenant locations through standard Settings on staging. Next planned phase is ECOWASH PILOT STANDARD SAAS CONFIGURATION. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Repository baseline before this documentation closeout: `7d8f1303e685d1d65d09db47eb8d9ca732a385d1` on local `main` and `origin/main`; working tree clean. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+Repository baseline before this documentation closeout: `7ef4843b78a7eab80e9036f8904bfedcb9451aef` on local `main`, `origin/main` and remote main; working tree clean. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## SAAS-OWNER-LOCATION-SETTINGS-001A Closeout
+
+**COMPLETE / CTO PASS / PRODUCT OWNER UAT PASS.** Functional commit `7ef4843b78a7eab80e9036f8904bfedcb9451aef` adds standard Owner-only **Settings > Locations** listing and editing for existing tenant locations at `/[locale]/app/settings/locations` and `/[locale]/app/settings/locations/[locationId]`. The eight editable fields are name, address lines 1 and 2, city, region, postal code, ISO country code and phone. IT / ES / EN / FR / DE are supported; the French location-save failure message was corrected before final deployment. Organization context comes from authenticated server-side membership. The guarded `public.update_owner_location_settings` RPC independently checks active Owner membership, active organization/location and exact tenant ownership; foreign IDs are denied without disclosing location data. Existing Manager database RLS policy and direct table grants were not expanded.
+
+Migration `20261012000100_saas_owner_location_settings_001a.sql` is applied once to staging Supabase `exthnplfokcucaqydney`. The RPC remains owned by `postgres`, uses `SECURITY DEFINER` with an empty search path, and is executable by `authenticated` but not `anon`; `authenticated` has no direct `locations` UPDATE grant. The final deployment `dpl_9FFiEGrwN1ZguJZUM577tJL584or` is **READY** at `https://ecowash-phoenix-staging.vercel.app` in the dedicated staging Vercel project. Focused and adjacent tests passed **47/47**; TypeScript, scoped ESLint and `git diff --check` passed.
+
+Cristiano's staging Owner UAT for **EcoWash La Tejita Tenerife** (`5f9df6bc-ec65-4a03-96f6-a4e23e851a8c`) passed: location **EcoWash La Tejita** (`aefb7c3d-833c-40aa-a0f5-06020f2c6f97`) opened; synthetic address/phone saved and persisted after refresh; `SP` was rejected while `ES` remained; original empty fields were restored; a foreign Demo location returned 404 without exposing data; Almacén opened and offered only the pilot location. Read-only staging verification reconfirmed the restored fields and country `ES`. No real production deployment occurred.
+
+Open findings remain separate: `SAAS-LOCATION-MANAGER-POLICY-001` (review existing Manager database location permissions before commercialization), `SAAS-LOCATION-GRANT-DRIFT-001` (investigate why effective staging UPDATE grants differ from the original repository migration) and `ONBOARDING-COUNTRY-VALIDATION-001` (onboarding accepted `SP`). The new UI/RPC are Owner-only; database location mutation is not claimed to be globally Owner-exclusive.
+
+Next planned phase: **ECOWASH PILOT STANDARD SAAS CONFIGURATION** through supported Owner interfaces: business/location configuration, commercial branding and logo, service categories/catalog, pricing/segments, staff/operations and synthetic customer import UAT. Branding entitlement and product-tier decisions remain separately scoped. Use no real customer personal data in staging and no live fiscal issuance or payments. Production launch remains gated by security, backup/restore, DR, GDPR, fiscal compliance and the Production Readiness Review.
 
 ## ECOWASH-PILOT-SIMPLE-ONBOARDING-001C Closeout
 
