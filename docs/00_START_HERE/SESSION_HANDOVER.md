@@ -2,15 +2,23 @@
 
 Status: Active
 
-Date: 2026-10-12
+Date: 2026-10-13
 
-Session checkpoint: SAAS-OWNER-LOCATION-SETTINGS-001A COMPLETE / CTO PASS / PRODUCT OWNER UAT PASS. The pilot Owner can edit existing tenant locations through standard Settings on staging. Next planned phase is ECOWASH PILOT STANDARD SAAS CONFIGURATION. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: ECOWASH-PILOT-CATALOG-MEDIA-002H COMPLETE / CTO TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS. The pilot catalog and approved images are present on staging; pilot prices and operational orders remain zero. Next planned phase is separately scoped pilot pricing setup using reviewed historical EcoWash pricing. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
 Repository baseline before this deployment-history reconciliation: `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main; working tree clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## ECOWASH-PILOT-CATALOG-MEDIA-002H Closeout
+
+**COMPLETE / CTO TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS.** Functional commit `bc6cc368ac475e563d694a29127da0f5f94b77dd` preserves the reviewed runner, frozen manifest and focused tests with execution authorization disabled. The controlled transfer on staging Supabase `exthnplfokcucaqydney` populated the **EcoWash La Tejita Tenerife** pilot catalog (`5f9df6bc-ec65-4a03-96f6-a4e23e851a8c`) with 188 tenant-owned `brand-media` Storage objects: 179 managed service images and 9 managed category images. All 219 pilot services remain active and have approved image associations: 179 pilot-owned managed paths and 40 application-static references. Nine category images are associated, for 228 total associations. `home_textiles` retains a NULL category image; `special_services` was excluded. Pilot service prices and operational orders remain at zero.
+
+The runner's final read-back reported `EXECUTION_VERIFIED_COMPLETE` with 188 verified objects, 219 services and 9 categories. A separate read-only staging audit checked the 188 pilot objects, exact tenant-owned paths, all service/category associations, and 376 source/destination object reads against the approved SHA-256, byte size and MIME evidence. No unexpected pilot objects or cross-tenant pilot media references in Demo/UAT catalog rows were found. The historical EcoWash tenant's 219 approved active service mappings and 188 source object bytes still matched the frozen pre-transfer evidence; its catalog currently has 222 services and 13 categories. This evidence does not establish an unchanged before/after comparison for historical records outside the approved manifest or all Demo/UAT data. Cristiano's pilot Owner visual UAT passed. The temporary runner authorization was restored to `APPROVED_EXECUTION_ID = null`; 8/8 focused tests, TypeScript, scoped ESLint and whitespace checks passed. No migration or application deployment was part of this transfer, and real production was untouched.
+
+Next planned phase: **separately scoped pilot pricing setup using reviewed historical EcoWash pricing**. Do not infer prices from the media transfer or create pilot orders. Phoenix remains short of production readiness and fiscal approval.
 
 ## SAAS-OWNER-LOCATION-SETTINGS-001A Closeout
 
