@@ -57,7 +57,7 @@ test("5 Terminal and Portal share locale presentation and ordering without chang
   assert.match(portal, /manualSortOrder: service\.segment_sort_order/);
 });
 
-test("6 CSV contains stable identity and independent multilingual columns without flattened prices", () => {
+test("6 CSV contains stable identity, multilingual columns and current base price fields", () => {
   for (const locale of ["it", "es", "en", "fr", "de"]) {
     assert.ok(CATALOG_CSV_HEADERS.includes(`service_name_${locale}`));
     assert.ok(CATALOG_CSV_HEADERS.includes(`service_description_${locale}`));
@@ -65,7 +65,9 @@ test("6 CSV contains stable identity and independent multilingual columns withou
   }
   assert.ok(CATALOG_CSV_HEADERS.includes("service_id"));
   assert.ok(CATALOG_CSV_HEADERS.includes("manual_sort_order"));
-  assert.ok(!CATALOG_CSV_HEADERS.some((header) => header.includes("price") || header.includes("amount")));
+  for (const header of ["base_price", "currency", "price_is_from", "price_valid_from", "price_valid_to", "media_reference"]) {
+    assert.ok(CATALOG_CSV_HEADERS.includes(header));
+  }
 });
 
 test("7 exported CSV round-trips quoting, translations, status and media reference", () => {

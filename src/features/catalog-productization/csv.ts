@@ -9,14 +9,32 @@ export const CATALOG_CSV_HEADERS = [
   "category_key", ...catalogLocales.map((locale) => `category_name_${locale}`),
   "unit_type", "manual_sort_order", "catalog_order_mode", "active_or_archived",
   "customer_visible", "customer_orderable", "featured", "media_reference",
+  "base_price", "currency", "price_is_from", "price_valid_from", "price_valid_to",
+  "import_action", "exclude_reason",
 ] as const;
 
+export type CatalogBasePrice = {
+  amount: string;
+  currency: string;
+  isFrom: boolean;
+  validFrom: string;
+  validTo: string | null;
+};
+
 function escapeCsv(value: unknown) {
-  const text = String(value ?? "");
+  const raw = String(value ?? "");
+  // Quoting alone does not prevent spreadsheet programs from evaluating a formula.
+  // Escape again when a literal value already begins with the escape marker.
+  // The importer removes exactly one marker, preserving round trips.
+  const text = /^(?:[=+\-@\t\r\n]|'[=+\-@\t\r\n])/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-export function serializeCatalogCsv(rows: CatalogImportRow[], mediaPaths: Map<string, string | null>) {
+export function serializeCatalogCsv(
+  rows: CatalogImportRow[],
+  mediaPaths: Map<string, string | null>,
+  prices: Map<string, CatalogBasePrice> = new Map(),
+) {
   const lines = rows.map((row) => CATALOG_CSV_HEADERS.map((header) => {
     if (header === "service_id") return row.serviceId;
     if (header === "service_code") return row.serviceCode;
@@ -31,6 +49,14 @@ export function serializeCatalogCsv(rows: CatalogImportRow[], mediaPaths: Map<st
     if (header === "customer_orderable") return row.customerOrderable;
     if (header === "featured") return row.featured;
     if (header === "media_reference") return mediaPaths.get(row.serviceId) ?? "";
+    const price = prices.get(row.serviceId);
+    if (header === "base_price") return price?.amount ?? "";
+    if (header === "currency") return price?.currency ?? "";
+    if (header === "price_is_from") return price ? String(price.isFrom) : "";
+    if (header === "price_valid_from") return price?.validFrom ?? "";
+    if (header === "price_valid_to") return price?.validTo ?? "";
+    if (header === "import_action") return "include";
+    if (header === "exclude_reason") return "";
     const serviceLocale = catalogLocales.find((locale) => header === `service_name_${locale}` || header === `service_description_${locale}`);
     if (serviceLocale) return header.startsWith("service_name_") ? row.translations[serviceLocale]?.name ?? "" : row.translations[serviceLocale]?.description ?? "";
     const categoryLocale = catalogLocales.find((locale) => header === `category_name_${locale}`);
@@ -39,7 +65,7 @@ export function serializeCatalogCsv(rows: CatalogImportRow[], mediaPaths: Map<st
   return `\uFEFF${CATALOG_CSV_HEADERS.join(",")}\r\n${lines.join("\r\n")}\r\n`;
 }
 
-export function parseCsv(text: string) {
+export function parseCsv(text: string, delimiter: "," | ";" = ",") {
   const rows: string[][] = [];
   let row: string[] = [];
   let cell = "";
@@ -48,7 +74,7 @@ export function parseCsv(text: string) {
     const character = text[index];
     if (quoted && character === '"' && text[index + 1] === '"') { cell += '"'; index += 1; }
     else if (character === '"') quoted = !quoted;
-    else if (!quoted && character === ",") { row.push(cell); cell = ""; }
+    else if (!quoted && character === delimiter) { row.push(cell); cell = ""; }
     else if (!quoted && (character === "\n" || character === "\r")) {
       if (character === "\r" && text[index + 1] === "\n") index += 1;
       row.push(cell); cell = "";

@@ -3,8 +3,8 @@ import { getCatalogExportData } from "@/features/catalog-productization/server/q
 
 export async function GET(_request: Request, context: { params: Promise<{ locale: string }> }) {
   const { locale } = await context.params;
-  const { mediaPaths, rows } = await getCatalogExportData(locale);
-  return new Response(serializeCatalogCsv(rows, mediaPaths), {
+  const { mediaPaths, prices, rows } = await getCatalogExportData(locale);
+  return new Response(serializeCatalogCsv(rows, mediaPaths, prices), {
     headers: {
       "Content-Disposition": 'attachment; filename="phoenix-catalog.csv"',
       "Content-Type": "text/csv; charset=utf-8",

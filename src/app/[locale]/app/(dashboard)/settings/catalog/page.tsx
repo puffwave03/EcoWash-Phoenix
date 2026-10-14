@@ -12,7 +12,7 @@ import {
   saveCatalogServiceAction,
   setCatalogOrderModeAction,
 } from "@/features/catalog-admin/server/actions";
-import { confirmCatalogImportAction, previewCatalogImportAction } from "@/features/catalog-productization/server/actions";
+import { confirmUnifiedCatalogAction, previewUnifiedCatalogAction } from "@/features/catalog-productization/server/unified-actions";
 import { getCatalogAdminSettings } from "@/features/catalog-admin/server/queries";
 import type { ServiceUnitType } from "@/features/services/types";
 import { Link } from "@/i18n/navigation";
@@ -40,13 +40,13 @@ export default async function CatalogSettingsPage({ params }: CatalogSettingsPag
       {settings.available ? (
         <>
         <CatalogTools
-          confirmAction={confirmCatalogImportAction.bind(null, locale)}
+          confirmAction={confirmUnifiedCatalogAction.bind(null, locale)}
           exportHref={`/${locale}/app/settings/catalog/export`}
           orderMode={settings.orderMode}
           orderModeAction={setCatalogOrderModeAction.bind(null, locale)}
-          previewAction={previewCatalogImportAction.bind(null, locale)}
+          previewAction={previewUnifiedCatalogAction.bind(null, locale)}
           text={{
-            applyImport: toolsT("applyImport"), cancelHelp: toolsT("cancelHelp"), confirmImport: toolsT("confirmImport"), export: toolsT("export"), exportHelp: toolsT("exportHelp"), import: toolsT("import"), importError: toolsT("importError"), importHelp: toolsT("importHelp"), importSizeError: toolsT("importSizeError"), importSuccess: toolsT("importSuccess"), modes: toolsT.raw("modes"), ordering: toolsT("ordering"), orderingHelp: toolsT("orderingHelp"), preview: toolsT("preview"), previewSummary: toolsT.raw("previewSummary") as string, save: toolsT("save"), saved: toolsT("saved"), title: toolsT("title"),
+            applyImport: toolsT("applyImport"), cancelHelp: toolsT("cancelHelp"), confirmImport: toolsT("confirmImport"), export: toolsT("export"), exportHelp: toolsT("exportHelp"), import: toolsT("import"), importError: toolsT("importError"), importHelp: toolsT("importHelp"), importSizeError: toolsT("importSizeError"), importSuccess: toolsT("importSuccess"), importMode: toolsT("importMode"), pricesOnly: toolsT("pricesOnly"), catalogAndPrices: toolsT("catalogAndPrices"), effectiveDate: toolsT("effectiveDate"), previewPriceSummary: toolsT.raw("previewPriceSummary") as string, previewTransferSummary: toolsT.raw("previewTransferSummary") as string, previewFields: toolsT.raw("previewFields") as Record<string, string>, previewOperations: toolsT.raw("previewOperations") as Record<string, string>, previewErrors: toolsT.raw("previewErrors") as Record<string, string>, unitTypes: catalogT.raw("unitTypes") as Record<string, string>, stalePreview: toolsT("stalePreview"), modes: toolsT.raw("modes"), ordering: toolsT("ordering"), orderingHelp: toolsT("orderingHelp"), preview: toolsT("preview"), previewSummary: toolsT.raw("previewSummary") as string, save: toolsT("save"), saved: toolsT("saved"), title: toolsT("title"),
           }}
         />
         <CatalogManagement

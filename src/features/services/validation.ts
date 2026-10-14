@@ -30,7 +30,7 @@ export function parseServiceStatusFilter(value: string | null): ServiceStatusFil
     : "active";
 }
 
-export function parseServiceForm(formData: FormData, defaultCurrency: string) {
+export function parseServiceForm(formData: FormData, defaultCurrency: string, allowEmptyPrice = false) {
   const fieldErrors: Record<string, string> = {};
   const name = requiredName(formData);
   const unitType = text(formData, "unitType", 24);
@@ -39,25 +39,31 @@ export function parseServiceForm(formData: FormData, defaultCurrency: string) {
   const currency = (text(formData, "currency", 3) || defaultCurrency).toUpperCase();
   const validFrom = text(formData, "validFrom", 10);
   const validTo = text(formData, "validTo", 10);
+  const priceIsFrom = formData.get("priceIsFrom");
 
   if (!name) fieldErrors.name = "required";
   else if (name.length > 160) fieldErrors.name = "invalid";
   if (!isUnitType(unitType)) fieldErrors.unitType = "invalid";
-  if (!Number.isFinite(amount) || amount < 0) fieldErrors.amount = "invalid";
-  if (currency.length !== 3) fieldErrors.currency = "invalid";
-  if (!DATE_PATTERN.test(validFrom)) fieldErrors.validFrom = "invalid";
-  if (validTo && !DATE_PATTERN.test(validTo)) fieldErrors.validTo = "invalid";
+  if (!(allowEmptyPrice && !amountText)
+    && (!/^(0|[1-9]\d{0,9})(\.\d{1,2})?$/.test(amountText) || !Number.isFinite(amount))) fieldErrors.amount = "invalid";
+  if (currency !== defaultCurrency) fieldErrors.currency = "invalid";
+  if (priceIsFrom !== "true" && priceIsFrom !== "false") fieldErrors.priceIsFrom = "invalid";
+  const validDate = (value: string) => DATE_PATTERN.test(value)
+    && !Number.isNaN(Date.parse(`${value}T00:00:00Z`))
+    && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+  if (!validDate(validFrom)) fieldErrors.validFrom = "invalid";
+  if (validTo && !validDate(validTo)) fieldErrors.validTo = "invalid";
   if (validTo && validFrom && validTo < validFrom) fieldErrors.validTo = "invalid";
 
   const input: ServiceFormInput = {
-    amount: Number.isFinite(amount) ? Math.round(amount * 100) / 100 : 0,
+    amount: amountText && Number.isFinite(amount) ? amount : null,
     category: text(formData, "category", 100),
     code: text(formData, "code", 80),
     currency,
     description: text(formData, "description", 600),
     isActive: formData.get("isActive") !== "false",
     name,
-    priceIsFrom: formData.get("priceIsFrom") === "true",
+    priceIsFrom: priceIsFrom === "true",
     unitType: isUnitType(unitType) ? unitType : "piece",
     validFrom,
     validTo,

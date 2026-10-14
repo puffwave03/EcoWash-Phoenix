@@ -35,6 +35,7 @@ export default async function NewServicePage({ params }: NewServicePageProps) {
           unitType: t("unitType"),
           validFrom: t("validFrom"),
           validTo: t("validTo"),
+          isFrom: t("isFrom"), yes: t("yes"), no: t("no"), currentPrice: t("currentPrice"), chosenEffectiveDate: t("chosenEffectiveDate"),
           unitTypes: catalogT.raw("unitTypes") as Record<import("@/features/services/types").ServiceUnitType, string>,
         }}
       />

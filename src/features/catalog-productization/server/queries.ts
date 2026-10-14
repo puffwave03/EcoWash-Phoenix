@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { AppLocale } from "@/i18n/routing";
 import type { ServiceUnitType } from "@/features/services/types";
 import type { CatalogImportRow, CatalogOrderMode, CatalogPresentation, CatalogTranslations, CategoryTranslations } from "@/features/catalog-productization/types";
+import type { CatalogBasePrice } from "@/features/catalog-productization/csv";
 
 type PresentationRow = {
   category_sort_order: number;
@@ -66,9 +67,26 @@ type ExportService = {
 type ExportCategory = { category_key: string; is_active: boolean };
 type ServiceTranslation = { service_id: string; locale: AppLocale; name: string; description: string | null };
 type CategoryTranslation = { category_key: string; locale: AppLocale; title: string };
+type ExportPrice = {
+  id: string;
+  service_id: string;
+  amount: number;
+  currency: string;
+  is_from: boolean;
+  valid_from: string;
+  valid_to: string | null;
+};
 
 const PAGE_SIZE = 500;
 const TRANSLATION_CHUNK_SIZE = 100;
+
+function localDate(timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    year: "numeric", month: "2-digit", day: "2-digit", timeZone,
+  }).formatToParts(new Date());
+  const part = (type: "year" | "month" | "day") => parts.find((entry) => entry.type === type)?.value;
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
 
 function chunks<T>(values: T[], size: number): T[][] {
   const result: T[][] = [];
@@ -80,8 +98,8 @@ export async function getCatalogExportData(locale: string) {
   const { membership } = await requireOwnerOrManager(locale);
   const organizationId = membership.organization.id;
   const supabase = await createSupabaseServerClient();
-  const organizationResult = await supabase.from("organizations").select("catalog_order_mode")
-    .eq("id", organizationId).single<{ catalog_order_mode: CatalogOrderMode }>();
+  const organizationResult = await supabase.from("organizations").select("catalog_order_mode, timezone")
+    .eq("id", organizationId).single<{ catalog_order_mode: CatalogOrderMode; timezone: string }>();
   if (organizationResult.error || !organizationResult.data) throw new Error("catalog_export_unavailable");
 
   const services: ExportService[] = [];
@@ -129,6 +147,32 @@ export async function getCatalogExportData(locale: string) {
     }
   }
 
+  const prices = new Map<string, CatalogBasePrice>();
+  const today = localDate(organizationResult.data.timezone);
+  for (const ids of chunks(services.map((service) => service.id), TRANSLATION_CHUNK_SIZE)) {
+    let priceCursor: string | null = null;
+    for (;;) {
+      let query = supabase.from("service_prices")
+        .select("id, service_id, amount, currency, is_from, valid_from, valid_to")
+        .eq("organization_id", organizationId).in("service_id", ids)
+        .is("location_id", null).eq("is_active", true)
+        .lte("valid_from", today).or(`valid_to.is.null,valid_to.gte.${today}`)
+        .order("id").limit(PAGE_SIZE);
+      if (priceCursor) query = query.gt("id", priceCursor);
+      const { data, error } = await query.returns<ExportPrice[]>();
+      if (error || !data) throw new Error("catalog_export_unavailable");
+      for (const price of data) {
+        if (prices.has(price.service_id)) throw new Error("catalog_export_ambiguous_base_price");
+        prices.set(price.service_id, {
+          amount: Number(price.amount).toFixed(2), currency: price.currency,
+          isFrom: price.is_from, validFrom: price.valid_from, validTo: price.valid_to,
+        });
+      }
+      if (data.length < PAGE_SIZE) break;
+      priceCursor = data[data.length - 1].id;
+    }
+  }
+
   const categoryTranslations = new Map<string, CategoryTranslations>();
   for (const keys of chunks([...categories.keys()], TRANSLATION_CHUNK_SIZE)) {
     const { data, error } = await supabase.from("category_catalog_translations")
@@ -164,6 +208,7 @@ export async function getCatalogExportData(locale: string) {
   });
   return {
     mediaPaths: new Map(services.map((service) => [service.id, service.portal_image_path])),
+    prices,
     rows,
     settings: { categories: [...categories.values()], orderMode: organizationResult.data.catalog_order_mode },
   };

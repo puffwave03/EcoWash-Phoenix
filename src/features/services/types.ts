@@ -26,7 +26,7 @@ export function isDiscreteServiceUnit(unitType: ServiceUnitType) {
 }
 
 export type ServiceFormInput = {
-  amount: number;
+  amount: number | null;
   category: string;
   code: string;
   currency: string;

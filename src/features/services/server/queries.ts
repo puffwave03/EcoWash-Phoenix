@@ -124,6 +124,7 @@ export async function getServiceById(locale: string, serviceId: string) {
     .from("services")
     .select(SERVICE_SELECT)
     .eq("organization_id", membership.organization.id)
+    .is("price.location_id", null)
     .eq("price.is_active", true)
     .lte("price.valid_from", currentDate)
     .or(`valid_to.is.null,valid_to.gte.${currentDate}`, { referencedTable: "price" })

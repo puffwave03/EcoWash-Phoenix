@@ -19,11 +19,17 @@ type ServiceFormText = {
   unitType: string;
   validFrom: string;
   validTo: string;
+  isFrom: string;
+  yes: string;
+  no: string;
+  currentPrice: string;
+  chosenEffectiveDate: string;
 };
 
 type ServiceFormProps = {
   action: (state: ServiceActionState, formData: FormData) => Promise<ServiceActionState>;
   defaultCurrency: string;
+  effectiveDate?: string;
   service?: Service;
   text: ServiceFormText;
 };
@@ -40,7 +46,7 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function ServiceForm({ action, defaultCurrency, service, text }: ServiceFormProps) {
+export function ServiceForm({ action, defaultCurrency, effectiveDate, service, text }: ServiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -50,6 +56,13 @@ export function ServiceForm({ action, defaultCurrency, service, text }: ServiceF
           {text.error}
         </p>
       ) : null}
+
+      {service ? <p className="rounded-control border border-border bg-primary-soft/30 px-4 py-3 text-sm text-primary">
+        {text.currentPrice}: {service.amount === null ? "—" : `${formatNumberInput(service.amount, 2)} ${service.currency ?? defaultCurrency}`}
+        {service.validFrom ? ` · ${text.validFrom}: ${service.validFrom}` : ""}
+        {service.validTo ? ` – ${service.validTo}` : ""}
+        {service.amount !== null ? ` · ${text.isFrom}: ${service.priceIsFrom ? text.yes : text.no}` : ""}
+      </p> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm font-semibold text-primary">
@@ -72,15 +85,21 @@ export function ServiceForm({ action, defaultCurrency, service, text }: ServiceF
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.amount}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.amount))} defaultValue={formatNumberInput(service?.amount ?? 0, 2)} min="0" name="amount" step="0.01" type="number" />
+          <input className={fieldClass(Boolean(state.fieldErrors.amount))} defaultValue={service?.amount === null ? "" : formatNumberInput(service?.amount ?? 0, 2)} min="0" name="amount" step="0.01" type="number" />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.currency}</span>
           <input className={fieldClass(Boolean(state.fieldErrors.currency))} defaultValue={service?.currency ?? defaultCurrency} name="currency" />
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
-          <span>{text.validFrom}</span>
-          <input className={fieldClass(Boolean(state.fieldErrors.validFrom))} defaultValue={service?.validFrom ?? today()} name="validFrom" type="date" />
+          <span>{service ? text.chosenEffectiveDate : text.validFrom}</span>
+          <input className={fieldClass(Boolean(state.fieldErrors.validFrom))} defaultValue={effectiveDate ?? service?.validFrom ?? today()} name="validFrom" type="date" />
+        </label>
+        <label className="space-y-2 text-sm font-semibold text-primary">
+          <span>{text.isFrom}</span>
+          <select aria-invalid={Boolean(state.fieldErrors.priceIsFrom)} className={fieldClass(Boolean(state.fieldErrors.priceIsFrom))} defaultValue={service?.priceIsFrom ? "true" : "false"} name="priceIsFrom">
+            <option value="false">{text.no}</option><option value="true">{text.yes}</option>
+          </select>
         </label>
         <label className="space-y-2 text-sm font-semibold text-primary">
           <span>{text.validTo}</span>
@@ -94,7 +113,6 @@ export function ServiceForm({ action, defaultCurrency, service, text }: ServiceF
       </label>
 
       <input name="isActive" type="hidden" value={service?.isActive === false ? "false" : "true"} />
-      <input name="priceIsFrom" type="hidden" value={service?.priceIsFrom ? "true" : "false"} />
 
       <Button disabled={isPending} type="submit">
         {isPending ? text.saving : text.save}

@@ -28,24 +28,6 @@ function revalidateServices(locale: string) {
   revalidatePath(`/${locale}/portal/requests/new`);
 }
 
-type CurrentServiceRow = {
-  category: string | null;
-  code: string | null;
-  description: string | null;
-  id: string;
-  is_active: boolean;
-  name: string;
-  unit_type: string;
-};
-
-type CurrentPriceRow = {
-  amount: number;
-  currency: string;
-  is_from: boolean;
-  valid_from: string;
-  valid_to: string | null;
-};
-
 export async function createServiceAction(
   locale: string,
   _state: ServiceActionState = initialState,
@@ -55,7 +37,7 @@ export async function createServiceAction(
 
   const { membership, user } = await requireOwnerOrManager(locale);
   const { input, fieldErrors, valid } = parseServiceForm(formData, membership.organization.defaultCurrency);
-  if (!valid) return fail(null, fieldErrors);
+  if (!valid || input.amount === null) return fail(null, fieldErrors);
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -109,91 +91,27 @@ export async function updateServiceAction(
 ) {
   void _state;
 
-  const { membership, user } = await requireOwnerOrManager(locale);
-  const { input, fieldErrors, valid } = parseServiceForm(formData, membership.organization.defaultCurrency);
+  const { membership } = await requireOwnerOrManager(locale);
+  const { input, fieldErrors, valid } = parseServiceForm(formData, membership.organization.defaultCurrency, true);
   if (!valid) return fail(null, fieldErrors);
 
   const supabase = await createSupabaseServerClient();
-  const [{ data: currentService, error: currentServiceError }, { data: currentPrices, error: currentPricesError }] = await Promise.all([
-    supabase.from("services")
-      .select("id, code, name, description, unit_type, category, is_active")
-      .eq("organization_id", membership.organization.id)
-      .eq("id", serviceId)
-      .maybeSingle<CurrentServiceRow>(),
-    supabase.from("service_prices")
-      .select("amount, currency, is_from, valid_from, valid_to")
-      .eq("organization_id", membership.organization.id)
-      .eq("service_id", serviceId)
-      .eq("is_active", true)
-      .returns<CurrentPriceRow[]>(),
-  ]);
-  if (currentServiceError || currentPricesError || !currentService) {
-    console.error("Service update target lookup failed", currentServiceError?.code ?? currentPricesError?.code);
-    return fail("generic");
-  }
-
-  const serviceFieldsUnchanged =
-    currentService.code === optionalDbValue(input.code)
-    && currentService.description === optionalDbValue(input.description)
-    && currentService.unit_type === input.unitType
-    && currentService.category === optionalDbValue(input.category)
-    && currentService.is_active === input.isActive;
-  const submittedPriceAlreadyExists = (currentPrices ?? []).some((price) =>
-    Number(price.amount) === input.amount
-    && price.currency === input.currency
-    && price.is_from === input.priceIsFrom
-    && price.valid_from === input.validFrom
-    && price.valid_to === optionalDbValue(input.validTo));
-  const nameOnlyUpdate = serviceFieldsUnchanged && submittedPriceAlreadyExists;
-
-  const { data: updatedService, error } = await supabase
-    .from("services")
-    .update({
-      category: optionalDbValue(input.category),
-      code: optionalDbValue(input.code),
-      description: optionalDbValue(input.description),
-      is_active: input.isActive,
-      name: input.name,
-      unit_type: input.unitType,
-      updated_by: user.id,
-    })
-    .eq("organization_id", membership.organization.id)
-    .eq("id", serviceId)
-    .select("id")
-    .maybeSingle<{ id: string }>();
-
-  if (error || !updatedService) {
-    console.error("Service update failed", error?.code ?? "not_found");
-    return fail("generic");
-  }
-
-  if (nameOnlyUpdate) {
-    revalidateServices(locale);
-    redirect(`/${locale}/app/services`);
-  }
-
-  await supabase
-    .from("service_prices")
-    .update({ is_active: false, updated_by: user.id })
-    .eq("organization_id", membership.organization.id)
-    .eq("service_id", serviceId)
-    .eq("is_active", true);
-
-  const { error: priceError } = await supabase.from("service_prices").insert({
-    amount: input.amount,
-    created_by: user.id,
-    currency: input.currency,
-    is_active: true,
-    is_from: input.priceIsFrom,
-    organization_id: membership.organization.id,
-    service_id: serviceId,
-    updated_by: user.id,
-    valid_from: input.validFrom,
-    valid_to: optionalDbValue(input.validTo),
+  const { error } = await supabase.rpc("save_service_with_versioned_price", {
+    target_amount: input.amount,
+    target_category: optionalDbValue(input.category),
+    target_code: optionalDbValue(input.code),
+    target_currency: input.currency,
+    target_description: optionalDbValue(input.description),
+    target_is_active: input.isActive,
+    target_is_from: input.priceIsFrom,
+    target_name: input.name,
+    target_service_id: serviceId,
+    target_unit_type: input.unitType,
+    target_valid_from: input.validFrom,
+    target_valid_to: optionalDbValue(input.validTo),
   });
-
-  if (priceError) {
-    console.error("Service price update failed", priceError.code);
+  if (error) {
+    console.error("Service price version save failed", error.code);
     return fail("generic");
   }
 
