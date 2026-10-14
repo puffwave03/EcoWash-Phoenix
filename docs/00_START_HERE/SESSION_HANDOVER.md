@@ -2,15 +2,27 @@
 
 Status: Active
 
-Date: 2026-10-13
+Date: 2026-10-14
 
-Session checkpoint: ECOWASH-PILOT-CATALOG-MEDIA-002H COMPLETE / CTO TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS. The pilot catalog and approved images are present on staging; pilot prices and operational orders remain zero. Next planned phase is separately scoped pilot pricing setup using reviewed historical EcoWash pricing. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: PHOENIX-UNIFIED-CATALOG-002J staging implementation and Product Owner UAT PASS; independent post-import audit PASS. The pilot has 219 active services with approved images and 219 current EUR base prices; operational orders remain zero. Customer Portal access was not validated or enabled by 002J. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
 Repository baseline before this deployment-history reconciliation: `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main; working tree clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## PHOENIX-UNIFIED-CATALOG-002J Staging Closeout
+
+**STAGING IMPLEMENTATION PASS / PRODUCT OWNER UAT PASS / INDEPENDENT POST-IMPORT AUDIT PASS.** Unified catalog CSV export/import includes multilingual service details, existing image references and global base prices. Owners/Managers can preview and confirm either **Prices only** or **Catalog and prices**. The preview shows per-service catalog and price operations, amounts, effective date, exclusions and errors. Confirmation uses a tenant-scoped transactional RPC with a stale-preview check; errors roll back catalog and price changes together. The approved effective-date policy preserves historical price rows, closes a preceding open period when a value changes, avoids redundant versions and supports idempotent repeat imports. An active base-price overlap trigger covers authorized direct writers. Imports are limited to **2,000 rows and 1 MB**. CSV supports the tested Spanish Excel/Numbers semicolon and comma-decimal workflow without ambiguous monetary interpretation; XLSX with embedded thumbnails remains a separate future enhancement. CSV import does not upload media or alter existing images.
+
+Staging Supabase `exthnplfokcucaqydney` has migrations `20261013000100_phoenix_unified_catalog_002j.sql` and `20261014000100_phoenix_unified_catalog_002j_pouat_002.sql` applied once. UAT-001 corrected Prices-only preview handling of archived source rows with blank codes. UAT-002 corrected the SQL confirmation RPC for the same approved archived-row exclusion without replaying the first migration. Product Owner confirmation succeeded through the normal staging UI. The dedicated staging project `ecowash-phoenix-staging` was verified **READY** at `https://ecowash-phoenix-staging.vercel.app`; the alias can move with later deployments. Real production was untouched.
+
+EcoWash La Tejita Tenerife (`5f9df6bc-ec65-4a03-96f6-a4e23e851a8c`) has **219 active services and 219 active, global, current EUR base prices** effective `2026-10-14`, each open-ended. Exactly two prices have `is_from=true`; the three archived historical source services were excluded. The independent read-only audit compared 53 public tables before and after confirmation: only the expected 219 pilot `service_prices` rows were added. Pilot services, categories and image references matched their pre-import rows; historical EcoWash retained 235 price rows and Demo retained one, with matching pre/post price fingerprints. Pilot segment prices and operational orders remain zero; no active price-period overlap was found. This comparison does not cover managed Auth or Storage object bytes.
+
+All 219 pilot services have `portal_visible=true` and `customer_orderable=true`; 173 are featured. These are configuration flags, not proof of customer Portal availability. The pilot has no customer or Portal access records, and 002J did **not** validate or enable actual customer Portal access. Separate findings remain: backup-script robustness; the payments circular-FK warning on logical data dumps, which requires restore planning; the pre-existing historical EcoWash `dry_cleaning.portal_featured` drift; and future XLSX/embedded-thumbnail support. No production-readiness or fiscal approval is implied. Any next pilot workflow requires separate CTO scope.
+
+Earlier mission sections below retain their original checkpoints; statements that pilot prices were zero describe the state before 002J.
 
 ## ECOWASH-PILOT-CATALOG-MEDIA-002H Closeout
 
