@@ -11,6 +11,7 @@ import { siteConfig } from "@/config/site";
 type PreviewAccessRow = {
   email: string;
   is_active: boolean;
+  organization_id: string;
   customer: {
     display_name: string;
     email: string | null;
@@ -96,13 +97,27 @@ export async function GET(
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("customer_portal_access")
-    .select("email, is_active, customer:customers!customer_portal_access_customer_same_org(display_name, email)")
+    .select("email, is_active, organization_id, customer:customers!customer_portal_access_customer_same_org(display_name, email)")
     .eq("customer_id", customerId)
     .eq("is_active", true)
     .limit(1)
     .maybeSingle<PreviewAccessRow>();
 
   if (error || !data || !isClearlyTestCustomer(data)) {
+    return NextResponse.redirect(deniedUrl);
+  }
+
+  // This staging-only shortcut must not mint a Portal session when the
+  // selected tenant's feature is disabled, missing or outside its dates.
+  const { data: portalEnabled, error: entitlementError } = await admin.rpc(
+    "organization_entitlement_is_enabled",
+    {
+      target_at: new Date().toISOString(),
+      target_feature_key: "core.portal",
+      target_organization_id: data.organization_id,
+    },
+  );
+  if (entitlementError || portalEnabled !== true) {
     return NextResponse.redirect(deniedUrl);
   }
 

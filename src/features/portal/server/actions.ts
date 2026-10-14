@@ -6,6 +6,8 @@ import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { siteConfig } from "@/config/site";
 import { requireMembership } from "@/lib/auth/require-membership";
+import { FEATURES } from "@/features/entitlements/feature-catalog";
+import { hasEntitlement } from "@/features/entitlements/server/resolver";
 import type { CustomerPortalActionState } from "@/features/portal/types";
 
 const initialState: CustomerPortalActionState = {
@@ -139,9 +141,21 @@ export async function inviteCustomerPortalAction(
 
   const access = await requireMembership(locale);
   if (!canManageCustomerPortal(access.membership.role)) return fail("unauthorized");
+  // Check before invoking Supabase Auth: an invitation must not be sent for
+  // a tenant whose Portal entitlement is unavailable.
+  if (!await hasEntitlement(locale, FEATURES.corePortal)) return fail("access");
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!EMAIL_PATTERN.test(email)) return fail(null, { email: "invalid" });
+  const supabase = await createSupabaseServerClient();
+  const { data: customer, error: customerError } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("id", customerId)
+    .eq("organization_id", access.membership.organization.id)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (customerError || !customer) return fail("access");
   if (!hasSupabaseAdminConfig()) return fail("configuration");
 
   const admin = createSupabaseAdminClient();
@@ -181,7 +195,6 @@ export async function inviteCustomerPortalAction(
 
   if (!userId) return fail("invite");
 
-  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("upsert_customer_portal_access", {
     target_customer_id: customerId,
     target_email: email,
@@ -259,6 +272,7 @@ export async function manageCustomerPortalAccessAction(
     if (!portalAccess.is_active) return fail("accessDisabled");
 
     if (intent === "resend" || intent === "resetPassword") {
+      if (!await hasEntitlement(locale, FEATURES.corePortal)) return fail("access");
       const admin = createSupabaseAdminClient();
       const operation = intent === "resend" ? "signInWithOtp" : "resetPasswordForEmail";
       const { data: authUser, error: userError } = await admin.auth.admin.getUserById(
