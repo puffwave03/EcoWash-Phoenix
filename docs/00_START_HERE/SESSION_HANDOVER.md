@@ -4,13 +4,23 @@ Status: Active
 
 Date: 2026-10-14
 
-Session checkpoint: PHOENIX-UNIFIED-CATALOG-002J staging implementation and Product Owner UAT PASS; independent post-import audit PASS. The pilot has 219 active services with approved images and 219 current EUR base prices; operational orders remain zero. Customer Portal access was not validated or enabled by 002J. Supabase Pro and mandatory AUTH-DR-001C remain deferred until pre-production.
+Session checkpoint: `PORTAL-ENTITLEMENT-BOUNDARY-001` application staging deployment, database migration and read-only Product Owner Portal UAT PASS; CTO technical review PASS. Functional implementation is recorded in commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`. The new EcoWash pilot has no customer Portal grants and `core.portal` remains disabled. Phoenix is not production-ready.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
-Repository baseline before this deployment-history reconciliation: `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main; working tree clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+Pre-closeout Git checkpoint (2026-10-14): local `main` was at functional commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`; `origin/main` was at `aacacdf8e85c6dc1b071cb03c902a185509d68e8`. At this checkpoint, the documentation commit and push had not occurred. Later Git history is authoritative for final synchronization.
+
+Historical deployment-history reconciliation baseline (001A): `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main at that earlier checkpoint; working tree then clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## PORTAL-ENTITLEMENT-BOUNDARY-001 — Staging Validation
+
+**CTO TECHNICAL PASS / STAGING PHASES 1 AND 2 PASS / PRODUCT OWNER READ-ONLY PORTAL UAT PASS.** Phase 1 deployed the application guards to the dedicated Vercel staging project as deployment `dpl_4PYbB5BcRBJhFqPa2CmQgaHaih1i`. Customer Portal access requires effective tenant `core.portal`; invitation and recovery actions check entitlement before Supabase Auth operations, and invitations require an active customer in the current tenant before Auth. Phase 2 applied `20261014000200_portal_entitlement_boundary_001.sql` exactly once to staging Supabase `exthnplfokcucaqydney`. The migration replaced 11 functions and two RLS policies while preserving function ownership, `SECURITY DEFINER`, fixed search paths and required ACLs. Local and remote migration histories are aligned. No production deployment or database change occurred.
+
+The Product Owner's **read-only** Historical EcoWash Portal UAT passed login, customer order history, order `EW-000144` detail, customer catalog and prices, followed by logout. No test orders or payments were created. This UAT did not manually exercise every negative authorization scenario on staging; focused local contract tests and post-migration read-only security checks cover the reviewed entitlement and tenant boundaries. Historical EcoWash retains its authorized Portal access. EcoWash La Tejita Tenerife remains at 219 active services and 219 current EUR prices, with zero customers, Portal grants, orders and payments; its `core.portal` entitlement remains disabled.
+
+**OPEN — `PORTAL-LEGACY-DEPLOYMENT-AUTH-001`:** old immutable Vercel deployment URLs may remain accessible to authorized team members and may execute older application code before the pre-Auth invitation guard. The deployed database entitlement boundary does not eliminate potential Auth email side effects from that older code. Assess release-readiness implications before commercial production in a separate approved task. Separately, the Spanish Portal catalog contains untranslated Italian descriptive text (**OPEN / NON-BLOCKING**); do not fold that translation finding into this security mission. Managed Supabase Auth recovery (`AUTH-DR-001C`) and other production-readiness requirements remain separate gates. After final Git synchronization and deployment verification, the next operational priority is separately scoping `ECOWASH-STORE-READINESS-AUDIT-001`.
 
 ## PHOENIX-UNIFIED-CATALOG-002J Staging Closeout
 

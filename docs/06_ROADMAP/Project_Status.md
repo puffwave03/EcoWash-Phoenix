@@ -6,11 +6,21 @@ Version: 0.1
 
 Last Updated: 2026-10-14
 
-Current Mission: No active implementation mission
+Current Mission: `PORTAL-ENTITLEMENT-BOUNDARY-001` staging technical validation and read-only Product Owner UAT passed; functional implementation is recorded in commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`.
 
-Next Action: Separately scope the next pilot customer/Portal and operational readiness checks after 002J closeout. The pilot has 219 active services, approved media and 219 current EUR base prices on staging; operational orders remain zero and customer Portal access has not been validated or enabled by 002J. Security, backup/restore, DR, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
+Next Action: After final Git synchronization and deployment verification, separately scope `ECOWASH-STORE-READINESS-AUDIT-001`. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. The new EcoWash pilot still has no customers or Portal grants and `core.portal` remains disabled. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
 
 **Auth DR decision (2026-10-06):** AUTH-DR-001B3 **CLOSED / PASS**; AUTH-DR-001B4 **COMPLETE / PASS**. The Product Owner/CTO deferred the Supabase Pro upgrade because current staging is a pilot/test tenant rather than the near-final real production state. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**, requiring a completed eligible physical backup and an isolated authenticated recovery rehearsal. Encrypted off-device custody remains a separate pre-production finding.
+
+---
+
+## PORTAL-ENTITLEMENT-BOUNDARY-001 — Staging Validation
+
+**CTO TECHNICAL PASS / STAGING PHASES 1 AND 2 PASS / PRODUCT OWNER READ-ONLY PORTAL UAT PASS.** Phase 1 application guards were deployed to the dedicated Vercel staging project as `dpl_4PYbB5BcRBJhFqPa2CmQgaHaih1i`: Portal requires effective tenant `core.portal`, and invitation/recovery Auth operations are guarded before email or link actions. Invitation also checks that the customer is active in the current tenant before Auth. Phase 2 applied migration `20261014000200_portal_entitlement_boundary_001.sql` once on staging Supabase `exthnplfokcucaqydney`. Eleven functions and two RLS policies were updated; owner, `SECURITY DEFINER`, fixed search paths and required ACLs were preserved. Local and remote migration histories align.
+
+The Product Owner completed **read-only** Historical EcoWash Portal UAT: login, customer order history, `EW-000144` detail, catalog and prices PASS; logout completed. No test orders or payments were created. This was a positive-path UAT, not a manual staging test of every negative authorization case. Historical EcoWash retains authorized Portal access. The new EcoWash pilot retains 219 active services and 219 current EUR prices, zero customers, Portal grants, orders and payments, and no effective `core.portal` entitlement. Functional implementation is recorded in commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`. At the pre-closeout checkpoint, local `main` included that commit while `origin/main` was `aacacdf8e85c6dc1b071cb03c902a185509d68e8`; the documentation commit and push had not yet occurred.
+
+**OPEN — `PORTAL-LEGACY-DEPLOYMENT-AUTH-001`:** authorized team members may still reach immutable old Vercel deployment URLs and run application code without the new pre-Auth guard. The database entitlement boundary is deployed, but older code may still trigger Auth email side effects. Review this risk in a separate approved task before commercial production. Separately, the Spanish Portal catalog contains untranslated Italian descriptive text (**OPEN / NON-BLOCKING**); it is outside this security mission. Managed Supabase Auth recovery (`AUTH-DR-001C`) and other production-readiness gates remain open. No real production access or deployment was part of this mission.
 
 ---
 
