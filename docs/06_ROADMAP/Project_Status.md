@@ -4,13 +4,25 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-10-14
+Last Updated: 2026-10-15
 
-Current Mission: `PORTAL-ENTITLEMENT-BOUNDARY-001` staging technical validation and read-only Product Owner UAT passed; functional implementation is recorded in commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`.
+Current Mission: `TERMINAL-FIVE-WORKSPACES-RECOVERY` implementation and staging deployment complete; Product Owner non-transactional Terminal UAT passed on 2026-10-15. Subsequent Product Owner order-confirmation observations require technical verification. Commit `8cca0c4374a92776202f592967930a73e354b151` is synchronized on local `main` and `origin/main`; the worktree was clean before this documentation update.
 
-Next Action: After final Git synchronization and deployment verification, separately scope `ECOWASH-STORE-READINESS-AUDIT-001`. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. The new EcoWash pilot still has no customers or Portal grants and `core.portal` remains disabled. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
+Next Action: CTO/Product Owner to scope controlled transactional UAT for Terminal order-submission recovery after timeout, including technical verification of the reported order confirmations, idempotency and payments, and review `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` and the remaining Terminal findings below. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
 
 **Auth DR decision (2026-10-06):** AUTH-DR-001B3 **CLOSED / PASS**; AUTH-DR-001B4 **COMPLETE / PASS**. The Product Owner/CTO deferred the Supabase Pro upgrade because current staging is a pilot/test tenant rather than the near-final real production state. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**, requiring a completed eligible physical backup and an isolated authenticated recovery rehearsal. Encrypted off-device custody remains a separate pre-production finding.
+
+---
+
+## TERMINAL-FIVE-WORKSPACES-RECOVERY — 2026-10-15 Staging UAT
+
+**IMPLEMENTED / PRODUCT OWNER NON-TRANSACTIONAL UAT PASS.** Commit `8cca0c4374a92776202f592967930a73e354b151` contains five independent Terminal sales workspaces, browser draft-storage failure protection and recoverable submission identity. Local and remote `main` are synchronized. The Product Owner verified the automatic Vercel deployment for commit `8cca0c4` as **Ready** on `ecowash-phoenix-staging`. The read-only status-lookup migration `20261015000100_terminal_order_submission_recovery_001a.sql` is applied to Supabase staging `exthnplfokcucaqydney`; the Git release did not reapply it.
+
+Product Owner non-transactional UAT on 2026-10-15 passed cart isolation, registered-customer A/B/A, distinct occasional customers and refresh recovery. No order or payment was confirmed during that initial UAT. Subsequently, the Product Owner independently tried order confirmations on the EcoWash test account in staging and reported observing orders `EW-000145`, `EW-000146`, `EW-000147` and `EW-000148`. Repeatedly, a temporary unknown-outcome message appeared after submission; without pressing “Comprobar estado del pedido”, after about 5–6 seconds “Pedido guardado” appeared automatically and the Venta workspace was freed. These are Product Owner observations, not independent technical verification of the four order records, actual idempotency, payments or confirmation path. The orders appear created according to available evidence, but controlled transactional UAT and financial integrity verification remain open; Terminal is not yet accepted for live shop operation or commercial production.
+
+**OPEN — `TERMINAL-SUBMISSION-CONFIRMATION-UX-001`:** diagnose why the unknown-outcome state appears consistently before automatic order confirmation; no cause has been established.
+
+**OPEN / DEFERRED:** customer/catalog/cart loading of about five seconds; approved but unimplemented initial Terminal screen improvement; future analysis of the POS till-closing procedure; deferred multi-till implementation. Total browser-storage loss still requires manual order verification. The separate Portal legacy-deployment Auth risk, Spanish Portal catalog translation finding, `AUTH-DR-001C` and other production gates remain open.
 
 ---
 
@@ -124,7 +136,7 @@ Track the current development state of EcoWash Phoenix and provide the handover 
 
 ## Contents
 
-## Authoritative Current Status — 2026-10-12
+## Historical Status — 2026-10-12 Checkpoint
 
 | Area | Current state |
 | --- | --- |

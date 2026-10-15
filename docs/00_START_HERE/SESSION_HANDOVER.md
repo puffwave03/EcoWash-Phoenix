@@ -2,17 +2,29 @@
 
 Status: Active
 
-Date: 2026-10-14
+Date: 2026-10-15
 
-Session checkpoint: `PORTAL-ENTITLEMENT-BOUNDARY-001` application staging deployment, database migration and read-only Product Owner Portal UAT PASS; CTO technical review PASS. Functional implementation is recorded in commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`. The new EcoWash pilot has no customer Portal grants and `core.portal` remains disabled. Phoenix is not production-ready.
+Session checkpoint: `TERMINAL-FIVE-WORKSPACES-RECOVERY` implementation, staging deployment and Product Owner non-transactional Terminal UAT PASS on 2026-10-15. Commit `8cca0c4374a92776202f592967930a73e354b151` is on synchronized local and remote `main`. Subsequent Product Owner order-confirmation observations require technical verification; order-submission timeout recovery still requires separate controlled transactional UAT. Phoenix is not ready for commercial production.
 
 Repository: `/Users/cristianomegale/EcoWash-Phoenix`
 
 Branch: `main`
 
+Git checkpoint before this documentation mission (2026-10-15): local `main` and `origin/main` were synchronized at `8cca0c4374a92776202f592967930a73e354b151`, with a clean worktree.
+
 Pre-closeout Git checkpoint (2026-10-14): local `main` was at functional commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`; `origin/main` was at `aacacdf8e85c6dc1b071cb03c902a185509d68e8`. At this checkpoint, the documentation commit and push had not occurred. Later Git history is authoritative for final synchronization.
 
 Historical deployment-history reconciliation baseline (001A): `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main at that earlier checkpoint; working tree then clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## TERMINAL-FIVE-WORKSPACES-RECOVERY — 2026-10-15 Staging UAT
+
+**IMPLEMENTED / PRODUCT OWNER NON-TRANSACTIONAL UAT PASS.** Commit `8cca0c4374a92776202f592967930a73e354b151` implements five independent Terminal sales workspaces, browser draft-storage failure protection and recoverable order-submission identity. Local `main` and `origin/main` are synchronized. The Product Owner verified the automatic deployment for that commit as **Ready** on the dedicated Vercel project `ecowash-phoenix-staging`. Migration `20261015000100_terminal_order_submission_recovery_001a.sql`, the read-only submission-status RPC, is applied on staging Supabase `exthnplfokcucaqydney`; it was not reapplied during the Git release.
+
+Product Owner non-transactional UAT on 2026-10-15 passed separate carts for the five sales, registered-customer A/B/A switching, distinct occasional customers and draft recovery after browser refresh. **No order or payment was confirmed during that initial UAT.** Subsequently, the Product Owner independently tried order confirmations on the EcoWash test account in staging and reported observing orders `EW-000145`, `EW-000146`, `EW-000147` and `EW-000148`. The Product Owner repeatedly observed a temporary unknown-outcome message after submission; without pressing “Comprobar estado del pedido”, after about 5–6 seconds the UI automatically displayed “Pedido guardado” and freed the Venta workspace. These are Product Owner observations; the four order records, actual idempotency, payments and confirmation path have not been independently verified in this documentation phase. Orders appear created according to the available Product Owner evidence, but controlled transactional UAT and financial integrity verification remain open. This does not establish readiness for live shop operation or commercial production.
+
+**OPEN — `TERMINAL-SUBMISSION-CONFIRMATION-UX-001`:** diagnose why the unknown-outcome state appears consistently before automatic order confirmation. The cause has not been established.
+
+**OPEN / DEFERRED:** customer, catalog and cart loading takes about five seconds; the approved Terminal initial-screen improvement is not implemented; POS till-closing procedure improvement awaits future analysis; multi-till operation is deferred. Complete browser-storage loss still requires manual order verification because the local submission identity may be unavailable. Preserve the separate Portal legacy-deployment Auth risk, `AUTH-DR-001C`, Spanish Portal catalog translation finding and other production-readiness gates below.
 
 ## PORTAL-ENTITLEMENT-BOUNDARY-001 — Staging Validation
 
@@ -176,7 +188,7 @@ Next Action: CTO scope for standard **EcoWash La Tejita Tenerife pilot organizat
 
 ---
 
-## Current Handover — 2026-10-05
+## Historical Handover — 2026-10-05
 
 - **COMPLETE / Product Owner UAT PASS:** `ORDER-PHOTO-INLINE-VALIDATION-UX-001` (`a4d1c6b4b1f31ac7f1a7c9765dc8c740f43df781`) and `ORDER-PHOTO-UPLOAD-BOUNDARY-UX-001` (`b7fb9d686e8d7ec136cfe6369a341982ce3cf611`). A selected file over the canonical 1 MB limit shows the localized inline size error immediately and is not submitted; the Product Owner confirmed that the Order page remains usable instead of showing the generic Next.js server-error page. Valid supported photos under 1 MB upload and the file helper remains visible. `MAX_ORDER_PHOTO_BYTES = 1024 * 1024` remains server-authoritative; Server Action `bodySizeLimit = "2mb"` provides multipart transport headroom only. MIME/signature validation, `order-media` Storage, tenant/order paths, photo registration/cleanup, categories/caption/visibility/deactivation and the database/bucket 1 MB boundary remain unchanged. No DB, migration, RLS or Storage-policy change; no Supabase commands and no production change.
 - **COMPLETE / Product Owner UAT PASS:** `RECEIPT-EMPTY-ORDER-UX-001` (`acd04ce4a0b6d891b04996e0645e9c3a41b6b4a7`). For an Order with no active items, “Print receipt” no longer opens the generic Next.js server-error page: no receipt is created, the user returns to the normal Order detail, sees the existing localized `orderItemsRequired` alert and can continue using the Order. The authoritative `public.issue_operational_receipt(uuid)` RPC rejects the empty active-item snapshot before numbering or insertion. Only `22023` plus `operational_receipt_items_required` maps to this warning; all other errors retain visible technical failure. Receipt numbering, immutable snapshots, reuse/idempotency, ticket/labels, access checks, tenant isolation and financial/fiscal boundaries remain unchanged. No DB, migration, schema, RLS or RPC change; no Supabase commands and no production change.
