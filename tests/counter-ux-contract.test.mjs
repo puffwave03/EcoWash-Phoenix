@@ -38,8 +38,8 @@ test("5 compact top bar exposes organization, operator, location and till manage
 });
 
 test("6 existing customer search covers name, phone and email", async () => {
-  const ui = await source(uiPath);
-  assert.match(ui, /\[customer\.name, customer\.phone, customer\.email\]/);
+  const [ui, queries] = await Promise.all([source(uiPath), source("src/features/shop-terminal/server/queries.ts")]);
+  assert.match(queries, /display_name\.ilike[\s\S]*phone\.ilike[\s\S]*email\.ilike/);
   assert.match(ui, /type="search"/);
 });
 

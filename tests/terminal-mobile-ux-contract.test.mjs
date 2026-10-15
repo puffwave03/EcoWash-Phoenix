@@ -72,7 +72,7 @@ test("6 sheet reuses cart handlers, financial values and existing checkout", asy
 
 test("7 simple cart close preserves catalog and customer context", async () => {
   const ui = await source(uiPath);
-  const close = ui.slice(ui.indexOf("useEffect(() =>"), ui.indexOf("function selectCustomer"));
+  const close = ui.slice(ui.indexOf("if (!isMobileCartOpen) return;"), ui.indexOf("function saveCurrentCustomerDraft"));
   assert.doesNotMatch(close, /setCustomerId|setServices|setSegmentName|setServiceQuery|setCategory|catalogRequestRef/);
   assert.match(ui, /selectedCustomerName/);
   assert.match(ui, /text\.changeCustomer/);

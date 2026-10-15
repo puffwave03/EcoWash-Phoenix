@@ -92,6 +92,7 @@ export async function listShopOperationalOptions(locale: string, locationId: str
   return {
     defaultProductionAssigneeId: location?.default_production_assignee_id ?? null,
     deliveryAssignments: assignments.delivery,
+    locationId: location?.id ?? null,
     productionAssignments: !locations.error && locations.count === 1 ? assignments.all : [],
   };
 }

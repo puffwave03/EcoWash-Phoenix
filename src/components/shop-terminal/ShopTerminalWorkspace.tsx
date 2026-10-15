@@ -1,13 +1,18 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { PortalMedia } from "@/components/portal/PortalMedia";
 import type { PosSession } from "@/features/pos/types";
 import { isDiscreteServiceUnit } from "@/features/services/types";
 import { resolveProductionAssignee } from "@/features/shop-terminal/production-assignee";
+import { parsePersistedDeliveryDraft, readDraftMap, type PersistedDeliveryDraft } from "@/features/shop-terminal/draft-storage";
+import { canCorrectRejectedSubmission } from "@/features/shop-terminal/submission-rejection";
+import { createSubmissionFlight } from "@/features/shop-terminal/submission-flight";
 import { resolveShopCategoryLabel } from "@/features/shop-terminal/category-label";
-import type { ShopAssignmentOption, ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopDeliveryAddress, ShopDeliveryOptions, ShopService, ShopSubmitState } from "@/features/shop-terminal/types";
+import { SALES_WORKSPACES, inspectWorkspaceDiscard, legacyDraftKey, parseStoredWorkspaceCustomer, parseWorkspace, workspaceCustomerKey, workspaceDraftKey, workspaceNamespace, workspaceOccupied, workspaceSelectionKey, workspaceSubmissionKey, workspaceWalkInKey, type SalesWorkspace } from "@/features/shop-terminal/workspace-storage";
+import { persistSubmissionAttempt, readSubmissionAttempt, removeSubmissionAttempt, type SubmissionAttempt } from "@/features/shop-terminal/submission-recovery";
+import type { ShopAssignmentOption, ShopCatalogSelection, ShopCodeResolveResult, ShopCustomer, ShopCustomerState, ShopDeliveryAddress, ShopDeliveryOptions, ShopService, ShopSubmitState, ShopSubmissionStatusResult } from "@/features/shop-terminal/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
 import { QuickDropTerminalPanel, type QuickDropText } from "@/components/quick-drop/QuickDropTerminalPanel";
@@ -15,13 +20,7 @@ import type { PendingQuickDrop, QuickDropCreateResult } from "@/features/quick-d
 
 type CartLine = { quantity: number; service: ShopService };
 type CustomerMode = "regular" | "walk_in" | null;
-type DeliveryDraft = ShopDeliveryAddress & {
-  assignedTo: string;
-  notes: string;
-  propertyId: string;
-  requested: boolean;
-  scheduledAt: string;
-};
+type DeliveryDraft = PersistedDeliveryDraft;
 type ShopTerminalDraft = {
   cardReference: string;
   customerNotes: string;
@@ -58,6 +57,14 @@ export type ShopTerminalText = {
   countryCode: string; delivery: string; deliveryAssignee: string; deliveryNotes: string;
   deliveryProperty: string; deliveryScheduledAt: string; loadingDelivery: string; manualAddress: string;
   noAssignee: string; postalCode: string; productionAssignee: string;
+  workspace: string; workspaceAvailable: string; workspaceInProgress: string; workspaceSelected: string;
+  workspacePrompt: string; workspaceDiscard: string; workspaceDiscardConfirm: string;
+  workspaceLocationRequired: string; workspaceStorageError: string; legacyDraftNotice: string; resumeOccasional: string;
+  workspaceSwitchBlocked: string; workspaceRetrySave: string; workspaceCleanupError: string; workspaceRetryCleanup: string;
+  workspaceDraftLoadError: string; workspaceRetryLoad: string;
+  submissionRejected: string; submissionCorrectDraft: string;
+  submissionSaveError: string; submissionUnknown: string; submissionPending: string; submissionNotFound: string;
+  submissionCheck: string; submissionRetry: string; submissionCompleted: string; submissionStorageLost: string;
 };
 
 type Props = {
@@ -69,6 +76,7 @@ type Props = {
     resolveCode: (raw: string) => Promise<ShopCodeResolveResult>;
     searchCustomers: (rawQuery: string) => Promise<ShopCustomer[]>;
     submit: (state: ShopSubmitState, formData: FormData) => Promise<ShopSubmitState>;
+    submissionStatus: (key: string) => Promise<ShopSubmissionStatusResult>;
   };
   canConfigurePrinters: boolean;
   canInvoice: boolean;
@@ -79,6 +87,7 @@ type Props = {
   defaultCurrency: string;
   customers: ShopCustomer[];
   deliveryAssignments: ShopAssignmentOption[];
+  draftLocationId: string | null;
   locale: string;
   operatorName: string;
   organizationId: string;
@@ -96,7 +105,6 @@ type Props = {
 
 const initialCustomerState: ShopCustomerState = { customer: null, error: null };
 const initialSubmitState: ShopSubmitState = { error: null, result: null };
-const terminalDraftStoragePrefix = "ecowash:shop-terminal-drafts:v1";
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
 function emptyDeliveryDraft(defaultAssignee = "", defaultCountryCode = ""): DeliveryDraft {
@@ -116,20 +124,15 @@ function emptyDeliveryDraft(defaultAssignee = "", defaultCountryCode = ""): Deli
   };
 }
 
-function parseDeliveryDraft(value: unknown): DeliveryDraft {
-  if (!value || typeof value !== "object") return emptyDeliveryDraft();
-  const draft = value as Record<string, unknown>;
-  const parsed = emptyDeliveryDraft();
-  for (const field of ["addressLine1", "addressLine2", "assignedTo", "city", "contactName", "contactPhone", "countryCode", "notes", "postalCode", "propertyId", "scheduledAt"] as const) {
-    if (typeof draft[field] === "string") parsed[field] = draft[field];
-  }
-  parsed.requested = draft.requested === true;
-  return parsed;
+function parseDeliveryDraft(value: unknown): DeliveryDraft | null {
+  return parsePersistedDeliveryDraft(value);
 }
 
 function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
-  if (!value || typeof value !== "object") return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const draft = value as Record<string, unknown>;
+  const allowedFields = new Set(["cardReference", "customerNotes", "discount", "dueAt", "internalNotes", "items", "delivery", "productionAssigneeId", "showSplitPayment", "splitCard", "splitCash"]);
+  if (Object.keys(draft).some((field) => !allowedFields.has(field))) return null;
   if (
     typeof draft.cardReference !== "string"
     || typeof draft.customerNotes !== "string"
@@ -140,15 +143,19 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
     || typeof draft.showSplitPayment !== "boolean"
     || typeof draft.splitCard !== "number" || !Number.isFinite(draft.splitCard) || draft.splitCard < 0
     || typeof draft.splitCash !== "number" || !Number.isFinite(draft.splitCash) || draft.splitCash < 0
+    || (draft.productionAssigneeId !== undefined && typeof draft.productionAssigneeId !== "string")
   ) return null;
-  const items = draft.items.flatMap((value) => {
-    if (!value || typeof value !== "object") return [];
+  const delivery = parseDeliveryDraft(draft.delivery);
+  if (!delivery) return null;
+  const items: ShopTerminalDraft["items"] = [];
+  for (const value of draft.items) {
+    if (!value || typeof value !== "object") return null;
     const item = value as Record<string, unknown>;
-    return typeof item.serviceId === "string" && item.serviceId
-      && typeof item.quantity === "number" && Number.isFinite(item.quantity) && item.quantity > 0
-      ? [{ quantity: item.quantity, serviceId: item.serviceId }]
-      : [];
-  });
+    if (Object.keys(item).some((field) => field !== "serviceId" && field !== "quantity")
+      || typeof item.serviceId !== "string" || !item.serviceId
+      || typeof item.quantity !== "number" || !Number.isFinite(item.quantity) || item.quantity <= 0) return null;
+    items.push({ quantity: item.quantity, serviceId: item.serviceId });
+  }
   return {
     cardReference: draft.cardReference,
     customerNotes: draft.customerNotes,
@@ -156,7 +163,7 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
     dueAt: draft.dueAt,
     internalNotes: draft.internalNotes,
     items,
-    delivery: parseDeliveryDraft(draft.delivery),
+    delivery,
     productionAssigneeId: typeof draft.productionAssigneeId === "string" ? draft.productionAssigneeId : undefined,
     showSplitPayment: draft.showSplitPayment,
     splitCard: draft.splitCard,
@@ -165,39 +172,190 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
 }
 
 function loadCustomerDrafts(storageKey: string) {
-  try {
-    const stored = window.sessionStorage.getItem(storageKey);
-    if (!stored) return new Map<string, ShopTerminalDraft>();
-    const entries = JSON.parse(stored) as unknown;
-    if (!Array.isArray(entries)) return new Map<string, ShopTerminalDraft>();
-    const drafts = new Map<string, ShopTerminalDraft>();
-    for (const entry of entries) {
-      if (!Array.isArray(entry) || entry.length !== 2 || typeof entry[0] !== "string") continue;
-      const draft = parseStoredDraft(entry[1]);
-      if (draft) drafts.set(entry[0], draft);
-    }
-    return drafts;
-  } catch {
-    return new Map<string, ShopTerminalDraft>();
-  }
+  try { return readDraftMap(window.sessionStorage, storageKey, parseStoredDraft); }
+  catch { return { kind: "read_error" as const }; }
 }
 
 function persistCustomerDrafts(storageKey: string, drafts: Map<string, ShopTerminalDraft>) {
   try {
     if (!drafts.size) {
       window.sessionStorage.removeItem(storageKey);
-      return;
+      return window.sessionStorage.getItem(storageKey) === null;
     }
-    window.sessionStorage.setItem(storageKey, JSON.stringify(Array.from(drafts.entries())));
+    const serialized = JSON.stringify(Array.from(drafts.entries()));
+    window.sessionStorage.setItem(storageKey, serialized);
+    return window.sessionStorage.getItem(storageKey) === serialized;
   } catch {
-    // The in-memory drafts remain usable if browser storage is unavailable or full.
+    return false;
   }
 }
 
-export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultCountryCode, defaultCurrency, defaultProductionAssigneeId, deliveryAssignments, locale, operatorName, organizationId, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text }: Props) {
+function readStoredCustomer(storageKey: string):
+  { kind: "missing" | "invalid" | "read_error" } | { kind: "present"; customer: ShopCustomer } {
+  try {
+    const raw = window.sessionStorage.getItem(storageKey);
+    if (raw === null) return { kind: "missing" };
+    const customer = parseStoredWorkspaceCustomer(raw);
+    return customer ? { kind: "present", customer } : { kind: "invalid" };
+  } catch {
+    return { kind: "read_error" };
+  }
+}
+
+function persistStoredCustomer(storageKey: string, customer: ShopCustomer | null) {
+  try {
+    if (customer) {
+      const serialized = JSON.stringify({
+      id: customer.id,
+      isWalkIn: customer.isWalkIn,
+      name: customer.name,
+      phone: customer.isWalkIn ? customer.phone : null,
+      email: null,
+      updatedAt: customer.updatedAt,
+      } satisfies ShopCustomer);
+      window.sessionStorage.setItem(storageKey, serialized);
+      return window.sessionStorage.getItem(storageKey) === serialized;
+    }
+    window.sessionStorage.removeItem(storageKey);
+    return window.sessionStorage.getItem(storageKey) === null;
+  } catch {
+    return false;
+  }
+}
+
+function browserSubmissionStorage(): Storage | null {
+  try { return window.sessionStorage; } catch { return null; }
+}
+
+function readBrowserSubmission(key: string) {
+  const storage = browserSubmissionStorage();
+  return storage ? readSubmissionAttempt(storage, key) : { kind: "unavailable" as const };
+}
+
+function persistBrowserSubmission(key: string, attempt: SubmissionAttempt) {
+  const storage = browserSubmissionStorage();
+  return storage ? persistSubmissionAttempt(storage, key, attempt) : false;
+}
+
+function removeBrowserSubmission(key: string) {
+  const storage = browserSubmissionStorage();
+  return storage ? removeSubmissionAttempt(storage, key) : false;
+}
+
+export function ShopTerminalWorkspace(props: Props) {
+  const { draftLocationId, organizationId, session, text } = props;
+  const namespace = workspaceNamespace(organizationId, draftLocationId);
+  const [selected, setSelected] = useState<SalesWorkspace | null>(null);
+  const [occupied, setOccupied] = useState<Record<number, boolean>>({});
+  const [legacyPresent, setLegacyPresent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [storageError, setStorageError] = useState(false);
+  const [switchBlocked, setSwitchBlocked] = useState(false);
+  const [discardBlocked, setDiscardBlocked] = useState<"submission" | "unreadable" | null>(null);
+  const saveActiveDraftRef = useRef<(() => boolean) | null>(null);
+  const selectionMadeRef = useRef(false);
+  const updateOccupied = useCallback((workspace: SalesWorkspace, value: boolean) => {
+    setOccupied((current) => ({ ...current, [workspace]: value }));
+  }, []);
+  const onActiveOccupiedChange = useCallback((value: boolean) => {
+    if (selected !== null) updateOccupied(selected, value);
+  }, [selected, updateOccupied]);
+  const reportStorageFailure = useCallback(() => setStorageError(true), []);
+
+  useEffect(() => {
+    selectionMadeRef.current = false;
+    const timer = window.setTimeout(() => {
+      try {
+        const storage = window.sessionStorage;
+        if (!selectionMadeRef.current) setSelected(parseWorkspace(storage.getItem(workspaceSelectionKey(namespace))));
+        setOccupied(Object.fromEntries(SALES_WORKSPACES.map((workspace) => [workspace, workspaceOccupied(storage, namespace, workspace)])));
+        const legacyKeys = new Set([
+          legacyDraftKey(organizationId, null),
+          legacyDraftKey(organizationId, draftLocationId),
+          legacyDraftKey(organizationId, session?.locationId ?? null),
+        ]);
+        setLegacyPresent([...legacyKeys].some((key) => {
+          const value = storage.getItem(key);
+          return Boolean(value && value !== "[]");
+        }));
+      } catch { setStorageError(true); }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [draftLocationId, namespace, organizationId, session?.locationId]);
+
+  function chooseWorkspace(workspace: SalesWorkspace) {
+    if (busy || !draftLocationId) return;
+    if (workspace === selected) return;
+    if (saveActiveDraftRef.current && !saveActiveDraftRef.current()) {
+      setStorageError(true);
+      setSwitchBlocked(true);
+      return;
+    }
+    try { window.sessionStorage.setItem(workspaceSelectionKey(namespace), String(workspace)); } catch {
+      setStorageError(true);
+      return;
+    }
+    setStorageError(false);
+    setSwitchBlocked(false);
+    selectionMadeRef.current = true;
+    setSelected(workspace);
+  }
+
+  function discardWorkspace(workspace: SalesWorkspace) {
+    const storage = browserSubmissionStorage();
+    if (!storage) {
+      setDiscardBlocked("unreadable");
+      return;
+    }
+    const inspected = inspectWorkspaceDiscard(storage, namespace, workspace, (raw) =>
+      readDraftMap({ getItem: () => raw }, workspaceDraftKey(namespace, workspace), parseStoredDraft).kind === "loaded");
+    if (inspected.kind !== "ready") {
+      setDiscardBlocked(inspected.kind);
+      return;
+    }
+    try {
+      for (const key of inspected.keys) storage.removeItem(key);
+    } catch {
+      setStorageError(true);
+      return;
+    }
+    setStorageError(false);
+    setDiscardBlocked(null);
+    setOccupied((current) => ({ ...current, [workspace]: false }));
+    setSelected(null);
+  }
+
+  const workspaceButtons = (
+    <nav aria-label={text.workspacePrompt} className="flex flex-wrap gap-2 border-b border-border bg-white px-3 py-3 sm:px-5">
+      {SALES_WORKSPACES.map((workspace) => <button aria-current={selected === workspace ? "step" : undefined} className={`min-h-12 min-w-24 rounded-control border px-3 text-left text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 ${selected === workspace ? "border-primary bg-primary text-white" : "border-border bg-white text-primary"}`} disabled={busy || !draftLocationId} key={workspace} onClick={() => chooseWorkspace(workspace)} type="button"><span className="block">{text.workspace} {workspace}</span><span className="block text-xs font-medium opacity-80">{occupied[workspace] ? text.workspaceInProgress : text.workspaceAvailable}{selected === workspace ? ` · ${text.workspaceSelected}` : ""}</span></button>)}
+    </nav>
+  );
+
+  return <div className="counter-register-shell min-h-screen bg-[#eef1ed]">
+    {workspaceButtons}
+    {!draftLocationId ? <p className="mx-3 mt-3 rounded-control border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 sm:mx-5" role="status">{text.workspaceLocationRequired}</p> : null}
+    {storageError ? <p className="mx-3 mt-3 rounded-control border border-red-300 bg-red-50 p-3 text-sm text-red-900 sm:mx-5" role="alert">{text.workspaceStorageError}</p> : null}
+    {switchBlocked ? <p className="mx-3 mt-3 rounded-control border border-red-300 bg-red-50 p-3 text-sm text-red-900 sm:mx-5" role="alert">{text.workspaceSwitchBlocked}</p> : null}
+    {discardBlocked ? <p className="mx-3 mt-3 rounded-control border border-red-300 bg-red-50 p-3 text-sm text-red-900 sm:mx-5" role="alert">{discardBlocked === "submission" ? text.submissionUnknown : text.workspaceDraftLoadError}</p> : null}
+    {storageError && selected !== null ? <button className="mx-3 mt-2 min-h-11 rounded-control border border-primary px-4 text-sm font-bold text-primary sm:mx-5" onClick={() => { if (saveActiveDraftRef.current?.()) { setStorageError(false); setSwitchBlocked(false); } }} type="button">{text.workspaceRetrySave}</button> : null}
+    {legacyPresent ? <p className="mx-3 mt-3 rounded-control border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 sm:mx-5" role="status">{text.legacyDraftNotice}</p> : null}
+    {selected === null || !draftLocationId ? <p className="px-5 py-10 text-center text-lg font-semibold text-primary">{text.workspacePrompt}</p> : <>
+      <div className="flex justify-end px-3 pt-3 sm:px-5"><button className="min-h-11 rounded-control border border-red-300 bg-white px-4 text-sm font-bold text-red-800 disabled:opacity-50" disabled={busy} onClick={() => { if (window.confirm(text.workspaceDiscardConfirm)) discardWorkspace(selected); }} type="button">{text.workspaceDiscard}</button></div>
+      <SaleWorkspace key={`${namespace}:${selected}`} {...props} namespace={namespace} onBusyChange={setBusy} onOccupiedChange={onActiveOccupiedChange} onRegisterSave={(save) => { saveActiveDraftRef.current = save; }} onStorageFailure={reportStorageFailure} workspace={selected} />
+    </>}
+  </div>;
+}
+
+type SaleProps = Props & { namespace: string; onBusyChange: (busy: boolean) => void; onOccupiedChange: (occupied: boolean) => void; onRegisterSave: (save: (() => boolean) | null) => void; onStorageFailure: () => void; workspace: SalesWorkspace };
+
+function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultCountryCode, defaultCurrency, defaultProductionAssigneeId, deliveryAssignments, locale, namespace, onBusyChange, onOccupiedChange, onRegisterSave, onStorageFailure, operatorName, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text, workspace }: SaleProps) {
   const router = useRouter();
-  const draftStorageKey = `${terminalDraftStoragePrefix}:${organizationId}:${session?.locationId ?? "no-location"}`;
+  const draftStorageKey = workspaceDraftKey(namespace, workspace);
+  const activeCustomerStorageKey = workspaceCustomerKey(namespace, workspace);
+  const walkInStorageKey = workspaceWalkInKey(namespace, workspace);
+  const submissionStorageKey = workspaceSubmissionKey(namespace, workspace);
   const [customers, setCustomers] = useState(initialCustomers);
+  const [walkInCustomer, setWalkInCustomer] = useState<ShopCustomer | null>(null);
   const [recentCustomers, setRecentCustomers] = useState(initialCustomers);
   const [customerSearchResults, setCustomerSearchResults] = useState<{ query: string; customers: ShopCustomer[] }>({ query: "", customers: [] });
   const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
@@ -224,6 +382,17 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   const [delivery, setDelivery] = useState<DeliveryDraft>(() => emptyDeliveryDraft(deliveryAssignments[0]?.id, defaultCountryCode ?? ""));
   const [deliveryOptions, setDeliveryOptions] = useState<ShopDeliveryOptions | null>(null);
   const [dismissedOrderId, setDismissedOrderId] = useState<string | null>(null);
+  const [cleanupFailed, setCleanupFailed] = useState(false);
+  const [attempt, setAttempt] = useState<SubmissionAttempt | null>(null);
+  const [attemptLoaded, setAttemptLoaded] = useState(false);
+  const [draftHydration, setDraftHydration] = useState<"loading" | "error" | "ready">("loading");
+  const [attemptStorageLost, setAttemptStorageLost] = useState(false);
+  const [attemptPersistenceFailed, setAttemptPersistenceFailed] = useState(false);
+  const [recoveryStatus, setRecoveryStatus] = useState<ShopSubmissionStatusResult["status"] | null>(null);
+  const [reconciledOrder, setReconciledOrder] = useState<{ id: string; number: string } | null>(null);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [definitiveRejection, setDefinitiveRejection] = useState<string | null>(null);
   const [isLoading, startLoading] = useTransition();
   const [isResolving, startResolving] = useTransition();
   const [isLoadingDelivery, startLoadingDelivery] = useTransition();
@@ -234,14 +403,63 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     if (result.customer) {
       setCustomers((current) => [result.customer!, ...current.filter((customer) => customer.id !== result.customer!.id)]);
       if (!result.customer.isWalkIn) setRecentCustomers((current) => [result.customer!, ...current.filter((customer) => customer.id !== result.customer!.id)].slice(0, 8));
-      selectCustomer(result.customer.id);
+      if (result.customer.isWalkIn) {
+        setWalkInCustomer(result.customer);
+        if (!persistStoredCustomer(walkInStorageKey, result.customer)) onStorageFailure();
+      }
+      selectCustomer(result.customer.id, result.customer);
       setCustomerMode(null);
       setCustomerQuery("");
     }
     return result;
   }, initialCustomerState);
-  const [submitState, submit, isSubmitting] = useActionState(actions.submit, initialSubmitState);
+  const [submitState, submit, isSubmitting] = useActionState(async (state: ShopSubmitState, _formData: FormData) => {
+    void _formData;
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "present" || stored.attempt.status !== "pending"
+      || stored.attempt.key !== attemptRef.current?.key || stored.attempt.payload !== attemptRef.current.payload) {
+      const token = initialSubmissionTokenRef.current;
+      if (token !== null) flightRef.current.endSubmission(token);
+      initialSubmissionTokenRef.current = null;
+      setAttemptStorageLost(true);
+      return { error: "storage", result: null };
+    }
+    const frozen = new FormData();
+    frozen.set("payload", stored.attempt.payload);
+    const token = initialSubmissionTokenRef.current;
+    initialSubmissionTokenRef.current = null;
+    if (token === null || !flightRef.current.isCurrentSubmission(token)) {
+      setRecoveryStatus("unknown");
+      return { error: "unknown", result: null };
+    }
+    const firstDispatch = firstDispatchKeyRef.current === stored.attempt.key;
+    firstDispatchKeyRef.current = null;
+    try {
+      const result = await actions.submit(state, frozen);
+      if (result.result) initialResultTokenRef.current = token;
+      else if (result.error) handleSubmissionError(stored.attempt, result, firstDispatch, token);
+      else {
+        flightRef.current.endSubmission(token);
+        setRecoveryStatus("unknown");
+      }
+      return result;
+    } catch {
+      flightRef.current.endSubmission(token);
+      setRecoveryStatus("unknown");
+      return { error: "unknown", result: null };
+    }
+  }, initialSubmitState);
+
+  useEffect(() => {
+    onBusyChange(isSubmitting || isCreatingCustomer);
+    return () => onBusyChange(false);
+  }, [isCreatingCustomer, isSubmitting, onBusyChange]);
   const payloadRef = useRef<HTMLInputElement>(null);
+  const flightRef = useRef(createSubmissionFlight());
+  const initialSubmissionTokenRef = useRef<number | null>(null);
+  const initialResultTokenRef = useRef<number | null>(null);
+  const firstDispatchKeyRef = useRef<string | null>(null);
+  const attemptRef = useRef<SubmissionAttempt | null>(null);
   const catalogRequestRef = useRef(0);
   const catalogCustomerRef = useRef<string | null>(null);
   const selectedCustomerIdRef = useRef("");
@@ -281,10 +499,44 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       && (!query || [service.name, service.code, service.description, service.category, service.categoryKey ? resolveShopCategoryLabel(service.categoryKey, service.category, categoryLabels) : null].some((value) => value?.toLocaleLowerCase(locale).includes(query))));
   }, [category, categoryLabels, locale, serviceQuery, services]);
 
-  useEffect(() => {
-    customerDraftsRef.current = loadCustomerDrafts(draftStorageKey);
+  function hydrateCustomerDrafts() {
+    const loaded = loadCustomerDrafts(draftStorageKey);
+    const storedWalkIn = readStoredCustomer(walkInStorageKey);
+    const storedCustomer = readStoredCustomer(activeCustomerStorageKey);
+    if (loaded.kind !== "loaded" || !["missing", "present"].includes(storedWalkIn.kind)
+      || (storedWalkIn.kind === "present" && !storedWalkIn.customer.isWalkIn)
+      || !["missing", "present"].includes(storedCustomer.kind)) {
+      setDraftHydration("error");
+      return;
+    }
+    customerDraftsRef.current = loaded.drafts;
     hydratedDraftStorageKeyRef.current = draftStorageKey;
-  }, [draftStorageKey]);
+    setDraftHydration("ready");
+    if (storedWalkIn.kind === "present" && storedWalkIn.customer.isWalkIn) {
+      setWalkInCustomer(storedWalkIn.customer);
+      setCustomers((current) => [storedWalkIn.customer, ...current.filter((customer) => customer.id !== storedWalkIn.customer.id)]);
+    }
+    if (storedCustomer.kind === "present") selectCustomer(storedCustomer.customer.id, storedCustomer.customer);
+  }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const restored = readBrowserSubmission(submissionStorageKey);
+      if (restored.kind === "present") {
+        attemptRef.current = restored.attempt;
+        setAttempt(restored.attempt);
+        if (restored.attempt.status === "rejected") setDefinitiveRejection(restored.attempt.rejectionReason ?? null);
+        if (restored.attempt.status === "completed" && restored.attempt.orderId && restored.attempt.orderNumber) {
+          setReconciledOrder({ id: restored.attempt.orderId, number: restored.attempt.orderNumber });
+        }
+      } else if (restored.kind !== "missing") setAttemptStorageLost(true);
+      setAttemptLoaded(true);
+      hydrateCustomerDrafts();
+    }, 0);
+    return () => window.clearTimeout(timer);
+    // The selected customer is hydrated only when this workspace's storage keys change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCustomerStorageKey, draftStorageKey, submissionStorageKey, walkInStorageKey]);
 
   useEffect(() => {
     if (!normalizedCustomerQuery) return;
@@ -323,15 +575,79 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       splitCard,
       splitCash,
     });
-    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
-  }, [cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, productionAssigneeId, showSplitPayment, splitCard, splitCash]);
+    if (persistCustomerDrafts(draftStorageKey, customerDraftsRef.current)) onOccupiedChange(true);
+    else onStorageFailure();
+  }, [cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash]);
 
   useEffect(() => {
     const submittedCustomerId = submitState.result?.customerId;
     if (!submittedCustomerId || !submitState.result?.orderId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
+    const token = initialResultTokenRef.current;
+    if (token === null || !flightRef.current.isCurrentSubmission(token)) return;
+    initialResultTokenRef.current = null;
+    const current = attemptRef.current;
+    if (!current || !persistBrowserSubmission(submissionStorageKey, {
+      ...current, status: "completed", orderId: submitState.result.orderId, orderNumber: submitState.result.orderNumber,
+    })) {
+      setCleanupFailed(true);
+      setAttemptStorageLost(true);
+      flightRef.current.endSubmission(token);
+      return;
+    }
+    const completed = { ...current, status: "completed" as const, orderId: submitState.result.orderId, orderNumber: submitState.result.orderNumber };
+    attemptRef.current = completed;
+    setAttempt(completed);
+    cleanupSubmittedDraft(submittedCustomerId, submitState.result.isWalkIn);
+    flightRef.current.endSubmission(token);
+    // Cleanup is tied to the confirmed order result, not to later UI state changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCustomerStorageKey, draftStorageKey, submitState.result?.customerId, submitState.result?.isWalkIn, submitState.result?.orderId, submissionStorageKey, walkInStorageKey]);
+
+  function handleSubmissionError(current: SubmissionAttempt, result: ShopSubmitState, firstDispatch: boolean, token: number) {
+    if (!flightRef.current.endSubmission(token)) return;
+    const proven = result.error && canCorrectRejectedSubmission(result.rejectionProof, firstDispatch);
+    if (!proven || !result.error) {
+      setRecoveryStatus("unknown");
+      return;
+    }
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "present" || stored.attempt.status !== "pending"
+      || stored.attempt.key !== current.key || stored.attempt.payload !== current.payload) {
+      setAttemptStorageLost(true);
+      return;
+    }
+    const rejected: SubmissionAttempt = { ...current, status: "rejected", rejectionReason: result.error };
+    setDefinitiveRejection(result.error);
+    if (!persistBrowserSubmission(submissionStorageKey, rejected)) {
+      onStorageFailure();
+      return;
+    }
+    attemptRef.current = rejected;
+    setAttempt(rejected);
+  }
+
+  function cleanupSubmittedDraft(submittedCustomerId: string, isWalkIn: boolean) {
+    if (hydratedDraftStorageKeyRef.current !== draftStorageKey) {
+      setCleanupFailed(true);
+      return false;
+    }
     customerDraftsRef.current.delete(submittedCustomerId);
-    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
-  }, [draftStorageKey, submitState.result?.customerId, submitState.result?.orderId]);
+    const draftRemoved = persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+    const walkInRemoved = !isWalkIn || persistStoredCustomer(walkInStorageKey, null);
+    const customerRemoved = persistStoredCustomer(activeCustomerStorageKey, null);
+    const markerRemoved = draftRemoved && walkInRemoved && customerRemoved
+      && removeBrowserSubmission(submissionStorageKey);
+    if (!draftRemoved || !walkInRemoved || !customerRemoved || !markerRemoved) {
+      setCleanupFailed(true);
+      onStorageFailure();
+      return false;
+    }
+    setCleanupFailed(false);
+    attemptRef.current = null;
+    setAttempt(null);
+    onOccupiedChange(customerDraftsRef.current.size > 0);
+    return true;
+  }
 
   useEffect(() => {
     if (!isMobileCartOpen) return;
@@ -344,7 +660,17 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }, [isMobileCartOpen]);
 
   function saveCurrentCustomerDraft() {
-    if (!customerId || catalogCustomerRef.current !== customerId || hydratedDraftStorageKeyRef.current !== draftStorageKey) return;
+    if (flightRef.current.hasActivity()) return false;
+    if (attemptRef.current) return true;
+    if (submitState.result?.orderId && dismissedOrderId !== submitState.result.orderId) return !cleanupFailed;
+    if (hydratedDraftStorageKeyRef.current !== draftStorageKey) return false;
+    if (!customerId || catalogCustomerRef.current !== customerId) {
+      const draftsSaved = persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+      const customerSaved = persistStoredCustomer(activeCustomerStorageKey, selectedCustomer);
+      const walkInSaved = !walkInCustomer || persistStoredCustomer(walkInStorageKey, walkInCustomer);
+      if (!draftsSaved || !customerSaved || !walkInSaved) onStorageFailure();
+      return draftsSaved && customerSaved && walkInSaved;
+    }
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
@@ -358,8 +684,18 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       splitCard,
       splitCash,
     });
-    persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+    const draftSaved = persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
+    const customerSaved = persistStoredCustomer(activeCustomerStorageKey, selectedCustomer);
+    const walkInSaved = !walkInCustomer || persistStoredCustomer(walkInStorageKey, walkInCustomer);
+    if (draftSaved && customerSaved && walkInSaved) onOccupiedChange(true);
+    else onStorageFailure();
+    return draftSaved && customerSaved && walkInSaved;
   }
+
+  useEffect(() => {
+    onRegisterSave(saveCurrentCustomerDraft);
+    return () => onRegisterSave(null);
+  });
 
   function restoreCheckoutDraft(draft: ShopTerminalDraft | undefined) {
     setDiscount(draft?.discount ?? 0);
@@ -424,13 +760,20 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }
 
   function selectCustomer(nextCustomerId: string, foundCustomer?: ShopCustomer) {
+    const nextCustomer = foundCustomer ?? customers.find((customer) => customer.id === nextCustomerId);
+    if (!nextCustomer) return;
     if (foundCustomer) setCustomers((current) => [foundCustomer, ...current.filter((customer) => customer.id !== foundCustomer.id)]);
     if (nextCustomerId === customerId) {
       setCustomerMode(null);
       setIsCustomerPickerOpen(false);
       return;
     }
-    saveCurrentCustomerDraft();
+    if (!saveCurrentCustomerDraft()) return;
+    if (!persistStoredCustomer(activeCustomerStorageKey, nextCustomer)) {
+      onStorageFailure();
+      return;
+    }
+    onOccupiedChange(true);
     const nextDraft = customerDraftsRef.current.get(nextCustomerId);
     const requestId = catalogRequestRef.current + 1;
     catalogRequestRef.current = requestId;
@@ -469,6 +812,12 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       customerDraftsRef.current.delete(customerId);
       persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
     }
+    if (selectedCustomer?.isWalkIn && !options.preserveDraft) {
+      persistStoredCustomer(walkInStorageKey, null);
+      setWalkInCustomer(null);
+    }
+    persistStoredCustomer(activeCustomerStorageKey, null);
+    onOccupiedChange(customerDraftsRef.current.size > 0);
     catalogRequestRef.current += 1;
     deliveryRequestRef.current += 1;
     catalogCustomerRef.current = null;
@@ -534,6 +883,11 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
   }
 
   function prepareSubmission(event: React.FormEvent<HTMLFormElement>) {
+    if (!attemptLoaded || draftHydration !== "ready" || attemptStorageLost || flightRef.current.hasActivity() || attemptRef.current) {
+      event.preventDefault();
+      setRecoveryStatus("unknown");
+      return;
+    }
     const intent = ((event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null)?.value ?? "later";
     const formData = new FormData(event.currentTarget);
     const payments = intent === "cash"
@@ -576,11 +930,153 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
       walkInName: selectedCustomer?.isWalkIn ? selectedCustomer.name || null : null,
       walkInPhone: selectedCustomer?.isWalkIn ? selectedCustomer.phone : null,
     };
-    if (payloadRef.current) payloadRef.current.value = JSON.stringify(payload);
+    const serialized = JSON.stringify(payload);
+    const nextAttempt: SubmissionAttempt = {
+      version: 1, key: payload.idempotencyKey, payload: serialized,
+      status: "pending", orderId: null, orderNumber: null,
+    };
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind === "present") {
+      event.preventDefault();
+      attemptRef.current = stored.attempt;
+      setAttempt(stored.attempt);
+      setRecoveryStatus("unknown");
+      return;
+    }
+    if (stored.kind !== "missing") {
+      event.preventDefault();
+      setAttemptStorageLost(true);
+      return;
+    }
+    if (!persistBrowserSubmission(submissionStorageKey, nextAttempt)) {
+      event.preventDefault();
+      attemptRef.current = nextAttempt;
+      setAttempt(nextAttempt);
+      setAttemptPersistenceFailed(true);
+      return;
+    }
+    attemptRef.current = nextAttempt;
+    setAttempt(nextAttempt);
+    const token = flightRef.current.beginSubmission();
+    if (token === null) {
+      event.preventDefault();
+      setRecoveryStatus("unknown");
+      return;
+    }
+    initialSubmissionTokenRef.current = token;
+    firstDispatchKeyRef.current = nextAttempt.key;
+    setDefinitiveRejection(null);
+    if (payloadRef.current) payloadRef.current.value = serialized;
+  }
+
+  function retryAttemptPersistence() {
+    const current = attemptRef.current;
+    if (!attemptPersistenceFailed || !current) return;
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "missing" && (stored.kind !== "present"
+      || stored.attempt.key !== current.key || stored.attempt.payload !== current.payload)) return;
+    if (persistBrowserSubmission(submissionStorageKey, current)) {
+      setAttemptPersistenceFailed(false);
+      setRecoveryStatus("not_found");
+    }
+  }
+
+  function confirmRecoveredOrder(current: SubmissionAttempt, orderId: string, orderNumber: string) {
+    const completed: SubmissionAttempt = { ...current, status: "completed", orderId, orderNumber };
+    setReconciledOrder({ id: orderId, number: orderNumber });
+    if (!persistBrowserSubmission(submissionStorageKey, completed)) {
+      setAttemptStorageLost(true);
+      setCleanupFailed(true);
+      return;
+    }
+    attemptRef.current = completed;
+    setAttempt(completed);
+    try {
+      const payload = JSON.parse(current.payload) as { customerId?: string; isWalkIn?: boolean };
+      if (payload.customerId) cleanupSubmittedDraft(payload.customerId, payload.isWalkIn === true);
+      else setCleanupFailed(true);
+    } catch { setCleanupFailed(true); }
+  }
+
+  async function checkSubmissionStatus() {
+    const current = attemptRef.current;
+    if (!current || current.status !== "pending" || !flightRef.current.beginStatusLookup()) return;
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "present" || stored.attempt.key !== current.key || stored.attempt.payload !== current.payload) {
+      setAttemptStorageLost(true);
+      flightRef.current.endStatusLookup();
+      return;
+    }
+    setCheckingStatus(true);
+    try {
+      const result = await actions.submissionStatus(current.key);
+      if (attemptRef.current?.key !== current.key || attemptRef.current?.status !== "pending") return;
+      setRecoveryStatus(result.status);
+      if (result.status === "completed" && result.orderId && result.orderNumber) {
+        confirmRecoveredOrder(current, result.orderId, result.orderNumber);
+      }
+    } catch { setRecoveryStatus("unknown"); }
+    finally { flightRef.current.endStatusLookup(); setCheckingStatus(false); }
+  }
+
+  async function retryIdenticalSubmission() {
+    const current = attemptRef.current;
+    if (!current || recoveryStatus !== "not_found") return;
+    const token = flightRef.current.beginSubmission();
+    if (token === null) return;
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "present" || stored.attempt.status !== "pending"
+      || stored.attempt.key !== current.key || stored.attempt.payload !== current.payload) {
+      setAttemptStorageLost(true);
+      flightRef.current.endSubmission(token);
+      return;
+    }
+    setRetrying(true);
+    setRecoveryStatus("unknown");
+    const frozen = new FormData();
+    frozen.set("payload", current.payload);
+    try {
+      const result = await actions.submit(initialSubmitState, frozen);
+      if (!flightRef.current.isCurrentSubmission(token)) return;
+      if (result.result) confirmRecoveredOrder(current, result.result.orderId, result.result.orderNumber);
+      else if (result.error) handleSubmissionError(current, result, false, token);
+    } catch { /* The server outcome is unknown; retain the same identity. */ }
+    finally { flightRef.current.endSubmission(token); setRetrying(false); }
+  }
+
+  function correctRejectedDraft() {
+    const current = attemptRef.current;
+    if (!current || !definitiveRejection || draftHydration !== "ready" || flightRef.current.hasActivity()) return;
+    const stored = readBrowserSubmission(submissionStorageKey);
+    if (stored.kind !== "present" || stored.attempt.key !== current.key || stored.attempt.payload !== current.payload
+      || !["pending", "rejected"].includes(stored.attempt.status)) {
+      setAttemptStorageLost(true);
+      return;
+    }
+    if (!removeBrowserSubmission(submissionStorageKey)) {
+      onStorageFailure();
+      return;
+    }
+    attemptRef.current = null;
+    setAttempt(null);
+    setDefinitiveRejection(null);
+    setRecoveryStatus(null);
+  }
+
+  function retryCompletedCleanup() {
+    const current = attemptRef.current;
+    if (!current || current.status !== "completed") return;
+    try {
+      const payload = JSON.parse(current.payload) as { customerId?: string; isWalkIn?: boolean };
+      if (payload.customerId) cleanupSubmittedDraft(payload.customerId, payload.isWalkIn === true);
+    } catch { setCleanupFailed(true); }
   }
 
   function resetOrder() {
+    if (attemptRef.current || attemptStorageLost || cleanupFailed) return;
     setDismissedOrderId(submitState.result?.orderId ?? null);
+    setReconciledOrder(null);
+    if (submitState.result?.isWalkIn) setWalkInCustomer(null);
     if (submitState.result?.customerId) {
       customerDraftsRef.current.delete(submitState.result.customerId);
       persistCustomerDrafts(draftStorageKey, customerDraftsRef.current);
@@ -622,9 +1118,34 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
     return (
       <div className="counter-register-shell min-h-screen bg-[#eef1ed]">
         {terminalHeader}
-        <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><div className="border-l-4 border-primary bg-white p-5 shadow-card sm:p-7"><div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-sm font-black uppercase tracking-[0.12em] text-secondary">✓ {text.orderSuccess}</p><h2 className="mt-1 text-3xl font-black text-primary">{result.orderNumber}</h2><p className="mt-1 text-lg font-semibold text-muted">{result.customerName}</p></div><dl className="grid grid-cols-3 gap-3">{[[text.total, result.total], [text.paid, result.paid], [text.outstanding, result.outstanding]].map(([label, value]) => <div className="min-w-0 border-l border-border pl-3" key={String(label)}><dt className="text-xs font-bold uppercase text-muted">{label}</dt><dd className="mt-1 whitespace-nowrap text-xl font-black text-primary sm:text-2xl">{formatCurrency(Number(value), currency, locale)}</dd></div>)}</dl></div>{result.dueAt ? <p className="mt-4 text-sm text-muted">{text.dueAt}: <strong className="text-primary">{new Date(result.dueAt).toLocaleString(locale)}</strong></p> : null}<div className="mt-6 flex flex-wrap gap-3"><button className="min-h-12 rounded-control bg-primary px-6 font-bold text-white" onClick={resetOrder} type="button">{text.newOrder}</button><Link className="inline-flex min-h-12 items-center rounded-control border border-primary px-5 font-bold !text-primary" href={`/app/orders/${result.orderId}`} locale={locale}>{text.openOrder}</Link>{canPrint ? <PrintOrderActions locale={locale} orderId={result.orderId} text={printText} /> : null}{canInvoice && !result.isWalkIn ? <Link className="inline-flex min-h-12 items-center rounded-control bg-primary-strong px-5 font-bold !text-white" href={`/app/billing/new?customerId=${result.customerId}&orderId=${result.orderId}&source=shop`} locale={locale}>{text.invoice}</Link> : null}</div></div></section>
+        <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><div className="border-l-4 border-primary bg-white p-5 shadow-card sm:p-7"><div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-sm font-black uppercase tracking-[0.12em] text-secondary">✓ {text.orderSuccess}</p><h2 className="mt-1 text-3xl font-black text-primary">{result.orderNumber}</h2><p className="mt-1 text-lg font-semibold text-muted">{result.customerName}</p></div><dl className="grid grid-cols-3 gap-3">{[[text.total, result.total], [text.paid, result.paid], [text.outstanding, result.outstanding]].map(([label, value]) => <div className="min-w-0 border-l border-border pl-3" key={String(label)}><dt className="text-xs font-bold uppercase text-muted">{label}</dt><dd className="mt-1 whitespace-nowrap text-xl font-black text-primary sm:text-2xl">{formatCurrency(Number(value), currency, locale)}</dd></div>)}</dl></div>{result.dueAt ? <p className="mt-4 text-sm text-muted">{text.dueAt}: <strong className="text-primary">{new Date(result.dueAt).toLocaleString(locale)}</strong></p> : null}{cleanupFailed || attemptStorageLost ? <div className="mt-4 rounded-control border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-900" role="alert"><p>{text.workspaceCleanupError}</p><button className="mt-2 min-h-11 rounded-control border border-red-700 px-4" onClick={() => cleanupSubmittedDraft(result.customerId, result.isWalkIn)} type="button">{text.workspaceRetryCleanup}</button></div> : null}<div className="mt-6 flex flex-wrap gap-3"><button className="min-h-12 rounded-control bg-primary px-6 font-bold text-white disabled:opacity-40" disabled={cleanupFailed || attemptStorageLost || Boolean(attempt)} onClick={resetOrder} type="button">{text.newOrder}</button><Link className="inline-flex min-h-12 items-center rounded-control border border-primary px-5 font-bold !text-primary" href={`/app/orders/${result.orderId}`} locale={locale}>{text.openOrder}</Link>{canPrint ? <PrintOrderActions locale={locale} orderId={result.orderId} text={printText} /> : null}{canInvoice && !result.isWalkIn ? <Link className="inline-flex min-h-12 items-center rounded-control bg-primary-strong px-5 font-bold !text-white" href={`/app/billing/new?customerId=${result.customerId}&orderId=${result.orderId}&source=shop`} locale={locale}>{text.invoice}</Link> : null}</div></div></section>
       </div>
     );
+  }
+
+  if (!attemptLoaded || draftHydration !== "ready" || attemptStorageLost || attempt || reconciledOrder) {
+    const confirmed = reconciledOrder ?? (attempt?.status === "completed" && attempt.orderId && attempt.orderNumber
+      ? { id: attempt.orderId, number: attempt.orderNumber } : null);
+    return <div className="counter-register-shell min-h-screen bg-[#eef1ed]">
+      {terminalHeader}
+      <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6" role="status">
+        <div className="rounded-card border border-border bg-white p-5 shadow-card">
+          {confirmed ? <><h2 className="text-2xl font-black text-primary">{text.submissionCompleted}: {confirmed.number}</h2><Link className="mt-4 inline-flex min-h-11 items-center rounded-control border border-primary px-4 font-bold text-primary" href={`/app/orders/${confirmed.id}`} locale={locale}>{text.openOrder}</Link></>
+            : <h2 className="text-lg font-bold text-primary">{!attemptLoaded ? text.saving : draftHydration === "error" ? text.workspaceDraftLoadError : attemptStorageLost ? text.submissionStorageLost : definitiveRejection ? text.submissionRejected : recoveryStatus === "pending" ? text.submissionPending : recoveryStatus === "not_found" ? text.submissionNotFound : text.submissionUnknown}</h2>}
+          {attemptStorageLost ? <p className="mt-3 text-sm text-red-800" role="alert">{text.submissionStorageLost}</p> : null}
+          {draftHydration === "error" ? <div className="mt-3" role="alert"><p className="text-sm text-red-800">{text.workspaceDraftLoadError}</p><button className="mt-3 min-h-11 rounded-control border border-primary px-4 font-bold text-primary" onClick={hydrateCustomerDrafts} type="button">{text.workspaceRetryLoad}</button></div> : null}
+          {attemptPersistenceFailed ? <p className="mt-3 text-sm text-red-800" role="alert">{text.submissionSaveError}</p> : null}
+          {attemptPersistenceFailed ? <button className="mt-4 min-h-11 rounded-control border border-primary px-4 font-bold text-primary" onClick={retryAttemptPersistence} type="button">{text.workspaceRetrySave}</button> : null}
+          {definitiveRejection ? <div className="mt-4" role="alert"><p className="text-sm font-semibold text-red-800">{text.submissionRejected} {definitiveRejection === "closedDay" ? text.errorClosedDay : definitiveRejection === "till" ? text.errorTill : definitiveRejection === "discount" ? text.errorDiscount : definitiveRejection === "validation" ? text.errorValidation : text.errorGeneric}</p><button className="mt-3 min-h-11 rounded-control border border-primary px-4 font-bold text-primary disabled:opacity-40" disabled={draftHydration !== "ready" || attemptStorageLost || retrying || checkingStatus || isSubmitting} onClick={correctRejectedDraft} type="button">{text.submissionCorrectDraft}</button></div> : null}
+          {attempt?.status === "pending" && !definitiveRejection && draftHydration === "ready" && !attemptStorageLost && !attemptPersistenceFailed ? <div className="mt-4 flex flex-wrap gap-3">
+            <button className="min-h-11 rounded-control border border-primary px-4 font-bold text-primary disabled:opacity-40" disabled={checkingStatus || retrying} onClick={checkSubmissionStatus} type="button">{text.submissionCheck}</button>
+            {recoveryStatus === "not_found" ? <button className="min-h-11 rounded-control bg-primary px-4 font-bold text-white disabled:opacity-40" disabled={checkingStatus || retrying} onClick={retryIdenticalSubmission} type="button">{text.submissionRetry}</button> : null}
+          </div> : null}
+          {attempt?.status === "completed" ? <button className="mt-4 min-h-11 rounded-control border border-primary px-4 font-bold text-primary" onClick={retryCompletedCleanup} type="button">{text.workspaceRetryCleanup}</button> : null}
+          {confirmed && !attempt && !attemptStorageLost ? <button className="mt-4 min-h-11 rounded-control bg-primary px-4 font-bold text-white" onClick={resetOrder} type="button">{text.newOrder}</button> : null}
+        </div>
+      </section>
+    </div>;
   }
 
   return (
@@ -661,7 +1182,7 @@ export function ShopTerminalWorkspace({ actions, canConfigurePrinters, canInvoic
               <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] gap-1.5">
                 <label><span className="sr-only">{text.customerSearch}</span><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-[#f8faf8] px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" onChange={(event) => { customerSearchRequestRef.current += 1; setCustomerQuery(event.target.value); setIsSearchingCustomers(Boolean(event.target.value.trim())); }} placeholder={text.customerSearch} type="search" value={customerQuery} /></label>
                 <button aria-pressed={customerMode === "regular"} className={`min-h-10 rounded-control border px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "regular" ? "border-primary bg-primary text-white" : "border-primary/25 text-primary"}`} onClick={() => setCustomerMode(customerMode === "regular" ? null : "regular")} type="button">+ {text.regularCustomer}</button>
-                <button aria-pressed={customerMode === "walk_in"} className={`min-h-10 rounded-control px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "walk_in" ? "bg-primary text-white" : "bg-primary-soft text-primary"}`} onClick={() => setCustomerMode(customerMode === "walk_in" ? null : "walk_in")} type="button">{text.occasionalCustomer}</button>
+                <button aria-pressed={customerMode === "walk_in"} className={`min-h-10 rounded-control px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${customerMode === "walk_in" ? "bg-primary text-white" : "bg-primary-soft text-primary"}`} onClick={() => walkInCustomer ? selectCustomer(walkInCustomer.id, walkInCustomer) : setCustomerMode(customerMode === "walk_in" ? null : "walk_in")} type="button">{walkInCustomer ? text.resumeOccasional : text.occasionalCustomer}</button>
               </div>
               {!customerMode ? <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto pb-0.5">{!normalizedCustomerQuery ? <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-[0.08em] text-muted">{text.recentCustomers}</span> : null}{filteredCustomers.map((customer) => <button className="min-h-9 shrink-0 rounded-full border border-border bg-white px-3 text-left hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" key={customer.id} onClick={() => selectCustomer(customer.id, normalizedCustomerQuery ? customer : undefined)} type="button"><strong className="block max-w-44 truncate text-xs text-primary">{customer.name}</strong></button>)}{normalizedCustomerQuery && isSearchingCustomers ? <span className="self-center text-xs text-muted" role="status">{text.searchingCustomers}</span> : null}{normalizedCustomerQuery && !isSearchingCustomers && filteredCustomers.length === 0 ? <span className="self-center text-xs text-muted" role="status">{text.noCustomerMatches}</span> : null}</div> : <form action={createCustomer} className="grid gap-2 border-l-4 border-primary bg-[#f8faf8] p-2 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-end"><input name="customerKind" type="hidden" value={customerMode} /><button className="inline-flex min-h-10 items-center rounded-control px-3 text-sm font-bold text-primary underline underline-offset-4 md:col-span-4 md:justify-self-start" onClick={() => setCustomerMode(null)} type="button">← {text.recentCustomers}</button><label className="text-xs font-bold text-muted">{customerMode === "walk_in" ? text.occasionalHelp : text.regularHelp}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="displayName" placeholder={text.customerName} required={customerMode === "regular"} /></label><label className="text-xs font-bold text-muted">{text.customerPhone}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="phone" placeholder={text.customerPhone} /></label>{customerMode === "regular" ? <label className="text-xs font-bold text-muted">{text.customerEmail}<input className="mt-1 min-h-10 w-full rounded-control border border-border bg-white px-3 text-sm text-primary" name="email" placeholder={text.customerEmail} type="email" /></label> : null}<button className="min-h-10 rounded-control bg-primary px-4 text-sm font-bold text-white" disabled={isCreatingCustomer}>{isCreatingCustomer ? text.saving : customerMode === "walk_in" ? text.continueToCatalog : text.saveCustomer}</button>{customerState.error ? <p className="text-sm font-semibold text-red-700 md:col-span-4">{customerState.error === "validation" ? text.errorValidation : text.errorGeneric}</p> : null}</form>}
             </div>

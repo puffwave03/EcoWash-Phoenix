@@ -58,6 +58,7 @@ export type ShopDeliveryOptions = {
 export type ShopOperationalOptions = {
   defaultProductionAssigneeId: string | null;
   deliveryAssignments: ShopAssignmentOption[];
+  locationId: string | null;
   productionAssignments: ShopAssignmentOption[];
 };
 
@@ -85,6 +86,13 @@ export type ShopOrderResult = {
 export type ShopSubmitState = {
   error: string | null;
   result: ShopOrderResult | null;
+  rejectionProof?: "before_rpc" | "after_lock";
+};
+
+export type ShopSubmissionStatusResult = {
+  status: "not_found" | "pending" | "completed" | "unknown";
+  orderId: string | null;
+  orderNumber: string | null;
 };
 
 export type ShopCustomerState = {

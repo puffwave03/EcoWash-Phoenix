@@ -6,6 +6,7 @@ import { getCurrentEntitlements } from "@/features/entitlements/server/resolver"
 import { getCurrentPosSession } from "@/features/pos/server/queries";
 import {
   createShopCustomerAction,
+  getShopSubmissionStatusAction,
   loadShopDeliveryOptionsAction,
   loadShopServicesAction,
   resolveShopCodeAction,
@@ -59,6 +60,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     <ShopTerminalWorkspace
       actions={{
         createCustomer: createShopCustomerAction.bind(null, locale),
+        submissionStatus: getShopSubmissionStatusAction.bind(null, locale),
         createQuickDrop: createQuickDropAction.bind(null, locale),
         loadDeliveryOptions: loadShopDeliveryOptionsAction.bind(null, locale),
         loadServices: loadShopServicesAction.bind(null, locale),
@@ -80,6 +82,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
       operatorName={access.profile.displayName || access.user.email || access.membership.role}
       pendingQuickDrops={pendingQuickDrops}
       deliveryAssignments={operationalOptions.deliveryAssignments}
+      draftLocationId={operationalOptions.locationId}
       defaultProductionAssigneeId={operationalOptions.defaultProductionAssigneeId}
       productionAssignments={operationalOptions.productionAssignments}
       printText={printT.raw("actions") as PrintActionText}

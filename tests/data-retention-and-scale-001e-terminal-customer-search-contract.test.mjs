@@ -61,7 +61,7 @@ test("001E searched customers use existing selection and customer drafts", async
   assert.match(ui, /selectCustomer\(customer\.id, normalizedCustomerQuery \? customer : undefined\)/);
   assert.match(ui, /if \(foundCustomer\) setCustomers/);
   assert.match(ui, /setRecentCustomers\(\(current\) => \[result\.customer!/);
-  assert.match(ui, /selectCustomer\(result\.customer\.id\)/);
+  assert.match(ui, /selectCustomer\(result\.customer\.id, result\.customer\)/);
   const select = ui.slice(ui.indexOf("function selectCustomer"), ui.indexOf("function openCustomerPicker"));
   assert.match(select, /saveCurrentCustomerDraft\(\)/);
   assert.match(select, /customerDraftsRef\.current\.get\(nextCustomerId\)/);

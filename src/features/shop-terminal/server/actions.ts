@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { loadShopDeliveryOptions as queryShopDeliveryOptions, listShopServices, searchShopCustomers } from "@/features/shop-terminal/server/queries";
-import type { ShopCatalogSelection, ShopCustomer, ShopCustomerState, ShopDeliveryOptions, ShopSubmitState } from "@/features/shop-terminal/types";
+import type { ShopCatalogSelection, ShopCustomer, ShopCustomerState, ShopDeliveryOptions, ShopSubmitState, ShopSubmissionStatusResult } from "@/features/shop-terminal/types";
 import type { ShopCodeResolveResult } from "@/features/shop-terminal/types";
 import { parsePhoenixCode } from "@/features/barcode/payload";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
@@ -13,6 +13,7 @@ import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { isDiscreteServiceUnit, type ServiceUnitType } from "@/features/services/types";
 import { organizationDateTimeLocalToIso } from "@/lib/organization-timezone";
 import { isBusinessDayClosedError } from "@/lib/daily-close-error";
+import { classifyDefinitiveTerminalRejection } from "@/features/shop-terminal/submission-rejection";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -143,6 +144,29 @@ export async function createShopCustomerAction(
   return { customer: { email: data.email, id: data.id, isWalkIn: data.customer_code?.startsWith("WALKIN-") ?? false, name: data.display_name, phone: data.phone, updatedAt: data.updated_at }, error: null };
 }
 
+export async function getShopSubmissionStatusAction(locale: string, key: string): Promise<ShopSubmissionStatusResult> {
+  if (!UUID.test(key)) return { status: "unknown", orderId: null, orderNumber: null };
+  await requireShopTerminalAccess(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("get_shop_terminal_submission_status", {
+    target_idempotency_key: key,
+  }).single<{ submission_status: string; order_id: string | null; order_number: string | null }>();
+  if (error || !data) {
+    console.error("Shop submission status lookup failed", error?.code);
+    return { status: "unknown", orderId: null, orderNumber: null };
+  }
+  if (data.submission_status === "completed" && data.order_id && data.order_number) {
+    return { status: "completed", orderId: data.order_id, orderNumber: data.order_number };
+  }
+  if (data.submission_status === "pending" && !data.order_id) {
+    return { status: "pending", orderId: null, orderNumber: null };
+  }
+  if (data.submission_status === "not_found") {
+    return { status: "not_found", orderId: null, orderNumber: null };
+  }
+  return { status: "unknown", orderId: null, orderNumber: null };
+}
+
 type SubmitPayload = {
   customerId?: unknown;
   customerName?: unknown;
@@ -183,7 +207,7 @@ export async function submitShopOrderAction(
   try {
     payload = JSON.parse(String(formData.get("payload") ?? "")) as SubmitPayload;
   } catch {
-    return { error: "validation", result: null };
+    return { error: "validation", result: null, rejectionProof: "before_rpc" };
   }
 
   const customerId = typeof payload.customerId === "string" ? payload.customerId : "";
@@ -209,7 +233,7 @@ export async function submitShopOrderAction(
     || (deliveryRequested && deliveryContactPhone && !PHONE.test(deliveryContactPhone))
     || (walkInPhone && !PHONE.test(walkInPhone))
     || !Array.isArray(payload.items) || payload.items.length < 1 || !Array.isArray(payload.payments)) {
-    return { error: "validation", result: null };
+    return { error: "validation", result: null, rejectionProof: "before_rpc" };
   }
 
   const { membership } = await requireShopTerminalAccess(locale);
@@ -217,7 +241,7 @@ export async function submitShopOrderAction(
     ? organizationDateTimeLocalToIso(deliveryScheduledAt, membership.organization.timezone)
     : null;
   if (deliveryRequested && !normalizedDeliveryScheduledAt) {
-    return { error: "validation", result: null };
+    return { error: "validation", result: null, rejectionProof: "before_rpc" };
   }
   const supabase = await createSupabaseServerClient();
   const activeLocationQuery = supabase.from("locations")
@@ -231,12 +255,12 @@ export async function submitShopOrderAction(
     .returns<{ id: string }[]>();
   if (locationError) {
     console.error("Shop order location resolution failed", locationError.code);
-    return { error: "generic", result: null };
+    return { error: "generic", result: null, rejectionProof: "before_rpc" };
   }
   const resolvedLocationId = locationId
     ? activeLocations?.some((location) => location.id === locationId) ? locationId : null
     : activeLocations?.length === 1 ? activeLocations[0].id : null;
-  if (!resolvedLocationId) return { error: "validation", result: null };
+  if (!resolvedLocationId) return { error: "validation", result: null, rejectionProof: "before_rpc" };
 
   const { data, error } = await supabase.rpc("submit_shop_terminal_order", {
     target_customer_id: customerId,
@@ -273,7 +297,8 @@ export async function submitShopOrderAction(
       ? "closedDay"
       : error?.message.includes("warehouse_default_inbound_unavailable") ? "inboundUnavailable"
         : error?.message.includes("session") ? "till" : error?.message.includes("discount") ? "discount" : "generic";
-    return { error: known, result: null };
+    const definitive = classifyDefinitiveTerminalRejection(error);
+    return { error: definitive ?? known, result: null, ...(definitive ? { rejectionProof: "after_lock" as const } : {}) };
   }
 
   revalidatePath(`/${locale}/app/shop`);

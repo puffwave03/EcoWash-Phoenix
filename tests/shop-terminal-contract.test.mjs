@@ -173,7 +173,7 @@ test("28 five locales expose complete terminal vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.auth.dashboard.shop, "string");
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 87);
+    assert.equal(Object.keys(messages.shopTerminal.labels).length, 114);
     assert.equal(typeof messages.shopTerminal.labels.segmentCatalog, "string");
     assert.equal(Object.keys(messages.barcode.terminal).length, 6);
   }
@@ -227,7 +227,7 @@ test("30b customer creation modes return to recents and successful creation clos
 
   assert.match(ui, /onClick=\{\(\) => setCustomerMode\(null\)\} type="button">← \{text\.recentCustomers\}/);
   assert.match(ui, /setCustomers\(\(current\) => \[result\.customer!/);
-  assert.match(ui, /selectCustomer\(result\.customer\.id\)/);
+  assert.match(ui, /selectCustomer\(result\.customer\.id, result\.customer\)/);
   assert.match(ui, /setIsCustomerPickerOpen\(false\)/);
 });
 
@@ -257,10 +257,14 @@ test("30d terminal drafts persist across remounts in tenant and location scoped 
   const persist = ui.slice(ui.indexOf("function persistCustomerDrafts"), ui.indexOf("export function ShopTerminalWorkspace"));
 
   assert.match(page, /organizationId=\{access\.membership\.organization\.id\}/);
-  assert.match(ui, /`\$\{terminalDraftStoragePrefix\}:\$\{organizationId\}:\$\{session\?\.locationId \?\? "no-location"\}`/);
-  assert.match(load, /window\.sessionStorage\.getItem\(storageKey\)/);
-  assert.match(persist, /window\.sessionStorage\.setItem\(storageKey, JSON\.stringify\(Array\.from\(drafts\.entries\(\)\)\)\)/);
-  assert.match(ui, /customerDraftsRef\.current = loadCustomerDrafts\(draftStorageKey\)/);
+  assert.match(ui, /draftStorageKey = workspaceDraftKey\(namespace, workspace\)/);
+  assert.match(ui, /const namespace = workspaceNamespace\(organizationId, draftLocationId\)/);
+  assert.match(page, /draftLocationId=\{operationalOptions\.locationId\}/);
+  assert.match(load, /readDraftMap\(window\.sessionStorage, storageKey, parseStoredDraft\)/);
+  assert.match(persist, /const serialized = JSON\.stringify\(Array\.from\(drafts\.entries\(\)\)\)/);
+  assert.match(persist, /window\.sessionStorage\.setItem\(storageKey, serialized\)/);
+  assert.match(persist, /window\.sessionStorage\.getItem\(storageKey\) === serialized/);
+  assert.match(ui, /const loaded = loadCustomerDrafts\(draftStorageKey\)[\s\S]*if \(loaded\.kind !== "loaded" \|\|[\s\S]*customerDraftsRef\.current = loaded\.drafts/);
   assert.match(ui, /hydratedDraftStorageKeyRef\.current = draftStorageKey/);
 });
 
@@ -275,7 +279,7 @@ test("30e active changes persist without replacing a draft during temporary cata
   assert.match(activePersistence, /customerDraftsRef\.current\.set\(customerId/);
   assert.match(activePersistence, /items: cart\.map/);
   assert.match(activePersistence, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
-  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, productionAssigneeId, showSplitPayment, splitCard, splitCash\]/);
+  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash\]/);
   assert.match(select, /catalogCustomerRef\.current = null[\s\S]*setCart\(\[\]\)/);
 });
 
@@ -492,11 +496,12 @@ test("42 delivery options are lazy, tenant-scoped and apply the approved address
 });
 
 test("43 operational fields survive A-B-A switching and session remount without serializing entities", async () => {
-  const [ui, types] = await Promise.all([
+  const [ui, types, draftStorage] = await Promise.all([
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
     source("src/features/shop-terminal/types.ts"),
+    source("src/features/shop-terminal/draft-storage.ts"),
   ]);
-  const draftType = ui.slice(ui.indexOf("type DeliveryDraft"), ui.indexOf("export type ShopTerminalText"));
+  const draftType = draftStorage.slice(draftStorage.indexOf("export type PersistedDeliveryDraft"), draftStorage.indexOf("export function parsePersistedDeliveryDraft"));
   const saveDraft = ui.slice(ui.indexOf("function saveCurrentCustomerDraft"), ui.indexOf("function restoreCheckoutDraft"));
   assert.match(saveDraft, /delivery,[\s\S]*productionAssigneeId/);
   assert.match(ui, /setProductionAssigneeId\(resolveProductionAssignee\(\s+productionAssignments, defaultProductionAssigneeId, draft\?\.productionAssigneeId/);
@@ -506,7 +511,7 @@ test("43 operational fields survive A-B-A switching and session remount without 
     assert.match(draftType, new RegExp(`${field}:`));
   }
   for (const field of ["addressLine1", "contactName", "contactPhone"]) assert.match(types, new RegExp(`${field}:`));
-  assert.match(draftType, /type DeliveryDraft = ShopDeliveryAddress/);
+  assert.match(draftType, /type PersistedDeliveryDraft = ShopDeliveryAddress/);
   assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|payment/);
   assert.match(ui, /parseDeliveryDraft\(draft\.delivery\)/);
 });
@@ -559,7 +564,7 @@ test("46 Terminal resolves the canonical order location server-side without ambi
   assert.match(resolution, /from\("locations"\)[\s\S]*eq\("organization_id", membership\.organization\.id\)[\s\S]*eq\("is_active", true\)[\s\S]*is\("deleted_at", null\)/);
   assert.match(resolution, /locationId[\s\S]*eq\("id", locationId\)\.limit\(1\)[\s\S]*activeLocationQuery\.limit\(2\)/);
   assert.match(resolution, /activeLocations\?\.length === 1 \? activeLocations\[0\]\.id : null/);
-  assert.match(resolution, /if \(!resolvedLocationId\) return \{ error: "validation", result: null \}/);
+  assert.match(resolution, /if \(!resolvedLocationId\) return \{ error: "validation", result: null, rejectionProof: "before_rpc" \}/);
   assert.match(submit, /target_location_id: resolvedLocationId/);
   assert.doesNotMatch(resolution, /order\(|\.first\(|activeLocations\?\.\[0\]/);
 
