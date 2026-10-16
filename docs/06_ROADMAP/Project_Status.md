@@ -6,11 +6,21 @@ Version: 0.1
 
 Last Updated: 2026-10-16
 
-Current Mission: `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` UI correction implemented; local validation and final CTO review PASS. One combined code/test/documentation commit and normal `origin/main` push are authorized from synchronized baseline `9a5cbd35758efc11845b080fb12fdb636b0e7907`, with automatic deployment only in `ecowash-phoenix-staging`. Staging-project verification returned HTTP 403: `DEPLOYMENT_NOT_VERIFIED`. Product Owner visual staging UAT remains OPEN.
+Current Mission: `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` CLOSED / PRODUCT OWNER STAGING UAT PASS on 2026-10-16. Released correction `77c251f48e8a97eec232c6fa74d93840e4c245b7` is synchronized on local `main` and `origin/main` before this documentation update. The Product Owner verified the waiting-to-success presentation using `EW-000150`; no next implementation mission is authorized.
 
-Next Action: confirm the automatic staging deployment and complete Product Owner visual UAT for the waiting-to-success presentation. Separately scope controlled transactional Terminal recovery UAT after timeout, including idempotency and payment integrity; preserve the other Terminal findings below. `TEST-DEBT-WALKIN-CONTRACT-001` remains open and unrelated. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
+Next Action: review this documentation-only closeout. Controlled transactional Terminal recovery UAT after timeout, including idempotency and payment integrity, remains separately scoped; preserve the other Terminal findings below. `TEST-DEBT-WALKIN-CONTRACT-001` remains open and unrelated. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
 
 **Auth DR decision (2026-10-06):** AUTH-DR-001B3 **CLOSED / PASS**; AUTH-DR-001B4 **COMPLETE / PASS**. The Product Owner/CTO deferred the Supabase Pro upgrade because current staging is a pilot/test tenant rather than the near-final real production state. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**, requiring a completed eligible physical backup and an isolated authenticated recovery rehearsal. Encrypted off-device custody remains a separate pre-production finding.
+
+---
+
+## TERMINAL-SUBMISSION-CONFIRMATION-UX-001 — 2026-10-16 Product Owner UAT Closeout
+
+**CLOSED / LOCAL VALIDATION PASS / FINAL CTO REVIEW PASS / PRODUCT OWNER STAGING UAT PASS.** On 2026-10-16 the Product Owner completed staging UAT with test order `EW-000150`: total **EUR 5.00**, payment **EUR 0.00**. During approximately four seconds of processing, “Guardando pedido… Por favor, espera.” appeared correctly, followed by “Pedido guardado”. The targeted visual confirmation flow passed and the premature unknown-outcome finding is closed.
+
+Functional release: `77c251f48e8a97eec232c6fa74d93840e4c245b7` (`fix(terminal): clarify order submission progress`), committed and pushed on `main`. The historical pre-UAT release checkpoint below, including the Vercel API **403 / DEPLOYMENT_NOT_VERIFIED** limitation, is preserved. Product Owner staging acceptance does not independently verify the deployment source SHA or API Ready state. Controlled transactional timeout/recovery/idempotency/payment UAT remains separately scoped; `TEST-DEBT-WALKIN-CONTRACT-001` and other existing findings remain open and unrelated.
+
+This phase only records the Product Owner's existing UAT evidence in the two canonical documents. No additional order/payment, code or database change, migration, deployment, commit or push was performed. No next implementation mission is authorized.
 
 ---
 

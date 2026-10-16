@@ -4,7 +4,9 @@ Status: Active
 
 Date: 2026-10-16
 
-Session checkpoint: `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` UI correction implemented, local validation PASS and final CTO review PASS. One combined code/test/documentation commit and normal push to `origin/main` are authorized from baseline `9a5cbd35758efc11845b080fb12fdb636b0e7907`, targeting only automatic deployment in `ecowash-phoenix-staging`. Deployment verification is `DEPLOYMENT_NOT_VERIFIED`: the staging-project read returned HTTP 403. Product Owner visual staging UAT remains OPEN; controlled transactional recovery UAT remains separate. Phoenix is not ready for commercial production.
+Session checkpoint: `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` is CLOSED / PRODUCT OWNER STAGING UAT PASS on 2026-10-16. Released correction: `77c251f48e8a97eec232c6fa74d93840e4c245b7`, synchronized on local `main` and `origin/main` before this documentation update. The Product Owner verified the waiting-to-success presentation on staging with `EW-000150`. Controlled transactional recovery UAT remains separate; Phoenix is not ready for commercial production.
+
+Pre-UAT session checkpoint (2026-10-16): `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` UI correction implemented, local validation PASS and final CTO review PASS. One combined code/test/documentation commit and normal push to `origin/main` are authorized from baseline `9a5cbd35758efc11845b080fb12fdb636b0e7907`, targeting only automatic deployment in `ecowash-phoenix-staging`. Deployment verification is `DEPLOYMENT_NOT_VERIFIED`: the staging-project read returned HTTP 403. Product Owner visual staging UAT remains OPEN at that checkpoint; controlled transactional recovery UAT remains separate. Phoenix is not ready for commercial production.
 
 Previous session checkpoint (2026-10-15): `TERMINAL-FIVE-WORKSPACES-RECOVERY` implementation, staging deployment and Product Owner non-transactional Terminal UAT PASS on 2026-10-15. Commit `8cca0c4374a92776202f592967930a73e354b151` is on synchronized local and remote `main` at that checkpoint. Subsequent Product Owner order-confirmation observations require technical verification; order-submission timeout recovery still requires separate controlled transactional UAT. Phoenix is not ready for commercial production.
 
@@ -17,6 +19,14 @@ Git checkpoint before this documentation mission (2026-10-15): local `main` and 
 Pre-closeout Git checkpoint (2026-10-14): local `main` was at functional commit `f893a8e41d831c5443ef06e13d451b6abf67bc29`; `origin/main` was at `aacacdf8e85c6dc1b071cb03c902a185509d68e8`. At this checkpoint, the documentation commit and push had not occurred. Later Git history is authoritative for final synchronization.
 
 Historical deployment-history reconciliation baseline (001A): `4d1018c80f8c129999f1d1c00178396121a89516` on local `main`, `origin/main` and remote main at that earlier checkpoint; working tree then clean. The 001A functional commit is `7ef4843b78a7eab80e9036f8904bfedcb9451aef`; its original documentation closeout commit is `4d1018c80f8c129999f1d1c00178396121a89516`. The tenant-scoped numbering functional commit is `79f1da89cc453fafb627edd636fa1b7a2f2bb7b7`.
+
+## TERMINAL-SUBMISSION-CONFIRMATION-UX-001 — 2026-10-16 Product Owner UAT Closeout
+
+**CLOSED / LOCAL VALIDATION PASS / FINAL CTO REVIEW PASS / PRODUCT OWNER STAGING UAT PASS.** The Product Owner completed staging UAT on 2026-10-16 using test order `EW-000150`, total **EUR 5.00**, payment **EUR 0.00**. During approximately four seconds of processing, the Terminal correctly displayed “Guardando pedido… Por favor, espera.”, followed by “Pedido guardado”. This Product Owner evidence passes the targeted visual confirmation flow and closes the premature unknown-outcome finding.
+
+The correction was committed and pushed as `77c251f48e8a97eec232c6fa74d93840e4c245b7` (`fix(terminal): clarify order submission progress`). The earlier Vercel API **403 / DEPLOYMENT_NOT_VERIFIED** checkpoint below is retained: the Product Owner's successful staging UAT does not independently establish the deployment source SHA or API Ready state. Controlled transactional timeout/recovery/idempotency/payment UAT remains separately scoped; `TEST-DEBT-WALKIN-CONTRACT-001` and the other existing findings remain open and unrelated.
+
+This closeout records the Product Owner's existing test evidence only. No additional order, payment, database change, migration, deployment, commit or push was performed during this documentation update. No next implementation mission is authorized by this closeout.
 
 ## TERMINAL-SUBMISSION-CONFIRMATION-UX-001 — 2026-10-16 Release Checkpoint
 
