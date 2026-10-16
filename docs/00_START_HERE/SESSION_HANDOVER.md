@@ -4,6 +4,27 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-16
 
+## BILLING-SIMPLIFIED-INVOICE-001B — Staging postflight and release checkpoint (16/10/2026)
+
+**FISCAL TYPE FOUNDATION IMPLEMENTED / CTO SQL REVIEW PASS / STAGING MIGRATION APPLIED / READ-ONLY POSTFLIGHT PASS.** Migration `20261016000100_billing_simplified_invoice_001b_fiscal_type_foundation.sql` was already applied to staging **`exthnplfokcucaqydney` (EcoWash Phoenix)** after target/schema/history verification and a dry-run proposing only that file. **Do not apply it again.** Local/remote migration history is aligned at **96 migrations**, including `20261016000100`. Approved SQL SHA-256: `74f904597f2e802e684496fd7bd0724410108555763283a332debcc8db5e307b`.
+
+The additive `billing_fiscal_document_type` enum reserves `ordinary` and `simplified`; `invoices.fiscal_document_type` is NOT NULL with default `ordinary`. The validated temporary ordinary-only CHECK blocks `simplified` at every document status, including drafts. The additional enabled trigger protects fiscal-type immutability for non-drafts; its function uses `search_path=public`, is not SECURITY DEFINER and grants no EXECUTE to PUBLIC, anon or authenticated. Existing Billing mutation, entitlement and shared-walk-in guards remain intact. **Simplified invoices are still not emittable**; no application/provider workflow is enabled by this foundation.
+
+### Postflight evidence and limits
+
+- The first postflight stopped after a temporary CLI-role authentication failure. This separately authorized read-only continuation succeeded without alternate credentials, migration reapplication or business writes.
+- Compared with the saved pre-migration baseline, counts and deterministic row fingerprints match for all original values in **nine tables**: invoices (2), invoice items (3), invoice-order links (2), numbering counters (1), orders (116), order items (123), payments (105), customers (25) and organization Billing settings (1). Only the newly added fiscal-type field is excluded from the invoice fingerprint. This covers existing invoice IDs/numbers/statuses, snapshots, amounts/taxes, links and payment registrations; it does not independently certify their prior fiscal validity or prove absence of pre-existing duplicate payments.
+- Both existing invoices remain readable and are `ordinary`; zero `simplified` or NULL types. All eight pre-existing Billing function bodies/signatures, the active-order invoice uniqueness index, prior invoice columns, compared RLS policies, table grants and pre-existing invoice triggers are unchanged.
+- **51/51 local tests PASS** remains prior implementation evidence. This closeout repeated only the **14/14 dedicated static contracts: PASS**. Catalog inspection verifies the deployed default/CHECK/trigger/privileges; runtime insert/update/issuance and concurrent-write tests are **NOT TESTED**, because business writes are prohibited. No claim of end-to-end simplified invoicing or full fiscal compliance.
+
+### Release scope and continuation
+
+Initial closeout baseline: `main`, local HEAD = `origin/main` = GitHub **`6cad22715fe45c06b5613cdf95f7cfbe1ea63a84`**, empty index and only the migration/test untracked. Exactly those two files plus this handover and Project Status are authorized for one commit, `feat(billing): prepare fiscal document type foundation`, and normal push after final gates. No application code, existing RPC, fiscal amount, numbering, payment, order/customer data, receipt/ticket, tenant authorization or configuration is changed. This continuation performs no SQL application or business write.
+
+The local Vercel project link and the baseline's single successful GitHub Vercel status identify **`ecowash-phoenix-staging`**, project `prj_u7MwRwQOLyRSRvbuhRLdURx653aZ`, team `team_nhXOvQKcrv9yeHjZ4aoMOak3`. They match the existing documented release gate; no new deployment destination is observed. Vercel project/catalog inspection returns **403**: an exhaustive live project inventory and the new deployment's source/Ready state are **not verified**; report **DEPLOYMENT_NOT_VERIFIED** pending PO evidence. Only automatic Git deployment to staging is authorized. Its Production target is not commercial Phoenix production. Existing Accountant Pack Cron/configuration remains untouched and is not manually invoked.
+
+**Next fiscal mission: `BILLING-SIMPLIFIED-INVOICE-001C`, separately scoped and authorized; do not start it here.** Shared walk-in fiscal eligibility and external-provider integration remain separate. No full fiscal conformity or commercial-production readiness is declared. All previous UAT/checkpoints and unrelated findings, including Direct Entry residual checks, remain unchanged; their earlier next-mission statements are historical for this fiscal-foundation scope.
+
 ## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
 
 **ORDERS → BILLING VISUAL UAT: PASS / RESIDUAL VERIFICATIONS OPEN.** Implementation commit **`d3c9a6074579efb35361a7f060d368dc2e258d93`** is published on `main`. The prior **CTO REVIEW PASS / 89/89 tests PASS**, TypeScript, scoped ESLint and five-locale validation remain the technical implementation evidence; those suites are not repeated for this documentation-only closeout. On **16 October 2026**, the Product Owner visually confirmed deployment **Ready** on **`ecowash-phoenix-staging`** for `d3c9a60`. This is PO evidence; the earlier API **403 / DEPLOYMENT_NOT_VERIFIED** checkpoint remains historical, not a deployment failure.
