@@ -83,7 +83,7 @@ test('exact old order/customer entry remains scoped and preselected', () => {
   assert.match(sql, /target_customer_id is null or o\.customer_id = target_customer_id/);
   assert.match(sql, /target_order_id is null or o\.id = target_order_id/);
   assert.match(query, /target_query: orderId \? "" : search\.trim\(\)\.slice\(0, 100\)/);
-  assert.match(page, /listEligibleBillingOrders\(locale, query\.customerId, query\.orderId, search\)/);
+  assert.match(page, /listEligibleBillingOrders\(locale, customerId, query\.orderId, search\)/);
   assert.match(page, /query\.source === "shop" && query\.orderId/);
   assert.match(form, /defaultChecked=\{order\.id === selectedOrderId\}/);
 });

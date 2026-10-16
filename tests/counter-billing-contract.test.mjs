@@ -53,7 +53,7 @@ test("5 terminal success opens Billing with canonical order and customer context
   assert.match(types, /customerId: string/);
   assert.match(action, /result: \{[\s\S]*customerId,/);
   assert.match(terminal, /canInvoice && !result\.isWalkIn \? <Link/);
-  assert.match(terminal, /billing\/new\?customerId=\$\{result\.customerId\}&orderId=\$\{result\.orderId\}&source=shop/);
+  assert.match(terminal, /billing\/new\?orderId=\$\{result\.orderId\}&source=shop/);
 });
 
 test("6 counter Invoice action reuses Billing entitlement and excludes Staff", async () => {
@@ -69,8 +69,8 @@ test("7 Billing route resolves and preselects the exact completed order", async 
     source("src/features/billing/server/queries.ts"),
     source("src/components/billing/BillingCreateForm.tsx"),
   ]);
-  assert.match(page, /listEligibleBillingOrders\(locale, query\.customerId, query\.orderId, search\)/);
-  assert.match(page, /getBillingCustomerContext\(locale, query\.customerId\)/);
+  assert.match(page, /listEligibleBillingOrders\(locale, customerId, query\.orderId, search\)/);
+  assert.match(page, /getBillingCustomerContext\(locale, customerId\)/);
   assert.match(page, /!customerContext \|\| customerContext\.isFiscalReady/);
   assert.match(queries, /target_customer_id: customerId \|\| null/);
   assert.match(queries, /target_order_id: orderId \|\| null/);

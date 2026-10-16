@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { BillingOrderEntry } from "@/components/billing/BillingOrderEntry";
 import { CustomerHandoffPanel, type CustomerHandoffText } from "@/components/orders/CustomerHandoffPanel";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
@@ -118,7 +119,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
     getQuickDropOrderOrNull(locale, orderId),
-    getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing]),
+    getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing, FEATURES.billingInvoicing]),
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.catalog" }),
     getTranslations({ locale, namespace: "common.print" }),
@@ -212,6 +213,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             </div>
           </div>
           <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
+            {canManageAssignments && entitlementEnabled(entitlements, FEATURES.billingInvoicing) ? <BillingOrderEntry locale={locale} orderId={order.id} /> : null}
             {canPrint ? <PrintOrderActions locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
             {pendingQuickDrop ? <a className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-white px-4 font-semibold text-primary lg:w-auto" href="#items">{quickDropT("detailOrder")}</a> : null}
             <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
