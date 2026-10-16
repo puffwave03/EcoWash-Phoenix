@@ -115,13 +115,13 @@ test("RLS, entitlement and role protections stay unchanged; no direct write priv
   assert.match(entitlements, /has_organization_entitlement\(organization_id, 'billing.invoicing'\)/);
 });
 
-test("detail/print queries still work without the historical field and do not depend on it", () => {
+test("detail/print queries read the canonical fiscal type while preserving legacy ordinary snapshots", () => {
   const select = queries.match(/const INVOICE_SELECT = "([^"]+)";/)[1].split(", ");
   assert.ok(select.includes("prices_include_tax"));
   assert.ok(select.includes("invoice_number"));
-  assert.ok(!select.includes("fiscal_document_type"));
+  assert.ok(select.includes("fiscal_document_type"));
   assert.ok(!select.includes("*"));
-  assert.doesNotMatch(queries, /fiscal_document_type|fiscalDocumentType/);
+  assert.match(queries, /fiscalDocumentType: row\.fiscal_document_type \?\? "ordinary"/);
   for (const route of ["page.tsx", "print/page.tsx"]) {
     const page = read(`src/app/[locale]/app/(dashboard)/billing/[invoiceId]/${route}`);
     assert.match(page, /const detail = await getBillingInvoice\(locale, invoiceId\)/);

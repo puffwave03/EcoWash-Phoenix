@@ -58,7 +58,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         <div className="billing-invoice-content p-5 sm:p-8">
           <header className="grid gap-6 border-b border-border pb-6 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t("document.invoice")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t(invoice.fiscalDocumentType === "simplified" ? "document.simplifiedInvoice" : "document.invoice")}</p>
               <h2 className="mt-2 text-3xl font-semibold text-primary">{invoice.invoiceNumber ?? t("draftNumber")}</h2>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div><dt className="text-muted">{t("fields.issueDate")}</dt><dd className="font-semibold">{formatDate(invoice.issueDate, locale)}</dd></div>
@@ -138,7 +138,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         </div>
       </article>
 
-      {!printMode && invoice.documentStatus === "draft" ? (
+      {!printMode && invoice.documentStatus === "draft" && invoice.fiscalDocumentType !== "simplified" ? (
         <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
           <Card className="bg-white">
             <h2 className="text-xl font-semibold text-primary">{t("draftEdit.title")}</h2>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTaxRate } from "@/features/billing/tax-rate";
+import { validateBillingDocumentSelection } from "@/features/billing/document-type";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
@@ -126,6 +127,10 @@ export async function saveBillingCustomerFiscalAction(
 export async function createBillingDraftAction(locale: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const selection = validateBillingDocumentSelection(formData.getAll("fiscalDocumentType"));
+  if (!selection.allowed) {
+    redirect(`/${locale}/app/billing/new?customerId=${encodeURIComponent(customerId)}&error=${selection.reason}`);
+  }
   const orderIds = formData.getAll("orderId").map(String);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();

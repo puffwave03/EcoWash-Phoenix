@@ -4,6 +4,7 @@ export const BILLING_ISSUER_REQUIRED_FIELDS = ["issuerLegalName", "issuerTaxId",
 export const BILLING_CUSTOMER_FISCAL_FIELDS = ["billingAddressLine1", "billingCity", "billingPostalCode", "billingCountryCode", "taxId"] as const;
 
 export type BillingDocumentStatus = (typeof BILLING_DOCUMENT_STATUSES)[number];
+export type BillingFiscalDocumentType = "ordinary" | "simplified";
 export type BillingPaymentStatus = (typeof BILLING_PAYMENT_STATUSES)[number];
 export type BillingIssuerRequiredField = (typeof BILLING_ISSUER_REQUIRED_FIELDS)[number];
 export type BillingCustomerFiscalField = (typeof BILLING_CUSTOMER_FISCAL_FIELDS)[number];
@@ -58,6 +59,7 @@ export type BillingInvoice = {
   customerTaxId: string | null;
   discountTotal: number;
   documentStatus: BillingDocumentStatus;
+  fiscalDocumentType: BillingFiscalDocumentType;
   dueDate: string | null;
   id: string;
   invoiceNumber: string | null;

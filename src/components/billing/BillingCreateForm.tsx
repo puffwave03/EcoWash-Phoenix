@@ -53,6 +53,16 @@ export function BillingCreateForm({ emptyMessage, hasMore, locale, orders, selec
                   </label>
                 ))}
               </div>
+              <div className="mt-5 space-y-2">
+                <label className="block space-y-2 text-sm font-semibold text-primary">
+                  <span>{text.documentType}</span>
+                  <select aria-describedby={`invoice-type-${first.customerId}-${first.currency}`} className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue="ordinary" name="fiscalDocumentType">
+                    <option value="ordinary">{text.ordinary}</option>
+                    <option disabled value="simplified">{text.simplified}</option>
+                  </select>
+                </label>
+                <p className="text-sm leading-6 text-muted" id={`invoice-type-${first.customerId}-${first.currency}`}>{text.simplifiedUnavailable}</p>
+              </div>
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_1fr_auto] lg:items-end">
                 <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.series}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={settings.defaultSeries} name="series" required /></label>
                 <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.taxRate}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(settings.defaultTaxRate)} inputMode="decimal" max="100" min="0" name="taxRate" required step="0.01" type="number" /></label>

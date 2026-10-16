@@ -8,6 +8,7 @@ import type {
   BillingCustomerContext,
   BillingCustomerFiscalField,
   BillingDocumentStatus,
+  BillingFiscalDocumentType,
   BillingInvoice,
   BillingInvoiceListEntry,
   BillingHistorySummary,
@@ -40,6 +41,7 @@ type InvoiceRow = {
   customer_tax_id: string | null;
   discount_total: number;
   document_status: BillingDocumentStatus;
+  fiscal_document_type: BillingFiscalDocumentType;
   due_date: string | null;
   id: string;
   invoice_number: string | null;
@@ -138,7 +140,7 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
 const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
 
 function number(value: number | string | null) {
@@ -170,6 +172,9 @@ function mapInvoice(
   orderNumbers: Map<string, string>,
   payments: PaymentRow[],
 ): BillingInvoice {
+  if (row.fiscal_document_type !== undefined && row.fiscal_document_type !== "ordinary" && row.fiscal_document_type !== "simplified") {
+    throw new Error("billing_invalid_fiscal_document_type");
+  }
   const orderIds = links.map((link) => link.order_id);
   const paidTotal = paymentTotals(payments.filter((payment) => orderIds.includes(payment.order_id)));
   const total = number(row.total);
@@ -190,6 +195,7 @@ function mapInvoice(
     customerTaxId: row.customer_tax_id,
     discountTotal: number(row.discount_total),
     documentStatus: row.document_status,
+    fiscalDocumentType: row.fiscal_document_type ?? "ordinary",
     dueDate: row.due_date,
     id: row.id,
     invoiceNumber: row.invoice_number,
