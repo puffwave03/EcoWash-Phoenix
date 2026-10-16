@@ -1,5 +1,31 @@
 # Features
 
+Status: Active — product scope and domain boundaries
+
+Last consolidated: 2026-10-16
+
+## Role and references
+
+This file describes product boundaries. [Project Status](../06_ROADMAP/Project_Status.md) owns the current implementation and acceptance inventory; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns continuation. The earlier MVP gap list below is historical and must not be used to propose already implemented modules again.
+
+## Established feature boundaries
+
+- Multi-tenant customer, catalog, order, payment and Billing domains use canonical records and server-derived organization context.
+- Terminal has five independent Venta workspaces and recoverable drafts. Occasional identity uses the tenant technical customer plus order-local visitor snapshots; regular customers keep their canonical identity.
+- Tenant-configurable catalogs, segments and server pricing preserve commercial order snapshots. Current EcoWash prices include IGIC; tax extraction preserves the agreed gross total.
+- Production and quality/packing are existing workflows. Warehouse and custody are order-level; final placement completes production. Fulfillment and payment remain separate. See [Workflow](Workflow.md).
+- Receipts, internal tickets and labels are operational outputs. An operational receipt is non-fiscal and does not replace a Billing invoice or payment.
+- Billing owns invoice snapshots and numbering; POS/payments/refunds own financial facts. Accounting and Daily Close provide operational reporting/control, not statutory accounting or fiscal closure.
+- Simplified invoices are approved as the habitual mode where permitted, but not implemented as a fiscal type. Ordinary-invoice compliance and external fiscal-provider integration remain separately gated.
+- Per-garment lifecycle, scan-event history and partial ready/fulfillment are deferred beyond V1. Individual label identifiers do not imply those capabilities.
+
+## Historical MVP feature assessment — 2026-07-31
+
+The original assessment is preserved below. Its missing/partial lists predate staff management, Portal, Billing, POS, Accounting/exports, QR, tenant settings and subsequent catalog work. They are not the current backlog. No open finding is closed without later implementation/UAT evidence in Project Status.
+
+<details>
+<summary>Original PRODUCT-001 feature assessment — historical scope</summary>
+
 Status: Active
 
 Version: 0.1
@@ -99,3 +125,5 @@ APP-008 is not a business intelligence module and does not add advanced analytic
 - Pickup and delivery are logistics concerns and must remain separate from production status.
 - Issues do not replace the active production status. An order can be `washing` and still have an open issue.
 - Current service prices may change, but each order item must keep a price snapshot for historical accuracy.
+
+</details>

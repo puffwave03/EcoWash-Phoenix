@@ -125,7 +125,7 @@ Canonical principles:
 - an order can be production-complete while still physically in EcoWash custody;
 - real customer handoff is separate from production completion.
 
-The next approved task is `ORDER-FULFILLMENT-LIFECYCLE-001`. Its approved business direction is:
+`ORDER-FULFILLMENT-LIFECYCLE-001` is implemented; its established business direction is:
 
 - draft logistics may be configured but must not become operational staff work;
 - logistics becomes operational from `received` onward;
@@ -133,7 +133,7 @@ The next approved task is `ORDER-FULFILLMENT-LIFECYCLE-001`. Its approved busine
 - open pickup/delivery remains visible after production completion;
 - the order remains in operational custody/stock until actual pickup or delivery completion.
 
-Do not implement this direction from `AGENTS.md`; implementation requires an explicit task prompt.
+Reuse these implemented boundaries. Current missions and acceptance gates belong in the canonical handover/status documents; this file does not assign the next task.
 
 ## 8. Financial canonical rules
 

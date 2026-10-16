@@ -1,5 +1,53 @@
 # EcoWash Phoenix
 
+EcoWash Phoenix is a multi-tenant laundry operations platform with a multilingual public website. EcoWash La Tejita is the first tenant/reference; tenant identity, catalog, pricing, currency, timezone and branding are configurable.
+
+## Documentation and resume
+
+- [Session Handover](docs/00_START_HERE/SESSION_HANDOVER.md): start here for current Git, protected work in progress and continuation.
+- [Project Status](docs/06_ROADMAP/Project_Status.md): current implementation, UAT and outstanding release gates.
+- [AGENTS.md](AGENTS.md): stable roles, safety, architecture and execution boundaries.
+- [Features](docs/01_PRODUCT/Features.md): product/domain boundaries.
+- [Workflow](docs/01_PRODUCT/Workflow.md): production, quality, custody, fulfillment and payment semantics.
+- [Roadmap](docs/01_PRODUCT/Roadmap.md) and [Milestones](docs/06_ROADMAP/Milestones.md): approved targets/sequencing and historical evidence.
+- [Git Workflow](docs/05_DEVELOPMENT/Git_Workflow.md): Git procedure; commit/push require explicit authorization.
+
+The older README and Codex baseline are not a separate source for the next task. Always inspect actual Git state and reconcile dated findings with later implementation/UAT evidence before proposing work.
+
+## Product overview
+
+The existing application covers customer/order management, tenant catalogs/pricing, five Terminal Venta workspaces with drafts, production and quality, order-level Warehouse custody, pickup/handoff/delivery, POS payments/refunds, operational Accounting/Daily Close, Billing, browser printing and customer Portal workflows. The authoritative acceptance inventory and limitations are in Project Status; code existence is not production readiness.
+
+Operational receipts are non-fiscal. Billing and tax-inclusive pricing are implemented foundations; simplified fiscal invoices and the external fiscal provider remain future separately approved work. Full fiscal compliance and commercial-production readiness are not claimed.
+
+## Technical foundation
+
+Next.js App Router, React, TypeScript, Tailwind CSS and next-intl; localized routes and IT / ES / EN / FR / DE system UI. Financial snapshots, server-derived tenant context and canonical locale/currency/time handling remain established boundaries.
+
+The public contact/demo form is presentation-only; this does not describe the operational application's server/database functionality. Staging is separate from commercial production. Use Session Handover for the established targets and current release gates.
+
+## Repository structure
+
+- `src/`: application and public website.
+- `tests/`: focused contracts and regression tests.
+- `supabase/migrations/`: canonical migration history; reading a migration is not authorization to apply it.
+- `docs/`: product decisions, architecture, operational references and historical evidence.
+
+## Working method
+
+Product Owner requirement → CTO scope/design → focused implementation → validation/evidence → CTO review → separately authorized staging/release → Product Owner acceptance. Preserve known WIP; do not commit, push or deploy automatically.
+
+## License
+
+Placeholder (TBD).
+
+## Historical README — 2026-08-22
+
+The complete original introduction/status below is retained as project history. Its “planned platform”, “No billing”, old SHA, QA-001 next-task proposal and early deployment/module limitations predate later implementations. They are not current execution instructions or an acceptance inventory.
+
+<details>
+<summary>Original README checkpoint — historical presentation and milestones</summary>
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)
@@ -232,3 +280,5 @@ Last Updated: 2026-08-22
 Current Mission: Operational role/workspace phase validated
 
 Next Action: prepare QA-001 and select the next approved product phase
+
+</details>

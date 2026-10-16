@@ -1,5 +1,22 @@
 # Milestones
 
+Status: Active — historical milestone register
+
+Last consolidated: 2026-10-16
+
+## Role of this register
+
+This file preserves milestone scope, approvals and dated completion evidence. [Project Status](Project_Status.md) owns the current implementation/UAT inventory. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns current Git, work in progress and continuation. [Roadmap](../01_PRODUCT/Roadmap.md) owns the approved launch targets and sequencing constraints.
+
+The 2026-09-29 register below predates implemented delivery transit, property filtering, photo validation, Portal validation, SaaS onboarding/Demo proof, tenant configuration, catalog/pricing exchange, five Venta recovery and the latest Billing fixes. Those must not be reopened as missing from this register alone. Later evidence is preserved in the canonical documents; unresolved UAT and release gates remain unresolved.
+
+## Historical milestone checkpoints
+
+The prior register is retained unchanged. Old baseline SHAs, next-task sequences and “future/not implemented” claims are checkpoint history, not current operating instructions. Existing approvals, migration evidence and V1 boundaries remain available.
+
+<details>
+<summary>Original milestone register through 2026-09-29 — historical evidence only</summary>
+
 Status: Active
 
 Version: 0.1
@@ -479,3 +496,5 @@ Scope guard:
 - do not start P3 before the internal operational product is stable, deployed and commercially validated
 - the first customer portal boundary is now part of M1 pilot scope; do not expand it into payments, fiscal documents or notifications without separate approval
 - do not introduce online payments, fiscal invoices, OCR, Realtime or Edge Functions without a separate approved architecture task
+
+</details>

@@ -1,5 +1,54 @@
 # Session Handover
 
+Status: Active — canonical resume instructions
+
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, local; CTO review pending)
+
+## Resume here
+
+Read this section and [Project Status](../06_ROADMAP/Project_Status.md) before any task. [AGENTS.md](../../AGENTS.md) owns stable operating rules. The explicit task prompt controls authorization. Older checkpoints below record evidence; their “current”, “next”, branch/SHA and deployment instructions are historical and do not authorize work today.
+
+### Verified Git checkpoint and preserved work
+
+- Verified for this consolidation: `main`, local HEAD = `origin/main` = `6d82aeb156e1b6384dde84cd075a9d8a81b2dd86`. Recheck Git on resume; this recorded SHA is not an instruction to reset or realign a worktree.
+- The expected initial worktree contains exactly seven unstaged/untracked files for `BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001`. Preserve them independently of documentation work:
+  - `src/components/billing/BillingInvoiceView.tsx`
+  - `src/i18n/it/common.json`
+  - `src/i18n/es/common.json`
+  - `src/i18n/en/common.json`
+  - `src/i18n/fr/common.json`
+  - `src/i18n/de/common.json`
+  - `tests/billing-ordinary-invoice-net-unit-price-001.test.mjs`
+- Billing phase: local implementation and validation reported **69/69 PASS**, TypeScript, scoped ESLint, translations and diff checks PASS. CTO review and visual browser/PDF UAT remain pending. No release, commit or fiscal-compliance approval is implied.
+- This mission changes documentation only. Additional Markdown changes are expected after consolidation; the seven Billing file contents must remain identical. No staging, commit, push, deployment or business-data operation is authorized.
+
+### Continuation gates
+
+1. Review this documentation diff and the Billing diff as separate missions. Do not commit or publish either without explicit authorization.
+2. Keep pending browser UAT separate: Terminal catalog-failure draft protection, Billing invoice-item read failure/recovery, and ordinary-invoice net-unit-price presentation. Controlled Terminal transactional recovery/idempotency/payment UAT also remains separate.
+3. `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` is **CLOSED / PO STAGING UAT PASS** (2026-10-16, `EW-000150`). Do not reopen it from an older checkpoint.
+4. Existing Terminal workspaces, production/quality, order-level Warehouse, handoff, POS, Daily Close, Accounting, tenant catalog/pricing and SaaS onboarding must be reused. Consult the current inventory and remaining gates in Project Status before proposing implementation.
+5. Approved target: EcoWash La Tejita operational by **2026-12-20**; controlled initial SaaS commercialization at the beginning of 2027. These targets do not waive UAT, security, recovery, fiscal or release gates.
+
+### Environment and document roles
+
+Staging application: `https://ecowash-phoenix-staging.vercel.app`; established Supabase staging ref: `exthnplfokcucaqydney`. Verify targets before any separately authorized remote action. No new deployment/Ready verification is claimed here. Commercial production remains outside this mission.
+
+- [Project Status](../06_ROADMAP/Project_Status.md): implementation, acceptance and outstanding gates.
+- [Workflow](../01_PRODUCT/Workflow.md): domain states and operational boundaries.
+- [Features](../01_PRODUCT/Features.md): product scope and domain boundaries.
+- [Roadmap](../01_PRODUCT/Roadmap.md): approved targets and sequencing constraints.
+- [Milestones](../06_ROADMAP/Milestones.md): historical milestone evidence.
+- [QA register](../07_QA/QA-PRODUCT-001.md) and [pilot findings](../07_QA/PILOT-FINDINGS-2026-09-06.md): dated evidence; resolve later closeouts before treating an old finding as open.
+- [Codex baseline compatibility entry](../CODEX_CURRENT_BASELINE.md): pointer and historical reference, not a third status authority.
+
+## Historical checkpoints
+
+The complete previous handover body is retained below. Approvals, migrations, UAT and limitations remain evidence at their recorded checkpoint. Old next-task queues, WIP/clean-tree assumptions, “not implemented” claims and environment/commit positions must be reconciled with the current sections above and Project Status. Still-open findings are not closed merely by this documentation consolidation.
+
+<details>
+<summary>Historical handover checkpoints through 2026-10-16 — expand for original evidence</summary>
+
 Status: Active
 
 Date: 2026-10-16
@@ -1018,3 +1067,5 @@ http://localhost:3000/it/portal
 http://localhost:3000/it/portal/orders
 http://localhost:3000/it/portal/support
 ```
+
+</details>

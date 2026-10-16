@@ -1,5 +1,26 @@
 # Codex Current Baseline
 
+Status: Compatibility entry and historical reference
+
+Last consolidated: 2026-10-16
+
+## Current source of truth
+
+The filename is retained for existing references. This file no longer owns a mutable third product baseline or the next task.
+
+1. Read [Session Handover](00_START_HERE/SESSION_HANDOVER.md) for resume instructions and preserved work.
+2. Read [Project Status](06_ROADMAP/Project_Status.md) for implementation, UAT and outstanding gates.
+3. Follow [AGENTS.md](../AGENTS.md) and the explicit task prompt. [Codex Execution Context](CODEX_EXECUTION_CONTEXT.md) is supplementary execution guidance.
+
+Do not update a second feature/status inventory here after each task. Do not reset Git to a historical SHA or execute an archived next-work list. In particular, preserve the current seven-file Billing WIP identified in Session Handover.
+
+## Historical baseline — 2026-09-29
+
+The original baseline below is preserved as dated implementation/UAT/migration evidence. Its clean-tree assumptions, “current” labels, future tasks and partial-feature claims are not current instructions. Later fulfillment/transit, tenant setup, catalog pricing, Terminal recovery and Billing releases are recorded in the two canonical documents.
+
+<details>
+<summary>Original 2026-09-29 baseline — historical evidence only</summary>
+
 Status: Active
 
 Recorded: 2026-09-29
@@ -147,3 +168,5 @@ The operational pilot closeout passed. The next phase is remaining small integri
 - CATALOG-PRODUCTIZATION-001 linked rollback proof updated a controlled existing service presentation, created and archived a controlled service, exercised non-destructive missing-row behavior, and confirmed unchanged UUID/code/unit/media, pricing, segment relations and order/invoice snapshots. The additive migration aligned locally/remotely and `persisted_fixture_count` returned `0`.
 - TERMINAL-SEGMENT-CATALOG-001 linked rollback proof confirmed explicit service/category restriction, unchanged effective pricing, general-catalog fallback for no/inactive segment and rejection of manipulated out-of-segment submission; `persisted_fixture_count` returned `0`.
 - Future recommendation: `QA-HARNESS-001` — share tenant-auth, rollback cleanup and canonical ledger assertion helpers to reduce repeated setup; do not implement without a separate approved task.
+
+</details>

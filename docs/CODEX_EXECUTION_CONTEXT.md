@@ -3,22 +3,22 @@
 Status: Active
 Scope: Stable operating protocol for EcoWash Phoenix Codex tasks
 
-Read this file with `docs/CODEX_CURRENT_BASELINE.md` before implementation. The Product Owner's explicit task instructions remain authoritative.
+Read [AGENTS.md](../AGENTS.md), [Session Handover](00_START_HERE/SESSION_HANDOVER.md) and [Project Status](06_ROADMAP/Project_Status.md) before implementation. This supplementary protocol does not own product status or the next task. [CODEX_CURRENT_BASELINE.md](CODEX_CURRENT_BASELINE.md) is a compatibility pointer with historical evidence. The explicit task prompt remains authoritative.
 
 ## A. Responsibilities
 
 - The Product Owner defines the desired outcome and acceptance criteria.
 - The CTO/Architect prompt defines scope, constraints and approved architecture decisions.
-- Codex implements, validates, commits and reports the scoped task.
+- Codex implements, validates and reports the scoped task; commit/push require explicit phase authorization.
 - Codex must not invent product requirements or expand into unapproved work.
 
 ## B. Repository and Git
 
 - `main` is the authoritative completed baseline.
 - Keep one logical task in one logical application commit where practical; use a separate docs commit when useful.
-- Do not start unrelated development directly on `main`. Use a scoped WIP branch while implementation is unfinished.
+- Preserve the branch and worktree required by the task. Do not create a WIP branch, preservation commit or other branch automatically.
 - Preserve interrupted work safely; never reset, clean or discard unknown work.
-- Normal final state: `main == origin/main` and working tree clean.
+- A local-only task normally ends with its authorized uncommitted diff. After an explicitly authorized push, verify `main == origin/main` and a clean worktree. Preserve known WIP from other missions.
 
 ## C. Multi-Tenancy — P0
 
@@ -49,7 +49,7 @@ Reuse these existing sources of truth:
 - Billing: canonical invoice records derived from established order/payment truth.
 - Online payments: provider attempts are separate from confirmed canonical payments.
 - Shop Terminal: counter UX over customers, catalog, pricing, orders, till and payments.
-- Printing: read-only receipt, ticket and label projections over canonical order/payment data.
+- Printing: persistent historical operational receipts with immutable snapshots and issue-time numbering; tickets/labels reuse canonical order/item data. Opening a receipt issue route may write a document; reprint/history are distinct from payments and Accounting. Operational receipts remain non-fiscal.
 - Entitlements: centralized feature catalog and organization entitlement state.
 - Platform Admin: separate SaaS control context with audited cross-tenant administration.
 
@@ -72,7 +72,7 @@ Never create a parallel domain, pricing, order, payment, POS, invoice, terminal,
 - Cash and manual card payments use canonical payment/POS functions.
 - PAY LATER creates an order/receivable with outstanding value and no fake payment row.
 - Shop Terminal is UX over the existing domain, not a separate POS engine.
-- Walk-ins are distinct, traceable, canonical tenant-scoped customers; do not use a shared anonymous customer.
+- New occasional visits use the tenant-scoped `WALKIN-SHARED` technical customer with order-local visitor name/phone; legacy `WALKIN-<UUID>` customers remain historical. Separate Venta/draft identities must be preserved. Do not recreate the superseded per-visit-customer model.
 
 ## H. Security
 
@@ -84,7 +84,7 @@ Never create a parallel domain, pricing, order, payment, POS, invoice, terminal,
 
 ## I. Migration Policy
 
-- Use the smallest required additive follow-up migration.
+- Use migrations only when explicitly needed and authorized. Preserve applied migration history; an unapplied local migration can be corrected within its approved phase rather than automatically adding a follow-up.
 - Never edit a migration already applied to any shared environment.
 - Use the next free migration number; resolve filename collisions before application.
 - Preserve historical tenant, operational and financial data.
@@ -123,8 +123,8 @@ Final task verification:
 
 - Module-focused tests.
 - Directly connected regressions.
-- `npm run lint`.
-- One production build when product code changed.
+- Scoped ESLint and TypeScript when relevant to the task.
+- Production build when appropriate or explicitly required, after the patch is stable; documentation-only work needs no application tests/build.
 - `git diff --check`.
 
 Run full-product QA only for a release, milestone, architecture-critical task or explicit Product Owner request.
@@ -132,7 +132,7 @@ Run full-product QA only for a release, milestone, architecture-critical task or
 ## N. Build Policy
 
 - Do not run a production build during early iteration.
-- Run it after implementation and focused tests are stable.
+- When a build is required, run it after implementation and focused tests are stable.
 - Avoid repeating a successful build. If code changes afterward, rerun only what the change requires.
 
 ## O. E2E and Fixture Policy
@@ -149,12 +149,12 @@ Future recommendation: **QA-HARNESS-001** — consolidate reusable authenticated
 ## P. Documentation Policy
 
 - Update only documents materially affected by a normal task.
-- Update `CODEX_CURRENT_BASELINE.md` after each completed product task.
-- Update `SESSION_HANDOVER.md` only when continuity requires it.
+- Keep current continuation and product status in `SESSION_HANDOVER.md` and `Project_Status.md`; update only when the task phase authorizes documentation changes.
+- Keep `CODEX_CURRENT_BASELINE.md` as a compatibility pointer and historical evidence, not a duplicate mutable status inventory.
 - Update Roadmap only when roadmap decisions change; update Milestones only when milestone state changes.
 - Use periodic `DOCS-SYNC` work to consolidate broader documentation after several tasks.
 - Do not rewrite all docs after every small task.
-- For the immediate next-task pointer, `CODEX_CURRENT_BASELINE.md` supersedes older status prose until the next relevant docs sync.
+- The current sections of the two canonical documents supersede archived next-task prose. No document grants implementation, commit or remote-mutation authorization by itself.
 
 ## Q. Credit and WIP Recovery Policy
 
@@ -162,10 +162,9 @@ If available usage is insufficient to complete safely:
 
 1. Stop before another implementation phase.
 2. Do not leave a destructive operation incomplete.
-3. Create or use `wip/<task-id>`.
-4. Run `git add -A` only after reviewing the exact worktree scope.
-5. Create one WIP preservation commit.
-6. Report the WIP branch/SHA, completed work, remaining work, passed tests and exact next action.
+3. Preserve the current worktree and identify task-owned versus pre-existing changes.
+4. Do not stage, commit, create a branch or push merely because usage is low.
+5. Report branch/HEAD, exact changed files, completed work, remaining work, passed tests and the next authorized action.
 
 Do not consume remaining usage by repeating audits, successful tests or builds.
 
@@ -173,7 +172,7 @@ Do not consume remaining usage by repeating audits, successful tests or builds.
 
 - Do not restart, reset or re-audit preserved work.
 - Initially inspect only status, branch, recent log and focused diff/stat.
-- Integrate latest `main` safely when required and preserve both current baseline and WIP.
+- If the task baseline differs, report it and follow the task's stop condition; do not realign history or preserved WIP automatically.
 - Finish only remaining work, run only unfinished tests and execute the final quality gate once.
 
 ## S. Visual Task Policy
@@ -189,12 +188,12 @@ Before reporting READY, as applicable:
 
 - Focused tests and directly related regressions pass.
 - Lint passes.
-- Production build passes when product code changed.
+- Production build passes when required by the task or a concrete release risk.
 - `git diff --check` passes.
 - Temporary fixtures are removed.
 - Migration alignment is verified when applicable.
-- Required commits are pushed.
-- `main == origin/main` and working tree is clean.
+- Commit/push are performed only in an explicitly authorized phase, with an exact reviewed staging list.
+- After push, `main == origin/main` and worktree is clean; local-only tasks report the authorized uncommitted diff and preserved unrelated WIP.
 
 ## U. Final Report
 
@@ -219,8 +218,10 @@ Keep it concise and report:
 TASK: <ID + title>
 
 Read and follow:
+AGENTS.md
+docs/00_START_HERE/SESSION_HANDOVER.md
+docs/06_ROADMAP/Project_Status.md
 docs/CODEX_EXECUTION_CONTEXT.md
-docs/CODEX_CURRENT_BASELINE.md
 
 GOAL
 ...
@@ -242,8 +243,8 @@ ACCEPTANCE
 TEST
 - focused tests
 - directly related regressions
-- lint
-- production build once if product code changed
+- scoped lint and TypeScript where applicable
+- production build once when appropriate/required
 - git diff --check
 
 COMMIT/PUSH

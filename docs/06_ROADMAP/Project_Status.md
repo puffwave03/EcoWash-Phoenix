@@ -1,5 +1,66 @@
 # Project Status
 
+Status: Active — canonical implementation and acceptance inventory
+
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, local; CTO review pending)
+
+## Current checkpoint
+
+Use [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) for Git, preserved WIP and immediate continuation. This document owns the current product inventory; historical tables below do not assign new work. Staging acceptance is not commercial-production or fiscal-compliance approval.
+
+## Implemented baseline and acceptance limits
+
+| Area | Verified state and remaining boundary |
+| --- | --- |
+| Terminal | Five independent Venta workspaces, customer A/B/A drafts, occasional customers and refresh recovery passed PO staging UAT on 2026-10-15. Controlled transactional submission-recovery UAT remains separate. |
+| Submission feedback | `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` CLOSED; PO staging UAT PASS on 2026-10-16 (`EW-000150`, EUR 5.00 total, EUR 0.00 payment). |
+| Catalog-failure draft protection | Released in `ca1923260b1944bc43fa04de50fed9a6246cf61d`; 73/73 pertinent tests and CTO PASS. Browser staging UAT OPEN; not CLOSED. |
+| Production and quality | Production, explicit quality/packing workspace, capability/assignment checks and persistent status history implemented and operationally UAT-tested. Final Warehouse placement atomically completes production. This does not prove an explicit passed-quality event for every possible workflow path. |
+| Inbound custody | Scheduled/in-progress inbound pickup blocks manual receipt. Canonical pickup completion and Quick Drop retain their existing receipt/item exceptions. |
+| Warehouse and fulfillment | Order-level storage and movement history implemented. Outbound departure removes current storage and records transit; failed delivery can return to Warehouse. Actual handoff or completed delivery remains separate from production and payment. |
+| POS, payments and refunds | Sessions, partial/mixed payments, balances, reconciliation and dedicated POS/manual-external refunds implemented. Confirmed payments minus separate refunds remain canonical. Till-close UX refinements are not absence of reconciliation. |
+| Daily Close and Accounting | Operational close, snapshots, history, exports and operational financial reporting implemented. They are not statutory accounting or fiscal closure. |
+| Catalog and pricing | Tenant catalog/categories, locale presentation, segments, server pricing, configured currency and previewed CSV catalog/pricing exchange implemented. Pilot catalog/prices UAT passed; import is now up to 2,000 rows / 1 MB under 002J, superseding earlier 500-row checkpoints. |
+| Printing | Browser/system receipt, ticket and label output, printer profiles and QR implemented. Verification of the two physical Windows USB printers remains open; driver/silent printing is not claimed. |
+| Billing | Canonical invoice drafts, numbering/issue, immutable financial snapshots, detail/print, customer/order links and tax-inclusive extraction implemented. Full ordinary/simplified-invoice fiscal compliance remains unverified. |
+| Billing line-read protection | Released in `6d82aeb156e1b6384dde84cd075a9d8a81b2dd86`; 50/50 pertinent tests and CTO PASS. Browser error/recovery UAT OPEN. |
+| Ordinary invoice net unit price | `BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001` is local WIP, not released: 69/69 pertinent tests reported PASS; CTO review and browser/PDF UAT pending. Seven files are protected during this documentation mission. |
+| Customers and Portal | Customer lifecycle/account, secure Portal requests/history, context isolation and entitlement boundary implemented. Earlier “future Portal” statements are historical. Separate Portal translation and legacy-deployment Auth findings remain open. |
+| SaaS foundation | Organization defaults, tenant numbering, onboarding, Owner location editing and Demo isolation proofs implemented/UAT-tested under their recorded boundaries. This is not complete commercial onboarding or production approval. |
+
+Detailed UAT, migration, commit and limitation evidence remains in the historical checkpoints below and in Session Handover. This consolidation does not rerun or upgrade that evidence.
+
+## Approved decisions to preserve
+
+- Five independent Venta workspaces and draft recovery; canonical customer/order/payment identities.
+- Order-level production, quality and Warehouse custody. Final placement completes production; actual delivery and payment remain independent. Garment/package lifecycle, scan history and partial ready/fulfillment are deferred beyond V1.
+- For EcoWash, the PO defines operational service completion as quality passed and ready for collection. Mapping that business definition to fiscal timing requires external fiscal validation; do not add automatic fiscal issuance on a status change.
+- Tenant-configurable catalog/prices. Current EcoWash commercial prices include IGIC; canonical Billing extracts tax after discounts without changing agreed gross totals or historical snapshots.
+- Operational receipts remain non-fiscal. Simplified invoices are the approved habitual mode where permitted, but the fiscal document type is not implemented. Ordinary invoices are used when needed/requested; the current Billing foundation does not itself prove legal compliance.
+- Provider-neutral external fiscal integration remains approved future architecture, not an implemented provider. Ordinary invoicing obligations, SIF/VERI*FACTU, B2B e-invoice exchange and management Accounting remain distinct.
+
+## Remaining gates and findings
+
+- CTO review of protected local Billing presentation work and this documentation cleanup; no commit/push authorization in either current phase.
+- Browser UAT for catalog draft protection, Billing line-read error/recovery and local net-unit-price presentation; controlled Terminal transactional recovery remains separate.
+- Terminal customer/catalog loading around five seconds, initial-screen and post-order UX refinement, till-closing procedure and two physical USB printers require their own scope. Existing implementations must not be proposed again as absent.
+- Catalog/treatment business clarification and network-loss/recovery procedures remain operational-readiness work; do not infer missing catalog implementation from those questions.
+- `AUTH-DR-001C` physical/authenticated recovery remains deferred until pre-production as a hard gate; encrypted off-device backup custody remains open. DB/Storage recovery evidence does not close Auth recovery.
+- Preserve the independent Portal legacy-deployment Auth risk, Spanish catalog translations, location-policy/grant drift, country-code onboarding validation, `TEST-DEBT-WALKIN-CONTRACT-001`, monitored dependency finding and remaining valid historical findings. No closure is inferred solely from age.
+- Fiscal profile/timing validation, simplified document support, advance/final coverage, rectifications, external-provider integration and SIF responsibilities remain separately scoped. `PHX-FISCAL-RECTIFICATION-001` is not implemented; no financial/fiscal architecture is changed here.
+- Commercial production still requires the established security, backup/restore, Auth DR, GDPR, fiscal and Production Readiness Review gates.
+
+## Approved launch targets
+
+EcoWash La Tejita: operational by **20 December 2026**. First controlled SaaS commercialization: **beginning of 2027**. These are PO targets, not completion percentages, guarantees or authorization to bypass remaining gates. Sequencing constraints belong in [Roadmap](../01_PRODUCT/Roadmap.md).
+
+## Historical checkpoints
+
+The previous status body is retained intact below. Its “current”, “next”, absent-feature lists, SHAs and pending migration/deployment statements describe their original dates. Later implementation/UAT evidence and the current inventory above supersede old execution queues. All earlier approvals, UAT and still-valid limitations remain available.
+
+<details>
+<summary>Historical status and release checkpoints through 2026-10-16 — expand for original evidence</summary>
+
 Status: Active
 
 Version: 0.1
@@ -1315,3 +1376,5 @@ First checks:
 4. Preserve the completed lifecycle rule: inactive customers retain history, lose Portal access and cannot create new orders.
 5. Reuse the validated operational fixtures and avoid creating additional fixtures unless a verified regression gap requires one.
 6. Keep the Product Owner's technical burden minimal and keep one task per logical commit.
+
+</details>

@@ -1,5 +1,36 @@
 # Roadmap
 
+Status: Active — targets and sequencing constraints
+
+Last consolidated: 2026-10-16
+
+## Purpose and authority
+
+This document records approved targets and sequencing constraints. [Project Status](../06_ROADMAP/Project_Status.md) owns implementation/UAT state; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns immediate continuation and Git/WIP. A roadmap entry is not implementation authorization.
+
+## Approved targets
+
+- EcoWash Phoenix operational at EcoWash La Tejita by **20 December 2026**.
+- First controlled SaaS commercialization at the **beginning of 2027**.
+- Staging acceptance is evidence for these targets; commercial release remains subject to the established operational UAT, security, recovery, privacy, fiscal and Production Readiness Review gates.
+
+## Sequencing constraints
+
+- Reuse implemented Terminal, production/quality, Warehouse, fulfillment, POS, Accounting, Billing, tenant configuration and onboarding. Do not repeat completed missions from archived priority lists.
+- Review and accept the current protected Billing WIP independently of this documentation-only task. Session Handover defines the pending gates; no release is authorized here.
+- Complete outstanding real-store validation and continuity procedures under separate scopes. Configured browser printing is distinct from acceptance of physical Windows USB hardware; implemented till reconciliation is distinct from UX refinements.
+- Preserve order-level V1 operations; per-garment tracking, scan history and partial ready/fulfillment remain deferred.
+- Preserve tax-inclusive commercial pricing. Habitual simplified invoices where permitted and an external fiscal provider are approved directions, with implementation and fiscal timing still separately gated.
+- Distinguish ordinary invoicing, SIF/VERI*FACTU and B2B electronic invoice exchange. A provider integration must preserve canonical orders/payments/Billing, idempotency, tenant/fiscal identity and history.
+- Do not turn the older M1/P0/P1 candidate lists below into a new queue or invent completion percentages/dates. New implementation requires explicit CTO scope and PO authorization.
+
+## Historical roadmap checkpoints
+
+All prior roadmap content follows unchanged, including approval, UAT and migration evidence. Its “current”, “next”, “missing” and future-task wording describes its original checkpoint. Use the canonical current documents above to distinguish completed work from remaining scope.
+
+<details>
+<summary>Original roadmap checkpoints through 2026-09-29 — historical planning and evidence</summary>
+
 Status: Active
 
 Version: 0.1
@@ -441,3 +472,5 @@ Product invariants across this sequence:
 - POS is provider-neutral and receipt-ready, not a claim of real TPV/terminal, card-acquirer, fiscal printer, barcode, full-accounting or e-invoice integration
 - `PREMIUM-DESIGN` / `CUSTOMER-PORTAL POLISH` remains known visual work: stronger media, richer service visuals, premium timeline, refined financial presentation and continued authenticated-app polish
 - no full accounting or e-invoice compliance is claimed before their dedicated missions
+
+</details>
