@@ -70,7 +70,7 @@ export async function loadShopServicesAction(
   customerId: string,
   locationId: string | null,
 ): Promise<ShopCatalogSelection> {
-  if (!UUID.test(customerId) || (locationId && !UUID.test(locationId))) return { segmentName: null, services: [] };
+  if (!UUID.test(customerId) || (locationId && !UUID.test(locationId))) throw new Error("Invalid shop catalog request");
   return listShopServices(locale, customerId, locationId);
 }
 

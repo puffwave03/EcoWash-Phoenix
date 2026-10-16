@@ -256,9 +256,9 @@ export async function listShopServices(
       .maybeSingle<{ catalog_segment_id: string | null }>(),
   ]);
 
-  if (servicesResult.error || categoriesResult.error || customerResult.error || !customerResult.data) {
+  if (servicesResult.error || categoriesResult.error || customerResult.error || !servicesResult.data || !customerResult.data) {
     console.error("Shop service query failed", servicesResult.error?.code ?? categoriesResult.error?.code ?? customerResult.error?.code);
-    return { segmentName: null, services: [] };
+    throw new Error("Shop catalog unavailable");
   }
 
   const segmentResult = customerResult.data.catalog_segment_id

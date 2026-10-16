@@ -50,6 +50,7 @@ export type ShopTerminalText = {
   searchingCustomers: string; noCustomerMatches: string;
   saveCustomer: string; saving: string; searchServices: string; segmentPrice: string; selectCustomer: string;
   segmentCatalog: string;
+  catalogLoadError: string; retryCatalog: string;
   splitCard: string; splitCash: string; splitPayment: string; subtotal: string; tillManagement: string;
   tillClosed: string; tillOpen: string; title: string; total: string; unitTypes: Record<string, string>;
   scanCode: string; scanPlaceholder: string; scanSubmit: string; scanning: string; scanInvalid: string; scanNotFound: string;
@@ -393,7 +394,8 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [definitiveRejection, setDefinitiveRejection] = useState<string | null>(null);
-  const [isLoading, startLoading] = useTransition();
+  const [, startLoading] = useTransition();
+  const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "error">("loading");
   const [isResolving, startResolving] = useTransition();
   const [isLoadingDelivery, startLoadingDelivery] = useTransition();
   const [scanError, setScanError] = useState<ShopCodeResolveResult["error"]>(null);
@@ -759,14 +761,16 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     });
   }
 
-  function selectCustomer(nextCustomerId: string, foundCustomer?: ShopCustomer) {
+  function selectCustomer(nextCustomerId: string, foundCustomer?: ShopCustomer, reloadCatalog = false) {
     const nextCustomer = foundCustomer ?? customers.find((customer) => customer.id === nextCustomerId);
     if (!nextCustomer) return;
     if (foundCustomer) setCustomers((current) => [foundCustomer, ...current.filter((customer) => customer.id !== foundCustomer.id)]);
     if (nextCustomerId === customerId) {
-      setCustomerMode(null);
-      setIsCustomerPickerOpen(false);
-      return;
+      if (!reloadCatalog) {
+        setCustomerMode(null);
+        setIsCustomerPickerOpen(false);
+        return;
+      }
     }
     if (!saveCurrentCustomerDraft()) return;
     if (!persistStoredCustomer(activeCustomerStorageKey, nextCustomer)) {
@@ -778,6 +782,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     const requestId = catalogRequestRef.current + 1;
     catalogRequestRef.current = requestId;
     catalogCustomerRef.current = null;
+    setCatalogStatus("loading");
     selectedCustomerIdRef.current = nextCustomerId;
     setCustomerId(nextCustomerId);
     setCustomerMode(null);
@@ -793,12 +798,18 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     restoreCheckoutDraft(nextDraft);
     if (nextDraft?.delivery.requested) loadDeliveryOptionsForCustomer(nextCustomerId, false);
     startLoading(async () => {
-      const catalog = await actions.loadServices(nextCustomerId, session?.locationId ?? null);
-      if (catalogRequestRef.current !== requestId) return;
-      catalogCustomerRef.current = nextCustomerId;
-      setServices(catalog.services);
-      setSegmentName(catalog.segmentName);
-      setCart(reconcileDraftCart(nextDraft, catalog.services));
+      try {
+        const catalog = await actions.loadServices(nextCustomerId, session?.locationId ?? null);
+        if (catalogRequestRef.current !== requestId) return;
+        catalogCustomerRef.current = nextCustomerId;
+        setServices(catalog.services);
+        setSegmentName(catalog.segmentName);
+        setCart(reconcileDraftCart(nextDraft, catalog.services));
+        setCatalogStatus("ready");
+      } catch {
+        if (catalogRequestRef.current !== requestId) return;
+        setCatalogStatus("error");
+      }
     });
   }
 
@@ -883,6 +894,10 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
   }
 
   function prepareSubmission(event: React.FormEvent<HTMLFormElement>) {
+    if (!customerId || catalogCustomerRef.current !== customerId) {
+      event.preventDefault();
+      return;
+    }
     if (!attemptLoaded || draftHydration !== "ready" || attemptStorageLost || flightRef.current.hasActivity() || attemptRef.current) {
       event.preventDefault();
       setRecoveryStatus("unknown");
@@ -1196,7 +1211,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
         <main className="min-w-0 p-3 pb-28 sm:p-4 md:pb-4">
           <div className="mb-2 flex items-center gap-2"><h2 className="shrink-0 text-sm font-black uppercase tracking-[0.08em] text-primary">{text.catalog}</h2><input className="min-h-10 w-full min-w-0 rounded-control border border-border bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 sm:ml-auto sm:max-w-xs" disabled={!selectedCustomer} onChange={(event) => setServiceQuery(event.target.value)} placeholder={text.searchServices} type="search" value={serviceQuery} /></div>
           <nav aria-label={text.catalog} className="mb-3 flex min-w-0 gap-1.5 overflow-x-auto pb-1"><button aria-pressed={category === "all"} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === "all" ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} disabled={!selectedCustomer} onClick={() => setCategory("all")} type="button">{text.categoryAll}</button>{categories.map((item) => <button aria-pressed={category === item.key} className={`min-h-10 shrink-0 rounded-full px-3 text-xs font-black ${category === item.key ? "bg-primary text-white" : "border border-border bg-white text-primary"}`} key={item.key} onClick={() => setCategory(item.key)} type="button">{item.label}</button>)}</nav>
-          {!selectedCustomer ? <div className="flex min-h-64 flex-col items-center justify-center rounded-control border border-dashed border-primary/25 bg-white px-6 text-center"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary"><svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m6.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7.5 0 2 2 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg></span><h3 className="mt-3 text-lg font-black text-primary">{text.selectCustomer}</h3><p className="mt-1 max-w-md text-sm text-muted">{text.noCustomer}</p></div> : isLoading ? <div className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.loadingCatalog}</div> : filteredServices.length ? <div className="grid grid-cols-1 gap-2 md:grid-cols-3 2xl:grid-cols-4" data-terminal-service-grid>{filteredServices.map((service) => {
+          {!selectedCustomer ? <div className="flex min-h-64 flex-col items-center justify-center rounded-control border border-dashed border-primary/25 bg-white px-6 text-center"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary"><svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m6.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7.5 0 2 2 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /></svg></span><h3 className="mt-3 text-lg font-black text-primary">{text.selectCustomer}</h3><p className="mt-1 max-w-md text-sm text-muted">{text.noCustomer}</p></div> : catalogStatus === "error" ? <div className="rounded-control border border-red-200 bg-red-50 p-6 text-center" role="alert"><p className="font-semibold text-red-700">{text.catalogLoadError}</p><button className="mt-4 min-h-11 rounded-control bg-primary px-4 font-bold text-white" onClick={() => selectCustomer(customerId, undefined, true)} type="button">{text.retryCatalog}</button></div> : catalogStatus === "loading" ? <div className="rounded-control bg-white py-20 text-center font-semibold text-muted">{text.loadingCatalog}</div> : filteredServices.length ? <div className="grid grid-cols-1 gap-2 md:grid-cols-3 2xl:grid-cols-4" data-terminal-service-grid>{filteredServices.map((service) => {
             const line = cartByServiceId.get(service.id);
             const categoryLabel = service.categoryKey ? resolveShopCategoryLabel(service.categoryKey, service.category, categoryLabels) : text.categoryAll;
             return <div className="contents" key={service.id}>
@@ -1223,7 +1238,8 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
         <aside className="scroll-mt-4 min-w-0 border-t border-border bg-white shadow-[-12px_0_30px_rgb(15_59_46_/_0.06)] lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0" id="terminal-checkout">
           <div className="p-4 sm:p-5"><div className="flex items-center justify-between border-b-2 border-primary pb-3"><div><p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-muted">{selectedCustomerName ?? text.customer}</p><h2 className="text-xl font-black text-primary">{text.cart}</h2></div>{cart.length ? <button className="min-h-10 px-2 text-sm font-bold text-red-700" onClick={clearCart} type="button">{text.clear}</button> : null}</div>
             <div className="max-h-[32vh] overflow-y-auto lg:max-h-[30vh]">{cart.length ? cart.map((line) => <div className="border-b border-border py-3" key={line.service.id}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="font-bold leading-tight text-primary">{line.service.name}</p><p className="mt-1 text-xs text-muted">{formatCurrency(line.service.amount, line.service.currency, locale)} / {text.unitTypes[line.service.unitType]}</p></div><strong className="whitespace-nowrap text-lg text-primary">{formatCurrency(line.quantity * line.service.amount, line.service.currency, locale)}</strong></div><div className="mt-2 flex items-center justify-between gap-3"><div className="flex items-center rounded-control border border-border bg-[#f7f8f5]"><button aria-label={`− ${text.quantity}`} className="min-h-11 min-w-11 text-xl font-black text-primary" onClick={() => adjustQuantity(line, -1)} type="button">−</button><input aria-label={text.quantity} className="h-11 w-16 border-x border-border bg-white text-center text-base font-black text-primary" min={isDiscreteServiceUnit(line.service.unitType) ? 1 : 0.001} onChange={(event) => updateQuantity(line.service.id, Number(event.target.value))} step={isDiscreteServiceUnit(line.service.unitType) ? 1 : 0.1} type="number" value={line.quantity} /><button aria-label={`+ ${text.quantity}`} className="min-h-11 min-w-11 text-xl font-black text-primary" onClick={() => adjustQuantity(line, 1)} type="button">+</button></div><button className="min-h-11 px-2 text-sm font-bold text-red-700" onClick={() => removeCartLine(line.service.id)} type="button">{text.remove}</button></div></div>) : <p className="py-10 text-center text-muted">{text.emptyCart}</p>}</div>
-            <form action={submit} className="mt-4 space-y-3" onSubmit={prepareSubmission}>
+            <form action={submit} className="mt-4" onSubmit={prepareSubmission}>
+              <fieldset className="min-w-0 space-y-3" disabled={!customerId || catalogStatus !== "ready"}>
               <input name="payload" ref={payloadRef} type="hidden" />
               <div className="rounded-control border-2 border-primary/30 bg-primary-soft p-3">
                 <label className="block text-sm font-black text-primary">{text.dueAt}<input className="mt-1 min-h-12 w-full rounded-control border border-border bg-white px-3 text-base" name="dueAt" onChange={(event) => setDueAt(event.target.value)} required type="datetime-local" value={dueAt} /></label>
@@ -1252,6 +1268,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
               {submitState.error ? <p className="rounded-control bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">{submitState.error === "closedDay" ? text.errorClosedDay : submitState.error === "validation" ? text.errorValidation : submitState.error === "till" ? text.errorTill : submitState.error === "discount" ? text.errorDiscount : submitState.error === "inboundUnavailable" ? text.errorInbound : text.errorGeneric}</p> : null}
               <fieldset><legend className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-muted">{text.payment}</legend><div className="grid grid-cols-3 gap-2"><button className="min-h-16 rounded-control bg-primary px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="cash">{isSubmitting ? text.saving : text.paymentCash}</button><button className="min-h-16 rounded-control bg-primary-strong px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="card">{isSubmitting ? text.saving : text.paymentCard}</button><button className="min-h-16 rounded-control border-2 border-primary bg-white px-2 text-sm font-black uppercase text-primary disabled:opacity-40" disabled={isSubmitting || !customerId || !cart.length || total < 0} name="intent" type="submit" value="later">{isSubmitting ? text.saving : text.payLater}</button></div></fieldset>
               <input className="min-h-10 w-full rounded-control border border-border px-3 text-sm" onChange={(event) => setCardReference(event.target.value)} placeholder={text.cardReference} value={cardReference} /><button className="min-h-10 w-full text-sm font-bold text-primary underline underline-offset-4" onClick={() => setShowSplitPayment((current) => !current)} type="button">{text.splitPayment}</button>{showSplitPayment ? <div className="grid grid-cols-2 gap-2 border-l-4 border-primary bg-primary-soft p-3"><label className="text-xs font-bold text-muted">{text.splitCash}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCash(Number(event.target.value))} step="0.01" type="number" value={splitCash} /></label><label className="text-xs font-bold text-muted">{text.splitCard}<input className="mt-1 min-h-11 w-full rounded-control border border-border bg-white px-2" min="0" onChange={(event) => setSplitCard(Number(event.target.value))} step="0.01" type="number" value={splitCard} /></label><button className="col-span-2 min-h-12 rounded-control bg-primary px-4 font-bold text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0 || roundMoney(splitCash + splitCard) !== total} name="intent" type="submit" value="split">{text.confirmSplit}</button></div> : null}{!session ? <Link className="flex min-h-12 items-center justify-center rounded-control bg-amber-50 px-3 text-sm font-bold !text-amber-800" href="/app/pos" locale={locale}>{text.openTill} →</Link> : null}
+              </fieldset>
             </form>
           </div>
         </aside>
