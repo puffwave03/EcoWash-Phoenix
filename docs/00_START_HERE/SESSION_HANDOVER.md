@@ -4,6 +4,18 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-16
 
+## BILLING-INVOICE-PRESENTATION-UX-001 — Product Owner visual UAT checkpoint (16/10/2026)
+
+**STAGING BROWSER AND A4 PREVIEW UAT: PASS. PHYSICAL PRINT: NOT EXECUTED.** On **16 October 2026**, the Product Owner confirmed **Ready** for application commit `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1` on `ecowash-phoenix-staging` and visually checked the **existing Billing draft linked to order `EW-000077`**. The net unit price and translated unit were displayed correctly; print-preview columns were readable. Chrome preview showed **one A4 page**, with no visible clipping or overlap. Verified displayed amounts: **taxable base EUR 67.29, IGIC 7% EUR 4.71, total EUR 72.00**. **No new invoice was issued during this UAT.**
+
+This records Product Owner evidence, not a new automated browser/API verification. The previous release's **403 / DEPLOYMENT_NOT_VERIFIED** evidence remains preserved below; the PO's subsequent Ready confirmation and visual UAT are the current acceptance evidence. The release's earlier browser-UAT-OPEN instruction is superseded for this tested draft/browser/A4-preview path only. Physical-printer validation remains outstanding; this is not blanket closure of every Billing acceptance gate.
+
+**Limits and decisions preserved:** the document was a **draft**, not an issued fiscal invoice; **no physical print was performed** and **full fiscal compliance was not demonstrated**. Simplified invoices remain to be implemented. A button for direct invoicing from Orders and Terminal remains a **future, separately scoped mission**; this closeout does not implement or authorize it. Operational receipts remain non-fiscal and distinct from Billing invoices. Phoenix is not declared commercially ready or fiscally certified. Other modules, findings, decisions and earlier UAT evidence retain their status; no new mission is opened.
+
+Documentation-only closeout baseline: `main`, local HEAD = `origin/main` = GitHub `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1`, clean worktree and empty index before editing. Only this handover and Project Status are authorized to change. No application/test change, invoice or business-data operation, Supabase write, migration, commit, push or deployment is authorized in this phase.
+
+The following release checkpoint is historical for its pre-UAT acceptance and deployment-verification state. Its implementation, CTO review, test evidence and boundaries are preserved unchanged.
+
 ## BILLING-INVOICE-PRESENTATION-UX-001 — Release checkpoint (16/10/2026)
 
 **LOCAL IMPLEMENTATION COMPLETE / CTO_REVIEW_PASS / STAGING BROWSER UAT OPEN / PHYSICAL PRINT UAT OPEN.** The Product Owner's visual review of the previous invoice presentation identified bulky stacked gross/net unit prices, the untranslated `common.billing.units.service` key and cramped columns. The ordinary-invoice detail and print table now shows the **net unit price, tax excluded, before discounts** as its single unit-price value. The existing translated pre-discount/two-decimal rounding note remains visible. Commercial gross prices in the catalog and Orders are preserved; canonical discounts, taxable bases, taxes and totals are read from their existing snapshots, never reconstructed from rounded net units. Historical `pricesIncludeTax=false` snapshots retain their original net-unit interpretation.

@@ -4,6 +4,16 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
 
+## BILLING-INVOICE-PRESENTATION-UX-001 — Product Owner visual UAT checkpoint (16/10/2026)
+
+**UAT VISIVA BROWSER E ANTEPRIMA A4: PASS. PHYSICAL PRINT: NOT EXECUTED.** On **16 October 2026**, the Product Owner confirmed deployment **Ready** on `ecowash-phoenix-staging` for application commit `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1`. The existing Billing **draft linked to `EW-000077`** correctly displayed the net unit price and translated unit; print-preview columns were readable. Chrome preview showed **one A4 page**, without visible clipping or overlap. Displayed amounts verified: **taxable base EUR 67.29; IGIC 7% EUR 4.71; total EUR 72.00**. **No new invoice was issued during the UAT.**
+
+This is PO-reported staging/visual evidence, not an independent new API or automated-browser verification. The earlier API **403 / DEPLOYMENT_NOT_VERIFIED** and pre-UAT OPEN checkpoints below remain historical evidence; the later Ready confirmation and browser/A4-preview PASS update the current acceptance state for this tested draft path.
+
+**Remaining limits:** no physical printing was performed; the tested invoice was a draft. Full fiscal compliance is not demonstrated and Phoenix is not declared commercially ready or fiscally certified. Simplified invoices remain unimplemented. A direct-invoicing button from Orders and Terminal remains a future separate mission, not work authorized by this closeout. Operational receipts remain non-fiscal and separate from Billing invoices. Other module/finding states, previous UAT and architectural decisions are unchanged; no new mission is opened.
+
+This phase updates only Session Handover and Project Status from synchronized baseline `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1`, initially clean with an empty index. No code, test, invoice or business-data change, Supabase write, migration, commit, push or deployment is authorized. The preceding implementation/CTO/test checkpoints are retained below.
+
 ## BILLING-INVOICE-PRESENTATION-UX-001 — Release checkpoint (16/10/2026)
 
 **LOCAL IMPLEMENTATION COMPLETE / CTO REVIEW PASS / STAGING BROWSER AND PHYSICAL-PRINT UAT OPEN.** Ordinary-invoice detail/print now presents a single **net unit price, tax excluded, before discounts**, with the existing translated rounding note. The bulky vertical gross/net duplication is removed; commercial gross catalog/Order prices remain unchanged. Missing Billing labels for `service`, `area`, `cycle` and `day` are completed in IT / ES / EN / FR / DE using the existing catalog vocabulary. No technical Billing translation key appears in the tested rendering.
@@ -51,7 +61,7 @@ Use [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) for Git, preserved 
 | Billing | Canonical invoice drafts, numbering/issue, immutable financial snapshots, detail/print, customer/order links and tax-inclusive extraction implemented. Full ordinary/simplified-invoice fiscal compliance remains unverified. |
 | Billing line-read protection | Released in `6d82aeb156e1b6384dde84cd075a9d8a81b2dd86`; 50/50 pertinent tests and CTO PASS. Browser error/recovery UAT OPEN. |
 | Ordinary invoice net unit price | `BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001` released in `beb1d65537a247c1faa0f7052f618590aa4a084c`; CTO PASS, 44/44 repeated and earlier 69/69 historical PASS. Net units before discounts and canonical snapshot amounts are preserved by the presentation refinement above. No full fiscal-compliance claim. |
-| Invoice presentation | `BILLING-INVOICE-PRESENTATION-UX-001`: local implementation and subsequent read-only CTO review PASS; 75/75 implementation tests, 25/25 geometry checks and 4/4 selected print contracts PASS, local multipage PDF verified. Ten-file release authorized; staging browser and physical-print UAT remain OPEN. |
+| Invoice presentation | Released in `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1`; PO staging Ready confirmed and browser/A4-preview UAT PASS on 16/10/2026 using the existing draft for `EW-000077` (EUR 67.29 base + EUR 4.71 IGIC = EUR 72.00). Net unit, translated unit and one-page Chrome A4 preview verified. Earlier CTO/test/PDF evidence is preserved above. Physical print NOT EXECUTED; no full fiscal-compliance claim. |
 | Customers and Portal | Customer lifecycle/account, secure Portal requests/history, context isolation and entitlement boundary implemented. Earlier “future Portal” statements are historical. Separate Portal translation and legacy-deployment Auth findings remain open. |
 | SaaS foundation | Organization defaults, tenant numbering, onboarding, Owner location editing and Demo isolation proofs implemented/UAT-tested under their recorded boundaries. This is not complete commercial onboarding or production approval. |
 
@@ -68,8 +78,8 @@ Detailed UAT, migration, commit and limitation evidence remains in the historica
 
 ## Remaining gates and findings
 
-- Billing presentation CTO review PASS; documentation consolidation CTO PASS and published as `2aac81a`. This release alone authorizes the reviewed nine-file Billing/documentation commit and normal staging-triggering push after final gates. Browser/stampa acceptance remains OPEN; no unrelated release or implementation is authorized.
-- Browser UAT for catalog draft protection, Billing line-read error/recovery and local net-unit-price presentation; controlled Terminal transactional recovery remains separate.
+- Billing presentation released as `df3c35c1d9df30c945c52b8d07730e5a5d18a6a1`, CTO PASS and PO browser/A4-preview UAT PASS on the existing draft for `EW-000077`. Physical-printer validation remains outstanding; draft preview does not establish issued-document or full fiscal compliance. This phase authorizes only the two-document UAT update, with no commit/push or new implementation.
+- Browser UAT for catalog draft protection and Billing line-read error/recovery remains OPEN; controlled Terminal transactional recovery remains separate. This Billing visual UAT does not close those findings.
 - Terminal customer/catalog loading around five seconds, initial-screen and post-order UX refinement, till-closing procedure and two physical USB printers require their own scope. Existing implementations must not be proposed again as absent.
 - Catalog/treatment business clarification and network-loss/recovery procedures remain operational-readiness work; do not infer missing catalog implementation from those questions.
 - `AUTH-DR-001C` physical/authenticated recovery remains deferred until pre-production as a hard gate; encrypted off-device backup custody remains open. DB/Storage recovery evidence does not close Auth recovery.
