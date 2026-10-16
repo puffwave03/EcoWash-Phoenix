@@ -55,7 +55,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
 
       <article className="overflow-hidden rounded-[1.25rem] border border-border bg-white shadow-card print:rounded-none print:border-0 print:shadow-none">
         <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary/20 print:bg-primary" />
-        <div className="p-5 sm:p-8">
+        <div className="billing-invoice-content p-5 sm:p-8">
           <header className="grid gap-6 border-b border-border pb-6 sm:grid-cols-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t("document.invoice")}</p>
@@ -93,30 +93,25 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             </div>
           </section>
 
-          <div className="overflow-x-auto py-6">
-            <table className="w-full min-w-[44rem] border-collapse text-sm">
-              <thead><tr className="border-b border-border text-left text-xs uppercase tracking-[0.08em] text-muted"><th className="pb-3 pr-4">{t("items.description")}</th><th className="pb-3 text-right">{t("items.quantity")}</th><th className="pb-3 text-right">{t("items.unitPrice")}</th><th className="pb-3 text-right">{t("items.discount")}</th><th className="pb-3 text-right">{t(invoice.pricesIncludeTax ? "items.taxIncluded" : "items.tax")}</th><th className="pb-3 text-right">{t("items.total")}</th></tr></thead>
+          <div className="billing-invoice-table-scroll py-6">
+            <table className="billing-invoice-items w-full border-collapse text-sm">
+              <colgroup><col className="billing-invoice-description" /><col className="billing-invoice-quantity" /><col className="billing-invoice-unit" /><col className="billing-invoice-discount" /><col className="billing-invoice-tax" /><col className="billing-invoice-total" /></colgroup>
+              <thead><tr className="border-b border-border text-left text-xs text-muted"><th scope="col">{t("items.description")}</th><th scope="col">{t("items.quantity")}</th><th scope="col">{t("items.unitPrice")}<span className="block font-normal">{t("items.unitNet")}</span></th><th scope="col">{t("items.discount")}</th><th scope="col">{t(invoice.pricesIncludeTax ? "items.taxIncluded" : "items.tax")}</th><th scope="col">{t("items.total")}</th></tr></thead>
               <tbody>{items.map((item) => {
                 // Presentation before discount only. Persisted line amounts remain authoritative.
                 const taxFactor = 1 + item.taxRate / 100;
-                const grossUnitPrice = invoice.pricesIncludeTax ? item.unitPrice : item.unitPrice * taxFactor;
                 const netUnitPrice = invoice.pricesIncludeTax ? item.unitPrice / taxFactor : item.unitPrice;
 
                 return (
                   <tr className="border-b border-border/70" key={item.id}>
-                    <td className="py-3 pr-4 font-medium text-primary">{item.description}</td>
-                    <td className="py-3 text-right tabular-nums">{formatQuantity(item.quantity, locale)} {t(`units.${item.unitType}`)}</td>
-                    <td className="py-3 text-right tabular-nums">
-                      <dl className="space-y-1">
-                        <div><dt className="text-xs text-muted">{t("items.unitGross")}</dt><dd>{formatCurrency(grossUnitPrice, invoice.currency, locale)}</dd></div>
-                        <div><dt className="text-xs text-muted">{t("items.unitNet")}</dt><dd>{formatCurrency(netUnitPrice, invoice.currency, locale)}</dd></div>
-                      </dl>
-                    </td>
-                    <td className="py-3 text-right tabular-nums">{formatCurrency(item.discountAmount, invoice.currency, locale)}</td>
-                    <td className="py-3 text-right tabular-nums">{item.taxRate}% · {formatCurrency(item.taxAmount, invoice.currency, locale)}</td>
-                    <td className="py-3 text-right tabular-nums">
-                      <p className="font-semibold">{formatCurrency(item.lineTotal, invoice.currency, locale)}</p>
-                      <p className="mt-1 text-xs text-muted">{t("totals.taxable")}: {formatCurrency(item.taxableBase, invoice.currency, locale)}</p>
+                    <td className="font-medium text-primary">{item.description}</td>
+                    <td className="tabular-nums">{formatQuantity(item.quantity, locale)} <span className="billing-invoice-unit-label">{t(`units.${item.unitType}`)}</span></td>
+                    <td className="tabular-nums"><span className="billing-invoice-amount">{formatCurrency(netUnitPrice, invoice.currency, locale)}</span></td>
+                    <td className="tabular-nums"><span className="billing-invoice-amount">{formatCurrency(item.discountAmount, invoice.currency, locale)}</span></td>
+                    <td className="tabular-nums"><p>{formatTaxRate(item.taxRate, locale)}%</p><p className="billing-invoice-amount">{formatCurrency(item.taxAmount, invoice.currency, locale)}</p></td>
+                    <td className="tabular-nums">
+                      <p className="billing-invoice-amount font-semibold">{formatCurrency(item.lineTotal, invoice.currency, locale)}</p>
+                      <p className="mt-1 text-xs text-muted">{t("totals.taxable")}: <span className="billing-invoice-amount">{formatCurrency(item.taxableBase, invoice.currency, locale)}</span></p>
                     </td>
                   </tr>
                 );
@@ -125,7 +120,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <p className="mt-3 text-xs text-muted">{t("items.unitRoundingNote")}</p>
           </div>
 
-          <section className="grid gap-6 border-t border-border pt-6 sm:grid-cols-[1fr_20rem]">
+          <section className="billing-invoice-summary grid gap-6 border-t border-border pt-6 sm:grid-cols-[1fr_20rem]">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted">{t("fields.notes")}</p>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted">{invoice.notes || t("document.noNotes")}</p>

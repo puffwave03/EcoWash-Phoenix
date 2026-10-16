@@ -66,6 +66,34 @@
   margin: 8mm;
 }
 
+@page billing-invoice {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+.billing-invoice-table-scroll { max-width: 100%; overflow-x: auto; }
+.billing-invoice-items { min-width: 48rem; table-layout: fixed; }
+.billing-invoice-description { width: 25%; }
+.billing-invoice-quantity { width: 12%; }
+.billing-invoice-unit { width: 14%; }
+.billing-invoice-discount { width: 12%; }
+.billing-invoice-tax { width: 16%; }
+.billing-invoice-total { width: 21%; }
+.billing-invoice-items th, .billing-invoice-items td {
+  padding: 0.85rem 0.65rem;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.billing-invoice-items th { line-height: 1.4; }
+.billing-invoice-items th:first-child, .billing-invoice-items td:first-child { padding-left: 0; }
+.billing-invoice-items th:last-child, .billing-invoice-items td:last-child { padding-right: 0; }
+.billing-invoice-items th:not(:first-child), .billing-invoice-items td:not(:first-child) { text-align: right; }
+.billing-invoice-amount { white-space: nowrap; }
+.billing-invoice-unit-label { display: block; font-size: 0.85em; color: var(--color-muted); }
+.billing-invoice-summary { overflow-wrap: anywhere; }
+.billing-invoice-summary dl > div { gap: 1rem; }
+.billing-invoice-summary dd { white-space: nowrap; }
+
 @media print {
 
   body:has(.daily-close-print-document) * {
@@ -88,6 +116,9 @@
     visibility: hidden;
   }
 
+  html:has(.invoice-print-document), body:has(.invoice-print-document) { background: #fff; }
+  body:has(.invoice-print-document) { page: billing-invoice; }
+
   body:has(.invoice-print-document) .invoice-print-document,
   body:has(.invoice-print-document) .invoice-print-document * {
     visibility: visible;
@@ -98,7 +129,23 @@
     inset: 0;
     width: 100%;
     max-width: none;
+    padding: 0;
   }
+
+  .invoice-print-document article { overflow: visible; }
+  .invoice-print-document .billing-invoice-content { padding: 0; }
+  .invoice-print-document .billing-invoice-table-scroll { overflow: visible; }
+  .invoice-print-document .billing-invoice-items { min-width: 0; font-size: 11px; }
+  .invoice-print-document .billing-invoice-items th,
+  .invoice-print-document .billing-invoice-items td { padding: 0.65rem 0.35rem; }
+  .invoice-print-document .billing-invoice-items th:first-child,
+  .invoice-print-document .billing-invoice-items td:first-child { padding-left: 0; }
+  .invoice-print-document .billing-invoice-items th:last-child,
+  .invoice-print-document .billing-invoice-items td:last-child { padding-right: 0; }
+  .invoice-print-document .billing-invoice-items td .text-xs { font-size: 10px; }
+  .invoice-print-document .billing-invoice-items thead { display: table-header-group; }
+  .invoice-print-document .billing-invoice-items tr,
+  .invoice-print-document .billing-invoice-summary { break-inside: avoid; }
 
   body:has(.order-print-document) * {
     visibility: hidden;

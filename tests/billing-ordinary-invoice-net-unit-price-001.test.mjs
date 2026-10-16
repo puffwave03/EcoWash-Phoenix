@@ -74,12 +74,15 @@ async function render(snapshot, printMode = false, locale = "it") {
   assert.equal(JSON.stringify(snapshot), before, "Frozen financial snapshots must remain unchanged");
   return html;
 }
-function unitPrices(html, locale, gross, net) {
+function unitPrice(html, locale, net) {
   const table = html.match(/<table\b[^>]*>[\s\S]*?<\/table>/)?.[0];
   assert.ok(table, "Invoice line table must be rendered");
   const plain = text(table);
-  assert.ok(plain.includes(text(`${messages[locale].items.unitGross} ${formatCurrency(gross, "EUR", locale)}`)));
-  assert.ok(plain.includes(text(`${messages[locale].items.unitNet} ${formatCurrency(net, "EUR", locale)}`)));
+  assert.ok(plain.includes(text(`${messages[locale].items.unitPrice} ${messages[locale].items.unitNet}`)));
+  assert.ok(!plain.includes(messages[locale].items.unitGross), "Gross/net must not be stacked in the unit cell");
+  const firstRow = table.match(/<tbody>\s*<tr\b[^>]*>([\s\S]*?)<\/tr>/)?.[1];
+  const cells = [...firstRow.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)];
+  assert.equal(text(cells[2][1]), text(formatCurrency(net, "EUR", locale)), "Only net unit price in the unit cell");
 }
 function totals(html, locale, values) {
   const plain = text(html);
@@ -93,9 +96,9 @@ for (const printMode of [false, true]) {
   const mode = printMode ? "print/PDF" : "detail";
   test(`${mode}: four units at EUR 9 preserve gross 36, base 33.64 and included tax 2.36`, async () => {
     const html = await render(detail([line()]), printMode);
-    unitPrices(html, "it", 9, 8.41);
+    unitPrice(html, "it", 8.41);
     totals(html, "it", { subtotal: 36, taxable: 33.64, total: 36, outstanding: 36 });
-    assert.ok(text(html).includes("7% · 2,36 €"));
+    assert.ok(text(html).includes("7% 2,36 €"));
     assert.ok(text(html).includes("Imposta inclusa (7%) 2,36 €"));
     assert.match(text(html.match(/<tbody>[\s\S]*?<\/tbody>/)[0]), /Imponibile\s*:\s*33,64 €/);
     assert.ok(text(html).includes(messages.it.items.unitRoundingNote));
@@ -109,41 +112,66 @@ for (const printMode of [false, true]) {
   });
   test(`${mode}: allocated discount preserves pre-discount unit prices and canonical discounted base`, async () => {
     const html = await render(detail([line({ discountAmount: 10, taxableBase: 24.30, taxAmount: 1.70, lineTotal: 26 })]), printMode);
-    unitPrices(html, "it", 9, 8.41);
+    unitPrice(html, "it", 8.41);
     totals(html, "it", { taxable: 24.30, total: 26 });
     assert.ok(text(html).includes("−10,00 €"));
   });
   test(`${mode}: fractional quantity and allocated discount retain stored line rounding`, async () => {
     const html = await render(detail([line({ quantity: .375, unitType: "weight", lineSubtotal: 3.38,
       discountAmount: .38, taxableBase: 2.80, taxAmount: .20, lineTotal: 3 })]), printMode);
-    unitPrices(html, "it", 9, 8.41);
+    unitPrice(html, "it", 8.41);
     assert.ok(text(html).includes("0,375 kg"));
     totals(html, "it", { taxable: 2.80, total: 3 });
   });
   test(`${mode}: repeating net unit does not reconstruct the line base from rounded units`, async () => {
     const html = await render(detail([line({ quantity: 3, unitPrice: 1, lineSubtotal: 3,
       taxableBase: 2.80, taxAmount: .20, lineTotal: 3 })]), printMode);
-    unitPrices(html, "it", 1, .93);
+    unitPrice(html, "it", .93);
     totals(html, "it", { taxable: 2.80, total: 3 });
     assert.ok(!text(html).includes("2,79 €"));
   });
   test(`${mode}: zero rate preserves identical gross and net units`, async () => {
     const html = await render(detail([line({ taxRate: 0, taxableBase: 36, taxAmount: 0 })]), printMode);
-    unitPrices(html, "it", 9, 9);
+    unitPrice(html, "it", 9);
     totals(html, "it", { taxable: 36, total: 36 });
   });
   test(`${mode}: legacy exclusive snapshot keeps net unit and original discounted financial amounts`, async () => {
     const html = await render(detail([line({ quantity: 2, unitPrice: 9, lineSubtotal: 18,
       discountAmount: 2, taxableBase: 16, taxAmount: 1.12, lineTotal: 17.12 })], false), printMode);
-    unitPrices(html, "it", 9.63, 9);
+    unitPrice(html, "it", 9);
     totals(html, "it", { subtotal: 18, taxable: 16, total: 17.12 });
-    assert.ok(text(html).includes("7% · 1,12 €"));
+    assert.ok(text(html).includes("7% 1,12 €"));
   });
 }
 for (const locale of Object.keys(messages)) test(`${locale}: both document modes use translated unit labels and rounding note`, async () => {
   for (const printMode of [false, true]) {
     const html = await render(detail([line()]), printMode, locale);
-    unitPrices(html, locale, 9, 8.41);
+    unitPrice(html, locale, 8.41);
     assert.ok(text(html).includes(messages[locale].items.unitRoundingNote));
+  }
+});
+
+for (const locale of Object.keys(messages)) test(`${locale}: every catalog unit has a Billing translation in detail and print`, async () => {
+  const catalog = JSON.parse(read(`src/i18n/${locale}/common.json`)).catalog.unitTypes;
+  for (const printMode of [false, true]) {
+    for (const unitType of Object.keys(catalog)) {
+      const html = await render(detail([line({ unitType })]), printMode, locale);
+      assert.equal(typeof messages[locale].units[unitType], "string", `${locale}: ${unitType}`);
+      assert.ok(text(html).includes(text(`4 ${messages[locale].units[unitType]}`)));
+      assert.doesNotMatch(html, /common\.billing\.|units\./);
+    }
+  }
+});
+
+test("both modes preserve and escape long descriptions with scoped table and amount layout", async () => {
+  const description = 'Long service <script>unsafe</script> ' + 'LongUnbrokenDescription'.repeat(12);
+  for (const printMode of [false, true]) {
+    const html = await render(detail([line({ description, unitType: "service" })]), printMode);
+    assert.ok(html.includes(description.replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+    assert.match(html, /class="billing-invoice-table-scroll/);
+    assert.match(html, /<colgroup>/);
+    assert.equal((html.match(/scope="col"/g) ?? []).length, 6);
+    assert.match(html, /class="billing-invoice-amount/);
+    assert.doesNotMatch(html, /min-w-\[44rem\]/);
   }
 });
