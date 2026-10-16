@@ -4,13 +4,25 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-10-15
+Last Updated: 2026-10-16
 
-Current Mission: `TERMINAL-FIVE-WORKSPACES-RECOVERY` implementation and staging deployment complete; Product Owner non-transactional Terminal UAT passed on 2026-10-15. Subsequent Product Owner order-confirmation observations require technical verification. Commit `8cca0c4374a92776202f592967930a73e354b151` is synchronized on local `main` and `origin/main`; the worktree was clean before this documentation update.
+Current Mission: `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` UI correction implemented; local validation and final CTO review PASS. One combined code/test/documentation commit and normal `origin/main` push are authorized from synchronized baseline `9a5cbd35758efc11845b080fb12fdb636b0e7907`, with automatic deployment only in `ecowash-phoenix-staging`. Staging-project verification returned HTTP 403: `DEPLOYMENT_NOT_VERIFIED`. Product Owner visual staging UAT remains OPEN.
 
-Next Action: CTO/Product Owner to scope controlled transactional UAT for Terminal order-submission recovery after timeout, including technical verification of the reported order confirmations, idempotency and payments, and review `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` and the remaining Terminal findings below. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
+Next Action: confirm the automatic staging deployment and complete Product Owner visual UAT for the waiting-to-success presentation. Separately scope controlled transactional Terminal recovery UAT after timeout, including idempotency and payment integrity; preserve the other Terminal findings below. `TEST-DEBT-WALKIN-CONTRACT-001` remains open and unrelated. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
 
 **Auth DR decision (2026-10-06):** AUTH-DR-001B3 **CLOSED / PASS**; AUTH-DR-001B4 **COMPLETE / PASS**. The Product Owner/CTO deferred the Supabase Pro upgrade because current staging is a pilot/test tenant rather than the near-final real production state. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**, requiring a completed eligible physical backup and an isolated authenticated recovery rehearsal. Encrypted off-device custody remains a separate pre-production finding.
+
+---
+
+## TERMINAL-SUBMISSION-CONFIRMATION-UX-001 — 2026-10-16 Release Checkpoint
+
+**IMPLEMENTED / LOCAL VALIDATION PASS / FINAL CTO REVIEW PASS / VISUAL STAGING UAT OPEN.** Confirmed diagnosis: a persisted pending attempt selected unknown-outcome feedback before the active original submission had returned. The normal successful response could subsequently show “Pedido guardado” and free the Venta without a manual lookup. No cause was assigned to network/server slowness or to the observed 5–6-second interval.
+
+The rendering now shows waiting while `isSubmitting` or `retrying` is active; genuinely uncertain attempts retain their warning and recovery controls. Only the new `submissionSaving` label was added in IT / ES / EN / FR / DE. Existing success, definitive rejection, `pending`, `not_found`, `completed` and storage-error behavior are preserved. No changes to idempotency, frozen payloads, payment keys, concurrent-send blocking, recovery, five Venta isolation, customer drafts, payments, POS sessions, Server Actions, RPCs, migrations, tenant/RLS or authentication. No artificial timer, polling or automatic retry; no new order/payment or other staging data was created during the correction.
+
+Local validation: **32/32** Terminal/recovery/workspace tests, including **9** dedicated cases; **10/10** customer-switching/persistence regressions; TypeScript, scoped ESLint, translations and whitespace checks **PASS**. Hook-simulated tests do not replace browser visual UAT. Final read-only CTO review **PASS**. The extra customer suite passed **8/9**; its stale Billing assertion fails identically on baseline `9a5cbd3`. `TEST-DEBT-WALKIN-CONTRACT-001` remains **OPEN / PRE-EXISTING / UNRELATED** and was not corrected here.
+
+Authorized release: one commit, `fix(terminal): clarify order submission progress`, with seven approved implementation/test files plus Session Handover and Project Status; Git history/release evidence provide the resulting SHA and push state. Only Git-triggered deployment to `ecowash-phoenix-staging` is authorized. A read of the exact staging Vercel project `prj_u7MwRwQOLyRSRvbuhRLdURx653aZ` under team `team_nhXOvQKcrv9yeHjZ4aoMOak3` returned **403 forbidden**: **DEPLOYMENT_NOT_VERIFIED**, with source SHA and Ready state unconfirmed. No manual deployment, Vercel/Cron change, Supabase write or commercial production operation. Visual staging UAT and the separate controlled transactional recovery UAT remain open.
 
 ---
 
@@ -20,7 +32,7 @@ Next Action: CTO/Product Owner to scope controlled transactional UAT for Termina
 
 Product Owner non-transactional UAT on 2026-10-15 passed cart isolation, registered-customer A/B/A, distinct occasional customers and refresh recovery. No order or payment was confirmed during that initial UAT. Subsequently, the Product Owner independently tried order confirmations on the EcoWash test account in staging and reported observing orders `EW-000145`, `EW-000146`, `EW-000147` and `EW-000148`. Repeatedly, a temporary unknown-outcome message appeared after submission; without pressing “Comprobar estado del pedido”, after about 5–6 seconds “Pedido guardado” appeared automatically and the Venta workspace was freed. These are Product Owner observations, not independent technical verification of the four order records, actual idempotency, payments or confirmation path. The orders appear created according to available evidence, but controlled transactional UAT and financial integrity verification remain open; Terminal is not yet accepted for live shop operation or commercial production.
 
-**OPEN — `TERMINAL-SUBMISSION-CONFIRMATION-UX-001`:** diagnose why the unknown-outcome state appears consistently before automatic order confirmation; no cause has been established.
+**Historical finding — `TERMINAL-SUBMISSION-CONFIRMATION-UX-001`:** at this 2026-10-15 checkpoint, the behavior was open and no cause had been established. See the 2026-10-16 checkpoint above for the confirmed diagnosis, correction, CTO PASS and remaining visual staging UAT.
 
 **OPEN / DEFERRED:** customer/catalog/cart loading of about five seconds; approved but unimplemented initial Terminal screen improvement; future analysis of the POS till-closing procedure; deferred multi-till implementation. Total browser-storage loss still requires manual order verification. The separate Portal legacy-deployment Auth risk, Spanish Portal catalog translation finding, `AUTH-DR-001C` and other production gates remain open.
 

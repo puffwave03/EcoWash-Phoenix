@@ -63,7 +63,7 @@ export type ShopTerminalText = {
   workspaceSwitchBlocked: string; workspaceRetrySave: string; workspaceCleanupError: string; workspaceRetryCleanup: string;
   workspaceDraftLoadError: string; workspaceRetryLoad: string;
   submissionRejected: string; submissionCorrectDraft: string;
-  submissionSaveError: string; submissionUnknown: string; submissionPending: string; submissionNotFound: string;
+  submissionSaveError: string; submissionSaving: string; submissionUnknown: string; submissionPending: string; submissionNotFound: string;
   submissionCheck: string; submissionRetry: string; submissionCompleted: string; submissionStorageLost: string;
 };
 
@@ -1131,7 +1131,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
       <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6" role="status">
         <div className="rounded-card border border-border bg-white p-5 shadow-card">
           {confirmed ? <><h2 className="text-2xl font-black text-primary">{text.submissionCompleted}: {confirmed.number}</h2><Link className="mt-4 inline-flex min-h-11 items-center rounded-control border border-primary px-4 font-bold text-primary" href={`/app/orders/${confirmed.id}`} locale={locale}>{text.openOrder}</Link></>
-            : <h2 className="text-lg font-bold text-primary">{!attemptLoaded ? text.saving : draftHydration === "error" ? text.workspaceDraftLoadError : attemptStorageLost ? text.submissionStorageLost : definitiveRejection ? text.submissionRejected : recoveryStatus === "pending" ? text.submissionPending : recoveryStatus === "not_found" ? text.submissionNotFound : text.submissionUnknown}</h2>}
+            : <h2 className="text-lg font-bold text-primary">{!attemptLoaded ? text.saving : draftHydration === "error" ? text.workspaceDraftLoadError : attemptStorageLost ? text.submissionStorageLost : definitiveRejection ? text.submissionRejected : isSubmitting || retrying ? text.submissionSaving : recoveryStatus === "pending" ? text.submissionPending : recoveryStatus === "not_found" ? text.submissionNotFound : text.submissionUnknown}</h2>}
           {attemptStorageLost ? <p className="mt-3 text-sm text-red-800" role="alert">{text.submissionStorageLost}</p> : null}
           {draftHydration === "error" ? <div className="mt-3" role="alert"><p className="text-sm text-red-800">{text.workspaceDraftLoadError}</p><button className="mt-3 min-h-11 rounded-control border border-primary px-4 font-bold text-primary" onClick={hydrateCustomerDrafts} type="button">{text.workspaceRetryLoad}</button></div> : null}
           {attemptPersistenceFailed ? <p className="mt-3 text-sm text-red-800" role="alert">{text.submissionSaveError}</p> : null}
