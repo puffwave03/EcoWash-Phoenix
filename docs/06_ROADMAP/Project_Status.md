@@ -6,15 +6,31 @@ Version: 0.1
 
 Last Updated: 2026-10-16
 
-Current Mission: `TERMINAL-CATALOG-FAILURE-DRAFT-001` IMPLEMENTED / LOCAL VALIDATION PASS / CTO_REVIEW_PASS. One reviewed commit and normal push from `8859a9ae638922d4f32adbe5faca885c42724f44` are authorized, targeting only automatic deployment in `ecowash-phoenix-staging`. Browser staging UAT remains OPEN; the finding is NOT CLOSED.
+Current Mission: `BILLING-INVOICE-ITEMS-READ-FAILURE-001` IMPLEMENTED / LOCAL VALIDATION PASS / CTO_REVIEW_PASS. One commit and normal push from `ca1923260b1944bc43fa04de50fed9a6246cf61d` are authorized for automatic deployment only to `ecowash-phoenix-staging`. Browser UAT of the error/recovery path remains OPEN; no fiscal-compliance approval is implied.
+
+Previous mission checkpoint (2026-10-16): `TERMINAL-CATALOG-FAILURE-DRAFT-001` IMPLEMENTED / LOCAL VALIDATION PASS / CTO_REVIEW_PASS. One reviewed commit and normal push from `8859a9ae638922d4f32adbe5faca885c42724f44` are authorized, targeting only automatic deployment in `ecowash-phoenix-staging`. Browser staging UAT remains OPEN; the finding is NOT CLOSED.
 
 Previous mission checkpoint (2026-10-16): `TERMINAL-SUBMISSION-CONFIRMATION-UX-001` CLOSED / PRODUCT OWNER STAGING UAT PASS on 2026-10-16. Released correction `77c251f48e8a97eec232c6fa74d93840e4c245b7` is synchronized on local `main` and `origin/main` before this documentation update. The Product Owner verified the waiting-to-success presentation using `EW-000150`; no next implementation mission is authorized.
 
-Next Action: Product Owner verifies the automatic staging deployment and performs browser UAT for catalog-failure draft preservation, explicit retry, checkout blocking, A→B→A, refresh and five independent Venta workspaces. Controlled transactional recovery UAT remains separately scoped. No new implementation mission or commercial production release is authorized.
+Next Action: Product Owner visually verifies the automatic staging deployment and the Billing error/recovery path on an existing invoice. A failed item read must block the invoice view/print output, and a subsequent successful read must restore the original lines. Terminal catalog-protection UAT and the existing open Billing/fiscal findings, including visual net-unit-price verification, remain separate and OPEN.
+
+Previous next-action checkpoint (2026-10-16): Product Owner verifies the automatic staging deployment and performs browser UAT for catalog-failure draft preservation, explicit retry, checkout blocking, A→B→A, refresh and five independent Venta workspaces. Controlled transactional recovery UAT remains separately scoped. No new implementation mission or commercial production release is authorized.
 
 Previous next-action checkpoint (2026-10-16): review this documentation-only closeout. Controlled transactional Terminal recovery UAT after timeout, including idempotency and payment integrity, remains separately scoped; preserve the other Terminal findings below. `TEST-DEBT-WALKIN-CONTRACT-001` remains open and unrelated. Keep `PORTAL-LEGACY-DEPLOYMENT-AUTH-001` open and assess it before commercial production. Security, backup/restore, managed Auth recovery, GDPR, fiscal compliance and Production Readiness Review remain production gates; Phoenix is not public-production ready.
 
 **Auth DR decision (2026-10-06):** AUTH-DR-001B3 **CLOSED / PASS**; AUTH-DR-001B4 **COMPLETE / PASS**. The Product Owner/CTO deferred the Supabase Pro upgrade because current staging is a pilot/test tenant rather than the near-final real production state. AUTH-DR-001C is **DEFERRED UNTIL PRE-PRODUCTION** and remains a **HARD PRE-PRODUCTION / RELEASE GATE**, requiring a completed eligible physical backup and an isolated authenticated recovery rehearsal. Encrypted off-device custody remains a separate pre-production finding.
+
+---
+
+## BILLING-INVOICE-ITEMS-READ-FAILURE-001 — 2026-10-16 Release Checkpoint
+
+**IMPLEMENTED / LOCAL VALIDATION PASS / CTO_REVIEW_PASS / STAGING BROWSER ERROR-PATH UAT OPEN.** Root cause: `getBillingInvoice` ignored `itemsResult.error` and mapped `data ?? []`, allowing a failed line read to return a seemingly valid invoice with no items. The correction explicitly throws item-read errors, rejects non-array/unavailable responses and maps only valid item arrays. Detail and print routes await the query, so failure blocks the invoice view through the existing server-error path. Successful manual re-reading restores the original lines; legitimate empty successful results and the existing header-error/not-found behavior remain unchanged. No automatic retry or new UI was added.
+
+**Evidence:** **50/50 pertinent tests PASS** (16 new regressions and 34 existing Billing/tax-inclusive/counter-Billing contracts); four regressions reproduced the baseline defect before correction. TypeScript, scoped ESLint and whitespace checks PASS. Final CTO review PASS. Tests execute the real query and page functions using read-only in-memory Supabase/auth doubles, covering failure, blocked detail/print output, recovery, normal values, empty drafts, not-found behavior, auth/entitlements and tenant filtering. They do not prove browser error presentation or live database/RLS behavior. Release review reuses the completed focused validation.
+
+**Scope and boundaries:** exactly four files: `src/features/billing/server/queries.ts`, `tests/billing-invoice-items-read-failure-001.test.mjs`, Session Handover and Project Status. No persistent invoice/financial data change; numbering, series, prices, tax bases, taxes, snapshots, issue/cancel transitions, payments/refunds, permissions, RLS, RPC and migrations are unchanged. No live invoice, order, customer or payment was created or issued; no Supabase write. Commit message: `fix(billing): reject incomplete invoice item reads`; Git history/release evidence provides the final SHA and push state. Only normal push to `origin/main` and automatic deployment to `ecowash-phoenix-staging` are authorized; deployment verification remains with the Product Owner. No manual deployment or commercial production operation.
+
+**Remaining gates:** browser UAT of failed item reads and subsequent successful recovery remains OPEN. Other Billing findings, including net-unit-price output and its visual verification, remain unchanged and separately scoped. This release does not complete fiscal compliance for ordinary or simplified invoices, IGIC or SIF/VERI*FACTU. Terminal catalog-protection UAT remains separately OPEN. All previous checkpoints and findings below are preserved.
 
 ---
 

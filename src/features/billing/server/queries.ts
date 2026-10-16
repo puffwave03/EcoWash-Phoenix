@@ -412,6 +412,8 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     supabase.from("invoice_items").select("id, source_order_id, description, unit_type, quantity, unit_price, line_subtotal, discount_amount, taxable_base, tax_rate, tax_amount, line_total, display_order").eq("organization_id", membership.organization.id).eq("invoice_id", invoiceId).order("display_order").returns<InvoiceItemRow[]>(),
   ]);
   if (invoiceResult.error || !invoiceResult.data) notFound();
+  if (itemsResult.error) throw itemsResult.error;
+  if (!Array.isArray(itemsResult.data)) throw new Error("billing_invoice_items_invalid_response");
   const invoices = await hydrateInvoices(supabase, [invoiceResult.data]);
   const invoice = invoices[0];
   if (!invoice) notFound();
@@ -421,7 +423,7 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
 
   return {
     invoice,
-    items: (itemsResult.data ?? []).map((item) => ({
+    items: itemsResult.data.map((item) => ({
       description: item.description,
       discountAmount: number(item.discount_amount),
       displayOrder: item.display_order,
