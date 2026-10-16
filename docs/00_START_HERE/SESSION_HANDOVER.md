@@ -4,6 +4,32 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-16
 
+## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
+
+**ORDERS → BILLING VISUAL UAT: PASS / RESIDUAL VERIFICATIONS OPEN.** Implementation commit **`d3c9a6074579efb35361a7f060d368dc2e258d93`** is published on `main`. The prior **CTO REVIEW PASS / 89/89 tests PASS**, TypeScript, scoped ESLint and five-locale validation remain the technical implementation evidence; those suites are not repeated for this documentation-only closeout. On **16 October 2026**, the Product Owner visually confirmed deployment **Ready** on **`ecowash-phoenix-staging`** for `d3c9a60`. This is PO evidence; the earlier API **403 / DEPLOYMENT_NOT_VERIFIED** checkpoint remains historical, not a deployment failure.
+
+### Product Owner browser evidence
+
+- Existing order **`EW-000147`**, customer **Carletto**: **Prepara fattura** was present in Order detail and opened Billing with the customer and order preselected. Missing billing identity fields were detected and the PO saved the requested data.
+- The PO created a Billing draft, returned to the order and saw **Riprendi bozza fattura**. Reopening the **same draft: PASS**. The draft's printable view also passed visual inspection.
+- The PO subsequently performed an **experimental technical invoice issue**, displaying number **`2026-A-000001`**, linked to **`EW-000147`**. The UI showed **Pagata** and the document appeared in the Billing list: **PASS**. This records what was observed, not fiscal validation of the issued document.
+- Visually checked amounts: **total EUR 13.50; taxable base EUR 12.62; IGIC 7% EUR 0.88; displayed confirmed payment EUR 13.50; displayed outstanding EUR 0.00**. These displayed payment values do not independently establish ledger uniqueness or exclude duplicate payments.
+- The earlier **EUR 72.00 draft for `EW-000077`** was reported still present and separate. Its previous presentation UAT remains preserved.
+
+### Explicitly open checks
+
+1. Read-only confirmation of the test invoice's owning **organization ID**, distinguishing the old tenant from the new pilot without inferring ownership from the displayed customer/order/number.
+2. Read-only confirmation that no external fiscal transmission occurred.
+3. Read-only confirmation that no duplicate payment exists.
+4. Browser UAT of the Billing link from the **Terminal success screen**.
+5. Browser UAT of direct Order-detail access to a **previously issued invoice**, unless equivalent evidence is subsequently established. Issue/list visibility alone does not prove this navigation case.
+
+Only the tested Orders → Billing preparation/draft-reopening/experimental-issue path gains visual PASS; the entire Direct Entry acceptance and Phoenix fiscalization are **not declared closed**. No claim of fiscal conformity, full fiscal compliance, physical-printer validation or commercial-production readiness is made. Receipts and internal tickets remain non-fiscal. Other findings and gates remain unchanged.
+
+This closeout changes only Session Handover and Project Status, preserving all previous checkpoints. It records business operations performed by the PO during UAT; **this documentation task creates/issues/cancels no invoice and creates no payment or other business record**, makes no Supabase write and runs no SQL/migration. Baseline: synchronized `main`/`origin/main`/GitHub **`d3c9a6074579efb35361a7f060d368dc2e258d93`**, initially clean with an empty index. One documentation commit `docs(billing): record direct invoice entry UAT` and normal push are authorized only after the existing staging deployment gates; no application/configuration change or manual deployment. **Next fiscal mission: `BILLING-SIMPLIFIED-INVOICE-001`**, separately scoped and not implemented by this closeout; shared walk-in invoicing and provider integration remain separate.
+
+The release checkpoint below is historical for its pre-UAT OPEN instruction. Its technical evidence, boundaries, limitations and all other acceptance gates remain preserved.
+
 ## BILLING-DIRECT-ENTRY-001 — Release checkpoint (16/10/2026)
 
 **LOCAL IMPLEMENTATION COMPLETE / CTO REVIEW PASS / STAGING BROWSER UAT OPEN.** Order detail now offers **Prepare invoice**, **Resume invoice draft** or **View invoice**, according to the canonical Billing state. Authorized Owner/Manager users with `billing.invoicing` reuse the existing preparation and invoice-detail routes. The Terminal success link reaches the same server-side control; its only Terminal code change is the Billing URL. Navigation derives the customer and organization on the server, opens an existing active draft/issued invoice, or preselects the exact order only after canonical eligibility verification. Cancelled documents retain their history and inactive links; eligibility remains governed by Billing. `WALKIN-SHARED` and ineligible orders cannot enter preparation and receive an explanation where applicable; the existing Terminal walk-in exclusion remains unchanged. The simple access creates no invoice, draft, payment or other record.

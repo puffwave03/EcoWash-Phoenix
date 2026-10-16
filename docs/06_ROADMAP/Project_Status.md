@@ -4,6 +4,26 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
 
+## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
+
+**ORDERS → BILLING VISUAL UAT PASS / RESIDUAL CHECKS OPEN.** Implementation **`d3c9a6074579efb35361a7f060d368dc2e258d93`** is released on `main`, with prior **CTO PASS / 89/89 tests PASS**, TypeScript, scoped ESLint, IT/ES/EN/FR/DE and integrity checks PASS. These remain implementation/review evidence, not suites rerun during documentation closeout. The PO visually confirmed **Ready** on **`ecowash-phoenix-staging`** for `d3c9a60`; this supplements the preserved historical API 403/`DEPLOYMENT_NOT_VERIFIED` report without claiming a new API verification.
+
+**PO browser evidence, 16 October 2026:** order **`EW-000147`**, customer **Carletto**, showed **Prepara fattura** in Order detail. Billing opened with the correct customer/order preselected, detected missing billing data and allowed the PO to save the requested fields. After draft creation, returning to the order showed **Riprendi bozza fattura**; reopening the same draft and viewing its printable layout both passed visually. The PO then experimentally issued invoice **`2026-A-000001`**, linked to `EW-000147`; **Pagata** status and presence in the Billing list were visually observed. Displayed amounts: **total EUR 13.50; taxable base EUR 12.62; IGIC 7% EUR 0.88; confirmed payment shown EUR 13.50; outstanding shown EUR 0.00**. The earlier **EUR 72.00 draft for `EW-000077`** remains present and separate according to the PO. No technical ledger or organization-ownership proof is inferred from these screenshots/observations.
+
+**Still OPEN:**
+
+1. Read-only identification of the organization owning the experimental invoice, explicitly distinguishing old tenant and new pilot.
+2. Read-only verification of the absence of external fiscal transmissions.
+3. Read-only verification of the absence of duplicate payments; a displayed zero balance is not that proof.
+4. Terminal-success → Billing browser UAT.
+5. Order detail → an already issued invoice browser UAT, unless equivalent evidence is subsequently documented; issuance and list visibility do not themselves cover this access.
+
+The tested Orders → Billing path has visual PASS, but residual Direct Entry acceptance and complete fiscalization are not closed. Technical issue/numbering does **not** establish fiscal validity. No complete fiscal conformity, physical-print acceptance or commercial-production-readiness claim. Other findings, prior UAT, canonical financial/tenant boundaries and historical checkpoints retain their status. Operational receipts/internal tickets remain non-fiscal; no architecture changes.
+
+Documentation-only scope: this status and Session Handover, from synchronized/clean baseline **`d3c9a6074579efb35361a7f060d368dc2e258d93`**. One authorized commit `docs(billing): record direct invoice entry UAT` and normal push after staging gates; no application/test/configuration change, SQL/migration, Supabase write, new invoice/payment, cancellation or manual deployment in this task. The recorded draft creation and experimental issue were PO UAT operations, not actions of this closeout. **Next mission: `BILLING-SIMPLIFIED-INVOICE-001`**, separately designed/authorized; it is not implemented here. Shared walk-in invoicing and the external provider remain separate missions.
+
+The following release checkpoint retains its original pre-UAT acceptance state as history; the visual PASS above supersedes only the tested path.
+
 ## BILLING-DIRECT-ENTRY-001 — Release checkpoint (16/10/2026)
 
 **IMPLEMENTED / CTO REVIEW PASS / 89/89 TESTS PASS / STAGING BROWSER UAT OPEN.** Order detail exposes **Prepare invoice**, **Resume invoice draft** or **View invoice** to Billing-entitled Owner/Manager users. The existing Terminal success link uses the same server-side resolver through the existing Billing preparation route. Server-derived organization/customer context and canonical eligibility select the exact order; active drafts/issued invoices open their existing detail instead of offering another preparation. Cancelled invoices preserve their history and canonical inactive-link/eligibility behavior. `WALKIN-SHARED` and ineligible orders remain protected, with an explicit explanation where applicable and the existing Terminal walk-in exclusion retained. Access alone creates no record. No second Billing model, archive, numbering system or print engine was introduced.
