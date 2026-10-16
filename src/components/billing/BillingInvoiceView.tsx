@@ -96,8 +96,33 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
           <div className="overflow-x-auto py-6">
             <table className="w-full min-w-[44rem] border-collapse text-sm">
               <thead><tr className="border-b border-border text-left text-xs uppercase tracking-[0.08em] text-muted"><th className="pb-3 pr-4">{t("items.description")}</th><th className="pb-3 text-right">{t("items.quantity")}</th><th className="pb-3 text-right">{t("items.unitPrice")}</th><th className="pb-3 text-right">{t("items.discount")}</th><th className="pb-3 text-right">{t(invoice.pricesIncludeTax ? "items.taxIncluded" : "items.tax")}</th><th className="pb-3 text-right">{t("items.total")}</th></tr></thead>
-              <tbody>{items.map((item) => <tr className="border-b border-border/70" key={item.id}><td className="py-3 pr-4 font-medium text-primary">{item.description}</td><td className="py-3 text-right tabular-nums">{formatQuantity(item.quantity, locale)} {t(`units.${item.unitType}`)}</td><td className="py-3 text-right tabular-nums">{formatCurrency(item.unitPrice, invoice.currency, locale)}</td><td className="py-3 text-right tabular-nums">{formatCurrency(item.discountAmount, invoice.currency, locale)}</td><td className="py-3 text-right tabular-nums">{item.taxRate}% · {formatCurrency(item.taxAmount, invoice.currency, locale)}</td><td className="py-3 text-right font-semibold tabular-nums">{formatCurrency(item.lineTotal, invoice.currency, locale)}</td></tr>)}</tbody>
+              <tbody>{items.map((item) => {
+                // Presentation before discount only. Persisted line amounts remain authoritative.
+                const taxFactor = 1 + item.taxRate / 100;
+                const grossUnitPrice = invoice.pricesIncludeTax ? item.unitPrice : item.unitPrice * taxFactor;
+                const netUnitPrice = invoice.pricesIncludeTax ? item.unitPrice / taxFactor : item.unitPrice;
+
+                return (
+                  <tr className="border-b border-border/70" key={item.id}>
+                    <td className="py-3 pr-4 font-medium text-primary">{item.description}</td>
+                    <td className="py-3 text-right tabular-nums">{formatQuantity(item.quantity, locale)} {t(`units.${item.unitType}`)}</td>
+                    <td className="py-3 text-right tabular-nums">
+                      <dl className="space-y-1">
+                        <div><dt className="text-xs text-muted">{t("items.unitGross")}</dt><dd>{formatCurrency(grossUnitPrice, invoice.currency, locale)}</dd></div>
+                        <div><dt className="text-xs text-muted">{t("items.unitNet")}</dt><dd>{formatCurrency(netUnitPrice, invoice.currency, locale)}</dd></div>
+                      </dl>
+                    </td>
+                    <td className="py-3 text-right tabular-nums">{formatCurrency(item.discountAmount, invoice.currency, locale)}</td>
+                    <td className="py-3 text-right tabular-nums">{item.taxRate}% · {formatCurrency(item.taxAmount, invoice.currency, locale)}</td>
+                    <td className="py-3 text-right tabular-nums">
+                      <p className="font-semibold">{formatCurrency(item.lineTotal, invoice.currency, locale)}</p>
+                      <p className="mt-1 text-xs text-muted">{t("totals.taxable")}: {formatCurrency(item.taxableBase, invoice.currency, locale)}</p>
+                    </td>
+                  </tr>
+                );
+              })}</tbody>
             </table>
+            <p className="mt-3 text-xs text-muted">{t("items.unitRoundingNote")}</p>
           </div>
 
           <section className="grid gap-6 border-t border-border pt-6 sm:grid-cols-[1fr_20rem]">

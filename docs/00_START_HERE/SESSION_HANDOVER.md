@@ -2,6 +2,33 @@
 
 Status: Active — canonical resume instructions
 
+Date: 2026-10-16
+
+## BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001 — Release checkpoint (16/10/2026)
+
+**IMPLEMENTED / CTO_REVIEW_PASS / LOCAL VALIDATION PASS / VISUAL UAT OPEN.** The shared invoice detail/print component now labels both the commercial gross unit price (IGIC included for current EcoWash snapshots) and the net unit price **before discounts**. The five supported locales explicitly explain pre-discount unit prices and the existing two-decimal display rounding. The persisted line taxable base is also shown. Gross sales prices, canonical discounts, taxable bases, tax amounts and invoice totals remain unchanged; displayed rounded unit values are never used to reconstruct those totals. Historical `pricesIncludeTax=false` snapshots retain their original net-unit interpretation and stored financial amounts.
+
+**Validation and review:** targeted CTO pre-commit review PASS. **44/44 repeated tests PASS** (19 unit-price rendering, 16 invoice-item read-error/recovery and 9 inclusive-pricing contracts). The earlier **69/69 PASS** is historical evidence, not a claim that all 69 were repeated at closeout. TypeScript (`--noEmit --incremental false`), scoped ESLint and five-locale validation PASS; final diff/index gates must pass before commit. Rendering tests cover detail and print HTML, not real browser pagination/PDF output. Browser/stampa UAT remains **OPEN** until Product Owner acceptance; this finding is not CLOSED.
+
+No RPC, schema, migration, numbering/series, issue/cancel transition, canonical calculation, payment/refund, idempotency, permission, RLS or tenant isolation changed. No persisted fiscal/financial data, invoice, customer, order or payment was created or altered. Simplified invoices remain in design and are not implemented; external fiscal-provider integration remains separate. This presentation correction does not establish full ordinary-invoice, IGIC or SIF/VERI*FACTU compliance.
+
+### Authorized release and continuation
+
+- Verified initial baseline: `main`, local HEAD = `origin/main` = GitHub `2aac81acf2554622fdf0a53bd064e0ee82651e47`. The documentary consolidation was reviewed and published; the PO confirms its staging deployment **Ready**. Git history and the final release report identify the subsequent Billing commit SHA.
+- The seven CTO-reviewed Billing files are unchanged from review. This phase authorizes exactly those seven plus Session Handover and Project Status in one commit: `fix(billing): show gross and net unit prices on invoices`, followed by normal push to `origin/main` only after final gates pass.
+- Automatic Git deployment is authorized only for `ecowash-phoenix-staging` (`prj_u7MwRwQOLyRSRvbuhRLdURx653aZ`, team `team_nhXOvQKcrv9yeHjZ4aoMOak3`). Its Vercel target named Production is the staging project's target, not commercial Phoenix production. Verify the new deployment source/state if accessible; an API 403 means `DEPLOYMENT_NOT_VERIFIED` and PO visual verification. No manual deployment, Vercel/Cron/configuration change or Supabase operation is authorized.
+- Next acceptance gate: on an existing suitable invoice, PO checks detail and browser print/Save PDF for labeled gross/net unit prices before discounts, canonical totals, discounts and legibility. No new invoice/order/payment is required by this closeout. Keep invoice-item read-failure UAT and Terminal catalog-protection UAT separately OPEN.
+- Read [Project Status](../06_ROADMAP/Project_Status.md) for implementation and remaining gates; follow [AGENTS.md](../../AGENTS.md) and the explicit task prompt for authorization. No next implementation mission is opened.
+
+## Previous consolidated resume checkpoint — historical
+
+The following preparation snapshot predates the documentation commit/push and this Billing release authorization. Its “review pending”, protected-WIP and no-commit instructions describe that earlier phase; the release checkpoint above controls current continuation. Original content is preserved.
+
+<details>
+<summary>Documentation consolidation preparation snapshot — superseded 16/10/2026 checkpoint</summary>
+
+Status: Active — canonical resume instructions
+
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, local; CTO review pending)
 
 ## Resume here
@@ -41,6 +68,8 @@ Staging application: `https://ecowash-phoenix-staging.vercel.app`; established S
 - [Milestones](../06_ROADMAP/Milestones.md): historical milestone evidence.
 - [QA register](../07_QA/QA-PRODUCT-001.md) and [pilot findings](../07_QA/PILOT-FINDINGS-2026-09-06.md): dated evidence; resolve later closeouts before treating an old finding as open.
 - [Codex baseline compatibility entry](../CODEX_CURRENT_BASELINE.md): pointer and historical reference, not a third status authority.
+
+</details>
 
 ## Historical checkpoints
 

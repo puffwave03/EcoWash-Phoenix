@@ -1287,7 +1287,7 @@
     "detail": {"back": "Torna a Fatturazione"},
     "document": {"invoice": "Fattura", "issuerPending": "Identità emittente da completare", "addressPending": "Indirizzo da completare", "billTo": "Intestata a", "linkedOrders": "Ordini collegati", "noNotes": "Nessuna nota documento."},
     "fields": {"issueDate": "Data emissione", "dueDate": "Scadenza", "series": "Serie", "status": "Stato", "taxId": "Identificativo fiscale", "notes": "Note", "taxRate": "Aliquota %"},
-    "items": {"description": "Descrizione", "quantity": "Quantità", "unitPrice": "Prezzo unitario", "discount": "Sconto", "tax": "Imposta", "taxIncluded": "Imposta inclusa", "total": "Totale"}, "units": {"piece": "pz", "weight": "kg"},
+    "items": {"description": "Descrizione", "quantity": "Quantità", "unitPrice": "Prezzo unitario", "discount": "Sconto", "tax": "Imposta", "taxIncluded": "Imposta inclusa", "total": "Totale", "unitGross": "Lordo (imposta inclusa)", "unitNet": "Netto (imposta esclusa)", "unitRoundingNote": "Prezzi unitari prima degli sconti, arrotondati a due decimali. Imponibili e totali seguono gli arrotondamenti di riga."}, "units": {"piece": "pz", "weight": "kg"},
     "totals": {"subtotal": "Subtotale", "discount": "Sconto", "taxable": "Imponibile", "tax": "Imposta", "taxIncluded": "Imposta inclusa", "total": "Totale fattura", "paid": "Pagato confermato", "outstanding": "Da incassare"},
     "draftEdit": {"title": "Rivedi bozza", "description": "Prima dell’emissione sono modificabili solo i metadati sicuri e l’aliquota neutra."},
     "issue": {"title": "Emetti documento", "description": "L’emissione valida cliente ed emittente, assegna il numero definitivo e blocca lo snapshot finanziario."},

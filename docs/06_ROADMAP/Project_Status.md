@@ -2,7 +2,17 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, local; CTO review pending)
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
+
+## BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001 — Release checkpoint (16/10/2026)
+
+**IMPLEMENTED / CTO REVIEW PASS / 44/44 REPEATED TESTS PASS / VISUAL UAT OPEN.** Detail and print now distinguish the commercial gross unit price (IGIC included for current EcoWash snapshots) from the net unit price before discounts, with a translated pre-discount/rounding note in IT / ES / EN / FR / DE. Unit values use the existing two-decimal currency display; canonical line taxable bases, discounts, taxes and document totals are read from snapshots and remain unchanged. No total is rebuilt from the rounded net unit. Quantity fractions, zero rate, repeating rounding and historical `pricesIncludeTax=false` snapshots are covered.
+
+The 44 repeated tests comprise 19 dedicated render cases, 16 item-read failure/recovery regressions and 9 inclusive-pricing contracts, all PASS. Earlier **69/69 PASS** remains historical evidence. TypeScript (`--noEmit --incremental false`), scoped ESLint and five-locale validation PASS; final Git gates are required before the authorized commit. Tests establish HTML rendering, not visual browser/print/PDF acceptance. PO browser/stampa UAT remains OPEN; do not mark the finding CLOSED.
+
+No RPC, migration/schema, numbering, issue/cancel state, canonical pricing/tax calculation, payment/refund, idempotency, auth/RLS or tenant change. No fiscal/financial snapshot or business data was written. Simplified invoices remain in design, not implemented; the external fiscal provider remains separate. Full fiscal compliance is not declared.
+
+Release scope: exactly seven reviewed Billing files and the two canonical documents. The PO authorizes one commit named `fix(billing): show gross and net unit prices on invoices` and normal push only after final gates pass, with automatic Git deployment exclusively to `ecowash-phoenix-staging`. The PO confirms the previous `2aac81a` staging deployment Ready; this is not proof of the new deployment. An API 403 is `DEPLOYMENT_NOT_VERIFIED`, with visual verification left to the PO. No manual deploy, configuration/Cron/Supabase change or commercial-production operation. Git history and the release report identify the resulting commit and synchronization state.
 
 ## Current checkpoint
 
@@ -24,7 +34,7 @@ Use [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) for Git, preserved 
 | Printing | Browser/system receipt, ticket and label output, printer profiles and QR implemented. Verification of the two physical Windows USB printers remains open; driver/silent printing is not claimed. |
 | Billing | Canonical invoice drafts, numbering/issue, immutable financial snapshots, detail/print, customer/order links and tax-inclusive extraction implemented. Full ordinary/simplified-invoice fiscal compliance remains unverified. |
 | Billing line-read protection | Released in `6d82aeb156e1b6384dde84cd075a9d8a81b2dd86`; 50/50 pertinent tests and CTO PASS. Browser error/recovery UAT OPEN. |
-| Ordinary invoice net unit price | `BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001` is local WIP, not released: 69/69 pertinent tests reported PASS; CTO review and browser/PDF UAT pending. Seven files are protected during this documentation mission. |
+| Ordinary invoice net unit price | `BILLING-ORDINARY-INVOICE-NET-UNIT-PRICE-001`: implemented, CTO REVIEW PASS; 44/44 repeated tests PASS and previous 69/69 historical PASS. Reviewed release authorized for seven Billing files plus these two documents. Browser/print/PDF UAT OPEN; no full fiscal-compliance claim. |
 | Customers and Portal | Customer lifecycle/account, secure Portal requests/history, context isolation and entitlement boundary implemented. Earlier “future Portal” statements are historical. Separate Portal translation and legacy-deployment Auth findings remain open. |
 | SaaS foundation | Organization defaults, tenant numbering, onboarding, Owner location editing and Demo isolation proofs implemented/UAT-tested under their recorded boundaries. This is not complete commercial onboarding or production approval. |
 
@@ -41,7 +51,7 @@ Detailed UAT, migration, commit and limitation evidence remains in the historica
 
 ## Remaining gates and findings
 
-- CTO review of protected local Billing presentation work and this documentation cleanup; no commit/push authorization in either current phase.
+- Billing presentation CTO review PASS; documentation consolidation CTO PASS and published as `2aac81a`. This release alone authorizes the reviewed nine-file Billing/documentation commit and normal staging-triggering push after final gates. Browser/stampa acceptance remains OPEN; no unrelated release or implementation is authorized.
 - Browser UAT for catalog draft protection, Billing line-read error/recovery and local net-unit-price presentation; controlled Terminal transactional recovery remains separate.
 - Terminal customer/catalog loading around five seconds, initial-screen and post-order UX refinement, till-closing procedure and two physical USB printers require their own scope. Existing implementations must not be proposed again as absent.
 - Catalog/treatment business clarification and network-loss/recovery procedures remain operational-readiness work; do not infer missing catalog implementation from those questions.

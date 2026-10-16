@@ -1263,7 +1263,7 @@
     "detail": {"back": "Zurück zur Abrechnung"},
     "document": {"invoice": "Rechnung", "issuerPending": "Ausstelleridentität ausstehend", "addressPending": "Adresse ausstehend", "billTo": "Rechnung an", "linkedOrders": "Verknüpfte Aufträge", "noNotes": "Keine Dokumentnotizen."},
     "fields": {"issueDate": "Ausstellungsdatum", "dueDate": "Fälligkeitsdatum", "series": "Serie", "status": "Status", "taxId": "Steuer-ID", "notes": "Notizen", "taxRate": "Steuersatz %"},
-    "items": {"description": "Beschreibung", "quantity": "Menge", "unitPrice": "Einzelpreis", "discount": "Rabatt", "tax": "Steuer", "taxIncluded": "Steuer enthalten", "total": "Gesamt"}, "units": {"piece": "Stk.", "weight": "kg"},
+    "items": {"description": "Beschreibung", "quantity": "Menge", "unitPrice": "Einzelpreis", "discount": "Rabatt", "tax": "Steuer", "taxIncluded": "Steuer enthalten", "total": "Gesamt", "unitGross": "Brutto (inkl. Steuer)", "unitNet": "Netto (ohne Steuer)", "unitRoundingNote": "Einzelpreise vor Rabatten, auf zwei Dezimalstellen gerundet. Steuerbasis und Gesamtbeträge folgen der Rundung je Position."}, "units": {"piece": "Stk.", "weight": "kg"},
     "totals": {"subtotal": "Zwischensumme", "discount": "Rabatt", "taxable": "Steuerbasis", "tax": "Steuer", "taxIncluded": "Steuer enthalten", "total": "Rechnungssumme", "paid": "Bestätigt bezahlt", "outstanding": "Offen"},
     "draftEdit": {"title": "Entwurf prüfen", "description": "Vor der Ausstellung können nur sichere Metadaten und der neutrale Steuersatz geändert werden."},
     "issue": {"title": "Dokument ausstellen", "description": "Die Ausstellung validiert Kunde und Aussteller, vergibt die endgültige Nummer und sperrt den Finanz-Snapshot."},
