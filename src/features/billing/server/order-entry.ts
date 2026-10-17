@@ -35,17 +35,20 @@ export async function getBillingOrderEntry(locale: string, orderId: string): Pro
   if (customer.error) throw customer.error;
   if (link.error) throw link.error;
   if (!customer.data) notFound();
-  if (customer.data.customer_code === "WALKIN-SHARED") return { kind: "unavailable", reason: "sharedWalkIn" };
   if (link.data) {
-    const invoice = await supabase.from("invoices").select("id, document_status")
+    const invoice = await supabase.from("invoices").select("id, document_status, fiscal_document_type")
       .eq("organization_id", organizationId).eq("id", link.data.invoice_id)
-      .maybeSingle<{ id: string; document_status: string }>();
+      .maybeSingle<{ id: string; document_status: string; fiscal_document_type?: string }>();
     if (invoice.error) throw invoice.error;
     if (!invoice.data || !["draft", "issued"].includes(invoice.data.document_status)) {
       throw new Error("billing_order_entry_invalid_document");
     }
+    if (customer.data.customer_code === "WALKIN-SHARED" && invoice.data.fiscal_document_type !== "simplified") {
+      return { kind: "unavailable", reason: "sharedWalkIn" };
+    }
     return { kind: invoice.data.document_status as "draft" | "issued", href: `/app/billing/${invoice.data.id}` };
   }
+  if (customer.data.customer_code === "WALKIN-SHARED") return { kind: "unavailable", reason: "sharedWalkIn" };
   // Cancelled documents have inactive links. Reuse the existing selector rather
   // than extending eligibility (or treating a read failure as an empty result).
   const { orders } = await listEligibleBillingOrders(locale, customerId, orderId);

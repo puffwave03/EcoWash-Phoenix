@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTaxRate } from "@/features/billing/tax-rate";
 import { validateBillingDocumentSelection } from "@/features/billing/document-type";
 import { parseBillingSimplifiedSeries } from "@/features/billing/simplified-series";
+import { prepareSimplifiedBillingRequest, requestedRecipientSnapshot } from "@/features/billing/server/simplified-preparation";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
@@ -21,6 +22,8 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_simplified_issuance_disabled") || message?.includes("billing_simplified_series_required")) return "simplifiedUnavailable";
+  if (message?.includes("billing_recipient_invalid")) return "customer";
   if (message?.includes("billing_series_reserved") || message?.includes("billing_simplified_series_used")) return "simplifiedSeriesUsed";
   if (message?.includes("issuer_configuration")) return "issuer";
   if (message?.includes("customer_configuration")) return "customer";
@@ -30,7 +33,7 @@ function billingError(message: string | undefined) {
   return "generic";
 }
 
-function revalidateBilling(locale: string, customerId?: string, invoiceId?: string) {
+function revalidateBilling(locale: string, customerId?: string | null, invoiceId?: string) {
   revalidatePath(`/${locale}/app/billing`);
   if (invoiceId) revalidatePath(`/${locale}/app/billing/${invoiceId}`);
   if (customerId) revalidatePath(`/${locale}/app/customers/${customerId}`);
@@ -145,11 +148,49 @@ export async function saveBillingCustomerFiscalAction(
 }
 
 export async function createBillingDraftAction(locale: string, customerId: string, formData: FormData) {
-  await requireOwnerOrManager(locale);
+  const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const selection = validateBillingDocumentSelection(formData.getAll("fiscalDocumentType"));
   if (!selection.allowed) {
     redirect(`/${locale}/app/billing/new?customerId=${encodeURIComponent(customerId)}&error=${selection.reason}`);
+  }
+  if (selection.documentType === "simplified") {
+    const preparation = await prepareSimplifiedBillingRequest({
+      organizationId: membership.organization.id, role: membership.role,
+    }, formData);
+    if (preparation.kind === "existing_document") {
+      redirect(`/${locale}/app/billing/${preparation.invoiceId}`);
+    }
+    if (preparation.kind === "assessed") {
+      if (!preparation.assessment.recipientSnapshot) {
+        redirect(`/${locale}/app/billing/new?error=customer`);
+      }
+      if (preparation.assessment.reasons.includes("invalid_order") || preparation.assessment.reasons.includes("invalid_amount")) {
+        redirect(`/${locale}/app/billing/new?error=orders`);
+      }
+    }
+    if (preparation.kind !== "assessed" || !preparation.assessment.recipientSnapshot) {
+      redirect(`/${locale}/app/billing/new?error=simplifiedUnavailable`);
+    }
+    // Persist an unnumbered draft only. Fiscal assessment/issuance may remain
+    // blocked; no submitted profile/date/enable flag is sent as authorization.
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.rpc("create_billing_draft", {
+      target_order_ids: [preparation.orderId], target_series: null, target_tax_rate: null,
+      target_notes: nullable(value(formData, "notes", 2000)),
+      target_fiscal_document_type: "simplified",
+      target_recipient_snapshot: preparation.assessment.recipientSnapshot,
+    });
+    if (error || !data) {
+      // A concurrent request may have won. Read back once; never retry a write.
+      if (error?.message?.includes("already_invoiced")) {
+        const recovered = await prepareSimplifiedBillingRequest({ organizationId: membership.organization.id, role: membership.role }, formData);
+        if (recovered.kind === "existing_document") redirect(`/${locale}/app/billing/${recovered.invoiceId}`);
+      }
+      redirect(`/${locale}/app/billing/new?error=${billingError(error?.message)}`);
+    }
+    revalidateBilling(locale, null, data);
+    redirect(`/${locale}/app/billing/${data}`);
   }
   const orderIds = formData.getAll("orderId").map(String);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
@@ -167,25 +208,30 @@ export async function createBillingDraftAction(locale: string, customerId: strin
   redirect(`/${locale}/app/billing/${data}`);
 }
 
-export async function updateBillingDraftAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
+export async function updateBillingDraftAction(locale: string, invoiceId: string, customerId: string | null, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("update_billing_draft", {
+  const payload = {
     target_due_date: nullable(value(formData, "dueDate", 10)),
     target_invoice_id: invoiceId,
     target_issue_date: value(formData, "issueDate", 10),
     target_notes: nullable(value(formData, "notes", 2000)),
     target_series: value(formData, "series", 12),
     target_tax_rate: taxRate,
-  });
+  };
+  const hasRecipient = formData.getAll("recipientMode").length > 0;
+  const snapshot = hasRecipient ? requestedRecipientSnapshot(formData) : null;
+  if (hasRecipient && !snapshot) redirect(`/${locale}/app/billing/${invoiceId}?error=customer`);
+  const { error } = await supabase.rpc("update_billing_draft", hasRecipient
+    ? { ...payload, target_recipient_snapshot: snapshot } : payload);
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
   revalidateBilling(locale, customerId, invoiceId);
   redirect(`/${locale}/app/billing/${invoiceId}?saved=draft`);
 }
 
-export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string) {
+export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string | null) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -195,7 +241,7 @@ export async function issueBillingInvoiceAction(locale: string, invoiceId: strin
   redirect(`/${locale}/app/billing/${invoiceId}?saved=issued`);
 }
 
-export async function cancelBillingInvoiceAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
+export async function cancelBillingInvoiceAction(locale: string, invoiceId: string, customerId: string | null, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -208,7 +254,7 @@ export async function cancelBillingInvoiceAction(locale: string, invoiceId: stri
   redirect(`/${locale}/app/billing/${invoiceId}?saved=cancelled`);
 }
 
-export async function deleteBillingDraftAction(locale: string, invoiceId: string, customerId: string) {
+export async function deleteBillingDraftAction(locale: string, invoiceId: string, customerId: string | null) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();

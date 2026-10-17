@@ -35,13 +35,14 @@ type InvoiceRow = {
   customer_city: string | null;
   customer_country_code: string | null;
   customer_email: string | null;
-  customer_id: string;
-  customer_name: string;
+  customer_id: string | null;
+  customer_name: string | null;
   customer_postal_code: string | null;
   customer_tax_id: string | null;
   discount_total: number;
   document_status: BillingDocumentStatus;
   fiscal_document_type: BillingFiscalDocumentType;
+  recipient_snapshot_mode?: BillingInvoice["recipientSnapshotMode"];
   due_date: string | null;
   id: string;
   invoice_number: string | null;
@@ -141,7 +142,7 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const INVOICE_SELECT = "id, recipient_snapshot_mode, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
 const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate, simplified_series";
 
 function number(value: number | string | null) {
@@ -175,6 +176,11 @@ function mapInvoice(
 ): BillingInvoice {
   if (row.fiscal_document_type !== undefined && row.fiscal_document_type !== "ordinary" && row.fiscal_document_type !== "simplified") {
     throw new Error("billing_invalid_fiscal_document_type");
+  }
+  const recipientMode = row.recipient_snapshot_mode ?? "registered";
+  if (!["registered", "anonymous", "identified"].includes(recipientMode)
+    || ((row.fiscal_document_type ?? "ordinary") === "ordinary" && (row.customer_id === null || row.customer_name === null || recipientMode !== "registered"))) {
+    throw new Error("billing_invalid_recipient_snapshot");
   }
   const orderIds = links.map((link) => link.order_id);
   const paidTotal = paymentTotals(payments.filter((payment) => orderIds.includes(payment.order_id)));
@@ -220,6 +226,7 @@ function mapInvoice(
     paidTotal,
     paymentStatus: derivePayment(row.document_status, total, paidTotal),
     pricesIncludeTax: row.prices_include_tax,
+    recipientSnapshotMode: recipientMode,
     sequenceNumber: row.sequence_number,
     series: row.series,
     subtotal: number(row.subtotal),

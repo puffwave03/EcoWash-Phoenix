@@ -54,7 +54,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
     </div>;
   }
   const copyLabel = isSimplifiedCopy && printCopy ? t(`document.${printCopy}Copy`) : null;
-  const showRecipient = !isSimplifiedCopy || Boolean(invoice.customerName.trim() || invoice.customerTaxId || customerAddress || invoice.customerEmail);
+  const showRecipient = !(invoice.fiscalDocumentType === "simplified") || Boolean((invoice.customerName ?? "").trim() || invoice.customerTaxId || customerAddress || invoice.customerEmail);
   const printHref = invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued" && invoice.orderIds.length === 1
     ? `/app/orders/${invoice.orderIds[0]}/print/receipt?document=fiscal`
     : `/app/billing/${invoice.id}/print`;
@@ -165,7 +165,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         </div>
       </article>
 
-      {!printMode && invoice.documentStatus === "draft" && invoice.fiscalDocumentType !== "simplified" ? (
+      {!printMode && invoice.documentStatus === "draft" ? (
         <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
           <Card className="bg-white">
             <h2 className="text-xl font-semibold text-primary">{t("draftEdit.title")}</h2>
@@ -173,16 +173,43 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <form action={updateBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)} className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.issueDate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.issueDate} name="issueDate" required type="date" /></label>
               <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.dueDate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.dueDate ?? ""} name="dueDate" type="date" /></label>
-              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.series")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.series} name="series" required /></label>
-              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.taxRate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(taxRate)} inputMode="decimal" max="100" min="0" name="taxRate" required step="0.01" type="number" /></label>
+              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.series")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.series} name="series" readOnly={invoice.fiscalDocumentType === "simplified"} required /></label>
+              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.taxRate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(taxRate)} inputMode="decimal" max="100" min="0" name="taxRate" readOnly={invoice.fiscalDocumentType === "simplified"} required step="0.01" type="number" /></label>
               <label className="space-y-2 text-sm font-semibold text-primary sm:col-span-2"><span>{t("fields.notes")}</span><textarea className="min-h-28 w-full rounded-control border border-border p-3" defaultValue={invoice.notes ?? ""} name="notes" /></label>
+              {invoice.fiscalDocumentType === "simplified" ? <fieldset className="space-y-3 sm:col-span-2">
+                <legend className="text-sm font-semibold text-primary">{t("document.billTo")}</legend>
+                <label className="block space-y-2 text-sm font-semibold text-primary">
+                  <span>{t("document.recipientMode")}</span>
+                  <select className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue={invoice.recipientSnapshotMode === "anonymous" ? "anonymous" : "identified"} name="recipientMode">
+                    <option value="anonymous">{t("document.anonymousRecipient")}</option>
+                    <option value="identified">{t("document.identifiedRecipient")}</option>
+                  </select>
+                </label>
+                <p className="text-sm text-muted">{t("document.recipientHelp")}</p>
+                <details open={invoice.recipientSnapshotMode !== "anonymous"}>
+                  <summary className="cursor-pointer text-sm font-semibold text-primary">{t("document.identifiedRecipient")}</summary>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {[
+                      ["recipientName", "document.recipientName", invoice.customerName, 180],
+                      ["recipientTaxId", "fields.taxId", invoice.customerTaxId, 80],
+                      ["recipientAddressLine1", "create.customerFiscal.addressLine1", invoice.customerAddressLine1, 180],
+                      ["recipientCity", "create.customerFiscal.city", invoice.customerCity, 100],
+                      ["recipientPostalCode", "create.customerFiscal.postalCode", invoice.customerPostalCode, 24],
+                      ["recipientCountryCode", "create.customerFiscal.countryCode", invoice.customerCountryCode, 2],
+                    ].map(([name, label, value, max]) => <label className="space-y-2 text-sm font-semibold text-primary" key={String(name)}>
+                      <span>{t(String(label))}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={String(value ?? "")} maxLength={Number(max)} name={String(name)} />
+                    </label>)}
+                  </div>
+                </details>
+              </fieldset> : null}
               <div className="sm:col-span-2"><Button type="submit" variant="secondary">{t("actions.saveDraft")}</Button></div>
             </form>
           </Card>
           <Card className="space-y-4 bg-white">
             <h2 className="text-xl font-semibold text-primary">{t("issue.title")}</h2>
             <p className="text-sm leading-6 text-muted">{t("issue.description")}</p>
-            <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
+            {invoice.fiscalDocumentType === "ordinary" ? <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
+              : <p className="text-sm text-amber-800" role="status">{t("create.form.simplifiedUnavailable")}</p>}
             <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form>
           </Card>
         </div>

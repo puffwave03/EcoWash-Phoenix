@@ -171,12 +171,29 @@ for (const locale of locales) test(`${locale}: real form explains blocked simpli
   }
 });
 
-test("simplified synthetic draft has no ordinary edit/issue controls", async () => {
+test("simplified synthetic draft permits editing but cannot offer fiscal issuance", async () => {
   const ui = billing(); ui.rows.invoices[0].fiscal_document_type = "simplified"; ui.rows.invoices[0].document_status = "draft";
   const View = ui.load("src/components/billing/BillingInvoiceView.tsx").BillingInvoiceView;
   const html = renderToStaticMarkup(await View({ detail: await ui.read(), locale: "es" }));
   assert.ok(!html.includes(messages.es.actions.issue));
-  assert.ok(!html.includes(messages.es.actions.saveDraft));
+  assert.ok(html.includes(messages.es.actions.saveDraft));
+});
+
+for (const locale of locales) test(`${locale}: persisted-style anonymous draft reads and renders editable identity without fiscal issue controls`, async () => {
+  const ui = billing();
+  Object.assign(ui.rows.invoices[0], { fiscal_document_type: "simplified", document_status: "draft",
+    recipient_snapshot_mode: "anonymous", customer_id: null, customer_name: null, customer_tax_id: null,
+    customer_address_line1: null, customer_address_line2: null, customer_city: null,
+    customer_postal_code: null, customer_country_code: null, customer_email: null });
+  const detail = await ui.read();
+  assert.equal(detail.invoice.customerId, null); assert.equal(detail.invoice.recipientSnapshotMode, "anonymous");
+  const View = ui.load("src/components/billing/BillingInvoiceView.tsx").BillingInvoiceView;
+  const html = renderToStaticMarkup(await View({ detail, locale }));
+  assert.match(html, /name="recipientMode"/); assert.match(html, /name="recipientName"/);
+  assert.ok(html.includes(messages[locale].document.anonymousRecipient));
+  assert.ok(html.includes(messages[locale].actions.saveDraft));
+  assert.ok(!html.includes(messages[locale].actions.issue));
+  assert.doesNotMatch(html, /common\.billing\.|WALKIN-SHARED/);
 });
 
 test("query preserves stored IGIC amounts for A/B/C, fractions, zero and historical exclusive pricing", async () => {

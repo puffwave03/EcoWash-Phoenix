@@ -63,7 +63,7 @@ export default async function BillingPage({ params, searchParams }: {
         <div className="divide-y divide-border overflow-hidden rounded-card border border-border bg-white shadow-card">
           {history.items.map((invoice) => <article className="grid gap-4 p-4 sm:grid-cols-[1.2fr_1fr_auto_auto] sm:items-center sm:p-5" key={invoice.id}>
             <div><Link className="text-lg font-semibold text-primary hover:underline" href={`/app/billing/${invoice.id}`} locale={locale}>{invoice.invoiceNumber ?? t("draftNumber")}</Link><p className="mt-1 text-xs text-muted">{invoice.orderNumbers.join(", ")}</p></div>
-            <div><p className="font-semibold text-foreground">{invoice.customerName}</p><p className="mt-1 text-xs text-muted">{formatDate(invoice.issueDate, locale)}</p></div>
+            <div><p className="font-semibold text-foreground">{invoice.customerName ?? t("document.anonymousRecipient")}</p><p className="mt-1 text-xs text-muted">{formatDate(invoice.issueDate, locale)}</p></div>
             <div className="sm:text-right"><p className="font-semibold tabular-nums text-primary">{formatCurrency(invoice.total, invoice.currency, locale)}</p><p className="mt-1 text-xs text-muted">{t("totals.outstanding")}: {formatCurrency(invoice.outstanding, invoice.currency, locale)}</p></div>
             <BillingStatusBadge label={t(`statuses.${invoice.paymentStatus}`)} status={invoice.paymentStatus} />
           </article>)}

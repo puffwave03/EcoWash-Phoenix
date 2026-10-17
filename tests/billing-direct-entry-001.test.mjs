@@ -195,6 +195,17 @@ test("WALKIN-SHARED stays excluded even with forged URL customer, with a clear u
   assert.equal(ui.calls.rpc.length, 0);
 });
 
+test("WALKIN-SHARED can reopen its linked simplified draft without becoming eligible for ordinary creation", async () => {
+  const ui = billing(); ui.rows.customers[0].customer_code = "WALKIN-SHARED";
+  ui.rows.invoice_orders.push({ organization_id: "org-a", order_id: "order-a", invoice_id: "simple-draft", is_active: true });
+  ui.rows.invoices.push({ organization_id: "org-a", id: "simple-draft", document_status: "draft", fiscal_document_type: "simplified", customer_id: null });
+  assert.deepEqual(normalize(await ui.entry()), { kind: "draft", href: "/app/billing/simple-draft" });
+  await assert.rejects(ui.page({ orderId: "order-a", customerId: "forged" }), (e) => e.href === "/it/app/billing/simple-draft");
+  assert.equal(ui.calls.rpc.length, 0);
+  ui.rows.invoices[0].fiscal_document_type = "ordinary";
+  assert.deepEqual(normalize(await ui.entry()), { kind: "unavailable", reason: "sharedWalkIn" });
+});
+
 for (const config of [{ role: "staff" }, { entitled: false }]) test(`server access gate blocks reads: ${JSON.stringify(config)}`, async () => {
   const ui = billing(config);
   await assert.rejects(ui.entry(), (error) => error === (config.role ? ui.denied : ui.featureDenied));

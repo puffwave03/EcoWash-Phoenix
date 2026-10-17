@@ -54,8 +54,8 @@ export type BillingInvoice = {
   customerCity: string | null;
   customerCountryCode: string | null;
   customerEmail: string | null;
-  customerId: string;
-  customerName: string;
+  customerId: string | null;
+  customerName: string | null;
   customerPostalCode: string | null;
   customerTaxId: string | null;
   discountTotal: number;
@@ -84,6 +84,7 @@ export type BillingInvoice = {
   paidTotal: number;
   paymentStatus: BillingPaymentStatus;
   pricesIncludeTax: boolean;
+  recipientSnapshotMode: "registered" | "anonymous" | "identified";
   sequenceNumber: number | null;
   series: string;
   subtotal: number;
