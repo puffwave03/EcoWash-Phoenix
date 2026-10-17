@@ -94,6 +94,8 @@
 .billing-invoice-summary dl > div { gap: 1rem; }
 .billing-invoice-summary dd { white-space: nowrap; }
 
+.invoice-print-document .billing-simplified-print-copy + .billing-simplified-print-copy { margin-top: 2rem; }
+
 @media print {
 
   body:has(.daily-close-print-document) * {
@@ -146,6 +148,13 @@
   .invoice-print-document .billing-invoice-items thead { display: table-header-group; }
   .invoice-print-document .billing-invoice-items tr,
   .invoice-print-document .billing-invoice-summary { break-inside: avoid; }
+
+  /* Two copies share one Billing print container; never position each copy
+     absolutely. Receipt, ticket and label page formats are unaffected. */
+  .invoice-print-document .billing-simplified-print-copy + .billing-simplified-print-copy {
+    break-before: page;
+    margin-top: 0;
+  }
 
   body:has(.order-print-document) * {
     visibility: hidden;

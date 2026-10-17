@@ -82,6 +82,7 @@ type PaymentRow = {
 type SettingsRow = {
   default_series: string;
   default_tax_rate: number;
+  simplified_series: string | null;
   issuer_address_line1: string | null;
   issuer_address_line2: string | null;
   issuer_city: string | null;
@@ -141,7 +142,7 @@ type InvoiceItemRow = {
 };
 
 const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
-const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
+const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate, simplified_series";
 
 function number(value: number | string | null) {
   const parsed = Number(value ?? 0);
@@ -309,6 +310,7 @@ export async function getBillingSettings(locale: string): Promise<BillingSetting
     autofilledFields,
     defaultSeries: settings?.default_series ?? "A",
     defaultTaxRate: number(settings?.default_tax_rate ?? 0),
+    simplifiedSeries: settings?.simplified_series ?? null,
     issuerAddressLine1,
     issuerAddressLine2: settings?.issuer_address_line2 ?? "",
     issuerCity,

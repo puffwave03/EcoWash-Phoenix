@@ -13,6 +13,7 @@ export type BillingSettings = {
   autofilledFields: BillingIssuerRequiredField[];
   defaultSeries: string;
   defaultTaxRate: number;
+  simplifiedSeries: string | null;
   issuerAddressLine1: string;
   issuerAddressLine2: string;
   issuerCity: string;

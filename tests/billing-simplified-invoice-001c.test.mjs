@@ -218,7 +218,9 @@ test("series migration is additive only: no assigned series/counter and neither 
   assert.match(sql, /add column simplified_series text,/);
   assert.match(sql, /simplified_series is null\s+or simplified_series ~ '\^\[A-Z0-9-\]\{1,12\}\$'/);
   assert.doesNotMatch(sql, /\b(?:default|insert|update|delete|grant|revoke|drop|function|policy|invoices|counter)\b/i);
-  assert.doesNotMatch(read("src/features/billing/server/queries.ts"), /simplified_series/);
+  // 001D can now read the series column already deployed by 001C. This remains
+  // a declaration only; neither the original migration nor either guard changes.
+  assert.match(read("src/features/billing/server/queries.ts"), /simplifiedSeries: settings\?\.simplified_series \?\? null/);
   for (const [path, sha] of [
     ["20261016000100_billing_simplified_invoice_001b_fiscal_type_foundation.sql", "74f904597f2e802e684496fd7bd0724410108555763283a332debcc8db5e307b"],
     ["20261016000200_billing_fiscal_profile_001_minimal_configuration.sql", "d0abe9affbd95229233938ba87350bf9bfc352cec098ac569b339c72f4bfe8ab"],

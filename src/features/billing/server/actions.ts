@@ -6,6 +6,7 @@ import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTaxRate } from "@/features/billing/tax-rate";
 import { validateBillingDocumentSelection } from "@/features/billing/document-type";
+import { parseBillingSimplifiedSeries } from "@/features/billing/simplified-series";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
@@ -20,6 +21,7 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_series_reserved") || message?.includes("billing_simplified_series_used")) return "simplifiedSeriesUsed";
   if (message?.includes("issuer_configuration")) return "issuer";
   if (message?.includes("customer_configuration")) return "customer";
   if (message?.includes("already_invoiced")) return "duplicate";
@@ -54,6 +56,24 @@ export async function saveBillingSettingsAction(locale: string, formData: FormDa
     target_issuer_tax_id: value(formData, "issuerTaxId", 80),
   });
   if (error) redirect(`/${locale}/app/billing?error=${billingError(error.message)}`);
+  revalidateBilling(locale);
+  redirect(`/${locale}/app/billing?saved=settings`);
+}
+
+export async function reserveBillingSimplifiedSeriesAction(locale: string, formData: FormData) {
+  await requireOwner(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  const series = parseBillingSimplifiedSeries(formData.getAll("simplifiedSeries"));
+  if (!series) redirect(`/${locale}/app/billing?error=simplifiedSeriesInvalid`);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("reserve_billing_simplified_series", { target_series: series });
+  if (error) {
+    const code = error.message?.includes("billing_simplified_series_used") ? "simplifiedSeriesUsed"
+      : error.message?.includes("billing_settings_required") ? "simplifiedSeriesSettings"
+      : error.message?.includes("billing_simplified_series_invalid") ? "simplifiedSeriesInvalid"
+      : billingError(error.message);
+    redirect(`/${locale}/app/billing?error=${code}`);
+  }
   revalidateBilling(locale);
   redirect(`/${locale}/app/billing?saved=settings`);
 }

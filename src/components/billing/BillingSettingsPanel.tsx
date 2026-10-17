@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button";
 import { DisclosureSection } from "@/components/DisclosureSection";
-import { saveBillingSettingsAction } from "@/features/billing/server/actions";
+import { reserveBillingSimplifiedSeriesAction, saveBillingSettingsAction } from "@/features/billing/server/actions";
 import type { BillingSettings } from "@/features/billing/types";
 import { taxRateInputValue } from "@/features/billing/tax-rate";
 
@@ -78,6 +78,15 @@ export function BillingSettingsPanel({
           <div className="flex items-end sm:col-span-2 lg:col-span-3">
             <Button type="submit">{text.save}</Button>
           </div>
+      </form>
+      <form action={reserveBillingSimplifiedSeriesAction.bind(null, locale)} className="mt-6 space-y-4 border-t border-border pt-5">
+        <h3 className="font-semibold text-primary">{text.simplifiedSeriesTitle}</h3>
+        <p className="text-sm text-muted" id="billing-simplified-series-help">{text.simplifiedSeriesHelp}</p>
+        <label className="block max-w-sm space-y-2 text-sm font-semibold text-primary">
+          <span>{text.simplifiedSeries}</span>
+          <input aria-describedby="billing-simplified-series-help" autoCapitalize="characters" className={inputClass} defaultValue={settings.simplifiedSeries ?? ""} maxLength={12} name="simplifiedSeries" pattern="[A-Za-z0-9-]{1,12}" required />
+        </label>
+        <Button type="submit" variant="secondary">{text.reserveSimplifiedSeries}</Button>
       </form>
     </DisclosureSection>
   );

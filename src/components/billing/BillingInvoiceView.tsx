@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import type { ReactElement } from "react";
 import { Button } from "@/components/Button";
 import { BillingStatusBadge } from "@/components/billing/BillingStatusBadge";
 import { PrintInvoiceButton } from "@/components/billing/PrintInvoiceButton";
@@ -23,12 +24,13 @@ function address(parts: Array<string | null>) {
   return parts.filter(Boolean).join(", ");
 }
 
-export async function BillingInvoiceView({ detail, locale, printRequestedAction, printMode = false }: {
+export async function BillingInvoiceView({ detail, locale, printRequestedAction, printMode = false, printCopy }: {
   detail: BillingInvoiceDetail;
   locale: string;
   printRequestedAction?: () => Promise<void>;
   printMode?: boolean;
-}) {
+  printCopy?: "customer" | "laundry";
+}): Promise<ReactElement> {
   const t = await getTranslations({ locale, namespace: "common.billing" });
   const { invoice, items, payments } = detail;
   const statusLabel = t(`statuses.${invoice.paymentStatus}`);
@@ -36,8 +38,29 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
   const issuerAddress = address([invoice.issuerAddressLine1, invoice.issuerAddressLine2, invoice.issuerPostalCode, invoice.issuerCity, invoice.issuerRegion, invoice.issuerCountryCode]);
   const customerAddress = address([invoice.customerAddressLine1, invoice.customerAddressLine2, invoice.customerPostalCode, invoice.customerCity, invoice.customerCountryCode]);
 
+  // One persisted invoice, one print/history action, two presentation copies.
+  // Never fetch, issue, allocate a number or alter a snapshot here. The ordinary
+  // view/print path retains its original markup and behavior.
+  const isSimplifiedCopy = printMode && invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued";
+  if (isSimplifiedCopy && !printCopy) {
+    const [customerCopy, laundryCopy] = await Promise.all([
+      BillingInvoiceView({ detail, locale, printMode: true, printCopy: "customer" }),
+      BillingInvoiceView({ detail, locale, printMode: true, printCopy: "laundry" }),
+    ]);
+    return <div className="invoice-print-document mx-auto max-w-5xl bg-white p-5 sm:p-10">
+      <div className="mb-6 flex justify-end print:hidden"><PrintInvoiceButton label={t("actions.printTwoCopies")} printRequestedAction={printRequestedAction} /></div>
+      {customerCopy}
+      {laundryCopy}
+    </div>;
+  }
+  const copyLabel = isSimplifiedCopy && printCopy ? t(`document.${printCopy}Copy`) : null;
+  const showRecipient = !isSimplifiedCopy || Boolean(invoice.customerName.trim() || invoice.customerTaxId || customerAddress || invoice.customerEmail);
+  const printHref = invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued" && invoice.orderIds.length === 1
+    ? `/app/orders/${invoice.orderIds[0]}/print/receipt?document=fiscal`
+    : `/app/billing/${invoice.id}/print`;
+
   return (
-    <div className={printMode ? "invoice-print-document mx-auto max-w-5xl bg-white p-5 sm:p-10" : "space-y-6"}>
+    <div className={copyLabel ? "billing-simplified-print-copy" : printMode ? "invoice-print-document mx-auto max-w-5xl bg-white p-5 sm:p-10" : "space-y-6"}>
       {!printMode ? (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -46,12 +69,14 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
           </div>
           <div className="flex flex-wrap gap-2">
             <BillingStatusBadge label={statusLabel} status={invoice.paymentStatus} />
-            <Link href={`/app/billing/${invoice.id}/print`} locale={locale}><Button variant="secondary">{t("actions.printView")}</Button></Link>
+            <Link href={printHref} locale={locale}><Button variant="secondary">{t("actions.printView")}</Button></Link>
           </div>
         </div>
-      ) : (
+      ) : !copyLabel ? (
         <div className="mb-6 flex justify-end print:hidden"><PrintInvoiceButton label={t("actions.print")} printRequestedAction={printRequestedAction} /></div>
-      )}
+      ) : null}
+
+      {copyLabel ? <p className="mb-3 text-sm font-semibold text-primary">{copyLabel}</p> : null}
 
       <article className="overflow-hidden rounded-[1.25rem] border border-border bg-white shadow-card print:rounded-none print:border-0 print:shadow-none">
         <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary/20 print:bg-primary" />
@@ -64,7 +89,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
                 <div><dt className="text-muted">{t("fields.issueDate")}</dt><dd className="font-semibold">{formatDate(invoice.issueDate, locale)}</dd></div>
                 <div><dt className="text-muted">{t("fields.dueDate")}</dt><dd className="font-semibold">{formatDate(invoice.dueDate, locale)}</dd></div>
                 <div><dt className="text-muted">{t("fields.series")}</dt><dd className="font-semibold">{invoice.series}</dd></div>
-                <div><dt className="text-muted">{t("fields.status")}</dt><dd className="font-semibold">{statusLabel}</dd></div>
+                {!isSimplifiedCopy ? <div><dt className="text-muted">{t("fields.status")}</dt><dd className="font-semibold">{statusLabel}</dd></div> : null}
               </dl>
             </div>
             <div className="text-sm sm:text-right">
@@ -76,13 +101,13 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
           </header>
 
           <section className="grid gap-5 border-b border-border py-6 sm:grid-cols-2">
-            <div>
+            {showRecipient ? <div>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted">{t("document.billTo")}</p>
               <h3 className="mt-2 text-lg font-semibold text-primary">{invoice.customerName}</h3>
               {invoice.customerTaxId ? <p className="mt-1 text-sm">{t("fields.taxId")}: {invoice.customerTaxId}</p> : null}
               <p className="mt-1 text-sm text-muted">{customerAddress || t("document.addressPending")}</p>
               {invoice.customerEmail ? <p className="mt-1 text-sm text-muted">{invoice.customerEmail}</p> : null}
-            </div>
+            </div> : null}
             <div className="sm:text-right">
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted">{t("document.linkedOrders")}</p>
               <div className="mt-2 flex flex-wrap gap-2 sm:justify-end">
@@ -131,8 +156,10 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
               <div className="flex justify-between"><dt className="text-muted">{t("totals.taxable")}</dt><dd className="font-semibold tabular-nums">{formatCurrency(invoice.taxableBase, invoice.currency, locale)}</dd></div>
               <div className="flex justify-between"><dt className="text-muted">{t(invoice.pricesIncludeTax ? "totals.taxIncluded" : "totals.tax")} ({formatTaxRate(taxRate, locale)}%)</dt><dd className="font-semibold tabular-nums">{formatCurrency(invoice.taxTotal, invoice.currency, locale)}</dd></div>
               <div className="flex justify-between border-t border-primary/15 pt-3 text-base"><dt className="font-semibold text-primary">{t("totals.total")}</dt><dd className="text-xl font-semibold tabular-nums text-primary">{formatCurrency(invoice.total, invoice.currency, locale)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">{t("totals.paid")}</dt><dd className="font-semibold tabular-nums text-emerald-700">{formatCurrency(invoice.paidTotal, invoice.currency, locale)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">{t("totals.outstanding")}</dt><dd className="font-semibold tabular-nums text-amber-800">{formatCurrency(invoice.outstanding, invoice.currency, locale)}</dd></div>
+              {!isSimplifiedCopy ? <>
+                <div className="flex justify-between"><dt className="text-muted">{t("totals.paid")}</dt><dd className="font-semibold tabular-nums text-emerald-700">{formatCurrency(invoice.paidTotal, invoice.currency, locale)}</dd></div>
+                <div className="flex justify-between"><dt className="text-muted">{t("totals.outstanding")}</dt><dd className="font-semibold tabular-nums text-amber-800">{formatCurrency(invoice.outstanding, invoice.currency, locale)}</dd></div>
+              </> : null}
             </dl>
           </section>
         </div>
@@ -161,7 +188,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         </div>
       ) : null}
 
-      {!printMode && invoice.documentStatus === "issued" ? (
+      {!printMode && invoice.documentStatus === "issued" && invoice.fiscalDocumentType !== "simplified" ? (
         <Card className="border-red-100 bg-white">
           <h2 className="text-xl font-semibold text-primary">{t("cancel.title")}</h2>
           <p className="mt-1 text-sm leading-6 text-muted">{t("cancel.description")}</p>
@@ -171,6 +198,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
           </form>
         </Card>
       ) : null}
+
+      {!printMode && invoice.documentStatus === "issued" && invoice.fiscalDocumentType === "simplified" ? <p className="text-sm text-muted">{t("document.simplifiedCorrectionBlocked")}</p> : null}
 
       {!printMode && payments.length > 0 ? (
         <Card className="bg-white">

@@ -89,7 +89,10 @@ test("12-14 receipt issue redirects to a readable persisted snapshot reprint whi
   assert.doesNotMatch(issueAction, /revalidatePath/);
   assert.match(issuePage, /issueOperationalReceipt\(locale, orderId\)/);
   assert.match(issuePage, /documents\/receipts\/\$\{receipt\.id\}\/print/);
-  assert.ok(issuePage.indexOf("issueOperationalReceipt(locale, orderId)") < issuePage.indexOf("redirect("));
+  // The explicit fiscal branch never issues REC documents. In the unchanged
+  // operational branch the persisted receipt must still precede its redirect.
+  const operationalBranch = issuePage.slice(issuePage.indexOf("const receipt = await issueOperationalReceipt"));
+  assert.ok(operationalBranch.indexOf("issueOperationalReceipt(locale, orderId)") < operationalBranch.indexOf("redirect("));
   assert.match(receiptPage, /getOperationalReceipt\(locale, receiptId\)/);
   assert.match(receiptDocument, /receipt\.snapshot/);
   assert.match(receiptDocument, /print-preview-toolbar operational-receipt-toolbar print:hidden/);
