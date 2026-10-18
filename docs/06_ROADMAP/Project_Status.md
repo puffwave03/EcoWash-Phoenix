@@ -4,6 +4,14 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 18/10/2026.
 
+## BILLING-SIMPLIFIED-INVOICE-001G-B — Advance payment link foundation (18/10/2026)
+
+**STAGING FOUNDATION COMPLETE / CTO PASS / POSTFLIGHT PASS; FISCAL ADVANCE ISSUANCE BLOCKED.** The single preparatory migration `20261018000200` is installed on EcoWash Phoenix staging `exthnplfokcucaqydney`; **102 local/remote migrations are aligned**. Canonical `invoice_orders` now distinguishes advance and final roles while preserving historical ordinary links as final and one active final per order. `billing_invoice_payment_links` binds a complete confirmed POS payment to its invoice and order within one tenant, without creating a second payment ledger. The schema reserves a reference from an advance to its final document; the linking workflow is not enabled. The new RLS policy requires Owner/Manager **and** the Billing entitlement; authenticated clients have no direct write permission.
+
+**Evidence:** final CTO RLS review PASS; **2/2 isolated PostgreSQL tests PASS**. Read-only staging postflight confirmed validated constraints, triggers, policy and privileges. Comparable pre/post fingerprints for invoices, payments, counters and original order-link columns match; six Billing/POS RPC definitions remain identical. Ordinary invoicing, POS, IGIC and numbering are unchanged. No business write or fiscal document was created by the migration checks.
+
+**Next gate:** the 001F payment-history block and new advance-issuance guard remain active. **001G-C** must complete coordinated advance/balance fiscal emission, allocation, refund/correction rules and reconciliation before tenant activation and HTTP/browser fiscal UAT. External provider/VERI*FACTU integration remains separate. No complete fiscal conformity or commercial-production readiness is claimed. Earlier checkpoints below describe their historical phases.
+
 ## BILLING-SIMPLIFIED-INVOICE-001F — Service issuance closeout checkpoint (18/10/2026)
 
 **IMPLEMENTED / CTO PASS / STAGING SCHEMA APPLIED / STRUCTURAL POSTFLIGHT PASS; FISCAL UAT OPEN.** The canonical Billing path prepares simplified issuance for an eligible local laundry/dry-cleaning service order with no prior non-`void` payment. Owner/Manager must declare and confirm the effective service date; actor and timestamp are persisted and the issued snapshot is immutable. Existing operational dates remain informational. The 001D series ownership and atomic Billing numbering, order–invoice uniqueness, idempotent replay, two labelled copies of one persisted fiscal document and canonical reprint are reused. The one-argument ordinary issue RPC and ordinary economic behavior remain compatible. Prices, IGIC snapshots, payment ledger, tenant/RLS and `WALKIN-SHARED` protections remain unchanged.
