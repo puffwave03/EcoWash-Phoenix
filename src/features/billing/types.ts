@@ -14,6 +14,7 @@ export type BillingSettings = {
   defaultSeries: string;
   defaultTaxRate: number;
   simplifiedSeries: string | null;
+  simplifiedIssuanceReady?: boolean;
   issuerAddressLine1: string;
   issuerAddressLine2: string;
   issuerCity: string;
@@ -85,6 +86,7 @@ export type BillingInvoice = {
   paymentStatus: BillingPaymentStatus;
   pricesIncludeTax: boolean;
   recipientSnapshotMode: "registered" | "anonymous" | "identified";
+  servicePerformedOn?: string | null;
   sequenceNumber: number | null;
   series: string;
   subtotal: number;
@@ -119,6 +121,8 @@ export type BillingPayment = {
 };
 
 export type BillingInvoiceDetail = {
+  simplifiedIssuanceReady?: boolean;
+  operationalCompletedAt?: string | null;
   invoice: BillingInvoice;
   items: BillingInvoiceItem[];
   payments: BillingPayment[];

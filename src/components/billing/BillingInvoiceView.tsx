@@ -8,6 +8,7 @@ import {
   cancelBillingInvoiceAction,
   deleteBillingDraftAction,
   issueBillingInvoiceAction,
+  issueSimplifiedBillingInvoiceAction,
   updateBillingDraftAction,
 } from "@/features/billing/server/actions";
 import type { BillingInvoiceDetail } from "@/features/billing/types";
@@ -87,6 +88,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
               <h2 className="mt-2 text-3xl font-semibold text-primary">{invoice.invoiceNumber ?? t("draftNumber")}</h2>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div><dt className="text-muted">{t("fields.issueDate")}</dt><dd className="font-semibold">{formatDate(invoice.issueDate, locale)}</dd></div>
+                {invoice.fiscalDocumentType === "simplified" && invoice.servicePerformedOn ? <div><dt className="text-muted">{t("serviceIssue.date")}</dt><dd className="font-semibold">{formatDate(invoice.servicePerformedOn, locale)}</dd></div> : null}
                 <div><dt className="text-muted">{t("fields.dueDate")}</dt><dd className="font-semibold">{formatDate(invoice.dueDate, locale)}</dd></div>
                 <div><dt className="text-muted">{t("fields.series")}</dt><dd className="font-semibold">{invoice.series}</dd></div>
                 {!isSimplifiedCopy ? <div><dt className="text-muted">{t("fields.status")}</dt><dd className="font-semibold">{statusLabel}</dd></div> : null}
@@ -209,7 +211,15 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <h2 className="text-xl font-semibold text-primary">{t("issue.title")}</h2>
             <p className="text-sm leading-6 text-muted">{t("issue.description")}</p>
             {invoice.fiscalDocumentType === "ordinary" ? <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
-              : <p className="text-sm text-amber-800" role="status">{t("create.form.simplifiedUnavailable")}</p>}
+              : detail.simplifiedIssuanceReady ? <form action={issueSimplifiedBillingInvoiceAction.bind(null, locale, invoice.id)} className="space-y-4">
+                <p className="text-sm text-muted">{t("serviceIssue.help")}</p>
+                {detail.operationalCompletedAt ? <p className="text-sm text-muted">{t("serviceIssue.reference")}: {formatDate(detail.operationalCompletedAt, locale)}</p> : null}
+                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" name="servicePerformedOn" required type="date" /></label>
+                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
+                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
+                <label className="flex gap-3 text-sm"><input className="mt-1" name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>
+                <Button className="w-full" type="submit">{t("actions.issue")}</Button>
+              </form> : <p className="text-sm text-amber-800" role="status">{t("create.form.simplifiedUnavailable")}</p>}
             <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form>
           </Card>
         </div>

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseBillingServiceDeclaration } from "@/features/billing/service-declaration";
 import { parseTaxRate } from "@/features/billing/tax-rate";
 import { validateBillingDocumentSelection } from "@/features/billing/document-type";
 import { parseBillingSimplifiedSeries } from "@/features/billing/simplified-series";
@@ -22,6 +23,10 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_advance_workflow_required")) return "advanceBlocked";
+  if (message?.includes("billing_service_date")) return "serviceDate";
+  if (message?.includes("billing_simplified_declaration_required") || message?.includes("billing_simplified_operation_not_eligible")
+    || message?.includes("billing_simplified_fiscal_history_review_required")) return "serviceDeclaration";
   if (message?.includes("billing_simplified_issuance_disabled") || message?.includes("billing_simplified_series_required")) return "simplifiedUnavailable";
   if (message?.includes("billing_recipient_invalid")) return "customer";
   if (message?.includes("billing_series_reserved") || message?.includes("billing_simplified_series_used")) return "simplifiedSeriesUsed";
@@ -262,4 +267,43 @@ export async function deleteBillingDraftAction(locale: string, invoiceId: string
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
   revalidateBilling(locale, customerId, invoiceId);
   redirect(`/${locale}/app/billing`);
+}
+
+// Explicit service declaration: the DB owns tenant, date, eligibility, locks and
+// numbering. Lost responses lead to ONE canonical read, never an automatic write.
+export async function issueSimplifiedBillingInvoiceAction(locale: string, invoiceId: string, form: FormData) {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  if (!UUID.test(invoiceId)) redirect(`/${locale}/app/billing?error=orders`);
+  const declaration = parseBillingServiceDeclaration(form);
+  if (!declaration) redirect(`/${locale}/app/billing/${invoiceId}?error=serviceDeclaration`);
+  const supabase = await createSupabaseServerClient();
+  let failed = false;
+  let message: string | undefined;
+  try {
+    const result = await supabase.rpc("issue_billing_invoice", {
+      target_invoice_id: invoiceId, target_service_performed_on: declaration.servicePerformedOn,
+      target_operation_scope: declaration.operationScope, target_recipient_requirement: declaration.recipientRequirement,
+      target_confirmed: true,
+    });
+    failed = Boolean(result.error);
+    message = result.error?.message;
+  } catch {
+    failed = true;
+  }
+  // Both success and uncertain responses are verified against persisted state.
+  let completed = false;
+  try {
+    const result = await supabase.from("invoices").select("id, organization_id, fiscal_document_type, document_status, invoice_number")
+      .eq("organization_id", membership.organization.id).eq("id", invoiceId)
+      .maybeSingle<{ id: string; organization_id: string; fiscal_document_type: string; document_status: string; invoice_number: string | null }>();
+    const row = result.data;
+    completed = !result.error && row?.id === invoiceId && row.organization_id === membership.organization.id
+      && row.fiscal_document_type === "simplified" && row.document_status === "issued" && Boolean(row.invoice_number);
+  } catch { /* Keep uncertainty visible; no second RPC or number allocation. */ }
+  if (completed) {
+    revalidateBilling(locale, null, invoiceId);
+    redirect(`/${locale}/app/billing/${invoiceId}?saved=issued`);
+  }
+  redirect(`/${locale}/app/billing/${invoiceId}?error=${failed && message ? billingError(message) : "issueUncertain"}`);
 }

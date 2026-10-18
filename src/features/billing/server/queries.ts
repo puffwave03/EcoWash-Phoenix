@@ -43,6 +43,7 @@ type InvoiceRow = {
   document_status: BillingDocumentStatus;
   fiscal_document_type: BillingFiscalDocumentType;
   recipient_snapshot_mode?: BillingInvoice["recipientSnapshotMode"];
+  service_performed_on?: string | null;
   due_date: string | null;
   id: string;
   invoice_number: string | null;
@@ -84,6 +85,9 @@ type SettingsRow = {
   default_series: string;
   default_tax_rate: number;
   simplified_series: string | null;
+  simplified_invoicing_enabled?: boolean;
+  fiscal_territory_code?: string | null;
+  declared_tax_regime_code?: string | null;
   issuer_address_line1: string | null;
   issuer_address_line2: string | null;
   issuer_city: string | null;
@@ -142,8 +146,8 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, recipient_snapshot_mode, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
-const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate, simplified_series";
+const INVOICE_SELECT = "id, service_performed_on, recipient_snapshot_mode, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate, simplified_series, simplified_invoicing_enabled, fiscal_territory_code, declared_tax_regime_code";
 
 function number(value: number | string | null) {
   const parsed = Number(value ?? 0);
@@ -227,6 +231,7 @@ function mapInvoice(
     paymentStatus: derivePayment(row.document_status, total, paidTotal),
     pricesIncludeTax: row.prices_include_tax,
     recipientSnapshotMode: recipientMode,
+    servicePerformedOn: row.service_performed_on ?? null,
     sequenceNumber: row.sequence_number,
     series: row.series,
     subtotal: number(row.subtotal),
@@ -318,6 +323,9 @@ export async function getBillingSettings(locale: string): Promise<BillingSetting
     defaultSeries: settings?.default_series ?? "A",
     defaultTaxRate: number(settings?.default_tax_rate ?? 0),
     simplifiedSeries: settings?.simplified_series ?? null,
+    simplifiedIssuanceReady: !settingsResult.error && settings?.simplified_invoicing_enabled === true
+      && settings.fiscal_territory_code === "ES-CN" && settings.declared_tax_regime_code === "IGIC-GENERAL"
+      && settings.issuer_country_code === "ES" && Boolean(settings.simplified_series) && isIssueReady,
     issuerAddressLine1,
     issuerAddressLine2: settings?.issuer_address_line2 ?? "",
     issuerCity,
@@ -436,8 +444,28 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     ? await supabase.from("payments").select("id, order_id, amount, method, status, paid_at").in("order_id", invoice.orderIds).order("paid_at", { ascending: false }).returns<PaymentRow[]>()
     : { data: [] as PaymentRow[] };
 
+  let simplifiedIssuanceReady = false;
+  let operationalCompletedAt: string | null = null;
+  if (invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "draft") {
+    const { data: profile, error } = await supabase.from("organization_billing_settings")
+      .select("simplified_invoicing_enabled, fiscal_territory_code, declared_tax_regime_code, simplified_series")
+      .eq("organization_id", membership.organization.id).maybeSingle<SettingsRow>();
+    if (error) throw error;
+    simplifiedIssuanceReady = profile?.simplified_invoicing_enabled === true
+      && profile.fiscal_territory_code === "ES-CN" && profile.declared_tax_regime_code === "IGIC-GENERAL"
+      && profile.simplified_series === invoice.series;
+    if (simplifiedIssuanceReady) {
+      const reference = await supabase.from("orders").select("completed_at")
+        .eq("organization_id", membership.organization.id).in("id", invoice.orderIds)
+        .maybeSingle<{ completed_at: string | null }>();
+      if (reference.error) throw reference.error;
+      operationalCompletedAt = reference.data?.completed_at ?? null;
+    }
+  }
   return {
     invoice,
+    simplifiedIssuanceReady,
+    operationalCompletedAt,
     items: itemsResult.data.map((item) => ({
       description: item.description,
       discountAmount: number(item.discount_amount),

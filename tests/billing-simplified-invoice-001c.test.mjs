@@ -27,6 +27,7 @@ function billing({ role = "owner", entitled = true } = {}) {
     invoice_items: [{ id: "line-a", organization_id: "org-a", invoice_id: "invoice-a", source_order_id: "order-a",
       description: "Memory service", unit_type: "service", quantity: 4, unit_price: 9, line_subtotal: 36,
       discount_amount: 0, taxable_base: 33.64, tax_rate: 7, tax_amount: 2.36, line_total: 36, display_order: 0 }],
+    organization_billing_settings: [],
     invoice_orders: [{ organization_id: "org-a", invoice_id: "invoice-a", order_id: "order-a" }],
     orders: [{ organization_id: "org-a", id: "order-a", order_number: "MEMORY-ORDER" }], payments: [],
   };

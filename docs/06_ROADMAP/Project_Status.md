@@ -2,7 +2,19 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 17/10/2026.
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 18/10/2026.
+
+## BILLING-SIMPLIFIED-INVOICE-001F — Service issuance closeout checkpoint (18/10/2026)
+
+**IMPLEMENTED / CTO PASS / STAGING SCHEMA APPLIED / STRUCTURAL POSTFLIGHT PASS; FISCAL UAT OPEN.** The canonical Billing path prepares simplified issuance for an eligible local laundry/dry-cleaning service order with no prior non-`void` payment. Owner/Manager must declare and confirm the effective service date; actor and timestamp are persisted and the issued snapshot is immutable. Existing operational dates remain informational. The 001D series ownership and atomic Billing numbering, order–invoice uniqueness, idempotent replay, two labelled copies of one persisted fiscal document and canonical reprint are reused. The one-argument ordinary issue RPC and ordinary economic behavior remain compatible. Prices, IGIC snapshots, payment ledger, tenant/RLS and `WALKIN-SHARED` protections remain unchanged.
+
+**Safety boundary:** only the new simplified issuance requires `READ COMMITTED`. Its order lock coordinates with the canonical POS payment writer; any prior payment record except `void` blocks issuance before a fiscal progressive is allocated. Advance/final-document linkage, balance settlement and corrective documents are not supported by this path. The migration makes no automatic tenant activation; actual live tenant configuration needs separate verification and explicit approval.
+
+**Recorded validation, reused without rerun:** CTO 001F final review PASS; **147/147 application tests**, **48/48 isolated PostgreSQL tests** after the POS race correction, **16/16 focused contracts**, TypeScript, scoped ESLint, five-locale translations and diff checks PASS. The PostgreSQL harness used canonical Billing/POS RPC bodies with synthetic Auth/source dependencies, not full HTTP end-to-end. The Product Owner applied only **`20261018000100_billing_simplified_invoice_001f_service_issuance.sql`** to staging **`exthnplfokcucaqydney`**; approved SHA-256 **`5b4ffc32367818633a8e7ae96c350dd1b6cf93e1d878ce81267c6cbd3dbefd7b`**. Migration-list evidence shows **101 local/remote versions aligned**; do not reapply it.
+
+**Postflight scope:** local comparison of the staging schema dump with the approved SQL and prior function snapshot is **PASS for structure**: installed RPC/trigger bodies, coordinated constraints, privileges, RLS, tenant and recipient guards, `READ COMMITTED` gate and non-`void` payment check match the approved design. The ordinary function's only body change is the intended simplified branch. **`DATA_COMPARISON_NOT_VERIFIED`:** five current Billing-table fingerprints lack a comparable pre-migration baseline using the same algorithm. The schema dump cannot establish unchanged historical invoices, payments, counters, current tenant flag values or absence of new records. There is no demonstrated structural defect; no data-integrity PASS is claimed.
+
+**Remaining gates:** tenant activation, real staging HTTP end-to-end, browser/print and Product Owner fiscal UAT, advance/saldo and corrective treatment, and later external provider/VERI*FACTU integration. No complete fiscal conformity or commercial-production readiness is declared. The 001E and earlier sections remain historical checkpoints for their original phases.
 
 ## BILLING-SIMPLIFIED-INVOICE-001E — Draft persistence foundation closeout (17/10/2026)
 

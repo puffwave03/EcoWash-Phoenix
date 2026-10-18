@@ -29,7 +29,7 @@ function load(path) {
     if (["@/lib/number-format", "@/features/billing/tax-rate"].includes(name)) return load(`src/${name.slice(2)}.ts`);
     if (name === "@/features/billing/server/actions") return {
       cancelBillingInvoiceAction: forbiddenAction, deleteBillingDraftAction: forbiddenAction,
-      issueBillingInvoiceAction: forbiddenAction, updateBillingDraftAction: forbiddenAction,
+      issueBillingInvoiceAction: forbiddenAction, issueSimplifiedBillingInvoiceAction: forbiddenAction, updateBillingDraftAction: forbiddenAction,
     };
     if (name === "@/components/Button") return { Button: ({ children }) => createElement("button", null, children) };
     if (name === "@/components/Card") return { Card: ({ children }) => createElement("div", null, children) };
@@ -174,4 +174,21 @@ test("both modes preserve and escape long descriptions with scoped table and amo
     assert.match(html, /class="billing-invoice-amount/);
     assert.doesNotMatch(html, /min-w-\[44rem\]/);
   }
+});
+
+for (const locale of ["it","es","en","fr","de"]) test(`${locale}: issued simplified copies carry the same service date and immutable fiscal number`, async()=>{
+ const fixture=JSON.parse(JSON.stringify(detail([line()])));
+ Object.assign(fixture.invoice,{fiscalDocumentType:"simplified",servicePerformedOn:"2026-10-18",recipientSnapshotMode:"anonymous",customerId:null,customerName:null});
+ const html=await render(fixture,true,locale);const label=messages[locale].serviceIssue.date;
+ assert.equal(text(html).split(label).length-1,2);
+ assert.equal(text(html).split(fixture.invoice.invoiceNumber).length-1,2);
+ assert.equal(text(html).split(messages[locale].document.customerCopy).length-1,1);
+ assert.ok(!text(html).includes("common.billing."));
+});
+test("enabled simplified declaration uses blank explicit date, with operational time only as reference",async()=>{
+ const fixture=JSON.parse(JSON.stringify(detail([line()])));
+ Object.assign(fixture.invoice,{fiscalDocumentType:"simplified",documentStatus:"draft",paymentStatus:"draft",recipientSnapshotMode:"anonymous",customerId:null,customerName:null});
+ fixture.simplifiedIssuanceReady=true;fixture.operationalCompletedAt="2026-10-17T12:00:00Z";
+ const html=await render(fixture,false,"it");assert.match(html,/name="servicePerformedOn"/);
+ assert.doesNotMatch(html,/name="servicePerformedOn"[^>]*value=/);assert.match(html,/name="serviceConfirmed"/);
 });

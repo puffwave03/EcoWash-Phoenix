@@ -267,7 +267,7 @@ for (const canInvoice of [true, false]) for (const isWalkIn of [true, false]) te
     orderId: "order-a", orderNumber: "MEMORY-ONLY", total: 36, paid: 0, outstanding: 36 } });
   await request.settled;
   const link = nodes(ui.render()).find((node) => node.props.href?.startsWith("/app/billing/"));
-  assert.equal(Boolean(link), canInvoice && !isWalkIn);
+  assert.equal(Boolean(link), canInvoice);
   if (link) {
     assert.equal(link.props.href, "/app/billing/new?orderId=order-a&source=shop");
     const billingUi = billing(); const query = Object.fromEntries(new URL(link.props.href, "https://memory.invalid").searchParams);
@@ -275,4 +275,27 @@ for (const canInvoice of [true, false]) for (const isWalkIn of [true, false]) te
   }
   assert.equal(ui.calls.submit.length, 1);
   assert.equal(ui.calls.status.length, 0);
+});
+
+function enableSimplifiedFixture(ui) {
+  ui.rows.organization_billing_settings.push({ organization_id: "org-a", simplified_invoicing_enabled: true,
+    fiscal_territory_code: "ES-CN", declared_tax_regime_code: "IGIC-GENERAL", simplified_series: "S",
+    issuer_country_code: "ES", issuer_legal_name: "Test", issuer_tax_id: "TEST", issuer_address_line1: "Test",
+    issuer_city: "Test", issuer_postal_code: "00000", default_series: "A", default_tax_rate: 7 });
+  Object.assign(ui.rows.orders[0], { currency: "EUR", total: 7, order_number: "MEMORY-ONLY" });
+}
+test("configured occasional entry prepares only simplified, without customer registration or writes", async () => {
+ const ui=billing();enableSimplifiedFixture(ui);ui.rows.customers[0].customer_code="WALKIN-SHARED";
+ const before=JSON.stringify(ui.rows);const tree=await ui.page({orderId:"order-a",customerId:"forged"});
+ const form=nodes(tree).find(n=>n.type?.name==="BillingCreateForm");assert.equal(form.props.onlySimplified,true);
+ assert.equal(form.props.orders.length,1);assert.equal(form.props.orders[0].customerId,"customer-a");
+ assert.ok(!nodes(tree).some(n=>n.type==="fiscal-panel"));
+ const rendered=nodes(ui.form(form.props));assert.equal(rendered.find(n=>n.type==="option"&&n.props.value==="ordinary").props.disabled,true);
+ assert.equal(rendered.find(n=>n.type==="option"&&n.props.value==="simplified").props.disabled,false);
+ assert.equal(JSON.stringify(ui.rows),before);assert.equal(ui.calls.rpc.length,0);
+});
+test("unsupported profile cannot expose occasional preparation even with submitted enable flag", async()=>{
+ const ui=billing();enableSimplifiedFixture(ui);ui.rows.customers[0].customer_code="WALKIN-SHARED";
+ ui.rows.organization_billing_settings[0].declared_tax_regime_code="UNKNOWN";
+ assert.equal((await ui.entry()).kind,"unavailable");assert.equal(ui.calls.rpc.length,0);
 });
