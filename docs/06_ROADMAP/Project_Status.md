@@ -2,7 +2,15 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 18/10/2026.
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026.
+
+## BILLING-SIMPLIFIED-INVOICE-001G-C1 — Advance declaration foundation (19/10/2026)
+
+**FOUNDATION COMPLETE ON STAGING / CTO PASS / POSTFLIGHT PASS; ADVANCE ISSUANCE BLOCKED.** Migration `20261018000300` adds immutable, tenant/order/payment-bound pre-service declarations with canonical POS amount/date and authenticated Owner/Manager identity/timestamp. A payment can have only one declaration. The corrected payment-before-order lock protocol and scoped `READ COMMITTED` requirement prevent the tested refund/declaration deadlock and detect the committed refund. RLS requires tenant, Owner/Manager and Billing entitlement; clients have no direct mutation grants. Ordinary Billing, POS RPCs, fiscal snapshots, IGIC and numbering are unchanged.
+
+**Evidence:** C1 CTO PASS; isolated PostgreSQL **2/2 PASS** and C1/G-B static contracts **2/2 PASS**, reused without repetition. Isolated runtime fixtures cover the canonical lock protocol, not the complete HTTP flow. The approved migration (SHA-256 `6b58b1df164343027b8e4de56fac86869f200e35056b15258d29da1a0c5a19fc`) was applied once to `exthnplfokcucaqydney`; **103 migrations are aligned**. Postflight verified the matching trigger body, active guards, validated constraints, RLS and privileges. Six comparable table fingerprints are identical pre/post; 34 pre-existing Billing/POS/helper functions are unchanged. No declaration or invoice was created. Do not reapply this migration.
+
+**Remaining gates:** fiscal advance/balance issuance is still blocked. The cent-reconciliation convention requires CTO/adviser confirmation; fiscal UAT and external provider/VERI*FACTU integration remain open. This checkpoint does not declare simplified invoicing complete or full fiscal conformity. All earlier checkpoints and other open findings remain preserved; C1 closeout does not authorize C2.
 
 ## BILLING-SIMPLIFIED-INVOICE-001G-B — Advance payment link foundation (18/10/2026)
 

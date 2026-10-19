@@ -2,7 +2,15 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-18
+Date: 2026-10-19
+
+## BILLING-SIMPLIFIED-INVOICE-001G-C1 — Advance declaration foundation (19/10/2026)
+
+**FOUNDATION INSTALLED ON STAGING / CTO PASS / POSTFLIGHT PASS; ADVANCE FISCAL ISSUANCE STILL BLOCKED.** `billing_advance_event_declarations` preserves an explicit Owner/Manager pre-service declaration for a confirmed POS payment: tenant/order/payment identity, canonical payment amount and collection date, authenticated operator and declaration timestamp. Declarations are immutable and unique per tenant/payment. The corrected lock protocol takes the source payment `FOR SHARE` before the order `FOR UPDATE`; `READ COMMITTED` and the subsequent refund check reject a refund committed while the declaration waited. POS RPCs and ordinary Billing remain unchanged. This foundation adds no callable issuer or client write permission and does not activate any tenant.
+
+**Approved evidence, reused without rerunning suites:** final CTO review PASS; isolated PostgreSQL C1 **2/2 PASS**, including refund/declaration concurrency; C1/G-B static contracts **2/2 PASS**. The runtime uses isolated fixtures reproducing the canonical POS lock protocol, not full HTTP E2E. Migration `20261018000300_billing_simplified_invoice_001g_c1_advance_event_foundation.sql`, SHA-256 `6b58b1df164343027b8e4de56fac86869f200e35056b15258d29da1a0c5a19fc`, was applied once to verified staging `exthnplfokcucaqydney`, database `postgres`, after a single-file dry-run. **103 local/remote migrations are aligned; do not reapply C1.** Read-only postflight confirmed the installed trigger body matches the approved SQL, validated FK/check constraints, active guard, RLS and restricted privileges. Comparable fingerprints of six tables (invoices, invoice_orders, payments, counters, Billing settings and payment links) match before/after; **34 pre-existing Billing/POS/helper function definitions are unchanged**. The declaration table is empty; no declaration or invoice was created.
+
+**Still OPEN:** advance/balance fiscal issuance remains blocked; the fiscal convention for cent reconciliation awaits CTO/adviser confirmation. Fiscal HTTP/browser UAT and external provider/VERI*FACTU integration remain open and separate. Simplified invoicing is not declared functionally complete or fully fiscally compliant. Earlier checkpoints below are preserved as historical phase evidence; no subsequent mission is started by this closeout.
 
 ## BILLING-SIMPLIFIED-INVOICE-001G-B — Advance payment link foundation (18/10/2026)
 
