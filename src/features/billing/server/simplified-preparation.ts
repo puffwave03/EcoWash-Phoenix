@@ -40,8 +40,9 @@ function canonicalCents(amount: unknown): number {
 type AuthorizedContext = { organizationId: string; role: string };
 type OrderRow = { organization_id: string; id: string; currency: string; total: number | string; is_active: boolean; production_status: string };
 type SettingsRow = { fiscal_territory_code: string | null; declared_tax_regime_code: string | null; simplified_invoicing_enabled: boolean };
-type LinkRow = { invoice_id: string; is_active: boolean };
-type DocumentRow = { id: string; document_status: "draft" | "issued" | "cancelled" };
+type LinkRow = { invoice_id: string; is_active: boolean; billing_link_role: "advance" | "final" };
+type DocumentRow = { id: string; document_status: "draft" | "issued" | "cancelled";
+  fiscal_document_type: "ordinary" | "simplified"; billing_event_kind: "service" | "advance" };
 
 // Called only AFTER the canonical action authenticates and checks entitlement.
 // Context comes from requireOwnerOrManager, never from a hidden form/customer ID.
@@ -69,7 +70,7 @@ export async function prepareSimplifiedBillingRequest(context: AuthorizedContext
     supabase.from("order_items").select("id")
       .eq("organization_id", context.organizationId).eq("order_id", orderId).eq("is_active", true)
       .returns<{ id: string }[]>(),
-    supabase.from("invoice_orders").select("invoice_id, is_active")
+    supabase.from("invoice_orders").select("invoice_id, is_active, billing_link_role")
       .eq("organization_id", context.organizationId).eq("order_id", orderId).returns<LinkRow[]>(),
     supabase.from("payments").select("id, status")
       .eq("organization_id", context.organizationId).eq("order_id", orderId)
@@ -83,13 +84,24 @@ export async function prepareSimplifiedBillingRequest(context: AuthorizedContext
   let existingDocument: "none" | "cancelled" = "none";
   if (links.data.length > 0) {
     const ids = [...new Set(links.data.map((link) => link.invoice_id))];
-    const documents = await supabase.from("invoices").select("id, document_status")
+    const documents = await supabase.from("invoices").select("id, document_status, fiscal_document_type, billing_event_kind")
       .eq("organization_id", context.organizationId).in("id", ids).returns<DocumentRow[]>();
     if (documents.error) throw documents.error;
     if (!Array.isArray(documents.data) || documents.data.length !== ids.length) {
       throw new Error("billing_order_entry_invalid_document");
     }
-    const active = links.data.filter((link) => link.is_active);
+    if (links.data.some((link) => !["advance", "final"].includes(link.billing_link_role))) {
+      throw new Error("billing_order_entry_invalid_document");
+    }
+    const advances = links.data.filter((link) => link.billing_link_role === "advance");
+    if (advances.some((link) => {
+      const document = documents.data.find((document) => document.id === link.invoice_id);
+      return !link.is_active || document?.document_status !== "issued"
+        || document.fiscal_document_type !== "simplified" || document.billing_event_kind !== "advance";
+    })) {
+      throw new Error("billing_order_entry_invalid_document");
+    }
+    const active = links.data.filter((link) => link.is_active && link.billing_link_role === "final");
     if (active.length > 1) throw new Error("billing_order_entry_invalid_document");
     const existing = active[0] && documents.data.find((document) => document.id === active[0].invoice_id);
     if (existing && ["draft", "issued"].includes(existing.document_status)) {

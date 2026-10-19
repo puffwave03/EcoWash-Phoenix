@@ -46,6 +46,19 @@ export type BillingCustomerContext = {
 };
 
 export type BillingInvoice = {
+  billingEventKind?: "service" | "advance";
+  operationTotal?: number | null;
+  operationTaxableBase?: number | null;
+  operationTaxTotal?: number | null;
+  documentedAdvanceTotal?: number | null;
+  documentedAdvanceTaxableBase?: number | null;
+  documentedAdvanceTaxTotal?: number | null;
+  operationRoundingBaseDelta?: number | null;
+  operationItemsSnapshot?: Array<{
+    description: string; quantity: number; unit_type: string; unit_price: number;
+    line_subtotal: number; discount_amount: number; taxable_base: number;
+    tax_rate: number; tax_amount: number; line_total: number;
+  }> | null;
   cancelledAt: string | null;
   cancellationReason: string | null;
   createdAt: string;
@@ -126,6 +139,9 @@ export type BillingInvoiceDetail = {
   invoice: BillingInvoice;
   items: BillingInvoiceItem[];
   payments: BillingPayment[];
+  advanceDeclarations?: string[];
+  paymentLinks?: Array<{ paymentId: string; invoiceId: string; role: "advance" | "final" }>;
+  advanceDocuments?: Array<{ id: string; invoiceNumber: string | null; issueDate: string; total: number; taxableBase: number; taxTotal: number }>;
 };
 
 export type EligibleBillingOrder = {

@@ -30,7 +30,8 @@ export async function getBillingOrderEntry(locale: string, orderId: string): Pro
       .eq("organization_id", organizationId).eq("id", customerId)
       .maybeSingle<{ customer_code: string | null }>(),
     supabase.from("invoice_orders").select("invoice_id")
-      .eq("organization_id", organizationId).eq("order_id", orderId).eq("is_active", true)
+      .eq("organization_id", organizationId).eq("order_id", orderId)
+      .eq("billing_link_role", "final").eq("is_active", true)
       .maybeSingle<{ invoice_id: string }>(),
   ]);
   if (customer.error) throw customer.error;

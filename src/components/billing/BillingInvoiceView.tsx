@@ -6,8 +6,11 @@ import { PrintInvoiceButton } from "@/components/billing/PrintInvoiceButton";
 import { Card } from "@/components/Card";
 import {
   cancelBillingInvoiceAction,
+  declareBillingAdvanceAction,
   deleteBillingDraftAction,
   issueBillingInvoiceAction,
+  issueBillingAdvanceAction,
+  issueBillingFinalAfterAdvancesAction,
   issueSimplifiedBillingInvoiceAction,
   updateBillingDraftAction,
 } from "@/features/billing/server/actions";
@@ -34,6 +37,10 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
 }): Promise<ReactElement> {
   const t = await getTranslations({ locale, namespace: "common.billing" });
   const { invoice, items, payments } = detail;
+  const attributed = new Set((detail.paymentLinks ?? []).map((link) => link.paymentId));
+  const declared = new Set(detail.advanceDeclarations ?? []);
+  const openPayments = payments.filter((payment) => payment.status === "confirmed" && !attributed.has(payment.id));
+  const hasIssuedAdvances = (detail.advanceDocuments ?? []).some((document) => document.invoiceNumber);
   const statusLabel = t(`statuses.${invoice.paymentStatus}`);
   const taxRate = items[0]?.taxRate ?? 0;
   const issuerAddress = address([invoice.issuerAddressLine1, invoice.issuerAddressLine2, invoice.issuerPostalCode, invoice.issuerCity, invoice.issuerRegion, invoice.issuerCountryCode]);
@@ -56,7 +63,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
   }
   const copyLabel = isSimplifiedCopy && printCopy ? t(`document.${printCopy}Copy`) : null;
   const showRecipient = !(invoice.fiscalDocumentType === "simplified") || Boolean((invoice.customerName ?? "").trim() || invoice.customerTaxId || customerAddress || invoice.customerEmail);
-  const printHref = invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued" && invoice.orderIds.length === 1
+  const printHref = invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued"
+    && invoice.orderIds.length === 1 && invoice.billingEventKind !== "advance" && invoice.operationTotal == null
     ? `/app/orders/${invoice.orderIds[0]}/print/receipt?document=fiscal`
     : `/app/billing/${invoice.id}/print`;
 
@@ -84,7 +92,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         <div className="billing-invoice-content p-5 sm:p-8">
           <header className="grid gap-6 border-b border-border pb-6 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t(invoice.fiscalDocumentType === "simplified" ? "document.simplifiedInvoice" : "document.invoice")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t(invoice.billingEventKind === "advance" ? "advanceFlow.advanceInvoice" : invoice.operationTotal != null ? "advanceFlow.finalInvoice" : invoice.fiscalDocumentType === "simplified" ? "document.simplifiedInvoice" : "document.invoice")}</p>
               <h2 className="mt-2 text-3xl font-semibold text-primary">{invoice.invoiceNumber ?? t("draftNumber")}</h2>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div><dt className="text-muted">{t("fields.issueDate")}</dt><dd className="font-semibold">{formatDate(invoice.issueDate, locale)}</dd></div>
@@ -119,6 +127,22 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
               </div>
             </div>
           </section>
+
+          {invoice.operationTotal != null ? <section className="space-y-3 border-b border-border py-6 text-sm">
+            <h3 className="font-semibold text-primary">{t("advanceFlow.operationSummary")}</h3>
+            <ul className="space-y-1">{(invoice.operationItemsSnapshot ?? []).map((item, index) => <li key={`${item.description}-${index}`}>{item.description} · {formatQuantity(item.quantity, locale)} × {formatCurrency(item.unit_price, invoice.currency, locale)} = {formatCurrency(item.line_total, invoice.currency, locale)}</li>)}</ul>
+            <div className="flex justify-between"><span>{t("advanceFlow.commercialTotal")}</span><strong>{formatCurrency(invoice.operationTotal, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.operationTaxableBase")}</span><strong>{formatCurrency(invoice.operationTaxableBase ?? 0, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.operationTax")}</span><strong>{formatCurrency(invoice.operationTaxTotal ?? 0, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.documentedAdvances")}</span><strong>{formatCurrency(invoice.documentedAdvanceTotal ?? 0, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.advancesTaxableBase")}</span><strong>{formatCurrency(invoice.documentedAdvanceTaxableBase ?? 0, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.advancesTax")}</span><strong>{formatCurrency(invoice.documentedAdvanceTaxTotal ?? 0, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.balance")}</span><strong>{formatCurrency(invoice.total, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.balanceTaxableBase")}</span><strong>{formatCurrency(invoice.taxableBase, invoice.currency, locale)}</strong></div>
+            <div className="flex justify-between"><span>{t("advanceFlow.balanceTax")}</span><strong>{formatCurrency(invoice.taxTotal, invoice.currency, locale)}</strong></div>
+            {(detail.advanceDocuments ?? []).map((document) => document.invoiceNumber ? <p key={document.id}>{t("advanceFlow.advanceReference")}: {document.invoiceNumber} · {formatDate(document.issueDate, locale)} · {formatCurrency(document.total, invoice.currency, locale)}</p> : null)}
+            {invoice.operationRoundingBaseDelta ? <p className="text-muted">{t("advanceFlow.roundingDifference")}: {formatCurrency(invoice.operationRoundingBaseDelta, invoice.currency, locale)}</p> : null}
+          </section> : null}
 
           <div className="billing-invoice-table-scroll py-6">
             <table className="billing-invoice-items w-full border-collapse text-sm">
@@ -211,6 +235,31 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <h2 className="text-xl font-semibold text-primary">{t("issue.title")}</h2>
             <p className="text-sm leading-6 text-muted">{t("issue.description")}</p>
             {invoice.fiscalDocumentType === "ordinary" ? <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
+              : detail.simplifiedIssuanceReady && payments.length > 0 ? <div className="space-y-5">
+                <p className="text-sm text-muted">{t("advanceFlow.help")}</p>
+                {openPayments.map((payment) => <div className="space-y-3 border-t border-border pt-4" key={payment.id}>
+                  <p className="font-semibold">{formatDate(payment.paidAt, locale)} · {formatCurrency(payment.amount, invoice.currency, locale)}</p>
+                  {declared.has(payment.id) ? <form action={issueBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
+                    <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
+                    <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
+                    <label className="flex gap-3 text-sm"><input name="advanceIssueConfirmed" required type="checkbox" value="confirmed" /><span>{t("advanceFlow.advanceIssueConfirm")}</span></label>
+                    <Button type="submit">{t("advanceFlow.issueAdvance")}</Button>
+                  </form>
+                    : <form action={declareBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
+                      <label className="flex gap-3 text-sm"><input name="preServiceConfirmed" required type="checkbox" value="confirmed" /><span>{t("advanceFlow.preServiceConfirm")}</span></label>
+                      <Button type="submit" variant="secondary">{t("advanceFlow.declareAdvance")}</Button>
+                    </form>}
+                </div>)}
+                {hasIssuedAdvances && openPayments.length > 0 ? <form action={issueBillingFinalAfterAdvancesAction.bind(null, locale, invoice.id)} className="space-y-4 border-t border-border pt-4">
+                  <h3 className="font-semibold">{t("advanceFlow.issueFinal")}</h3>
+                  <label className="block space-y-2 text-sm font-semibold"><span>{t("advanceFlow.balancePayment")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" name="balancePaymentId" required>{openPayments.map((payment) => <option key={payment.id} value={payment.id}>{formatDate(payment.paidAt, locale)} · {formatCurrency(payment.amount, invoice.currency, locale)}</option>)}</select></label>
+                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" name="servicePerformedOn" required type="date" /></label>
+                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
+                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
+                  <label className="flex gap-3 text-sm"><input name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>
+                  <Button className="w-full" type="submit">{t("advanceFlow.issueFinal")}</Button>
+                </form> : null}
+              </div>
               : detail.simplifiedIssuanceReady ? <form action={issueSimplifiedBillingInvoiceAction.bind(null, locale, invoice.id)} className="space-y-4">
                 <p className="text-sm text-muted">{t("serviceIssue.help")}</p>
                 {detail.operationalCompletedAt ? <p className="text-sm text-muted">{t("serviceIssue.reference")}: {formatDate(detail.operationalCompletedAt, locale)}</p> : null}
@@ -220,7 +269,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
                 <label className="flex gap-3 text-sm"><input className="mt-1" name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>
                 <Button className="w-full" type="submit">{t("actions.issue")}</Button>
               </form> : <p className="text-sm text-amber-800" role="status">{t("create.form.simplifiedUnavailable")}</p>}
-            <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form>
+            {!(invoice.fiscalDocumentType === "simplified" && hasIssuedAdvances) ? <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form> : null}
           </Card>
         </div>
       ) : null}
@@ -240,7 +289,9 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
 
       {!printMode && payments.length > 0 ? (
         <Card className="bg-white">
-          <h2 className="text-xl font-semibold text-primary">{t("payments.title")}</h2>
+          <h2 className="text-xl font-semibold text-primary">{t(invoice.billingEventKind === "advance" || invoice.operationTotal != null
+            ? "payments.documentTitle" : invoice.fiscalDocumentType === "simplified"
+              ? "payments.orderTitle" : "payments.title")}</h2>
           <div className="mt-4 divide-y divide-border">{payments.map((payment) => <div className="grid gap-2 py-3 text-sm sm:grid-cols-4" key={payment.id}><span>{formatDate(payment.paidAt, locale)}</span><span>{t(`paymentMethods.${payment.method}`)}</span><span>{t(`paymentRecords.${payment.status}`)}</span><strong className="sm:text-right">{payment.status === "refunded" ? "−" : ""}{formatCurrency(payment.amount, invoice.currency, locale)}</strong></div>)}</div>
         </Card>
       ) : null}

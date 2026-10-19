@@ -34,6 +34,8 @@ function billing({ role = "owner" } = {}) {
     payments: [{ id: "payment-a", organization_id: "org-a", order_id: "order-a", amount: "5.00",
       method: "cash", status: "confirmed", paid_at: "2026-10-16T12:00:00Z" }],
   };
+  rows.billing_invoice_payment_links = [];
+  rows.billing_advance_event_declarations = [];
   const calls = { reads: [], auth: [], entitlement: [] };
   const overrides = new Map();
   let authorizationError = null, entitlementError = null;
@@ -192,4 +194,73 @@ test("rejected transport read blocks output without retry or persistent changes"
   await assert.rejects(ui.page(printPath), (error) => error === unavailable);
   assert.equal(ui.calls.reads.filter(({ table }) => table === "invoice_items").length, 1);
   assert.equal(JSON.stringify(ui.rows), before);
+});
+
+function advanceAndFinal() {
+  const ui = billing();
+  const original = ui.rows.invoices[0];
+  ui.rows.invoices = [
+    { ...original, fiscal_document_type: "simplified", billing_event_kind: "advance", total: 2 },
+    { ...original, id: "invoice-final", fiscal_document_type: "simplified", billing_event_kind: "service", operation_total: 7, total: 5 },
+  ];
+  ui.rows.invoice_orders.push({ ...ui.rows.invoice_orders[0], invoice_id: "invoice-final" });
+  ui.rows.payments = [
+    { ...ui.rows.payments[0], id: "advance-payment", amount: 2 },
+    { ...ui.rows.payments[0], id: "balance-payment", amount: 5 },
+  ];
+  ui.rows.billing_invoice_payment_links = [
+    { organization_id: "org-a", order_id: "order-a", invoice_id: "invoice-a", payment_id: "advance-payment", attributed_amount: 2, billing_link_role: "advance" },
+    { organization_id: "org-a", order_id: "order-a", invoice_id: "invoice-final", payment_id: "balance-payment", attributed_amount: 5, billing_link_role: "final" },
+  ];
+  return ui;
+}
+
+test("C2 detail attributes only its own payment, including the related refund without removing the original", async () => {
+  const ui = advanceAndFinal();
+  ui.rows.payments.push(
+    { ...ui.rows.payments[0], id: "advance-refund", amount: .5, status: "refunded", refunded_from_payment_id: "advance-payment" },
+    { ...ui.rows.payments[1], id: "balance-refund", amount: 1, status: "refunded", refunded_from_payment_id: "balance-payment" },
+  );
+  const before = JSON.stringify(ui.rows);
+  const advance = await ui.read();
+  const final = await ui.read("invoice-final");
+  assert.deepEqual(normalize(advance.payments.map(p => [p.id, p.amount, p.status])),
+    [["advance-payment", 2, "confirmed"], ["advance-refund", .5, "refunded"]]);
+  assert.deepEqual(normalize(final.payments.map(p => [p.id, p.amount, p.status])),
+    [["balance-payment", 5, "confirmed"], ["balance-refund", 1, "refunded"]]);
+  assert.equal(advance.invoice.paidTotal, 1.5);
+  assert.equal(final.invoice.paidTotal, 4);
+  assert.equal(advance.invoice.outstanding, .5);
+  assert.equal(final.invoice.outstanding, 1);
+  assert.equal(JSON.stringify(ui.rows), before);
+});
+
+test("C2 missing attribution never falls back to the whole order ledger", async () => {
+  const ui = advanceAndFinal();
+  ui.rows.billing_invoice_payment_links = [];
+  const detail = await ui.read();
+  assert.deepEqual(normalize(detail.payments), []);
+  assert.equal(detail.invoice.paidTotal, 0);
+});
+
+test("ordinary history without attribution retains all order payments and separate refunds", async () => {
+  const ui = billing();
+  ui.rows.payments.push({ ...ui.rows.payments[0], id: "refund", amount: 2,
+    status: "refunded", refunded_from_payment_id: "payment-a" });
+  const detail = await ui.read();
+  assert.deepEqual(normalize(detail.payments.map(p => p.id)), ["payment-a", "refund"]);
+  assert.equal(detail.invoice.paidTotal, 3);
+  assert.equal(detail.invoice.taxableBase, 10);
+  assert.equal(detail.invoice.taxTotal, .7);
+});
+
+test("C2 read excludes foreign organization attributions and refunds", async () => {
+  const ui = advanceAndFinal();
+  ui.rows.payments.push({ ...ui.rows.payments[0], id: "foreign-refund", organization_id: "org-b",
+    amount: 2, status: "refunded", refunded_from_payment_id: "advance-payment" });
+  ui.rows.billing_invoice_payment_links.push({ ...ui.rows.billing_invoice_payment_links[0],
+    organization_id: "org-b", payment_id: "balance-payment" });
+  const detail = await ui.read();
+  assert.deepEqual(normalize(detail.payments.map(p => p.id)), ["advance-payment"]);
+  assert.equal(detail.invoice.paidTotal, 2);
 });

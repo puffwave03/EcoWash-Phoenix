@@ -23,6 +23,8 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_exact_reconciliation_required") || message?.includes("billing_final_payment_links_invalid")) return "advanceBlocked";
+  if (message?.includes("billing_advance_") || message?.includes("billing_final_")) return "advanceBlocked";
   if (message?.includes("billing_advance_workflow_required")) return "advanceBlocked";
   if (message?.includes("billing_service_date")) return "serviceDate";
   if (message?.includes("billing_simplified_declaration_required") || message?.includes("billing_simplified_operation_not_eligible")
@@ -306,4 +308,97 @@ export async function issueSimplifiedBillingInvoiceAction(locale: string, invoic
     redirect(`/${locale}/app/billing/${invoiceId}?saved=issued`);
   }
   redirect(`/${locale}/app/billing/${invoiceId}?error=${failed && message ? billingError(message) : "issueUncertain"}`);
+}
+
+export async function declareBillingAdvanceAction(locale: string, invoiceId: string, paymentId: string, form: FormData) {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  if (!UUID.test(invoiceId) || !UUID.test(paymentId)) redirect(`/${locale}/app/billing?error=orders`);
+  if (form.get("preServiceConfirmed") !== "confirmed") redirect(`/${locale}/app/billing/${invoiceId}?error=serviceDeclaration`);
+  const supabase = await createSupabaseServerClient();
+  const { data: link, error: linkError } = await supabase.from("invoice_orders")
+    .select("order_id").eq("organization_id", membership.organization.id)
+    .eq("invoice_id", invoiceId).eq("billing_link_role", "final")
+    .eq("is_active", true).maybeSingle<{ order_id: string }>();
+  if (linkError || !link) redirect(`/${locale}/app/billing/${invoiceId}?error=orders`);
+  const { error } = await supabase.rpc("declare_billing_advance_event", {
+    target_order_id: link.order_id, target_payment_id: paymentId, target_confirmed: true,
+  });
+  if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
+  revalidateBilling(locale, null, invoiceId);
+  redirect(`/${locale}/app/billing/${invoiceId}?saved=advanceDeclared`);
+}
+
+export async function issueBillingAdvanceAction(locale: string, invoiceId: string, paymentId: string, form: FormData) {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  if (!UUID.test(invoiceId) || !UUID.test(paymentId)) redirect(`/${locale}/app/billing?error=orders`);
+  const operationScope = value(form, "operationScope", 80);
+  const recipientRequirement = value(form, "fiscalRecipientRequirement", 80);
+  if (form.get("advanceIssueConfirmed") !== "confirmed"
+    || operationScope !== "local_laundry_dry_cleaning"
+    || !["consumer", "consumer_identified", "business"].includes(recipientRequirement)) {
+    redirect(`/${locale}/app/billing/${invoiceId}?error=serviceDeclaration`);
+  }
+  const supabase = await createSupabaseServerClient();
+  let message: string | undefined;
+  try {
+    const result = await supabase.rpc("issue_billing_advance_invoice", {
+      target_final_draft_id: invoiceId, target_payment_id: paymentId,
+      target_operation_scope: operationScope,
+      target_recipient_requirement: recipientRequirement,
+      target_confirmed: true,
+    });
+    message = result.error?.message;
+  } catch { /* Resolve from the immutable payment attribution below. */ }
+  const { data: link, error: linkError } = await supabase.from("billing_invoice_payment_links")
+    .select("invoice_id").eq("organization_id", membership.organization.id)
+    .eq("payment_id", paymentId).eq("billing_link_role", "advance")
+    .maybeSingle<{ invoice_id: string }>();
+  if (!linkError && link) {
+    const { data: issued, error } = await supabase.from("invoices")
+      .select("id").eq("organization_id", membership.organization.id)
+      .eq("id", link.invoice_id).eq("document_status", "issued")
+      .eq("billing_event_kind", "advance").maybeSingle<{ id: string }>();
+    if (!error && issued) {
+      revalidateBilling(locale, null, invoiceId);
+      redirect(`/${locale}/app/billing/${issued.id}?saved=issued`);
+    }
+  }
+  redirect(`/${locale}/app/billing/${invoiceId}?error=${message ? billingError(message) : "issueUncertain"}`);
+}
+
+export async function issueBillingFinalAfterAdvancesAction(locale: string, invoiceId: string, form: FormData) {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  if (!UUID.test(invoiceId)) redirect(`/${locale}/app/billing?error=orders`);
+  const paymentId = value(form, "balancePaymentId", 36);
+  const declaration = parseBillingServiceDeclaration(form);
+  if (!UUID.test(paymentId) || !declaration) redirect(`/${locale}/app/billing/${invoiceId}?error=serviceDeclaration`);
+  const supabase = await createSupabaseServerClient();
+  let message: string | undefined;
+  try {
+    const result = await supabase.rpc("issue_billing_final_after_advances", {
+      target_final_draft_id: invoiceId, target_balance_payment_id: paymentId,
+      target_service_performed_on: declaration.servicePerformedOn,
+      target_operation_scope: declaration.operationScope,
+      target_recipient_requirement: declaration.recipientRequirement,
+      target_confirmed: true,
+    });
+    message = result.error?.message;
+  } catch { /* Resolve committed state below, without resubmitting. */ }
+  const [invoiceResult, linkResult] = await Promise.all([
+    supabase.from("invoices").select("id").eq("organization_id", membership.organization.id)
+      .eq("id", invoiceId).eq("document_status", "issued")
+      .maybeSingle<{ id: string }>(),
+    supabase.from("billing_invoice_payment_links").select("payment_id")
+      .eq("organization_id", membership.organization.id).eq("invoice_id", invoiceId)
+      .eq("payment_id", paymentId).eq("billing_link_role", "final")
+      .maybeSingle<{ payment_id: string }>(),
+  ]);
+  if (!invoiceResult.error && invoiceResult.data && !linkResult.error && linkResult.data) {
+    revalidateBilling(locale, null, invoiceId);
+    redirect(`/${locale}/app/billing/${invoiceId}?saved=issued`);
+  }
+  redirect(`/${locale}/app/billing/${invoiceId}?error=${message ? billingError(message) : "issueUncertain"}`);
 }

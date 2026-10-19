@@ -30,6 +30,8 @@ function load(path) {
     if (name === "@/features/billing/server/actions") return {
       cancelBillingInvoiceAction: forbiddenAction, deleteBillingDraftAction: forbiddenAction,
       issueBillingInvoiceAction: forbiddenAction, issueSimplifiedBillingInvoiceAction: forbiddenAction, updateBillingDraftAction: forbiddenAction,
+      declareBillingAdvanceAction: forbiddenAction, issueBillingAdvanceAction: forbiddenAction,
+      issueBillingFinalAfterAdvancesAction: forbiddenAction,
     };
     if (name === "@/components/Button") return { Button: ({ children }) => createElement("button", null, children) };
     if (name === "@/components/Card") return { Card: ({ children }) => createElement("div", null, children) };
@@ -191,4 +193,31 @@ test("enabled simplified declaration uses blank explicit date, with operational 
  fixture.simplifiedIssuanceReady=true;fixture.operationalCompletedAt="2026-10-17T12:00:00Z";
  const html=await render(fixture,false,"it");assert.match(html,/name="servicePerformedOn"/);
  assert.doesNotMatch(html,/name="servicePerformedOn"[^>]*value=/);assert.match(html,/name="serviceConfirmed"/);
+});
+
+for (const locale of ["it", "es", "en", "fr", "de"]) test(`C2 ${locale}: document payment heading and refund sign preserve issued snapshot`, async () => {
+  const snapshot = JSON.parse(JSON.stringify(detail([line()])));
+  Object.assign(snapshot.invoice, { fiscalDocumentType: "simplified", billingEventKind: "advance", paidTotal: 1.5 });
+  snapshot.payments = [
+    { id: "p", amount: 2, status: "confirmed", method: "cash", paidAt: "2026-10-19T10:00:00Z" },
+    { id: "r", amount: .5, status: "refunded", method: "cash", paidAt: "2026-10-19T11:00:00Z" },
+  ];
+  const html = await render(freeze(snapshot), false, locale);
+  assert.ok(text(html).includes(messages[locale].payments.documentTitle));
+  assert.ok(text(html).includes(text(`−${formatCurrency(.5, "EUR", locale)}`)));
+  assert.ok(text(html).includes(text(`${messages[locale].totals.paid} ${formatCurrency(1.5, "EUR", locale)}`)));
+});
+
+test("C2 draft delete action follows issued advances; ordinary and unpaid drafts remain deletable", async () => {
+  for (const fiscalDocumentType of ["ordinary", "simplified"]) {
+    for (const invoiceNumber of [null, "2026-S-000001"]) {
+      const snapshot = JSON.parse(JSON.stringify(detail([line()])));
+      Object.assign(snapshot.invoice, { fiscalDocumentType, documentStatus: "draft", paymentStatus: "draft" });
+      snapshot.advanceDocuments = [{ id: "advance", invoiceNumber, total: 2 }];
+      snapshot.simplifiedIssuanceReady = false;
+      const html = await render(snapshot);
+      assert.equal(text(html).includes(messages.it.actions.deleteDraft),
+        fiscalDocumentType === "ordinary" || invoiceNumber === null);
+    }
+  }
 });

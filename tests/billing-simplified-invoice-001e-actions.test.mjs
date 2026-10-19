@@ -21,6 +21,7 @@ function harness({ role = "owner", entitled = true, errorTable, unavailableTable
       declared_tax_regime_code: "IGIC-GENERAL", simplified_invoicing_enabled: false, simplified_series: "TEST-S", default_tax_rate: 7 }],
     order_items: [{ id: "item-a", organization_id: "tenant-a", order_id: orderId, is_active: true }],
     invoice_orders: [], invoices: [], invoice_items: [], payments: [],
+    billing_invoice_payment_links: [], billing_advance_event_declarations: [],
   };
   const readError = Error("READ_FAILURE"), lostError = Error("RESPONSE_LOST");
   const supabase = {
@@ -56,7 +57,7 @@ function harness({ role = "owner", entitled = true, errorTable, unavailableTable
           issue_date: "2026-10-17", currency: "EUR", subtotal: 7, total: 7, taxable_base: 6.54, tax_total: 0.46,
           discount_total: 0, prices_include_tax: true, ...plain(args.target_recipient_snapshot),
           customer_id: args.target_recipient_snapshot.recipient_snapshot_mode === "identified" && rows.orders[0].customer_id !== "WALKIN-SHARED" ? rows.orders[0].customer_id : null });
-        rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: draftId, is_active: true });
+        rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: draftId, is_active: true, billing_link_role: "final" });
         rows.invoice_items.push({ id: "snapshot-item", organization_id: "tenant-a", invoice_id: draftId, source_order_id: orderId,
           description: "Synthetic laundry", unit_type: "service", quantity: 1, unit_price: 7,
           line_subtotal: 7, discount_amount: 0, taxable_base: 6.54, tax_amount: 0.46, tax_rate: 7, line_total: 7, display_order: 1 });
@@ -130,6 +131,55 @@ function request(type = "simplified") {
   return form;
 }
 const blocked = (e) => e.href?.endsWith("error=simplifiedUnavailable");
+
+function linkedFinalWithAdvances(ui, count, status = "draft") {
+  // Put advances first: selecting the first active document is incorrect.
+  for (let n = 0; n < count; n++) {
+    const id = `advance-${n}`;
+    ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId,
+      invoice_id: id, is_active: true, billing_link_role: "advance" });
+    ui.rows.invoices.push({ organization_id: "tenant-a", id, document_status: "issued",
+      fiscal_document_type: "simplified", billing_event_kind: "advance" });
+  }
+  ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId,
+    invoice_id: ui.draftId, is_active: true, billing_link_role: "final" });
+  ui.rows.invoices.push({ organization_id: "tenant-a", id: ui.draftId, document_status: status,
+    fiscal_document_type: "simplified", billing_event_kind: "service" });
+}
+
+for (const count of [1, 3]) for (const status of ["draft", "issued"]) {
+  test(`C2 reopens canonical ${status} with ${count} advances, without writes`, async () => {
+    const ui = harness(); linkedFinalWithAdvances(ui, count, status);
+    const before = JSON.stringify(ui.rows);
+    for (let n = 0; n < 2; n++) await assert.rejects(ui.submit(request()),
+      (e) => e.href === `/es/app/billing/${ui.draftId}`);
+    assert.equal(ui.calls.rpc.length, 0);
+    assert.equal(ui.calls.writes, 0);
+    assert.equal(JSON.stringify(ui.rows), before);
+    for (const read of ui.calls.reads) assert.ok(read.filters.some(([key, values]) =>
+      key === "organization_id" && values[0] === "tenant-a"));
+  });
+}
+
+test("C2 rejects duplicate finals, orphan advances and inconsistent advance history", async () => {
+  const corruptions = [
+    ui => ui.rows.invoice_orders.push({ ...ui.rows.invoice_orders.at(-1) }),
+    ui => ui.rows.invoice_orders.pop(),
+    ui => { ui.rows.invoices[0].document_status = "draft"; },
+    ui => { ui.rows.invoices[0].document_status = "cancelled"; },
+    ui => { ui.rows.invoices[0].fiscal_document_type = "ordinary"; },
+    ui => { ui.rows.invoices[0].billing_event_kind = "service"; },
+    ui => { ui.rows.invoice_orders[0].is_active = false; },
+    ui => { ui.rows.invoice_orders[0].billing_link_role = "unknown"; },
+    ui => { ui.rows.invoices[0].organization_id = "tenant-b"; },
+  ];
+  for (const corrupt of corruptions) {
+    const ui = harness(); linkedFinalWithAdvances(ui, 1); corrupt(ui);
+    await assert.rejects(ui.submit(request()), /billing_order_entry_invalid_document/);
+    assert.equal(ui.calls.rpc.length, 0);
+    assert.equal(ui.calls.writes, 0);
+  }
+});
 
 test("canonical action transfers anonymous snapshot through the six-argument draft contract", async () => {
   const ui = harness();
@@ -262,7 +312,7 @@ test("invalid/ambiguous types and order IDs never invoke RPC or read unrelated o
 test("active draft and issued invoice are reopened idempotently without a second preparation/write", async () => {
   for (const documentStatus of ["draft", "issued"]) {
     const ui = harness();
-    ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "existing-invoice", is_active: true });
+    ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "existing-invoice", is_active: true, billing_link_role: "final" });
     ui.rows.invoices.push({ organization_id: "tenant-a", id: "existing-invoice", document_status: documentStatus });
     const before = JSON.stringify(ui.rows);
     for (let i = 0; i < 2; i++) await assert.rejects(ui.submit(request()), (e) => e.href === "/es/app/billing/existing-invoice");
@@ -274,7 +324,7 @@ test("active draft and issued invoice are reopened idempotently without a second
 
 test("cancelled inactive history remains while canonical rules permit a new unnumbered draft", async () => {
   const ui = harness();
-  ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "cancelled-invoice", is_active: false });
+  ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "cancelled-invoice", is_active: false, billing_link_role: "final" });
   ui.rows.invoices.push({ organization_id: "tenant-a", id: "cancelled-invoice", document_status: "cancelled" });
   await assert.rejects(ui.submit(request()), (e) => e.href === `/es/app/billing/${ui.draftId}`);
   assert.equal(ui.calls.facts[0].existingFiscalDocument, "cancelled");
@@ -285,7 +335,7 @@ test("cancelled inactive history remains while canonical rules permit a new unnu
 
 test("missing/foreign linked invoice is a read inconsistency, never a successful empty history", async () => {
   const ui = harness();
-  ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "missing-invoice", is_active: true });
+  ui.rows.invoice_orders.push({ organization_id: "tenant-a", order_id: orderId, invoice_id: "missing-invoice", is_active: true, billing_link_role: "final" });
   ui.rows.invoices.push({ organization_id: "tenant-b", id: "missing-invoice", document_status: "issued" });
   await assert.rejects(ui.submit(request()), /billing_order_entry_invalid_document/);
   assert.equal(ui.calls.rpc.length, 0);
