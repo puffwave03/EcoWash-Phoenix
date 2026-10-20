@@ -45,6 +45,8 @@ export function BillingSettingsPanel({
       summary={settings.isIssueReady ? issuerSummary : `${settings.organizationName} · ${text.description}`}
       title={text.title}
     >
+      <p className="text-sm leading-6 text-muted">{text.partialSaveHelp}</p>
+      <p className="mt-2 text-sm leading-6 text-muted">{text.verificationNotice}</p>
       {!settings.isIssueReady && settings.autofilledFields.length ? <p className="rounded-control bg-primary-soft px-3 py-2 text-sm leading-6 text-primary">{text.autofillNotice}</p> : null}
       {!settings.isIssueReady && settings.missingRequiredFields.length ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -54,14 +56,14 @@ export function BillingSettingsPanel({
       ) : null}
       <form action={saveBillingSettingsAction.bind(null, locale)} className="mt-5 grid gap-4 border-t border-border pt-5 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            ["issuerLegalName", text.legalName, settings.issuerLegalName, true],
-            ["issuerTaxId", text.taxId, settings.issuerTaxId, true],
-            ["issuerAddressLine1", text.addressLine1, settings.issuerAddressLine1, true],
+            ["issuerLegalName", text.legalName, settings.issuerLegalName, false],
+            ["issuerTaxId", text.taxId, settings.issuerTaxId, false],
+            ["issuerAddressLine1", text.addressLine1, settings.issuerAddressLine1, false],
             ["issuerAddressLine2", text.addressLine2, settings.issuerAddressLine2, false],
-            ["issuerCity", text.city, settings.issuerCity, true],
+            ["issuerCity", text.city, settings.issuerCity, false],
             ["issuerRegion", text.region, settings.issuerRegion, false],
-            ["issuerPostalCode", text.postalCode, settings.issuerPostalCode, true],
-            ["issuerCountryCode", text.countryCode, settings.issuerCountryCode, true],
+            ["issuerPostalCode", text.postalCode, settings.issuerPostalCode, false],
+            ["issuerCountryCode", text.countryCode, settings.issuerCountryCode, false],
             ["issuerEmail", text.email, settings.issuerEmail, false],
             ["issuerPhone", text.phone, settings.issuerPhone, false],
             ["defaultSeries", text.defaultSeries, settings.defaultSeries, true],

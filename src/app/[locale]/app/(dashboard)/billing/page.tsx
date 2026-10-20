@@ -44,7 +44,7 @@ export default async function BillingPage({ params, searchParams }: {
     <div className="space-y-6">
       <PageHeader action={<Link href="/app/billing/new" locale={locale}><Button>{t("actions.create")}</Button></Link>} description={t("description")} eyebrow={t("eyebrow")} title={t("title")} />
       {query.error ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{t(`errors.${query.error}`)}</p> : null}
-      {query.saved ? <p className="rounded-control border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{t("saved")}</p> : null}
+      {query.saved ? <p className="rounded-control border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{t(query.saved === "settings" ? "issuerSettingsSaved" : "saved")}</p> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard label={t("summary.invoices")} value={summary.invoiceCount} />
         <SummaryCard label={t("summary.drafts")} value={summary.draftCount} />

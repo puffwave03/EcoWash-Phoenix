@@ -47,23 +47,46 @@ function revalidateBilling(locale: string, customerId?: string | null, invoiceId
 }
 
 export async function saveBillingSettingsAction(locale: string, formData: FormData) {
-  await requireOwner(locale);
+  const { membership } = await requireOwner(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
-  const taxRate = parseTaxRate(value(formData, "defaultTaxRate", 16));
+  const series = value(formData, "defaultSeries", 13).toUpperCase();
+  const taxRateInput = value(formData, "defaultTaxRate", 16);
+  const taxRate = taxRateInput ? parseTaxRate(taxRateInput) : null;
+  if (!/^[A-Z0-9-]{1,12}$/.test(series) || taxRate === null) {
+    redirect(`/${locale}/app/billing?error=settingsInvalid`);
+  }
   const supabase = await createSupabaseServerClient();
+  // The canonical RPC replaces all issuer fields. Read persisted values, without
+  // branding fallbacks, so a blank/omitted field cannot accidentally erase them.
+  const { data: existing, error: readError } = await supabase
+    .from("organization_billing_settings")
+    .select("issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone")
+    .eq("organization_id", membership.organization.id)
+    .maybeSingle<Record<string, string | null>>();
+  if (readError) redirect(`/${locale}/app/billing?error=generic`);
+  const issuer: Record<string, string> = {};
+  for (const [field, column, max] of [
+    ["issuerLegalName", "issuer_legal_name", 180],
+    ["issuerTaxId", "issuer_tax_id", 80],
+    ["issuerAddressLine1", "issuer_address_line1", 180],
+    ["issuerAddressLine2", "issuer_address_line2", 180],
+    ["issuerCity", "issuer_city", 100],
+    ["issuerRegion", "issuer_region", 100],
+    ["issuerPostalCode", "issuer_postal_code", 24],
+    ["issuerCountryCode", "issuer_country_code", 3],
+    ["issuerEmail", "issuer_email", 254],
+    ["issuerPhone", "issuer_phone", 40],
+  ] as const) {
+    issuer[`target_${column}`] = value(formData, field, max) || existing?.[column] || "";
+  }
+  issuer.target_issuer_country_code = issuer.target_issuer_country_code.toUpperCase();
+  if (issuer.target_issuer_country_code && issuer.target_issuer_country_code.length !== 2) {
+    redirect(`/${locale}/app/billing?error=settingsInvalid`);
+  }
   const { error } = await supabase.rpc("upsert_organization_billing_settings", {
-    target_default_series: value(formData, "defaultSeries", 12),
-    target_default_tax_rate: taxRate ?? -1,
-    target_issuer_address_line1: value(formData, "issuerAddressLine1", 180),
-    target_issuer_address_line2: value(formData, "issuerAddressLine2", 180),
-    target_issuer_city: value(formData, "issuerCity", 100),
-    target_issuer_country_code: value(formData, "issuerCountryCode", 2).toUpperCase(),
-    target_issuer_email: value(formData, "issuerEmail", 254),
-    target_issuer_legal_name: value(formData, "issuerLegalName", 180),
-    target_issuer_phone: value(formData, "issuerPhone", 40),
-    target_issuer_postal_code: value(formData, "issuerPostalCode", 24),
-    target_issuer_region: value(formData, "issuerRegion", 100),
-    target_issuer_tax_id: value(formData, "issuerTaxId", 80),
+    ...issuer,
+    target_default_series: series,
+    target_default_tax_rate: taxRate,
   });
   if (error) redirect(`/${locale}/app/billing?error=${billingError(error.message)}`);
   revalidateBilling(locale);

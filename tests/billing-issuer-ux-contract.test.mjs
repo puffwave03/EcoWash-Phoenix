@@ -50,7 +50,11 @@ test("issuer presentation preserves Owner Manager and Staff boundaries", async (
   assert.match(page, /access\.membership\.role === "owner" \? <BillingSettingsPanel/);
   assert.match(page, /managerMissing/);
   assert.match(actions, /saveBillingSettingsAction[\s\S]*requireOwner\(locale\)/);
-  assert.match(settings, /isOwner && entitlementEnabled\(entitlements, FEATURES\.billingInvoicing\)/);
+  // The Company group is Owner-only; Billing entitlement gates its issuer link.
+  const company = settings.slice(settings.indexOf('id: "company"'), settings.indexOf('title: t("groups.company.title")'));
+  assert.match(company, /items: isOwner\s*\? \[/);
+  assert.match(company, /entitlementEnabled\(entitlements, FEATURES\.billingInvoicing\) \? \[{[\s\S]*?href: "\/app\/billing#issuer-settings"/);
+  assert.match(company, /: \[\],/);
 });
 
 test("issuer disclosure remains semantic focus-visible and narrow-screen safe", async () => {
