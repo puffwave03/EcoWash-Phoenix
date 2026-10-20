@@ -4,6 +4,36 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## PHOENIX-ROLE-AUTH-BROWSER-UAT-DOCS-001 — Scoped browser authorization UAT (20/10/2026)
+
+**INDIVIDUALLY OBSERVED MANAGER/STAFF BROWSER CHECKS PASS / DOCUMENTATION ONLY.** Environment: Phoenix staging, `Phoenix UAT Tenant 001C`; repository baseline `main`/`origin/main` at `8e67e51689eba0ae690c9e91375b0d5289f2cf3a`. This checkpoint records Product Owner browser observations; no checks were repeated against the application or remote services in this documentation mission.
+
+**Manager — specific results PASS:** the invited Manager account was activated and accessed the application; the Manager role was retained after invitation acceptance. Billing opened successfully, the fiscal issuer editing form was unavailable, and missing issuer information was reported. Direct navigation to `/es/app/staff` redirected to `/es/app/access-denied`.
+
+**Staff — specific results PASS:** the invited account had only the `pickups` operational capability. The workspace exposed only **Mi día** and **Recogidas**; Recogidas loaded successfully. Staff password recovery and subsequent Safari login succeeded according to the Product Owner's report; these authentication observations are distinguished from screenshot evidence and are not independently proven by screenshots.
+
+**Observed direct browser access denials — each PASS:**
+
+| Role | Requested path | Observed result |
+| --- | --- | --- |
+| Manager | `/es/app/staff` | Redirect to `/es/app/access-denied` |
+| Staff | `/es/app/billing` | Access Denied |
+| Staff | `/es/app/production` | Access Denied |
+| Staff | `/es/app/staff` | Access Denied |
+| Staff | `/es/app/shop` | Access Denied |
+| Staff | `/es/app/pos` | Access Denied |
+
+The initial `/es/app/terminal` attempt used an incorrect URL and is **excluded from security-test results**. No orders, invoices, payments, POS sessions or pickup records were created during these tests.
+
+**Invitation/session observation — separate from authorization PASS:** opening the one-time Staff invitation link in the Owner's Chrome session replaced that browser session. The same link subsequently failed in Safari, as expected for a consumed link. Staff password recovery and subsequent Safari login then succeeded, as reported by the Product Owner. This does not establish a general authentication vulnerability or a root cause for the earlier Auth UX findings. No credentials, invitation/recovery URLs, tokens or password details are recorded; no Auth fix is implemented or approved here.
+
+**Evidence limits / remaining security verification:** PASS applies only to the listed role/capability presentation and browser navigation outcomes. It does not comprehensively verify PostgreSQL/RLS, cross-tenant isolation, direct RPC calls, server-action authorization, hostile requests or unobserved role/capability combinations. These require independent testing; the earlier local authorization evidence retains its original scope. No tenant membership/capability, fiscal setting or historical document was modified by this documentation mission; no fiscal issuance eligibility or compliance is established.
+
+**UX findings — OPEN, separate future missions requiring independent approval:**
+
+- `UX-STAFF-ROLE-CAPABILITIES-001`: invite and capability forms do not clearly distinguish capabilities managed by role. The displayed supervision message is misleading for Staff; Manager checkboxes may suggest choices that server-side role defaults ignore. No fix is implemented.
+- `UX-ACCESS-DENIED-MESSAGE-001`: the generic “Esta cuenta no tiene acceso operativo” suggests the account has no operational membership when only the requested page or capability is denied. No fix is implemented.
+
 ## UX-BILLING-SAVE-FEEDBACK-001 — CTO-approved closeout (20/10/2026)
 
 **IMPLEMENTED / CTO CODE REVIEW PASS / COMMITTED / PUSHED / VERCEL READY / PRINCIPAL OWNER BROWSER UX UAT PASS.** This status covers the validated happy-path save-feedback behavior; browser and accessibility edge cases remain open. The Product Owner identified insufficient visual feedback when saving Billing issuer settings. A small form-scoped client component uses `useFormStatus` for a localized pending label, native disabled submit control and accessible live progress. Confirmed issuer save redirects to `?saved=issuerSettings#issuer-save-feedback`; the disclosure opens and focus/scroll moves to the localized confirmation beside the submit button. The page-level confirmation remains available. Error results suppress success messages and preserve server error handling with an accessible alert. The simplified-series form retains its own action, button and original redirect. English, Italian, Spanish, French and German are covered. Success confirms configuration persistence only; it does not imply official identity verification or permission to issue.
@@ -29,7 +59,7 @@ Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PA
 15. Simplified invoicing remained disabled.
 16. The simplified-series reservation form remained visually separate.
 
-No invoices or fiscal documents were created during this UAT. **Evidence boundary:** this is a principal Owner browser UX happy-path PASS, not completion of all browser/accessibility checks. Screenshots support visible pending state, disabled styling, successful navigation and visible inline confirmation. They do not independently establish rapid repeated-click prevention under adverse network conditions, actual accessibility focus destination or screen-reader behavior, mobile layout, server-error feedback, Manager/Staff browser authorization, remote PostgreSQL/RLS authorization or real fiscal issuance eligibility. Those checks remain pending or require independent testing. No official issuer identity verification, fiscal compliance or issuance readiness is granted by this UAT.
+No invoices or fiscal documents were created during this UAT. **Evidence boundary:** this is a principal Owner browser UX happy-path PASS, not completion of all browser/accessibility checks. Screenshots support visible pending state, disabled styling, successful navigation and visible inline confirmation. They do not independently establish rapid repeated-click prevention under adverse network conditions, actual accessibility focus destination or screen-reader behavior, mobile layout, server-error feedback, Manager/Staff browser authorization, remote PostgreSQL/RLS authorization or real fiscal issuance eligibility. These limits describe the Owner save-feedback evidence. The subsequent scoped Manager/Staff browser outcomes recorded above provide separate evidence for their listed checks; all other unverified scenarios still require independent testing. No official issuer identity verification, fiscal compliance or issuance readiness is granted by this UAT.
 
 **Validation:** the 175 applicable focused UX/Billing regressions PASS, including 13 new UX tests; TypeScript, scoped ESLint and diff-check PASS. The unfiltered 176-test selection has **175 PASS / 1 historical FAIL**, not a fully passing suite. `tests/billing-simplified-invoice-001d.test.mjs` still expects simplified document selection to be universally blocked, whereas the current controlled assessment/preparation workflow permits selection without automatically authorizing issuance. The failure was reproduced using the exact test from committed baseline `cad60c9a1c19e1cd5bd3272a14a8a3c20a8e13af`; its SQL hashes remain valid. This expectation is preserved, not disabled or corrected. Its maintenance is separate technical debt requiring independently approved review. The previously reported 175/175 result refers only to the explicitly filtered selection excluding that known failure. Render tests use form-status and DOM-effect doubles and do not establish browser layout, real network submission, hydration, assistive-technology behavior or runtime remote RLS.
 
@@ -49,7 +79,7 @@ Owners with Billing entitlement can save incomplete issuer details without ficti
 
 **Actual Owner browser UAT — specific checks PASS, supplied by the Product Owner:** on `Phoenix UAT Tenant 001C`, the correct tenant and Owner session were confirmed and Billing entitlement was available. Partial settings saved successfully with country **ES**, default ordinary series **UAT-A** and default tax rate **7%** persisted. Fiscal ID was deliberately empty and the missing-fiscal-information warning remained visible. Values persisted after page reload. A later save with an empty country field preserved the existing **ES**. The successful save returned `?saved=settings` and the browser displayed confirmation. No invoices or fiscal documents were created in these checks. This remains evidence for the published 001A behavior with its original `?saved=settings` redirect. The subsequent 20 October UX UAT above validates the new save-feedback happy path; the two checkpoints cover their respective published versions.
 
-**Authorization evidence limits:** local Owner/Manager/Staff and tenant-boundary tests passed in their stated scope. Manager/Staff browser authorization UAT and remote PostgreSQL/RLS verification remain separate and are not marked complete by the Owner checks above.
+**Authorization evidence limits:** local Owner/Manager/Staff and tenant-boundary tests passed in their stated scope. The Owner checks do not establish Manager/Staff authorization or remote PostgreSQL/RLS. The separate 20 October role UAT above records only its individually observed Manager/Staff browser checks as PASS; additional authorization scenarios and remote PostgreSQL/RLS verification remain open.
 
 ## International SaaS fiscal architecture — approved direction, implementation bounded
 
@@ -61,7 +91,7 @@ Fiscal-register responsibility allocation and the tenant-by-tenant transition to
 
 **Separate unresolved UX/Auth observations, reported by the Product Owner:** the incognito session ended after Chrome restart; initial login failed; two recovery links returned invalid/expired feedback. Controlled password recovery in the same incognito context succeeded. After password update, login temporarily showed persistent loading; opening the protected application URL in that same session confirmed successful authentication. No authentication fix has been implemented or approved, and these observations do not establish a root cause. No credentials, recovery links, tokens or password details are recorded.
 
-**Still OPEN:** UX-BILLING-SAVE-FEEDBACK-001 browser/accessibility edge checks (rapid repeated clicks under adverse network conditions, actual focus destination and screen-reader behavior, mobile layout, server-error feedback, and functional series independence beyond visual separation); Manager/Staff browser authorization UAT; Platform tenant-creation button contrast; General Settings save-feedback visibility; historical simplified-selection test maintenance; further fiscal-readiness and provider-integration missions; unresolved fiscal-register responsibility and tenant-specific issuance transition. No task starts automatically from this closeout. The C2 and earlier checkpoints below remain historical evidence for their stated phases.
+**Still OPEN:** UX-BILLING-SAVE-FEEDBACK-001 browser/accessibility edge checks (rapid repeated clicks under adverse network conditions, actual focus destination and screen-reader behavior, mobile layout, server-error feedback, and functional series independence beyond visual separation); additional Manager/Staff authorization/security scenarios beyond the listed browser checks; `UX-STAFF-ROLE-CAPABILITIES-001`; `UX-ACCESS-DENIED-MESSAGE-001`; Platform tenant-creation button contrast; General Settings save-feedback visibility; historical simplified-selection test maintenance; further fiscal-readiness and provider-integration missions; unresolved fiscal-register responsibility and tenant-specific issuance transition. No task starts automatically from this closeout. The C2 and earlier checkpoints below remain historical evidence for their stated phases.
 
 ## BILLING-SIMPLIFIED-INVOICE-001G-C2 — Final closeout (19/10/2026)
 
