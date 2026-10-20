@@ -92,7 +92,7 @@ const complete = {
 
 test("an Owner can save and read an incomplete profile without a fictional NIF", async () => {
   const h = harness();
-  assert.equal(await h.save({ issuerLegalName: "[field supplied]" }), "/en/app/billing?saved=settings");
+  assert.equal(await h.save({ issuerLegalName: "[field supplied]" }), "/en/app/billing?saved=issuerSettings#issuer-save-feedback");
   assert.equal(h.settings().issuer_tax_id, null);
   assert.equal(h.settings().issuer_address_line1, null);
   assert.equal(h.settings().default_series, "A");
@@ -212,7 +212,7 @@ test("form permits partial identity, preserves technical requirements and displa
   assert.match(panel, /text\.verificationNotice/);
   assert.match(panel, /settings\.missingRequiredFields\.map/);
   const page = read("src/app/[locale]/app/(dashboard)/billing/page.tsx");
-  assert.match(page, /query\.saved === "settings" \? "issuerSettingsSaved" : "saved"/);
+  assert.match(page, /issuerSettingsSaved \|\| query\.saved === "settings" \? "issuerSettingsSaved" : "saved"/);
 });
 
 test("all five languages distinguish saved, missing, complete and unverified states", () => {

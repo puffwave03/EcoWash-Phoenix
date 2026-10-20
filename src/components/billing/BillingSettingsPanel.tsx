@@ -1,3 +1,4 @@
+import { BillingIssuerSaveControls } from "@/components/billing/BillingIssuerSaveControls";
 import { Button } from "@/components/Button";
 import { DisclosureSection } from "@/components/DisclosureSection";
 import { reserveBillingSimplifiedSeriesAction, saveBillingSettingsAction } from "@/features/billing/server/actions";
@@ -9,10 +10,12 @@ const inputClass = "min-h-11 w-full rounded-control border border-border bg-whit
 export function BillingSettingsPanel({
   locale,
   settings,
+  saved = false,
   text,
 }: {
   locale: string;
   settings: BillingSettings;
+  saved?: boolean;
   text: Record<string, string>;
 }) {
   const requiredLabels = {
@@ -38,7 +41,8 @@ export function BillingSettingsPanel({
     <DisclosureSection
       actionLabel={settings.isIssueReady ? text.edit : text.review}
       contentClassName="rounded-card border border-border bg-white p-4 shadow-card sm:p-6"
-      defaultOpen={!settings.isIssueReady}
+      defaultOpen={saved || !settings.isIssueReady}
+      key={saved ? "issuer-saved" : "issuer-settings"}
       id="issuer-settings"
       statusLabel={settings.isIssueReady ? text.ready : text.missing}
       statusTone={settings.isIssueReady ? "success" : "warning"}
@@ -77,9 +81,7 @@ export function BillingSettingsPanel({
             <span>{text.defaultTaxRate}</span>
             <input className={inputClass} defaultValue={taxRateInputValue(settings.defaultTaxRate)} inputMode="decimal" max="100" min="0" name="defaultTaxRate" required step="0.01" type="number" />
           </label>
-          <div className="flex items-end sm:col-span-2 lg:col-span-3">
-            <Button type="submit">{text.save}</Button>
-          </div>
+          <BillingIssuerSaveControls label={text.save} pendingLabel={text.saving} saved={saved} savedLabel={text.saved} />
       </form>
       <form action={reserveBillingSimplifiedSeriesAction.bind(null, locale)} className="mt-6 space-y-4 border-t border-border pt-5">
         <h3 className="font-semibold text-primary">{text.simplifiedSeriesTitle}</h3>

@@ -47,7 +47,8 @@ function harness({ role = "owner", entitled = true, rpcError = null, transportFa
     const m = { exports: {} };
     const localRequire = (name) => {
       if (name === "server-only" || name === "@/features/billing/pagination") return {};
-      if (name === "react/jsx-runtime") return require(name);
+      if (["react", "react-dom", "react/jsx-runtime"].includes(name)) return require(name);
+      if (name === "@/components/billing/BillingIssuerSaveControls") return load("src/components/billing/BillingIssuerSaveControls.tsx");
       if (name === "next/cache") return { revalidatePath: (path) => calls.revalidations.push(path) };
       if (name === "next/navigation") return { redirect(href) { throw Object.assign(Error("REDIRECT"), { href }); }, notFound() { throw Error("NOT_FOUND"); } };
       if (name === "@/features/billing/server/order-entry") return { getBillingOrderEntry: async (locale, orderId) => {

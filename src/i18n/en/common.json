@@ -1308,7 +1308,7 @@
       "missingFields": "Still required",
       "edit": "Edit",
       "review": "Review and complete",
-      "save": "Save issuer settings",
+      "save": "Save issuer settings", "saving": "Saving…", "saved": "Issuer settings saved.",
       "partialSaveHelp": "You can save incomplete issuer details. Empty or omitted fields keep any previously saved values; enter a new value to replace them.",
       "verificationNotice": "Official fiscal verification has not been performed. Fiscal issuance readiness has not been established.",
       "simplifiedSeriesTitle": "Simplified invoice series — issuance disabled",

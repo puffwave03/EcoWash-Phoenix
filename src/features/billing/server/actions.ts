@@ -90,7 +90,7 @@ export async function saveBillingSettingsAction(locale: string, formData: FormDa
   });
   if (error) redirect(`/${locale}/app/billing?error=${billingError(error.message)}`);
   revalidateBilling(locale);
-  redirect(`/${locale}/app/billing?saved=settings`);
+  redirect(`/${locale}/app/billing?saved=issuerSettings#issuer-save-feedback`);
 }
 
 export async function reserveBillingSimplifiedSeriesAction(locale: string, formData: FormData) {

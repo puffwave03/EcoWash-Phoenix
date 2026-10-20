@@ -7,7 +7,7 @@ const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8"
 test("configured issuer defaults to a compact essential summary with edit affordance", async () => {
   const panel = await source("src/components/billing/BillingSettingsPanel.tsx");
 
-  assert.match(panel, /defaultOpen=\{!settings\.isIssueReady\}/);
+  assert.match(panel, /defaultOpen=\{saved \|\| !settings\.isIssueReady\}/);
   assert.match(panel, /actionLabel=\{settings\.isIssueReady \? text\.edit : text\.review\}/);
   assert.match(panel, /statusLabel=\{settings\.isIssueReady \? text\.ready : text\.missing\}/);
   assert.match(panel, /summary=\{settings\.isIssueReady \? issuerSummary/);
@@ -20,7 +20,7 @@ test("configured issuer defaults to a compact essential summary with edit afford
 test("incomplete issuer stays open with suggestions missing fields and the canonical form", async () => {
   const panel = await source("src/components/billing/BillingSettingsPanel.tsx");
 
-  assert.match(panel, /defaultOpen=\{!settings\.isIssueReady\}/);
+  assert.match(panel, /defaultOpen=\{saved \|\| !settings\.isIssueReady\}/);
   assert.match(panel, /!settings\.isIssueReady && settings\.autofilledFields\.length/);
   assert.match(panel, /!settings\.isIssueReady && settings\.missingRequiredFields\.length/);
   assert.match(panel, /settings\.missingRequiredFields\.map/);
