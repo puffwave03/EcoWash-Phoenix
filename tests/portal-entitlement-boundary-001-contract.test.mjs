@@ -39,12 +39,9 @@ test("invitation and recovery emails cannot precede the effective Portal entitle
   assert.ok(management.indexOf('intent === "disable"') < management.indexOf('intent === "resend"'));
 });
 
-test("staging preview checks the tenant entitlement before minting a session", () => {
-  const check = preview.indexOf('"organization_entitlement_is_enabled"');
-  assert.ok(check >= 0);
-  assert.ok(preview.indexOf("portalEnabled !== true") > check);
-  assert.ok(preview.indexOf("admin.auth.admin.generateLink") > check);
-  assert.ok(preview.indexOf("supabase.auth.setSession") > check);
+test("disabled staging preview cannot reach Auth even for an entitled tenant", () => {
+  assert.match(preview, /status: 404/);
+  assert.doesNotMatch(preview, /import\s|createSupabase|createServerClient|generateLink|setSession|fetch\(/);
 });
 
 test("migration keeps the first active Portal context and does not backfill access or entitlements", () => {
