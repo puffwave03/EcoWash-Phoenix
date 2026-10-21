@@ -23,10 +23,7 @@ type CustomerPortalAccessPanelText = {
   invitedAt: string;
   inviteError: string;
   inactiveCustomer: string;
-  lastSignIn: string;
   membershipError: string;
-  noLastSignIn: string;
-  pending: string;
   preview: string;
   rateLimit: string;
   resend: string;
@@ -91,7 +88,6 @@ function successMessage(successKey: string | null | undefined, text: CustomerPor
 function accessStatus(access: CustomerPortalAccessSummary | null, text: CustomerPortalAccessPanelText) {
   if (!access) return text.disabled;
   if (!access.isActive) return text.accessDisabled;
-  if (!access.lastSignInAt) return text.pending;
 
   return text.active;
 }
@@ -145,7 +141,7 @@ export function CustomerPortalAccessPanel({
       </div>
 
       {access ? (
-        <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
+        <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-muted">{text.email}</dt>
             <dd className="break-words font-semibold text-primary">{access.email}</dd>
@@ -153,12 +149,6 @@ export function CustomerPortalAccessPanel({
           <div>
             <dt className="text-muted">{text.invitedAt}</dt>
             <dd className="font-semibold text-primary">{formatDate(access.invitedAt, locale)}</dd>
-          </div>
-          <div>
-            <dt className="text-muted">{text.lastSignIn}</dt>
-            <dd className="font-semibold text-primary">
-              {access.lastSignInAt ? formatDate(access.lastSignInAt, locale) : text.noLastSignIn}
-            </dd>
           </div>
         </dl>
       ) : null}

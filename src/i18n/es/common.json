@@ -1189,13 +1189,10 @@
     "portal": {
       "title": "Acceso al portal cliente",
       "active": "Acceso activo",
-      "pending": "Invitación pendiente",
       "disabled": "No habilitado",
       "accessDisabled": "Acceso deshabilitado",
       "email": "Email del cliente",
       "invitedAt": "Fecha de invitación",
-      "lastSignIn": "Último acceso",
-      "noLastSignIn": "Aún no disponible",
       "invite": "Invitar al portal",
       "resend": "Reenviar enlace",
       "resetPassword": "Enviar reset de contraseña",

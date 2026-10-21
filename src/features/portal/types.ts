@@ -107,7 +107,6 @@ export type CustomerPortalAccessSummary = {
   disabledAt: string | null;
   invitedAt: string;
   id: string;
-  lastSignInAt: string | null;
   isActive: boolean;
   updatedAt: string;
 };

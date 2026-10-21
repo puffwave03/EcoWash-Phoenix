@@ -1213,13 +1213,10 @@
     "portal": {
       "title": "Customer portal access",
       "active": "Access active",
-      "pending": "Invitation pending",
       "disabled": "Not enabled",
       "accessDisabled": "Access disabled",
       "email": "Customer email",
       "invitedAt": "Invitation date",
-      "lastSignIn": "Last access",
-      "noLastSignIn": "Not available yet",
       "invite": "Invite to portal",
       "resend": "Resend link",
       "resetPassword": "Send password reset",
