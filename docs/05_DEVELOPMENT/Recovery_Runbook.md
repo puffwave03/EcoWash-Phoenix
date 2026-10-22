@@ -4,7 +4,31 @@ Status: AUTH-DR-001B3 CLOSED / PASS; AUTH-DR-001B4 COMPLETE / PASS; AUTH-DR-001C
 
 Last verified: 2026-10-06
 
+Latest supplied checkpoint: 2026-10-22 (PO/CTO evidence below; no Codex artifact inspection or restore).
+
 Scope: EcoWash Phoenix staging only. Production does not exist and is not authorized by this document.
+
+## Post-001E logical backup and custody update — 21–22 October 2026
+
+This dated checkpoint supplements the historical September/October inventories and BACKUP-DR-001D rehearsal below. Evidence is supplied by the Product Owner/CTO; Codex did not access the Mac backup, Toshiba disk, remote services or restored data in this documentation mission.
+
+**Source:** `~/EcoWash-Backups/PHOENIX-STAGING-20261021-POST-001E`, captured after the reported staging application/postflight PASS for `20261021000100_security_portal_identity_binding_001e.sql` on `exthnplfokcucaqydney`. CTO verification confirmed 105 unique migration entries, the migration present once, both updated management functions with ownership/SECURITY DEFINER/search-path/EXECUTE checks, two Portal associations (one active, one inactive), and zero UUID/email mismatches. No association was repaired or reactivated. Portal runtime Product Owner UAT remains pending; database postflight does not establish runtime acceptance.
+
+| Captured artifact | PO/CTO-reported verification |
+| --- | --- |
+| `roles.sql`, `schema.sql`, `data.sql` | All three local SQL SHA-256 checks PASS |
+| `brand-media` | 414 files / 42,635,604 bytes |
+| `order-media` | 6 files / 3,526,753 bytes |
+| `accounting-exports` | Zero files at the captured inventory check |
+| Storage total | 420 files; 420/420 local SHA-256 checks PASS |
+| `PHOENIX-STAGING-20261021-AES256-PROTETTO.dmg` | AES-256 creation confirmed; password-protected read-only mount succeeded; all three SQL and all 420 Storage checksums passed inside the image |
+| External Toshiba APFS partition `/Volumes/DEV` | Encrypted image copied; destination SHA-256 matched the original |
+
+**Custody classification:** verified encrypted local/external-device copy according to the supplied evidence. Geographically independent off-site custody, recovery after simulated Mac loss, retention and accountable recovery ownership are not established by the external-device checksum. The separate B4 protected Auth/configuration inventory must not be described as included in this image without independent evidence. Historical B4 custody findings below retain their scope.
+
+**Restore limitations:** this new snapshot has not undergone a separate isolated restore rehearsal. The data-only dump reported circular foreign-key restore warnings for `payments` and `invoice_orders`; record these for an approved restore procedure, not as export failure or a demonstrated restore defect. Managed Supabase Auth identities/password continuity and full authenticated application recovery remain outside the demonstrated logical backup. The completed BACKUP-DR-001D logical DB/Storage restore evidence is unchanged and does not establish restoration of this newer set.
+
+**Release gate unchanged:** `AUTH-DR-001C` remains the hard pre-production gate, and Supabase Pro expenditure remains deferred until separately approved. Preserve the approved provider-physical-backup strategy, protected B4 inventory/configuration and clone containment requirements. No full disaster-recovery, fiscal or production readiness is claimed.
 
 ## Safety and Classification
 
@@ -41,7 +65,7 @@ Vercel's `Production` scope below means the production target of the **staging V
 | Vercel variable | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | No | Supabase API settings, copied to Vercel | Yes | Obtain the replacement project's publishable/anonymous key and enter it in Vercel. | No | `DOCUMENTED_NOT_VERIFIED` | Exists in Preview and Production scopes; it is browser-visible by design. |
 | Vercel variable | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase API settings, copied to Vercel server scope | Yes | Generate or obtain the replacement project credential from Supabase and re-enter it. Do not attempt to export it from Vercel. | No | `DOCUMENTED_NOT_VERIFIED` | Exists only in Production scope. Required for trusted Auth administration; never expose it to the browser. |
 | Vercel variable | `NEXT_PUBLIC_SITE_INDEXING` | No | Vercel deployment policy | Yes | Recreate the staging no-index setting from this deployment contract. | No | `DOCUMENTED_NOT_VERIFIED` | Exists in Preview and Production scopes. Staging must remain non-indexable. |
-| Vercel variable | `ENABLE_STAGING_CUSTOMER_PREVIEW` | Provider-sensitive | Vercel deployment policy | Yes for the current review helper | Recreate the staging-only flag from the approved deployment contract. | No | `DOCUMENTED_NOT_VERIFIED` | Exists in Preview and Production scopes of the staging project. It must not be carried into a future real production environment. |
+| Vercel variable | `ENABLE_STAGING_CUSTOMER_PREVIEW` | Provider-sensitive | Vercel deployment policy | No for the disabled helper | F02-001C disables Preview independently of flags; do not restore or enable the unsafe helper. | Containment covered by source/local tests; full runtime Portal UAT pending | Historical variable inventory | Earlier evidence recorded the flag in staging Preview/Production scopes; no variable was changed or remotely rechecked here. The retired helper is not a recovery prerequisite. |
 | Vercel variables | Development scope | Depends on variable | Vercel | No | Rebuild local `.env.local` directly from provider sources when needed. | No | `NOT_APPLICABLE` | No project variables were listed in Vercel Development scope. |
 | Local environment | `.env.local` variable names: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `VERCEL_OIDC_TOKEN` | Mixed | Provider dashboards; local file is only a cache | Yes, except transient OIDC token | Recreate from Vercel/Supabase account access. Let Vercel regenerate the short-lived OIDC token. Never copy the file into Git or this runbook. | No | `DOCUMENTED_NOT_VERIFIED` | The ignored file exists only on this Mac. It must not be treated as the secret system of record. |
 | Supabase link | `supabase/.temp/project-ref` | No | Supabase project ref; ignored local link file | Yes for CLI operations | Authenticate the CLI and link explicitly to the verified ref. After project replacement, use the new staging ref. | No | `DOCUMENTED_NOT_VERIFIED` | Current ignored link points to `exthnplfokcucaqydney`. |

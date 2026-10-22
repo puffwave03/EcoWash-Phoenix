@@ -2,7 +2,19 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-20
+Date: 2026-10-22
+
+## PHX-POST-F02-DOCS-001 — Portal and backup checkpoint (21–22/10/2026)
+
+**DOCUMENTATION ONLY / PRODUCT OWNER AND CTO-SUPPLIED EVIDENCE.** Starting local baseline: `main` and local `origin/main` at `726818126a78c8ee7c4e93a13b09e252769548c2`, clean worktree/index. This checkpoint reconciles later evidence with the earlier history below; Codex did not repeat remote checks, access backup artifacts or perform a restore in this mission.
+
+**Portal — application publication and database postflight PASS; runtime Product Owner UAT PENDING.** F01 Auth callback HTML-bridge hardening is published to staging. F02-001C disables Preview independently of flags: source and local tests establish HTTP 404/no-store, no Auth operations and no generated preview links. Previously reported live endpoint HTTP 404 evidence concerns that endpoint only; it does not establish full browser Portal UAT. F02-001E removes global Auth login metadata from customer management and adds authoritative UUID/email checks to management RPCs. The Product Owner applied only `20261021000100_security_portal_identity_binding_001e.sql` after a successful dry-run against staging `exthnplfokcucaqydney`. Independent CTO connector verification confirmed **105 unique migration entries**, version `20261021000100` present exactly once, both management function definitions and ownership, `SECURITY DEFINER`, empty `search_path`, authenticated EXECUTE allowed and anon/PUBLIC EXECUTE denied. Two Portal associations remain: **one active, one inactive; zero UUID/email mismatches at verification time**. No association was repaired or reactivated during migration.
+
+**Open security gates:** runtime invitation, binding, reactivation and normal Portal Auth/authorization UAT; association consent and identity-reassignment policy; D03 association/platform-suspension interference; F03 Staff read permissions; F04 inactive-organization authorization; and the other previously recorded residual findings. Preview containment does not revoke previously created sessions. No blanket Portal security closure or production-readiness claim is made. The next acceptance gate is separately authorized Portal runtime UAT; no UAT or UX implementation starts in this documentation mission.
+
+**New logical backup and encrypted external-device copy — PO/CTO-reported, distinct from earlier snapshots.** Source: `~/EcoWash-Backups/PHOENIX-STAGING-20261021-POST-001E`. `roles.sql`, `schema.sql` and `data.sql` each passed SHA-256 checks. Captured Storage inventory: `brand-media` **414 files / 42,635,604 bytes**; `order-media` **6 / 3,526,753**; `accounting-exports` **zero files at capture**. All **420 local Storage SHA-256 checks passed**. AES-256 image `PHOENIX-STAGING-20261021-AES256-PROTETTO.dmg` was created, mounted read-only with its password, and the three SQL plus all 420 Storage checksums passed inside it. The copy to the external Toshiba APFS partition `/Volumes/DEV` matched the source image SHA-256. This proves the reported encrypted local/external-device copy, not geographically independent off-site custody.
+
+**Recovery limits preserved:** the new snapshot has not undergone a separate isolated restore. The data-only dump's circular-FK warnings for `payments` and `invoice_orders` are restore-planning considerations, not export failure or a demonstrated restore defect. Inclusion of the separate B4 protected Auth/configuration inventory in this image is not evidenced. Managed Auth identities, password continuity and full authenticated application recovery remain outside the demonstrated logical backup. `AUTH-DR-001C` remains a **hard pre-production gate**, with Supabase Pro expenditure deferred. BACKUP-DR-001D and earlier snapshots retain their original evidence; see the dated update in [Recovery Runbook](../05_DEVELOPMENT/Recovery_Runbook.md) for custody and remaining recovery gates.
 
 ## PHOENIX-ROLE-AUTH-BROWSER-UAT-DOCS-001 — Scoped browser authorization UAT (20/10/2026)
 
