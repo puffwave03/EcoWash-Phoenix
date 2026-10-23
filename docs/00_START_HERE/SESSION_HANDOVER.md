@@ -4,6 +4,14 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## SECURITY-F03-DEFERRED-DECISION-001 — Product Owner / CTO decision (23/10/2026)
+
+**SECURITY-F03 — DEFERRED / REASSESS BEFORE SAAS RELEASE.** PO/CTO retain the current Staff authorization model to avoid a broad, risky change in this phase. `SECURITY-F03-STAFF-READ-PERMISSIONS-DESIGN-001` analyzed Owner-configurable read permissions independent of mutation rights; that alternative is not authorized for implementation.
+
+**Rationale:** tenant isolation already has PASS evidence within its documented scope; operational role, capability and assignment controls are implemented. Configurable reads would require coordinated RLS, grants, RPC and application-reader changes, with potential Terminal, POS and operational-workflow regressions. The F03 investigation confirmed no new critical defect.
+
+**Preserved limitation and history:** some membership-based direct reads within a tenant remain broader than workspace filters. This limitation is unresolved and is not certified acceptable for every future SaaS deployment. This decision supersedes the earlier F03 continuation status in `SECURITY-EVIDENCE-RECONCILIATION-001`; its findings and evidence remain valid. Reassess F03 before SaaS release. Existing pre-production gates, including `AUTH-DR-001C` and Production Readiness Review, remain mandatory. SEC-001, F01, F02, F04 and D03 retain their recorded states; no implementation or other mission is opened by this documentation decision.
+
 ## SECURITY-EVIDENCE-RECONCILIATION-001 — AUDIT COMPLETE / CTO REVIEWED
 
 **23/10/2026 — accepted evidence reconciliation.** SEC-001/.1/.2 remain historically completed. F01 callback hardening, F02 Preview containment/identity binding and F04 inactive-organization helper enforcement are complete within their verified scopes. Existing tenant-isolation, Staff capability/assignment and ordinary tenant/Portal suspension/reactivation PASS evidence remains valid for its tested cases. The F04 staging checkpoint below supersedes historical F04 OPEN/BLOCKED wording; PORTAL-UAT-006 supersedes the earlier pending browser revocation/reactivation status for its observed sequence.
