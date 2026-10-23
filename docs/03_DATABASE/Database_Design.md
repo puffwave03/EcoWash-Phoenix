@@ -1,5 +1,40 @@
 # Database Design
 
+Status: Current authorization model supplement — CTO REVIEW PASS — READY FOR COMMIT
+
+Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
+
+## Implemented identity and authorization model
+
+Supabase Auth, PostgreSQL and Storage are implemented. The migration history is the schema source of truth; the July model preserved below is a historical design snapshot, not a complete current table inventory. This supplement reconciles security relationships without redesigning operational, financial or fiscal models.
+
+| Existing relation or field | Current responsibility | Authorization boundary |
+| --- | --- | --- |
+| `profiles`, `organization_memberships` | Auth-linked profile and organization membership with `role`, `is_active`, `operational_capabilities`. | Tenant roles remain Owner, Manager and Staff. Membership establishes tenant access; it does not by itself express assignment to each operational record. |
+| `orders.assigned_to`, `pickups.assigned_to`, `deliveries.assigned_to` | Assignment to an operational actor. | Workspace filters and relevant mutation RPCs enforce capability/assignment. These fields do not imply that every SELECT policy filters by assignee. |
+| `customer_portal_access` | Connects an Auth `user_id` to a tenant's `customer_id`, with association state. | Separate from staff membership. Canonical Portal context uses the authenticated UUID, active association/customer, organization state and Portal entitlement. Customer RPCs scope reads to that context. |
+| `platform_admins`, `platform_audit_log` | Separate Platform identity and administration audit. | Guarded cross-tenant administration; Platform Admin is not an `app_role` tenant membership or an automatic grant to read all raw business tables. |
+| `organizations.status`, `platform_service_status`, `deleted_at` | Organization activity, platform suspension and logical deletion. | F04 membership/role/shared-profile helpers and canonical Portal context require active organization/service and no logical deletion. PostgREST pre-request separately handles suspended identity associations. |
+
+Sources: [tenant foundation](../../supabase/migrations/20260727000100_app_003_tenant_foundation.sql), [capabilities and assignments](../../supabase/migrations/20260820000100_ux_ops_001_8_access_capabilities.sql), [Portal association](../../supabase/migrations/20260803000100_portal_001_customer_portal.sql), [Platform administration](../../supabase/migrations/20260827000300_platform_admin_001_saas_control_center.sql), [Portal context](../../supabase/migrations/20261014000200_portal_entitlement_boundary_001.sql), [F04 helpers](../../supabase/migrations/20261023122144_security_f04_inactive_org_helpers_001a.sql).
+
+## Tenant isolation and visibility within one tenant
+
+Authenticated identity and canonical membership/Portal context determine tenant access; client-supplied organization IDs are not authorization. Existing composite tenant relationships, RLS and explicit RPC checks protect organization boundaries. The accepted staging Tenant A/B tests include real direct reads; see [Testing](../05_DEVELOPMENT/Testing.md).
+
+The SELECT policies `customers_select_member`, `orders_select_member` and `payments_select_member` call `is_organization_member(organization_id)`. They do not require an operational assignment or capability. See the [customer policy](../../supabase/migrations/20260728000100_app_005_customers_properties.sql), [order policy](../../supabase/migrations/20260728000200_app_006_orders_workflow.sql) and [payment policy](../../supabase/migrations/20260728000300_app_007_logistics_photos_payments.sql). F04 adds organization-state enforcement to the shared helper, preserving this membership-based visibility model.
+
+Application route guards, server-query filters, SQL SELECT policies and RPC authorization are separate layers. For example, Customer Account RPCs enforce Owner/Manager even though operational payment-table SELECT uses membership. See [Customer Account functions](../../supabase/migrations/20260826000100_customer_account_001_financial_summary.sql). UI denial alone cannot establish direct table/RPC denial.
+
+F03 remains a specific evidence/contract gap about Staff reads inside its own tenant. D03 remains a specific gap about multiple identity contexts and suspension: the pre-request checks any qualifying suspended association while Portal selects one canonical context. Neither gap authorizes new policies or an architectural change. [Security](../04_ARCHITECTURE/Security.md) defines the reconciled boundaries and [Project Status](../06_ROADMAP/Project_Status.md) records the pending CTO decisions.
+
+## Historical database design — 2026-07-28
+
+The original design below is preserved verbatim. Its proposed tables, pre-migration language, global order sequence and payment descriptions are historical; later canonical migrations and domain rules take precedence. It must not be used as a complete current schema or authorization inventory.
+
+<details>
+<summary>Original APP database model — historical reference</summary>
+
 Status: Active
 
 Version: 0.1
@@ -239,3 +274,5 @@ APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary`. Dashboar
 - Prefer deactivation for catalog services and prices.
 - Use cancellation/void/refund records instead of destructive deletion for orders and payments.
 - `order_status_history` and `audit_logs` are append-only.
+
+</details>

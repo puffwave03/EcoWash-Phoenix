@@ -4,6 +4,16 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## SECURITY-EVIDENCE-RECONCILIATION-001 — AUDIT COMPLETE / CTO REVIEWED
+
+**23/10/2026 — accepted evidence reconciliation.** SEC-001/.1/.2 remain historically completed. F01 callback hardening, F02 Preview containment/identity binding and F04 inactive-organization helper enforcement are complete within their verified scopes. Existing tenant-isolation, Staff capability/assignment and ordinary tenant/Portal suspension/reactivation PASS evidence remains valid for its tested cases. The F04 staging checkpoint below supersedes historical F04 OPEN/BLOCKED wording; PORTAL-UAT-006 supersedes the earlier pending browser revocation/reactivation status for its observed sequence.
+
+**Residual gaps, not newly demonstrated vulnerabilities:** F03 concerns Staff visibility within the same tenant through direct SELECT/RPC paths; existing tenant isolation and privileged-operation denials do not settle that read contract. D03 concerns identities with multiple contexts and suspension of a different associated tenant; ordinary suspension QA is already complete. CTO must delimit intended behavior and any targeted verification before authorizing correction. No F03, D03 or subsequent mission starts here.
+
+**Preserved gates:** `AUTH-DR-001C` remains mandatory before production. Portal photographs remain enabled under the existing PO/CTO decision; the recorded 600-second signed-URL/cache risk remains separate from the passed browser revocation flow. Remaining Portal/Auth, fiscal, GDPR, operational and Production Readiness Review gates are unchanged; no overall security or production-readiness approval is claimed.
+
+**SECURITY-DOCS-RECONCILIATION-001 — CTO REVIEW PASS — READY FOR COMMIT.** Documentation-only patch on `main`, baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`, initially clean worktree/index. The five authorized documents now distinguish current architecture, evidence levels and historical records. No new tests or remote verification are claimed; no code, migration, database, Docker or environment change, commit, push or deployment is part of this phase.
+
 ## SECURITY-F04-INACTIVE-ORG-HELPERS-001A — STAGING POSTFLIGHT + BEHAVIORAL PASS — 23/10/2026
 
 **F04 helper authorization: STAGING POSTFLIGHT + BEHAVIORAL PASS.** Per CTO/Product Owner evidence, migration `20261023122144_security_f04_inactive_org_helpers_001a.sql` was applied to Supabase staging `exthnplfokcucaqydney`. The CTO confirmed 106 migration entries, with F04 recorded exactly once. All three updated helpers — `is_organization_member`, `has_organization_role` and `shares_organization_with_profile` — contain `organization.status = 'active'`; signatures, ownership, `STABLE`, `SECURITY DEFINER`, `search_path` and existing grants were preserved. The migration changes only these three function definitions; it contains no operational data updates or edits to Portal, Platform Admin or pre-request functions.

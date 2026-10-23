@@ -1,5 +1,38 @@
 # Testing
 
+Status: Security evidence index — CTO REVIEW PASS — READY FOR COMMIT
+
+Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
+
+## Current validation policy
+
+Follow [AGENTS.md](../../AGENTS.md) and the authorized task scope: focused checks first, broader checks only when required. This documentation mission executes no new application, PostgreSQL, staging or browser tests. Results below are previously recorded evidence. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own acceptance and remaining gates.
+
+## Security evidence index
+
+| Evidence level | Existing evidence and reference | What it establishes / limits |
+| --- | --- | --- |
+| Static inspection | SEC-001 RLS/grant/definer/search-path audit; the reviewed SECURITY-EVIDENCE-RECONCILIATION-001 checkpoint in the canonical documents. | Source and documented policy semantics; not fresh database execution or a complete current remote-catalog audit. |
+| Automated contract and local application tests | [Platform contracts](../../tests/platform-admin-contract.test.mjs), [F01 callback](../../tests/security-auth-callback-xss-001b.test.mjs), [F02 Preview](../../tests/security-portal-preview-containment-001c.test.mjs), [F02 identity binding](../../tests/security-portal-identity-binding-001e.test.mjs). [QA-PRODUCT-001](../07_QA/QA-PRODUCT-001.md) records 143/143 focused tests, including Platform 20/20. | Source assertions and application execution with doubles have different coverage; neither proves actual PostgreSQL authorization or full browser E2E. No suites rerun here. |
+| PostgreSQL with simulated identity and rollback | PORTAL-REVOCATION-LOCAL-UAT-001B scenarios A–D, recorded in the PORTAL-UAT-006 checkpoint; F04 CTO staging SQL test: each of three helpers TRUE for active / FALSE for inactive, 3/3 PASS, explicit rollback and no temporary organization residue. | SQL behavior for controlled identities and cases; F04 ran on staging but its Auth identity was simulated. Neither result proves real Auth session persistence or browser behavior. |
+| PostgreSQL harness availability | [F02 identity harness](../../tests/security-portal-identity-binding-001e-postgres.test.mjs). | Uses synthetic Auth dependencies and a disposable local target. Harness existence is not proof of execution; absence of a target/skip must never be counted as PASS. |
+| Authenticated staging mutation and suspension tests | SEC-001.2 rollback-only RPC regression; [QA-PRODUCT-001 controlled transaction](../07_QA/QA-PRODUCT-001.md), with nine identities/roles, capability/assignment boundaries, Tenant A/B isolation and tenant/Portal suspension/reactivation. | Previously documented database scenarios; the QA separately reports that interactive authenticated visual tooling was unavailable. |
+| Real authenticated staging reads | SAAS-DEMO-TENANT-ISOLATION-001F in [Session Handover](../00_START_HERE/SESSION_HANDOVER.md): ordinary authenticated Demo Owner and EcoWash Staff sessions, own-tenant reads, foreign-ID zero-row results, plus rejected foreign-ID mutations. | Direct customer/service/order/payment isolation was tested. Does not establish assignment/capability filtering for every same-tenant Staff read. |
+| Staging structural postflight | PHX-POST-F02-DOCS-001: 001E definitions, owner/search-path/grants and unique history; F04: unique migration among 106 entries and preserved function properties/permissions. | CTO/PO-supplied state checks; distinct from behavioral or browser acceptance. |
+| Product Owner browser checks | PHOENIX-ROLE-AUTH-BROWSER-UAT-DOCS-001: specified Manager/Staff route denials; PORTAL-UAT-006: refreshed protected read denied after revocation, then all 17 orders returned after reactivation without new login. Both recorded in [Session Handover](../00_START_HERE/SESSION_HANDOVER.md). | Real observed browser cases only; does not prove all direct SQL/RPC paths, Auth session termination or immediate signed-URL revocation. |
+| Historical operational staging E2E | Pickup, Production, Quality and Delivery capability/assignment/workspace flows in the preserved record below. | Keep the accepted flows; do not restart them merely because a later evidence gap concerns direct reads. |
+
+**Remaining evidence boundaries:** F03 concerns Staff intra-tenant read visibility; D03 concerns multiple identity contexts and suspension interactions. F01/F02/F04 are completed within the accepted scopes described in [Security](../04_ARCHITECTURE/Security.md). Portal TTL/cache and remaining invitation/consent/identity cases retain their separate limits. [AUTH-DR-001C](Recovery_Runbook.md) remains a hard pre-production gate.
+
+**Evidence availability:** some historical transaction scripts were deliberately removed after rollback; their dated reports remain the available evidence. The F04 closeout commit contains the migration and two canonical documents, not a persistent F04 contract test. The earlier local 3/3 static result and the CTO's 3/3 PostgreSQL behavioral result are distinct; neither is a new test run in this mission.
+
+## Historical validation record — through 2026-08-22
+
+The original record below is preserved verbatim. Its “current” and “next QA-001” wording and APP-era commands describe the original phase; they do not assign today's mission or override current validation policy. Historical refund/void regression does not authorize legacy RPC reuse.
+
+<details>
+<summary>Original quality gates, operational evidence and SEC-001 results</summary>
+
 Status: Active
 
 Version: 0.1
@@ -204,3 +237,5 @@ Expected outcomes before review:
 - invalid MIME or size: DENIED
 - logistics fee changes order total: DENIED, fee is informational in APP-007
 - direct Storage object update/delete: DENIED
+
+</details>

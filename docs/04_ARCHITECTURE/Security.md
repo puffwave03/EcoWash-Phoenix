@@ -1,5 +1,65 @@
 # Security
 
+Status: Current architecture reference — CTO REVIEW PASS — READY FOR COMMIT
+
+Last reconciled: 2026-10-23; repository baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
+
+## Current scope and authority
+
+This section records the implemented security boundaries reconciled by `SECURITY-EVIDENCE-RECONCILIATION-001` (AUDIT COMPLETE / CTO REVIEWED). [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own current acceptance and continuation; [Testing](../05_DEVELOPMENT/Testing.md) indexes evidence by level. This documentation update runs no new security tests and does not declare general application security or production readiness.
+
+## Tenant identity, roles and operational access
+
+Tenant context comes from authenticated identity and database relationships, not a browser-supplied organization ID. Organization-scoped RLS and RPC checks enforce tenant boundaries. `owner`, `manager` and `staff` remain the tenant `app_role` values. Owner controls Staff/access administration; Manager has operational supervision without that Owner-only authority. Staff operations use explicit capabilities and assignments. Owner and Manager receive the effective operational capabilities through their roles; Staff cannot obtain supervision and POS requires explicit capability. See [capability resolution](../../src/lib/auth/capabilities.ts) and [database capability/assignment enforcement](../../supabase/migrations/20260820000100_ux_ops_001_8_access_capabilities.sql).
+
+Server guards and workspace assignment filters restrict application routes, queries and actions. They are not equivalent to restrictions on every direct SQL SELECT. Existing `customers_select_member`, `orders_select_member` and `payments_select_member` policies authorize tenant membership, without an assignment predicate. The [database boundary summary](../03_DATABASE/Database_Design.md) distinguishes these layers. Real authenticated Tenant A/B isolation and capability-scoped operational flows have existing PASS evidence; they must not be reopened merely because a historical document lists an unfinished task.
+
+**F03 — PARTIAL / EVIDENCE GAP:** the remaining question is Staff visibility within the same tenant, across direct table reads and RPCs, for users with/without capability and assignment. Cross-tenant reads and specific privileged RPC denials already have evidence. CTO must delimit the intended intra-tenant read contract before deciding whether any policy correction is necessary. No new restriction or confirmed vulnerability is declared here.
+
+## Customer Portal and Platform administration
+
+Portal authorization uses `customer_portal_access`, separate from staff membership. Auth login alone does not authorize customer data. The canonical `customer_portal_current_access()` derives the customer/organization from the authenticated UUID, selects the first active association with an active customer, then checks organization state and Portal entitlement. Customer-facing RPCs bind reads to that context. See [Portal context isolation](../../supabase/migrations/20261005000200_portal_context_isolation_001.sql) and [entitlement boundary](../../supabase/migrations/20261014000200_portal_entitlement_boundary_001.sql).
+
+Platform Admin uses separate `platform_admins` identity and guarded, audited administration RPCs. It is not a tenant role and does not imply arbitrary raw customer/order/payment access. Its bounded cross-tenant management and ability to manage suspended tenants have existing staging evidence. [Platform migration](../../supabase/migrations/20260827000300_platform_admin_001_saas_control_center.sql) and [guard](../../src/lib/auth/require-platform-admin.ts) define this boundary.
+
+## Organization state and pre-request checks
+
+Organization `status`, `platform_service_status` and `deleted_at` are distinct checks. The three F04 membership/role/shared-profile helpers require active organization status, active platform service and no logical deletion, in addition to their existing authenticated identity, membership, tenant and role conditions. The canonical Portal context also checks these organization conditions; the application membership resolver rejects inactive organizations.
+
+`platform_assert_request_allowed()` is configured as the PostgREST pre-request hook. It rejects a non-Platform-Admin identity when an active membership or active Portal association points to a non-deleted suspended organization. Active Platform Admin identities are exempt from this hook so that they can administer suspended tenants; their separate RPC guards remain necessary. Ordinary suspension/reactivation and tenant/Portal denial already passed the controlled staging QA.
+
+**D03 — PARTIAL / EVIDENCE GAP:** the hook considers any qualifying suspended association, while Portal selects a canonical context. A user with a legitimate context in tenant A and an active association in suspended tenant B can therefore encounter a request-wide denial. The intended behavior and remaining combinations of multiple contexts, inactive associations and inactive customers require focused CTO review. This is not evidence of unauthorized access and does not reopen the completed ordinary suspension QA or authorize a global session redesign.
+
+## RLS, RPC privileges and privileged server code
+
+RLS determines permitted rows for direct table access; grants determine which operations/functions are callable. RPCs separately validate caller, tenant and applicable role/capability. `SECURITY DEFINER` functions require explicit authorization, a fixed safe `search_path` and deliberate grants; their existence alone does not prove safe access. SEC-001.1 revoked broad function execution and reduced table privileges, with subsequent migrations maintaining explicit per-function boundaries. Later F02/F04 postflights verified their respective function properties and permissions; these scoped results are not a fresh exhaustive remote catalog audit.
+
+Browser clients do not receive service-role credentials. Privileged Auth administration uses the server-only [admin client](../../src/lib/supabase/admin.ts) behind application authorization. The historical statement that no Server Action uses service role describes an earlier phase, not the current invitation architecture. Current POS refunds use `record_pos_refund`; historical SEC-001 mutation evidence involving `void_payment` or `refund_payment` does not authorize re-enabling those legacy RPCs.
+
+## Completed scoped security corrections
+
+| Finding | Accepted scope | Remaining distinction |
+| --- | --- | --- |
+| SEC-001 / .1 / .2 | Historical audit, privilege/Storage remediation and authenticated mutation regression completed. | The preserved August evidence is not a blanket certification of later features. |
+| F01 | Auth callback HTML bridge hardened; source/local regression evidence and publication recorded. | Does not certify every Auth/browser flow. |
+| F02 | Unsafe Preview disabled independently of flags; identity-binding RPC checks and removal of global Auth activity metadata implemented, with staging postflight recorded. | Consent, identity reassignment, remaining invitation/Auth cases and previously created sessions are separate questions. |
+| F04 | Three helpers corrected by `20261023122144_security_f04_inactive_org_helpers_001a.sql`; CTO staging postflight and active/inactive behavior 3/3 PASS with explicit rollback. | Supersedes the historical F04 OPEN/BLOCKED gate for these helpers; not browser E2E or all RLS/RPC combinations. |
+
+## Private Storage and Portal photographs
+
+`order-media` is private. Staff Storage SELECT requires the tenant boundary and matching active photo metadata; customer access has its separate Portal policy. The Portal issues signed photo URLs with a 600-second expiry. [Portal queries](../../src/features/portal/server/queries.ts) and [Storage policy](../../supabase/migrations/20260803000300_portal_001_fix_customer_storage_policy.sql) are the implementation references.
+
+`PORTAL-UAT-006` passed browser revocation at a refreshed protected request and subsequent reactivation without a new login. That result does not prove Auth session termination or immediate invalidation of previously issued photo URLs. `PORTAL-REVOCATION-MEDIA-TTL-001` remains the already recorded bounded TTL/cache privacy risk. PO/CTO keep Portal photos enabled; shorter expiry/cache mitigation requires separate scope before commercial release. No new photo prohibition or demonstrated cross-tenant leak is inferred.
+
+`AUTH-DR-001C` remains mandatory before production, alongside the other release gates in [Recovery Runbook](../05_DEVELOPMENT/Recovery_Runbook.md). Logical database/Storage restore evidence does not establish physical Auth or authenticated application recovery.
+
+## Historical security reference — 2026-08-01
+
+The original text below is preserved verbatim as evidence of its phase. Its future-feature wording, role/payment descriptions and release mission are historical; the current sections above and later canonical checkpoints take precedence.
+
+<details>
+<summary>Original SEC-001 and APP security reference — historical evidence</summary>
+
 Status: Active
 
 Version: 0.1
@@ -228,3 +288,5 @@ Audit logs are required for:
 - membership and role changes
 - deletion/archive actions
 - future sensitive access events
+
+</details>
