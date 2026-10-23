@@ -4,6 +4,14 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## SECURITY-F04-INACTIVE-ORG-HELPERS-001A — STAGING POSTFLIGHT + BEHAVIORAL PASS — 23/10/2026
+
+**F04 helper authorization: STAGING POSTFLIGHT + BEHAVIORAL PASS.** Per CTO/Product Owner evidence, migration `20261023122144_security_f04_inactive_org_helpers_001a.sql` was applied to Supabase staging `exthnplfokcucaqydney`. The CTO confirmed 106 migration entries, with F04 recorded exactly once. All three updated helpers — `is_organization_member`, `has_organization_role` and `shares_organization_with_profile` — contain `organization.status = 'active'`; signatures, ownership, `STABLE`, `SECURITY DEFINER`, `search_path` and existing grants were preserved. The migration changes only these three function definitions; it contains no operational data updates or edits to Portal, Platform Admin or pre-request functions.
+
+**Controlled PostgreSQL behavior:** the CTO tested a temporary organization, two isolated profiles and a simulated Auth identity. Each helper returned TRUE for an active tenant and FALSE for an inactive tenant: **3/3 PASS**. The transaction ended with explicit `ROLLBACK`; the subsequent check found four organizations total, zero temporary organizations remaining and one F04 migration entry. These are CTO-supplied staging SQL results; Codex did not repeat SQL or modify Supabase during this documentation closeout. They prove the tested PostgreSQL helper behavior, not browser end-to-end authorization or every RLS/RPC path.
+
+**Current gate:** this checkpoint supersedes the historical F04 OPEN/BLOCKED status below for the three scoped helpers; that earlier local Docker diagnosis remains historical evidence. D03, F03, remaining Portal/Auth and cross-tenant scenarios, `AUTH-DR-001C`, fiscal, GDPR, operational and Production Readiness Review gates remain open. No general security or production-readiness approval follows from F04.
+
 ## LOCAL-POSTGRES-SAFETY-HANDOVER-001 — Local Docker read-only checkpoint (23/10/2026)
 
 **F04 inactive-organization authorization: static analysis OPEN; local PostgreSQL runtime proof BLOCKED / NOT VERIFIED.** The prior checkpoints establish F04 as an open security gate. This mission did not implement F04, run SQL or PostgreSQL tests, or establish authorization behavior; no F04 runtime result is claimed.
