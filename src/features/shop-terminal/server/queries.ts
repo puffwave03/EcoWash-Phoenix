@@ -261,29 +261,30 @@ export async function listShopServices(
     throw new Error("Shop catalog unavailable");
   }
 
-  const segmentResult = customerResult.data.catalog_segment_id
-    ? await supabase.from("catalog_segments")
-      .select("name")
-      .eq("organization_id", membership.organization.id)
-      .eq("id", customerResult.data.catalog_segment_id)
-      .eq("is_active", true)
-      .maybeSingle<{ name: string }>()
-    : { data: null, error: null };
-  if (segmentResult.error) console.error("Shop customer segment query failed", segmentResult.error.code);
-
   const services = (servicesResult.data ?? []) as unknown as ServiceRow[];
-  const mediaResult = services.length > 0
-    ? await supabase.from("services")
-      .select("id, portal_image_path, portal_sort_order")
-      .eq("organization_id", membership.organization.id)
-      .in("id", services.map((service) => service.id))
-      .returns<{ id: string; portal_image_path: string | null; portal_sort_order: number }[]>()
-    : { data: [], error: null };
+  const [segmentResult, mediaResult, presentation] = await Promise.all([
+    customerResult.data.catalog_segment_id
+      ? supabase.from("catalog_segments")
+        .select("name")
+        .eq("organization_id", membership.organization.id)
+        .eq("id", customerResult.data.catalog_segment_id)
+        .eq("is_active", true)
+        .maybeSingle<{ name: string }>()
+      : { data: null, error: null },
+    services.length > 0
+      ? supabase.from("services")
+        .select("id, portal_image_path, portal_sort_order")
+        .eq("organization_id", membership.organization.id)
+        .in("id", services.map((service) => service.id))
+        .returns<{ id: string; portal_image_path: string | null; portal_sort_order: number }[]>()
+      : { data: [], error: null },
+    loadCatalogPresentation(supabase, locale, services.map((service) => service.id)),
+  ]);
+  if (segmentResult.error) console.error("Shop customer segment query failed", segmentResult.error.code);
   if (mediaResult.error) console.error("Shop service media query failed", mediaResult.error.code);
 
   const categoryTitles = new Map((categoriesResult.data ?? []).map((category) => [category.category_key, category.portal_title]));
   const imagePaths = new Map((mediaResult.data ?? []).map((service) => [service.id, service.portal_image_path]));
-  const presentation = await loadCatalogPresentation(supabase, locale, services.map((service) => service.id));
   const mode = presentation.values().next().value?.orderMode ?? "manual";
   const mapped = services.map((service) => ({
     amount: Number(service.amount),
