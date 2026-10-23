@@ -4,6 +4,14 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## POS-COUNTED-CASH-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+**23/10/2026 — application commit `73f9ccfa453b175e647d902555db9cedbbc349e9`**, already committed and pushed (`fix(pos): require explicit counted cash at session close`). The POS session-close counted-cash field starts empty and requires the operator to enter the amount actually counted, including an explicit zero (`0,00`). Server validation rejects a missing field, an empty string or whitespace; explicit zero and valid positive amounts remain accepted, while negative and nonnumeric amounts remain rejected. The shared money converter, separately displayed expected cash, reconciliation calculations, session lifecycle, payments/refunds, authorization, online flows, Daily Close snapshots and database are unchanged; no migration was introduced.
+
+**Existing technical evidence, not rerun here:** **8/8** focused tests in `tests/pos-counted-cash-ux-001.test.mjs`, **38/38** pertinent regressions (`pos-contract`: 31/31; `pos-session-ux`: 7/7), TypeScript, scoped ESLint and diff-check **PASS**. The focused tests execute the actual POS workspace, internal close form, validation and action with simulated hooks/server dependencies; invalid input never reaches the close RPC. These tests are not browser or PostgreSQL runtime proof.
+
+**Product Owner UAT PASS, supplied evidence:** session closure was possible only after entering the counted amount. This acceptance is limited to that observed interaction; the validation cases above are supported by automated tests and are not additional claimed browser scenarios. Codex did not repeat UAT or independently verify deployment status during this documentation closeout. This documentation commit is separate from the application commit above. Historical checkpoints and unrelated gates remain preserved; `DAILY-CLOSE-CLARITY-UX-001` has not been started.
+
 ## TERMINAL-CUSTOMER-CATALOG-PERFORMANCE-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 **23/10/2026 — application commit `935c0144835a1823bec0131d373b0e473f67e978`**, already committed and pushed (`perf(terminal): parallelize catalog enrichment queries`). `listShopServices` now runs its three independent accessory reads (active segment name, service media and localized presentation) concurrently after the existing access checks and initial reads. Prices, authorization, segment rules, fallback/error behavior and order logic are preserved; no cache was introduced.

@@ -4,6 +4,12 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## POS-COUNTED-CASH-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+**23/10/2026 — application commit `73f9ccfa453b175e647d902555db9cedbbc349e9`.** Counted cash starts empty at POS session close and requires explicit entry, including zero (`0,00`). Missing, empty and whitespace-only input is rejected; valid zero/positive amounts are accepted and negative/nonnumeric amounts remain rejected. Expected cash, reconciliation calculations, session lifecycle, payments/refunds, authorization, online flows, Daily Close snapshots and database are unchanged; no migration.
+
+Existing technical evidence: **8/8** new focused tests, **38/38** pertinent regressions, TypeScript, scoped ESLint and diff-check **PASS**. Product Owner UAT confirms that closure is possible only after entering the amount; other validation cases are automated evidence, not additional browser claims. No tests or UAT were repeated and no deployment was independently verified in this documentation closeout. The [full acceptance checkpoint](../00_START_HERE/SESSION_HANDOVER.md#pos-counted-cash-ux-001--complete--technical-pass--product-owner-uat-pass) distinguishes application and documentation commits. Historical evidence and unrelated gates remain unchanged; `DAILY-CLOSE-CLARITY-UX-001` is not started.
+
 ## TERMINAL-CUSTOMER-CATALOG-PERFORMANCE-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 Application commit: `935c0144835a1823bec0131d373b0e473f67e978`. Three accessory reads in `listShopServices` are parallelized; prices, access controls and order logic remain unchanged. Existing validation: **14/14** new tests, **30/30** pertinent regressions, TypeScript, scoped ESLint and diff-check **PASS**. No tests were rerun for this documentation closeout.
