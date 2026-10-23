@@ -75,7 +75,7 @@ type DailyCloseText = {
   nonFiscal: string;
   paymentStatuses: Record<DerivedPaymentStatus, string>;
   previewLabel: string;
-  semantics: Record<"currentState" | "currentStateNote" | "historicalNotice" | "selectedDateFacts" | "selectedDateNote", string>;
+  semantics: Record<"currentState" | "currentStateNote" | "historicalNotice" | "liveDataNote" | "outstandingNote" | "selectedDateFacts" | "selectedDateNote", string>;
   sections: Record<"attention" | "businessDay" | "logistics" | "orders" | "payments" | "pos", string>;
   sourceLabels: Record<DailyCloseSource, string>;
   statuses: Record<FulfillmentStatus | ProductionStatus, string>;
@@ -184,6 +184,7 @@ export function DailyCloseDashboard({ closeAction, data, locale, persistedClose,
         description={text.description}
       />
       <div className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">{text.nonFiscal}</div>
+      <p className="rounded-control border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{text.semantics.liveDataNote}</p>
 
       <section className="space-y-3" aria-labelledby="daily-close-business-day">
         <h3 className="text-xl font-semibold text-primary" id="daily-close-business-day">{text.sections.businessDay}</h3>
@@ -233,6 +234,7 @@ export function DailyCloseDashboard({ closeAction, data, locale, persistedClose,
           <p className="text-sm text-muted">{text.metrics.refunds}: {payment.refundCount}</p>
           {isHistoricalBusinessDate ? <div><h5 className="font-semibold text-primary">{text.semantics.currentState}</h5><p className="mt-1 text-sm text-muted">{text.semantics.currentStateNote}</p></div> : null}
           <div className="grid gap-3 sm:grid-cols-2"><SummaryCard label={text.metrics.outstanding} tone="warning" value={formatCurrency(payment.outstanding, payment.currency, locale)} /><SummaryCard label={text.metrics.outstandingOrders} tone="warning" value={payment.outstandingOrderCount} /></div>
+          <p className="text-sm text-muted">{text.semantics.outstandingNote}</p>
         </Card>)}</div> : <EmptyState>{text.empty}</EmptyState> : <EmptyState>{text.unavailable}</EmptyState>}
       </section>
 

@@ -147,8 +147,37 @@ test("all locales contain the Phase 1 preview, non-fiscal, section and blocker v
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.dailyClose.previewLabel, "string");
     assert.equal(typeof messages.dailyClose.nonFiscal, "string");
-    for (const semantic of ["selectedDateFacts", "selectedDateNote", "currentState", "currentStateNote", "historicalNotice"]) assert.equal(typeof messages.dailyClose.semantics[semantic], "string");
+    for (const semantic of ["selectedDateFacts", "selectedDateNote", "currentState", "currentStateNote", "historicalNotice", "liveDataNote", "outstandingNote"]) assert.equal(typeof messages.dailyClose.semantics[semantic], "string");
     for (const section of ["businessDay", "orders", "payments", "pos", "logistics", "attention"]) assert.equal(typeof messages.dailyClose.sections[section], "string");
     for (const blocker of ["source_unavailable", "future_business_date", "open_pos_session", "cash_without_session", "unassigned_location"]) assert.equal(typeof messages.dailyClose.blockers[blocker], "string");
   }
 });
+
+test("clarity notes identify live summaries for today and saved days and explain the displayed residual", async () => {
+  const dashboard = await source("src/components/daily-close/DailyCloseDashboard.tsx");
+  const notice = dashboard.slice(dashboard.indexOf("{text.nonFiscal}"), dashboard.indexOf('aria-labelledby="daily-close-business-day"'));
+  assert.match(notice, /<p[^>]*>\{text\.semantics\.liveDataNote\}<\/p>/);
+  assert.doesNotMatch(notice, /isHistoricalBusinessDate|persistedClose|\?/);
+  assert.match(dashboard, /eyebrow=\{text\.previewLabel\}/);
+  assert.match(dashboard, /text\.metrics\.outstandingOrders[\s\S]*<p[^>]*>\{text\.semantics\.outstandingNote\}<\/p>/);
+  assert.ok(dashboard.indexOf("text.semantics.liveDataNote") < dashboard.indexOf("<DailyCloseWorkflow"));
+});
+
+const clarityTerms = {
+  it: [/in tempo reale/i, /caricamento della pagina/, /giornata selezionata/, /incassi confermati/, /Non rappresenta tutti i crediti storici/],
+  es: [/en tiempo real/i, /cargar la página/, /jornada seleccionada/, /cobros confirmados/, /No representa todos los créditos históricos/],
+  en: [/Live/i, /page loads/, /selected business day/, /confirmed collections/, /does not represent all historical receivables/],
+  fr: [/en temps réel/i, /chargement de la page/, /journée sélectionnée/, /encaissements confirmés/, /ne représente pas toutes les créances historiques/],
+  de: [/Echtzeit/, /Laden der Seite/, /ausgewählten Geschäftstag/, /bestätigten Zahlungseingänge/, /nicht alle historischen Forderungen/],
+};
+for (const [locale, [live, loaded, day, confirmed, scope]] of Object.entries(clarityTerms)) {
+  test(`clarity copy in ${locale} distinguishes live data and selected-day receivables`, async () => {
+    const { dailyClose } = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.match(dailyClose.previewLabel, live);
+    assert.match(dailyClose.semantics.liveDataNote, loaded);
+    assert.match(dailyClose.semantics.outstandingNote, day);
+    assert.match(dailyClose.semantics.outstandingNote, confirmed);
+    assert.match(dailyClose.semantics.outstandingNote, scope);
+    assert.doesNotMatch(JSON.stringify(dailyClose), /(?:phase|fase)\s*2/i);
+  });
+}

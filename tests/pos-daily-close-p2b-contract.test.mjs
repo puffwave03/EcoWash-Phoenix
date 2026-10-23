@@ -185,9 +185,13 @@ test("22 desktop confirmation and summaries use responsive grids", async () => {
   assert.match(workflow, /lg:grid-cols-5/);
 });
 
-test("23 all five locales have identical definitive-close key topology", async () => {
+test("23 all five locales have identical Daily Close and definitive-close key topology", async () => {
   const locales = ["en", "it", "es", "fr", "de"];
-  const messages = await Promise.all(locales.map(async (locale) => JSON.parse(await source(`src/i18n/${locale}/common.json`)).dailyClose.definitive));
+  const dailyClose = await Promise.all(locales.map(async (locale) => JSON.parse(await source(`src/i18n/${locale}/common.json`)).dailyClose));
+  const topology = (value) => Object.keys(value).sort().flatMap((key) =>
+    typeof value[key] === "object" ? topology(value[key]).map((child) => `${key}.${child}`) : [key]);
+  for (const message of dailyClose) assert.deepEqual(topology(message), topology(dailyClose[0]));
+  const messages = dailyClose.map((message) => message.definitive);
   const keys = (value) => Object.keys(value).sort();
   for (const message of messages) {
     assert.deepEqual(keys(message), keys(messages[0]));
@@ -196,6 +200,33 @@ test("23 all five locales have identical definitive-close key topology", async (
     assert.deepEqual(keys(message.serverBlockers), keys(messages[0].serverBlockers));
     assert.deepEqual(keys(message.warningLabels), keys(messages[0].warningLabels));
   }
+});
+
+test("clarity copy explains POS-first confirmation and immutable saved snapshots in all five locales", async () => {
+  const terms = {
+    it: [/POS[\s\S]*verifica[\s\S]*conferma/, /non può essere riapert/, /interfaccia attuale/, /modificat/],
+    es: [/POS[\s\S]*revisa[\s\S]*confirma/, /no puede reabrirse/, /interfaz actual/, /modific/],
+    en: [/POS[\s\S]*review[\s\S]*confirm/, /cannot be reopened/, /current interface/, /edited/],
+    fr: [/POS[\s\S]*vérifiez[\s\S]*confirmez/, /ne peut être rouvert/, /interface actuelle/, /modifi/],
+    de: [/POS[\s\S]*prüfen[\s\S]*bestätigen/, /weder wieder geöffnet/, /aktuelle Oberfläche/, /bearbeitet/],
+  };
+  for (const [locale, [sequence, reopen, ui, edit]] of Object.entries(terms)) {
+    const { dailyClose: message } = JSON.parse(await source(`src/i18n/${locale}/common.json`));
+    assert.match(message.description, sequence);
+    assert.match(message.definitive.startDescription, sequence);
+    for (const text of [message.definitive.immutable, message.definitive.confirmationDescription]) {
+      assert.match(text, reopen);
+      assert.match(text, ui);
+      assert.match(text, edit);
+    }
+    assert.match(message.definitive.closedDescription, /snapshot|Snapshot/);
+  }
+  const panel = await source(panelPath);
+  assert.match(panel, /text\.startDescription/);
+  assert.match(panel, /text\.confirmationDescription/);
+  const workflow = await source(workflowPath);
+  assert.match(workflow, /text\.immutable/);
+  assert.match(workflow, /text\.closedDescription/);
 });
 
 test("24 P1 preview sections and filters remain present", async () => {
