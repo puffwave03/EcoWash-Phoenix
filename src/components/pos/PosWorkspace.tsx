@@ -95,14 +95,14 @@ function RefundForm({ action, payment, sessionId, text }: { action: Action; paym
   );
 }
 
-function CloseSessionForm({ action, session, summary, text }: { action: Action; session: PosSession; summary: PosSessionSummary; text: PosText }) {
+function CloseSessionForm({ action, session, text }: { action: Action; session: PosSession; text: PosText }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   return (
     <Card className="space-y-4">
       <div><h3 className="text-xl font-semibold text-primary">{text.close.title}</h3><p className="mt-1 text-sm text-muted">{text.close.description}</p></div>
       <form action={formAction} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <input name="sessionId" type="hidden" value={session.id} />
-        <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.close.counted}</span><input className={inputClass} defaultValue={summary.expectedCash.toFixed(2)} min="0" name="countedCash" required step="0.01" type="number" /></label>
+        <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.close.counted}</span><input className={inputClass} min="0" name="countedCash" required step="0.01" type="number" /></label>
         <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.close.notes}</span><input className={inputClass} name="notes" /></label>
         <Button className="min-h-12" disabled={pending} type="submit" variant="secondary">{text.actions.close}</Button>
         <div className="sm:col-span-3">{result(state, text)}</div>
@@ -142,7 +142,7 @@ export function PosWorkspace({ actions, canSeeHistory, currency, history, histor
 
       {session ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.payments.title}</h3>{payments.length === 0 ? <p className="text-sm text-muted">{text.payments.empty}</p> : <div className="divide-y divide-border">{payments.map((payment) => <div className="py-4" key={payment.id}><div className="grid gap-2 sm:grid-cols-4"><div><p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p><p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p></div><p className="text-sm text-muted">{payment.orderNumber}</p><p className="text-sm text-muted">{new Date(payment.paidAt).toLocaleString(locale)}</p><p className="text-sm text-muted">{payment.recordedByName ?? "-"}</p></div>{payment.method === "card" ? <p className="mt-2 text-xs text-muted">{text.payments.manualCard}</p> : null}{payment.status === "confirmed" && payment.channel === "pos" ? <><p className="mt-2 text-xs font-medium text-muted">{text.payments.phoenixRefund}</p><RefundForm action={actions.refund} payment={payment} sessionId={session.id} text={text} /></> : null}</div>)}</div>}<PaginationNav navigation={paymentNavigation} text={text.pagination} title={text.payments.title} /></Card> : null}
 
-      {session && summary ? <CloseSessionForm action={actions.close} session={session} summary={summary} text={text} /> : null}
+      {session && summary ? <CloseSessionForm action={actions.close} session={session} text={text} /> : null}
 
       {canSeeHistory ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.history.title}</h3>{history.length === 0 ? <p className="text-sm text-muted">{text.history.empty}</p> : <div className="overflow-x-auto"><table className="w-full min-w-[44rem] text-left text-sm"><thead><tr className="border-b border-border text-muted"><th className="p-3">{text.common.date}</th><th className="p-3">{text.common.actor}</th><th className="p-3">{text.session.opening}</th><th className="p-3">{text.history.expected}</th><th className="p-3">{text.history.counted}</th><th className="p-3">{text.history.difference}</th></tr></thead><tbody>{history.map((item) => <tr className="border-b border-border" key={item.id}><td className="p-3">{new Date(item.openedAt).toLocaleString(locale)}</td><td className="p-3">{item.openedByName ?? "-"}</td><td className="p-3">{formatCurrency(item.openingCash, currency, locale)}</td><td className="p-3">{item.expectedCash === null ? "-" : formatCurrency(item.expectedCash, currency, locale)}</td><td className="p-3">{item.countedCash === null ? "-" : formatCurrency(item.countedCash, currency, locale)}</td><td className="p-3">{item.difference === null ? "-" : formatCurrency(item.difference, currency, locale)}</td></tr>)}</tbody></table></div>}<PaginationNav navigation={historyNavigation} text={text.pagination} title={text.history.title} /></Card> : null}
     </div>
