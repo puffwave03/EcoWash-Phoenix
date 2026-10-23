@@ -4,6 +4,16 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## TERMINAL-CUSTOMER-CATALOG-PERFORMANCE-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+**23/10/2026 — application commit `935c0144835a1823bec0131d373b0e473f67e978`**, already committed and pushed (`perf(terminal): parallelize catalog enrichment queries`). `listShopServices` now runs its three independent accessory reads (active segment name, service media and localized presentation) concurrently after the existing access checks and initial reads. Prices, authorization, segment rules, fallback/error behavior and order logic are preserved; no cache was introduced.
+
+**Existing technical evidence, not rerun here:** 14/14 new focused tests, 30/30 pertinent regressions, TypeScript, scoped ESLint and diff-check PASS. The tests execute actual server query/helper code with simulated Supabase reads and controlled promises; they establish concurrent start, completion barriers and covered output/error behavior, not real staging timings.
+
+**Product Owner staging UAT PASS, scoped to the reported observation:** catalog loading felt “a little faster”. No stopwatch measurement, percentage reduction or final loading time is available. This closes the scoped parallelization mission; it does not certify a quantified performance target or eliminate all previously observed latency. Further catalog optimizations are deferred unless new evidence justifies them. Historical checkpoints and unrelated acceptance/release gates remain intact. Codex did not repeat UAT or independently verify deployment status during this documentation phase. This local documentation closeout awaits CTO review; its future commit is separate from the application SHA above.
+
+**Notification improvement recorded, not started:** `UX-NOTIFICATIONS-001 — BACKLOG / DESIGN PENDING`, priority **MEDIUM**. The canonical functional decision is in [Project Status](../06_ROADMAP/Project_Status.md#ux-notifications-001--backlog--design-pending). It refines the historical `NOTIFY-001` candidate rather than opening a duplicate implementation stream. Inspect existing notification mechanisms before any future implementation; no design or implementation work or next mission is authorized here.
+
 ## TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 **Phoenix Staging — Product Owner browser evidence, recorded 23/10/2026.** Application commit: `c0af60a12c8149a31c73fd8c5244669bdda2d18a` (`fix(terminal): open first sales workspace automatically`), already committed and pushed. The Terminal now restores a valid saved sale or defaults to Sale 1 after successful storage reads, with selection normalization/read-back and the existing safety guards. This checkpoint records supplied UAT evidence; Codex did not repeat browser tests or remotely verify deployment status in this documentation phase.

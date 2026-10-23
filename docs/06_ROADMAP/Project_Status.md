@@ -4,6 +4,27 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## TERMINAL-CUSTOMER-CATALOG-PERFORMANCE-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+Application commit: `935c0144835a1823bec0131d373b0e473f67e978`. Three accessory reads in `listShopServices` are parallelized; prices, access controls and order logic remain unchanged. Existing validation: **14/14** new tests, **30/30** pertinent regressions, TypeScript, scoped ESLint and diff-check **PASS**. No tests were rerun for this documentation closeout.
+
+Product Owner Phoenix Staging UAT: catalog loading perceived as **“a little faster”**. This is qualitative acceptance, without stopwatch measurements, a percentage improvement or a measured final time. Further optimizations are deferred unless new evidence emerges. The [full scoped checkpoint](../00_START_HERE/SESSION_HANDOVER.md#terminal-customer-catalog-performance-001--complete--technical-pass--product-owner-uat-pass) preserves evidence limits and history. Documentation is prepared locally for CTO review; no documentation commit/push yet and no independent deployment verification claimed.
+
+## UX-NOTIFICATIONS-001 — BACKLOG / DESIGN PENDING
+
+**Priority: MEDIUM. Product Owner functional decision, recorded 23/10/2026.** This is the current scoped refinement of the historical `NOTIFY-001 — Customer/staff notifications` candidate in [Roadmap](../01_PRODUCT/Roadmap.md) and [Milestones](Milestones.md), not an additional duplicate notification initiative. Those historical records remain preserved.
+
+| Event | Intended recipients |
+| --- | --- |
+| New Portal order | Authorized operators of the same organization. |
+| New production assignment | The assigned employee. |
+| New pickup or delivery | The assigned employee. |
+| Administrative notification | Authorized Owner/Manager users. |
+
+The approved direction includes an internal bell with a counter, persisted notifications, read/unread state and a link to the relevant activity. Real-time delivery is to be evaluated during design, not assumed or authorized now. Notifications never grant additional access: organization isolation and the recipient's current authorization remain mandatory for notification content and the linked activity.
+
+Before proposing implementation, inspect and reuse suitable existing notification mechanisms; distinguish existing operational alerts from any proposed persistent notification behavior. No new table, RPC, transport, real-time mechanism or implementation is approved by this backlog entry. Design and implementation each require their own authorized scope; no notification mission starts here.
+
 ## TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 **Application published:** `c0af60a12c8149a31c73fd8c5244669bdda2d18a`. Product Owner browser UAT on Phoenix Staging passed: immediate operational-sale opening without the empty initial screen; five available workspaces; Sale 1 and Sale 2 in progress concurrently; selected Sale 2 customer/cart and selection retained after reload; sales retained after leaving for Home and returning. Full evidence and boundaries are in [Session Handover](../00_START_HERE/SESSION_HANDOVER.md).

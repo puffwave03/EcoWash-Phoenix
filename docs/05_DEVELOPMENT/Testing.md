@@ -8,6 +8,12 @@ Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`
 
 Follow [AGENTS.md](../../AGENTS.md) and the authorized task scope: focused checks first, broader checks only when required. This documentation mission executes no new application, PostgreSQL, staging or browser tests. Results below are previously recorded evidence. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own acceptance and remaining gates.
 
+## Terminal catalog performance evidence — 23/10/2026
+
+`TERMINAL-CUSTOMER-CATALOG-PERFORMANCE-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS`, application commit `935c0144835a1823bec0131d373b0e473f67e978`. [Focused query tests](../../tests/terminal-customer-catalog-performance-001.test.mjs): **14/14 PASS**, covering concurrent accessory reads, waiting for completion, customers with/without segment, valid empty catalogs and accessory fallback/transport behavior. The tests execute real query/presentation code with simulated Supabase reads; they do not measure staging latency. [Catalog failure/draft regressions](../../tests/terminal-catalog-failure-draft-001.test.mjs) and [segment contracts](../../tests/terminal-segment-catalog-contract.test.mjs): **30/30 PASS** combined; TypeScript, scoped ESLint and diff-check **PASS** at implementation.
+
+Separate Product Owner staging acceptance reports loading as **“a little faster”**, without stopwatch measurements, percentage reduction or a measured final time. Further optimizations are deferred pending new evidence. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#terminal-customer-catalog-performance-001--complete--technical-pass--product-owner-uat-pass) owns the scoped closeout. No tests or UAT were repeated in this documentation mission; the future documentation commit is distinct from the application SHA.
+
 ## Terminal initial-screen evidence — 23/10/2026
 
 `TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS`, application commit `c0af60a12c8149a31c73fd8c5244669bdda2d18a`. [Targeted outer-component test](../../tests/terminal-initial-screen-001.test.mjs): 19/19 PASS; pertinent workspace/draft/submission-recovery regressions: 52/52 PASS; TypeScript, scoped ESLint and diff-check PASS at implementation. The outer-component test runs real component code with simulated hooks/storage/timers, not a browser.
