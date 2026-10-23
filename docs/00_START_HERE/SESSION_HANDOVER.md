@@ -4,6 +4,14 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## DAILY-CLOSE-CLARITY-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS
+
+**23/10/2026 — application commit `e6309172ff6c4579b126dfd3d5482e23b1f8fc99`**, already committed and pushed (`fix(daily-close): clarify close workflow and snapshot labels`). Daily Close copy in **IT / ES / EN / FR / DE** now explains the sequence of closing relevant POS sessions → reviewing Daily Close → confirming. It identifies the saved close as a definitive snapshot that cannot be reopened or edited through the current interface, distinguishes live summaries available at page load from the separately saved snapshot, and limits the displayed outstanding balance to orders attributed to the selected business day rather than all historical organization receivables. The obsolete future Phase 2 reference was removed. Calculations, dates, snapshot behavior, payments, operational workflow, authorization and database are unchanged; no migration was introduced.
+
+**Existing technical evidence, not rerun here:** **45/45 PASS**, including **7 new tests**, in `pos-daily-close-p1-contract.test.mjs` and `pos-daily-close-p2b-contract.test.mjs`; TypeScript, scoped ESLint and diff-check **PASS**. Copy/rendering-source contracts and translation-key parity cover all five languages; they are not browser or PostgreSQL runtime proof.
+
+**Product Owner visual staging UAT PASS, supplied evidence:** the shown staging screens were examined with a positive visual result. **Acceptance is limited to those screens:** no new Daily Close was performed, no financial verification was carried out, and no complete five-language UAT is claimed. Codex did not repeat tests/UAT or independently verify deployment status in this documentation closeout. This documentation commit is separate from the application SHA above. This checkpoint supersedes the earlier POS-closeout statements that this mission had not started; all historical checkpoints and unrelated gates remain preserved. No further mission is opened.
+
 ## POS-COUNTED-CASH-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 **23/10/2026 — application commit `73f9ccfa453b175e647d902555db9cedbbc349e9`**, already committed and pushed (`fix(pos): require explicit counted cash at session close`). The POS session-close counted-cash field starts empty and requires the operator to enter the amount actually counted, including an explicit zero (`0,00`). Server validation rejects a missing field, an empty string or whitespace; explicit zero and valid positive amounts remain accepted, while negative and nonnumeric amounts remain rejected. The shared money converter, separately displayed expected cash, reconciliation calculations, session lifecycle, payments/refunds, authorization, online flows, Daily Close snapshots and database are unchanged; no migration was introduced.

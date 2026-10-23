@@ -4,6 +4,12 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## DAILY-CLOSE-CLARITY-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS
+
+**23/10/2026 — application commit `e6309172ff6c4579b126dfd3d5482e23b1f8fc99`.** IT/ES/EN/FR/DE texts clarify relevant POS session closure → Daily Close review → confirmation, definitive snapshot immutability through the current interface, live versus saved data, and outstanding amounts limited to orders attributed to the selected business day. The obsolete future Phase 2 reference is removed. Calculations, snapshot behavior, payments, operational workflow and database remain unchanged; no migration.
+
+Existing technical evidence: **45/45 tests PASS**, including **7 new tests**, plus TypeScript, scoped ESLint and diff-check **PASS**. Product Owner **visual staging UAT PASS covers only the shown screens**: no new daily close, financial verification or complete five-language UAT. No tests/UAT were repeated or deployment independently verified in this documentation closeout. The [full acceptance checkpoint](../00_START_HERE/SESSION_HANDOVER.md#daily-close-clarity-ux-001--complete--technical-pass--product-owner-visual-uat-pass) separates application and documentation commits and supersedes the historical not-started statements for this mission. Historical checkpoints and unrelated gates remain preserved; no new mission is opened.
+
 ## POS-COUNTED-CASH-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
 
 **23/10/2026 — application commit `73f9ccfa453b175e647d902555db9cedbbc349e9`.** Counted cash starts empty at POS session close and requires explicit entry, including zero (`0,00`). Missing, empty and whitespace-only input is rejected; valid zero/positive amounts are accepted and negative/nonnumeric amounts remain rejected. Expected cash, reconciliation calculations, session lifecycle, payments/refunds, authorization, online flows, Daily Close snapshots and database are unchanged; no migration.
