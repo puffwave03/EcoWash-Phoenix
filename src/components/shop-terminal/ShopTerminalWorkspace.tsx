@@ -268,7 +268,6 @@ export function ShopTerminalWorkspace(props: Props) {
     const timer = window.setTimeout(() => {
       try {
         const storage = window.sessionStorage;
-        if (!selectionMadeRef.current) setSelected(parseWorkspace(storage.getItem(workspaceSelectionKey(namespace))));
         setOccupied(Object.fromEntries(SALES_WORKSPACES.map((workspace) => [workspace, workspaceOccupied(storage, namespace, workspace)])));
         const legacyKeys = new Set([
           legacyDraftKey(organizationId, null),
@@ -279,6 +278,18 @@ export function ShopTerminalWorkspace(props: Props) {
           const value = storage.getItem(key);
           return Boolean(value && value !== "[]");
         }));
+        if (!selectionMadeRef.current && draftLocationId) {
+          const selectionKey = workspaceSelectionKey(namespace);
+          const storedSelection = storage.getItem(selectionKey);
+          const workspace = parseWorkspace(storedSelection) ?? SALES_WORKSPACES[0];
+          if (storedSelection !== String(workspace)) {
+            storage.setItem(selectionKey, String(workspace));
+            if (storage.getItem(selectionKey) !== String(workspace)) {
+              throw new Error("Workspace selection was not persisted");
+            }
+          }
+          setSelected(workspace);
+        }
       } catch { setStorageError(true); }
     }, 0);
     return () => window.clearTimeout(timer);
