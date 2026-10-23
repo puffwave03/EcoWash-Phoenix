@@ -183,6 +183,8 @@ Hosted staging signup is **VERIFIED DISABLED** by the Auth public settings and P
 
 Client-side PostgreSQL tooling was verified with the existing `postgres:17` image on `linux/amd64` using `psql` 17.11. No additional Docker image was pulled during Phase 2D. Where applicable, use `--platform=linux/amd64` and `--pull=never`. Avoid commands that start or pull a Supabase local Postgres image because those images consume significant local disk space.
 
+The historical local Supabase volume `supabase_db_ecowash-phoenix` belongs to the existing `LOCAL-SUPABASE-VOLUME-CORRUPTION-001` finding and must remain immutable without specific authorization; preserve its stopped container too. Before any separately approved PostgreSQL runtime test, inventory Docker context, images, containers, volumes, mounts and disk space. Use a separate environment with a unique container name and unique new volume; never reuse historical volumes, including the earlier 001B test volume. Do not run `docker prune`, Docker Desktop reset, Supabase reset or modify `Docker.raw`. Cleanup is limited to positively identified temporary resources after review. An isolated PostgreSQL instance does not by itself validate the full Supabase stack, Auth or HTTP authorization paths.
+
 ## What Still Depends on Platform or Account Recovery
 
 - GitHub write/admin access and recovery factors.

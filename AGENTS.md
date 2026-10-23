@@ -67,6 +67,8 @@ If another issue is discovered, report it, give it a concise finding/task identi
 
 ## 4. Inspect before modifying
 
+At the start of each new session, read `AGENTS.md`, `docs/00_START_HERE/SESSION_HANDOVER.md` and `docs/06_ROADMAP/Project_Status.md`. Check the recorded history, relevant code and tests before proposing an implementation; do not duplicate completed functionality. Inventory existing test environments before reuse and obtain task authorization for that reuse. Do not delete or modify pre-existing Docker resources without an explicit assignment.
+
 Before implementation:
 
 - inspect the smallest relevant existing architecture;

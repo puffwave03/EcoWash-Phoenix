@@ -2,7 +2,21 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-22
+Date: 2026-10-23
+
+## LOCAL-POSTGRES-SAFETY-HANDOVER-001 — Local Docker read-only checkpoint (23/10/2026)
+
+**F04 inactive-organization authorization: static analysis OPEN; local PostgreSQL runtime proof BLOCKED / NOT VERIFIED.** The prior checkpoints establish F04 as an open security gate. This mission did not implement F04, run SQL or PostgreSQL tests, or establish authorization behavior; no F04 runtime result is claimed.
+
+**Preserved historical resource:** container `supabase_db_ecowash-phoenix`, image `public.ecr.aws/supabase/postgres:17.6.1.147`, mounts volume `supabase_db_ecowash-phoenix` at `/var/lib/postgresql/data`. This is the same preserved volume in `LOCAL-SUPABASE-VOLUME-CORRUPTION-001` under `SAAS-TENANT-BOOTSTRAP-001B`: `postgresql.auto.conf` was previously zero-filled; after its historical repair, `PG_VERSION` was invalid. The original volume was retained and 001B used a separate disposable volume. No original cause of corruption is established, and no volume contents were read in this mission.
+
+**Read-only Docker inventory, active local `desktop-linux` context:** `docker ps -a` listed only the stopped historical container; no F04 container exists. `docker volume ls` listed `supabase_db_ecowash-phoenix` (49.78 MB, one container link) and `supabase_db_phoenix-bootstrap-001b-local` (74.57 MB, zero links). Local images include the exact Supabase Postgres image above (also tagged `supabase/postgres:17.6.1.147`, same image ID) and gotrue, storage-api, realtime, mailpit and kong. `docker system df -v` reported no build cache and only the one container (81.9 kB writable layer). The 001B volume remains present; its contents and suitability for reuse were not assessed.
+
+**Current diagnostics and limits:** `docker inspect` reports `exited`, ExitCode `1`, OOMKilled `false`, FinishedAt `2026-10-09T08:41:31.50612051Z`, and State.Error `failed to set up container networking: network ... not found`. The last 80 log lines repeatedly report `PG_VERSION` invalid and the PostgreSQL data directory invalid through 08:41:31 UTC on 9 October. These are separate observed signals; the exact causal sequence of the final stop cannot be proven from this read-only evidence. The logs corroborate the historical `PG_VERSION` finding, not a new corruption finding.
+
+**Disk evidence:** `df -h` reported 15 GiB available on `/` and 461 GiB on mounted `/Volumes/DEV`; the `Docker.raw` file at `/Volumes/DEV/Docker/DockerDesktop` had apparent size 121,017,204,736 bytes and `du -h` reported 4.4 GiB allocated. Its existence and these measurements do not prove Docker Desktop's configured disk-image location, future free capacity inside the VM, or the origin of the historical volume damage. `docker info` reported Docker Desktop with `/var/lib/docker` as its engine root, a path inside the VM.
+
+**Next CTO gate:** review this diagnosis, current disk capacity and a separate-container/unique-volume isolation plan before any F04 runtime attempt. Reconfirm context, image, mounts, names and available space immediately before separately authorized creation; preserve both existing volumes and the stopped historical container. No new infrastructure was started, cleaned up or changed in this mission.
 
 ## PORTAL-UAT-006-DOCS-001 — Scoped Portal revocation/reactivation browser PASS (22/10/2026)
 

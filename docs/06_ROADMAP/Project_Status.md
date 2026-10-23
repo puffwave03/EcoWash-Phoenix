@@ -4,6 +4,10 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## LOCAL-POSTGRES-SAFETY-HANDOVER-001 — F04 local proof gate (23/10/2026)
+
+**F04 static analysis OPEN; local PostgreSQL proof BLOCKED / NOT VERIFIED.** The historical container and volume `supabase_db_ecowash-phoenix` remain identified for preservation under the existing `LOCAL-SUPABASE-VOLUME-CORRUPTION-001` finding. Read-only Docker inventory found one stopped container, that volume and the separate `supabase_db_phoenix-bootstrap-001b-local` volume; no isolated F04 container has been created. Inspect/log signals include invalid `PG_VERSION` and a missing-network error; the exact final-stop cause is unproven. Disk checks found 15 GiB available on `/` and 461 GiB on `/Volumes/DEV`; the apparent `Docker.raw` file size is not physical consumption. Next CTO gate: review [the full diagnosis](../00_START_HERE/SESSION_HANDOVER.md), available space and a unique-container/unique-volume isolation plan. This mission started no infrastructure and made no application, SQL or database change.
+
 ## PORTAL-UAT-006-DOCS-001 — Scoped browser acceptance (22/10/2026)
 
 **PORTAL-UAT-006: PASS, per Product Owner live-browser evidence** on Phoenix staging, EcoWash La Tejita, dedicated **Cliente Smoke Test** account. Owner disabled only the Portal association while the customer remained active and its Chrome incognito session stayed open. Refreshing a previously accessible protected order returned unauthorized/no-linked-customer-Portal feedback instead of the order content. Owner then re-enabled the same association; a fresh order-list reload in the retained session returned **all 17 existing orders without a new login or invitation**. Codex did not repeat this UAT or perform remote operations in this documentation mission. The full observed sequence is recorded in [Session Handover](../00_START_HERE/SESSION_HANDOVER.md).
