@@ -4,6 +4,8 @@ Status: Current architecture reference — CTO REVIEW PASS — READY FOR COMMIT
 
 Last reconciled: 2026-10-23; repository baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
 
+D03 scoped closeout: 2026-10-24, `SECURITY-D03-MULTICONTEXT-SUSPENSION-001B — COMPLETE / CTO PASS / STAGING HTTP UAT PASS`; publication baseline `13d1b3470ebe82c7d80c2d8961cf77634c98a76e`.
+
 ## Current scope and authority
 
 This section records the implemented security boundaries reconciled by `SECURITY-EVIDENCE-RECONCILIATION-001` (AUDIT COMPLETE / CTO REVIEWED). [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own current acceptance and continuation; [Testing](../05_DEVELOPMENT/Testing.md) indexes evidence by level. This documentation update runs no new security tests and does not declare general application security or production readiness.
@@ -30,9 +32,13 @@ Platform Admin uses separate `platform_admins` identity and guarded, audited adm
 
 Organization `status`, `platform_service_status` and `deleted_at` are distinct checks. The three F04 membership/role/shared-profile helpers require active organization status, active platform service and no logical deletion, in addition to their existing authenticated identity, membership, tenant and role conditions. The canonical Portal context also checks these organization conditions; the application membership resolver rejects inactive organizations.
 
-`platform_assert_request_allowed()` is configured as the PostgREST pre-request hook. It rejects a non-Platform-Admin identity when an active membership or active Portal association points to a non-deleted suspended organization. Active Platform Admin identities are exempt from this hook so that they can administer suspended tenants; their separate RPC guards remain necessary. Ordinary suspension/reactivation and tenant/Portal denial already passed the controlled staging QA.
+`platform_assert_request_allowed()` is configured as the PostgREST pre-request hook. With D03, an eligible active Staff membership or the existing usable canonical Portal context permits the request to continue; an unrelated suspended association no longer vetoes that usable context. Without a usable context, the existing active-membership/active-Portal-association suspension check still reports `organization_suspended`. This gate grants no tenant access: F04 helpers, RLS and each RPC's authorization remain authoritative. `app_current_organization_id()` requires exactly one eligible active Staff membership and reports suspension only when none is eligible; two eligible Staff contexts remain ambiguous and denied. Active Platform Admin identities retain their hook exemption and separate guarded management privileges, without raw tenant-data access being granted by that exemption. Ordinary suspension/reactivation QA remains preserved.
+
+**Historical D03 analysis baseline, superseded by the scoped closeout below:**
 
 **D03 — PARTIAL / EVIDENCE GAP:** the hook considers any qualifying suspended association, while Portal selects a canonical context. A user with a legitimate context in tenant A and an active association in suspended tenant B can therefore encounter a request-wide denial. The intended behavior and remaining combinations of multiple contexts, inactive associations and inactive customers require focused CTO review. This is not evidence of unauthorized access and does not reopen the completed ordinary suspension QA or authorize a global session redesign.
+
+**Current D03 — COMPLETE / CTO PASS / STAGING HTTP UAT PASS (24/10/2026):** [migration `20261023192656`](../../supabase/migrations/20261023192656_security_d03_multicontext_suspension_001b.sql) replaces only the two coordinated guards; staging recorded it once among 107 migrations, preserving definitions/properties/ACLs at final postflight and the configured pre-request hook. The original denial was reproduced in 2/2 real HTTP checks. Evidence comprises 4/4 new static contracts, 36/36 regressions, 11/11 isolated local SQL and 4/4 additional local RPC checks, followed by real authenticated PostgREST verification, including final 3/3 Portal scenarios / 7/7 checks. A remains usable while B stays denied in the verified tenant-access paths; canonical Portal selection never falls back on suspension or entitlement denial. Inactive B associations use valid audit fields, disabled B customers retain coherent associations, Staff ambiguity remains denied, and Platform Admin's separate management boundary is preserved. Synthetic fixtures/accounts were removed with zero checked residues and unchanged fingerprints/counts for the ten checked public tables. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) records the complete evidence and limits. This supersedes the preceding D03 gap for this scope, not F03 or other open gates; it is not browser UAT, universal RLS/RPC coverage or complete SaaS certification.
 
 ## RLS, RPC privileges and privileged server code
 
@@ -48,6 +54,7 @@ Browser clients do not receive service-role credentials. Privileged Auth adminis
 | F01 | Auth callback HTML bridge hardened; source/local regression evidence and publication recorded. | Does not certify every Auth/browser flow. |
 | F02 | Unsafe Preview disabled independently of flags; identity-binding RPC checks and removal of global Auth activity metadata implemented, with staging postflight recorded. | Consent, identity reassignment, remaining invitation/Auth cases and previously created sessions are separate questions. |
 | F04 | Three helpers corrected by `20261023122144_security_f04_inactive_org_helpers_001a.sql`; CTO staging postflight and active/inactive behavior 3/3 PASS with explicit rollback. | Supersedes the historical F04 OPEN/BLOCKED gate for these helpers; not browser E2E or all RLS/RPC combinations. |
+| D03 | Coordinated pre-request/Staff resolver correction in `20261023192656_security_d03_multicontext_suspension_001b.sql`; local SQL/RPC and real staging HTTP PASS, including final Portal edge cases; applied once, fixture cleanup and postflight PASS. | Suspended-tenant denial preserved in verified tenant-access paths; does not establish browser UAT, every RLS/RPC path or complete SaaS readiness. |
 
 ## Private Storage and Portal photographs
 

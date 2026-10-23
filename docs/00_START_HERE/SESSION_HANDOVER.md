@@ -2,7 +2,19 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-23
+Date: 2026-10-24
+
+## SECURITY-D03-MULTICONTEXT-SUSPENSION-001B — COMPLETE / CTO PASS / STAGING HTTP UAT PASS
+
+**24/10/2026 — PO/CTO-approved closeout**, repository baseline `main` / `origin/main` / GitHub `13d1b3470ebe82c7d80c2d8961cf77634c98a76e`. Migration [`20261023192656_security_d03_multicontext_suspension_001b.sql`](../../supabase/migrations/20261023192656_security_d03_multicontext_suspension_001b.sql) replaces only `platform_assert_request_allowed()` and `app_current_organization_id()`. The pre-request hook permits an existing usable Staff or canonical Portal context instead of vetoing every request because another associated tenant is suspended. The Staff resolver counts eligible active memberships before reporting suspension; exactly one eligible Staff context remains required. Passing pre-request does not authorize a tenant: existing F04 helpers, RLS and guarded RPCs continue to enforce each operation. Portal selection has no automatic fallback and Platform Admin retains its separate exception and authorization boundaries.
+
+**Previously completed evidence, not rerun for publication:** the original global denial was reproduced in **2/2 authenticated PostgREST HTTP checks**. The local disposable PostgreSQL matrix passed **11/11**, with **4/4 additional local RPC checks**; these execute the pertinent function definitions with synthetic dependencies/simulated identity, not a complete Supabase stack. The [D03 harness](../../tests/security-d03-multicontext-suspension-001b.test.mjs) adds **4/4 static contracts**; pertinent existing regressions passed **36/36**. Static assertions are not SQL or HTTP runtime proof.
+
+**Real staging HTTP evidence:** subsequent authenticated PostgREST runs passed **5/5**, then **23** completed checks, then the final **3/3 Portal scenarios / 7/7 checks**. JWTs belonged to dedicated synthetic `authenticated` users, never service-role identities for ordinary authorization. Verified cases include usable A with suspended B, B denied through the tested SELECT/helper/RPC paths, mixed Staff/Portal contexts, suspended-only denial, ambiguous active Staff contexts still denied, Platform Admin management without raw tenant-read escalation, and no Portal fallback. The final cases verified inactive B associations with valid `disabled_by`/`disabled_at`, disabled B customers with coherent inactive associations, and denied canonical A entitlement without switching to a later eligible B. Earlier interrupted attempts used an incorrect RPC argument or incomplete fixture audit fields; their invalid checks are not counted as authorization PASS. The pending cases were subsequently completed with coherent fixtures.
+
+**Staging state and cleanup:** `exthnplfokcucaqydney` contains **107 migration entries**, D03 version `20261023192656` exactly once. Saved applied definitions match the proposed local function bodies; final postflight preserved definitions, signatures, owners, ACLs, `STABLE`, `SECURITY DEFINER`, `search_path` and `pgrst.db_pre_request=public.platform_assert_request_allowed`. All mission-created synthetic organizations, customers, associations and Auth identities were removed; final residue checks returned zero, temporary token files were deleted, and row counts/content fingerprints of the ten checked public tables matched their baselines. This publication phase performs no remote SQL, migration application or repeated tests.
+
+**Acceptance boundary and history:** this checkpoint supersedes historical D03 OPEN/PARTIAL/EVIDENCE GAP statements only for the approved multicontext suspension scope; all earlier checkpoints remain historical evidence. It is authenticated HTTP UAT, not browser UAT, universal RLS/RPC coverage or complete SaaS security certification. F03 remains **DEFERRED / REASSESS BEFORE SAAS RELEASE**; `AUTH-DR-001C`, remaining Portal/Auth and TTL/cache questions, fiscal, GDPR, operational and Production Readiness Review gates remain unchanged. No next mission is opened.
 
 ## DAILY-CLOSE-CLARITY-UX-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER VISUAL UAT PASS
 
