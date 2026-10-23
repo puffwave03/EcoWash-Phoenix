@@ -4,6 +4,18 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-23
 
+## TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+**Phoenix Staging — Product Owner browser evidence, recorded 23/10/2026.** Application commit: `c0af60a12c8149a31c73fd8c5244669bdda2d18a` (`fix(terminal): open first sales workspace automatically`), already committed and pushed. The Terminal now restores a valid saved sale or defaults to Sale 1 after successful storage reads, with selection normalization/read-back and the existing safety guards. This checkpoint records supplied UAT evidence; Codex did not repeat browser tests or remotely verify deployment status in this documentation phase.
+
+**Observed browser scenarios PASS:** opening the Terminal directly displayed the operational sale without the empty initial screen; all five workspaces were available. Sale 1 and Sale 2 were simultaneously in progress. With Sale 2 selected, its selection, customer and cart were preserved after page reload. Leaving for Home and returning to the Terminal preserved the sales.
+
+**Technical evidence already passed, not rerun here:** 19/19 targeted outer-component tests in `tests/terminal-initial-screen-001.test.mjs`, 52/52 pertinent workspace/draft/submission-recovery regressions, TypeScript, scoped ESLint and diff-check. The new tests execute the actual outer component with simulated hooks/storage/timers; they do not establish browser scheduling or layout. The Product Owner observations above provide separate browser evidence.
+
+**Acceptance boundary and history:** PASS covers only those observed opening, concurrent-sale, reload and Home-return scenarios. It does not establish logout/login continuity, a new browser, recovery after storage loss or new-order creation. Historical submission/financial UAT limits remain unchanged. This checkpoint supersedes the earlier statements that the initial-screen improvement was unimplemented, only for that improvement; customer/catalog loading latency, POS till-closing, multi-till and unrelated security/release findings remain separate. All earlier checkpoints are preserved.
+
+**Documentation state:** this UAT closeout is a local documentation patch awaiting CTO review, with no documentation commit or push yet. The application SHA above must not be confused with a future documentation commit. No application, SQL, Supabase, Docker or deployment operation is part of this phase; no further mission starts here.
+
 ## SECURITY-F03-DEFERRED-DECISION-001 — Product Owner / CTO decision (23/10/2026)
 
 **SECURITY-F03 — DEFERRED / REASSESS BEFORE SAAS RELEASE.** PO/CTO retain the current Staff authorization model to avoid a broad, risky change in this phase. `SECURITY-F03-STAFF-READ-PERMISSIONS-DESIGN-001` analyzed Owner-configurable read permissions independent of mutation rights; that alternative is not authorized for implementation.

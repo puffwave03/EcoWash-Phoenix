@@ -8,6 +8,12 @@ Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`
 
 Follow [AGENTS.md](../../AGENTS.md) and the authorized task scope: focused checks first, broader checks only when required. This documentation mission executes no new application, PostgreSQL, staging or browser tests. Results below are previously recorded evidence. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own acceptance and remaining gates.
 
+## Terminal initial-screen evidence — 23/10/2026
+
+`TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS`, application commit `c0af60a12c8149a31c73fd8c5244669bdda2d18a`. [Targeted outer-component test](../../tests/terminal-initial-screen-001.test.mjs): 19/19 PASS; pertinent workspace/draft/submission-recovery regressions: 52/52 PASS; TypeScript, scoped ESLint and diff-check PASS at implementation. The outer-component test runs real component code with simulated hooks/storage/timers, not a browser.
+
+Separate Product Owner Phoenix Staging browser PASS covers operational opening without the empty screen, five available workspaces, simultaneous Sale 1/2 drafts, selected Sale 2 customer/cart and selection retained after reload, and sales retained after Home-return navigation. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) records the complete scoped acceptance. Logout, a new browser, storage loss and new-order creation are not established by this UAT. No tests were rerun in this documentation closeout; its future documentation commit is separate from the application SHA.
+
 ## Security evidence index
 
 | Evidence level | Existing evidence and reference | What it establishes / limits |

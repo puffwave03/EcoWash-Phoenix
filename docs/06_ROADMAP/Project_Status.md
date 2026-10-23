@@ -4,6 +4,14 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## TERMINAL-INITIAL-SCREEN-001 — COMPLETE / TECHNICAL PASS / PRODUCT OWNER UAT PASS
+
+**Application published:** `c0af60a12c8149a31c73fd8c5244669bdda2d18a`. Product Owner browser UAT on Phoenix Staging passed: immediate operational-sale opening without the empty initial screen; five available workspaces; Sale 1 and Sale 2 in progress concurrently; selected Sale 2 customer/cart and selection retained after reload; sales retained after leaving for Home and returning. Full evidence and boundaries are in [Session Handover](../00_START_HERE/SESSION_HANDOVER.md).
+
+**Existing technical PASS:** 19/19 targeted tests, 52/52 pertinent regressions, TypeScript, scoped ESLint and diff-check. No tests rerun or deployment status remotely rechecked in this documentation phase. Browser PASS is limited to the listed scenarios; logout, a new browser, storage loss and new-order creation are not established. This supersedes earlier unimplemented initial-screen wording, while preserving historical evidence, submission/financial UAT limits, loading-performance findings, POS/multi-till work and other release gates.
+
+**Documentation closeout pending CTO review:** only the local documents are updated; a future documentation commit remains separate from the application commit above. No commit/push or next mission is authorized by this checkpoint.
+
 ## SECURITY-F03-DEFERRED-DECISION-001 — Product Owner / CTO decision (23/10/2026)
 
 **SECURITY-F03 — DEFERRED / REASSESS BEFORE SAAS RELEASE.** PO/CTO retain the current Staff authorization model to avoid a broad, risky change in this phase. `SECURITY-F03-STAFF-READ-PERMISSIONS-DESIGN-001` analyzed Owner-configurable read permissions independent of mutation rights; that alternative is not authorized for implementation.
