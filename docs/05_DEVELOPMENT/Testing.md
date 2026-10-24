@@ -4,6 +4,12 @@ Status: Current security evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## Billing C2 local UAT evidence boundary — 24/10/2026
+
+Previously accepted C2 evidence remains **63/63 application tests, 1/1 isolated PostgreSQL C2 test, TypeScript, scoped ESLint and diff-check PASS**; staging C2 migration/postflight passed. The specific simplified advance/final **browser/HTTP UAT remains OPEN**. Staging preparation of `UAT-S` and fiscal profile `ES-CN` / `IGIC-GENERAL` passed for the historical synthetic EcoWash La Tejita tenant, while simplified issuance stayed disabled; Phase B2 was not authorized. The new Tenerife tenant is excluded.
+
+The dedicated Toshiba Supabase stack (`phoenix-c2-uat-local-001`, CLI 2.84.2) applied canonical migrations including C2 and passed local health checks. **LOCAL_C2_NETWORK_PASS / CTO REVIEW PASS** covers PostgreSQL `pg_isready`/`SELECT 1`, Auth/REST HTTP 200, loopback-only Docker binds for ports 55321/55322, no listener on 55320/55323/55324, and tested non-loopback IPv4 denial. These checks do not prove fiscal behavior or complete Docker/host security. No application seed, synthetic user or transaction was created. Next.js local configuration, synthetic fixtures, local C2 enablement, the proposed €7.00 advance/balance browser/HTTP scenario and IGIC reconciliation remain untested and subject to separate authorization. Previously exposed local credentials require review and possible regeneration before reuse; no credential is recorded here. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#docs-billing-c2-local-uat-checkpoint-001--24102026) owns the detailed current checkpoint. No new test is run for this documentation update.
+
 ## TERMINAL-TRANSACTIONAL-RECOVERY-UAT-001 — 24/10/2026
 
 **COMPLETE / CTO REVIEW PASS / PRODUCT OWNER BROWSER UAT PASS / STAGING SQL VERIFIED**
