@@ -4,6 +4,18 @@ Status: Active — canonical implementation and acceptance inventory
 
 Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
 
+## TERMINAL-TRANSACTIONAL-RECOVERY-UAT-001 — 24/10/2026
+
+**COMPLETE / CTO REVIEW PASS / PRODUCT OWNER BROWSER UAT PASS / STAGING SQL VERIFIED**
+
+Staging acceptance on **24/10/2026**, historical synthetic EcoWash La Tejita tenant only; the new Tenerife pilot tenant was not involved. Baseline `af760dbbb5fd0068a39d41042a7cf8eb04ac6951`.
+
+**Scenario A PASS:** pre-send disconnection, pending request preserved across refresh, point-in-time `not_found`, manual retry with original identity; **EW-000152 / €3.00**, 1 order/submission/item, 0 payments; independent Sale 2 **€4.50** preserved.
+
+**Scenario B PASS:** one-shot Playwright forwarding followed by response suppression, unknown browser outcome and manual status recovery without resubmission; **EW-000153 / €7.00**, 1 order/submission and 1 confirmed cash payment associated with a POS session, no duplicate payment key detected; refresh leaves no pending marker. PO browser acceptance and CTO final staging SQL verification are PASS. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#terminal-transactional-recovery-uat-001--24102026) records exact HTTP timings, attribution and evidence retention. Orders/payment remain as synthetic audit evidence.
+
+**Scope and history:** previous UAT PENDING statements for these two scenarios are **HISTORICAL / SUPERSEDED** by this checkpoint; historical records remain intact. No application defect was detected and no software change was required. Acceptance covers only these two scenarios, not universal idempotency, offline continuity, financial security or commercial readiness. The separate real environment, security, backup/restore, managed Auth (`AUTH-DR-001C`), GDPR, fiscal, physical-printer and Production Readiness Review gates remain unchanged. No tests were rerun during documentation closeout.
+
 ## SECURITY-D03-MULTICONTEXT-SUSPENSION-001B — COMPLETE / CTO PASS / STAGING HTTP UAT PASS
 
 **24/10/2026 — approved D03 closeout**, pre-publication baseline `13d1b3470ebe82c7d80c2d8961cf77634c98a76e`; published in commit `a18b45733ee9d53483317f0c677ebda5af33331d` (`fix(security): scope suspended tenant denial to valid contexts`), with local `main` / `origin/main` / GitHub synchronized and clean worktree/index verified after push. Migration `20261023192656_security_d03_multicontext_suspension_001b.sql` changes only pre-request `platform_assert_request_allowed()` and Staff resolver `app_current_organization_id()`: usable A is no longer globally vetoed by suspended B; the tenant-specific authorization boundaries, unique Staff context, canonical Portal without fallback and separate Platform Admin privileges remain intact. B stayed denied in the verified tenant-access paths; Platform Admin's authorized management of suspended tenants remains separate.
