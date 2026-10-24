@@ -1,8 +1,8 @@
 # Security
 
-Status: Current architecture reference — CTO REVIEW PASS — READY FOR COMMIT
+Status: Current architecture reference
 
-Last reconciled: 2026-10-23; repository baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
+Original security reconciliation: 2026-10-23; repository baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
 
 D03 scoped closeout: 2026-10-24, `SECURITY-D03-MULTICONTEXT-SUSPENSION-001B — COMPLETE / CTO PASS / STAGING HTTP UAT PASS`; publication baseline `13d1b3470ebe82c7d80c2d8961cf77634c98a76e`.
 

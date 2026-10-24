@@ -1,12 +1,20 @@
 # Deployment
 
-Status: Active
+Status: Current deployment reference — staging test environment / production deferred
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Current-state clarification: 2026-10-24. Original release-plan update: 2026-08-22.
 
-Current Mission: Operational role/workspace phase validated
+Historical operational checkpoint (2026-08-22): Operational role/workspace phase validated. This is not the current mission.
+
+## Current environment boundary and authority
+
+[Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own current acceptance, publication checkpoints and authorized continuation. The August release milestones, resource observations and procedures below are retained as historical reference; they do not assign a current mission or constitute a new environment verification. Later canonical checkpoints take precedence over superseded statements.
+
+Staging remains a test/UAT environment. The existing EcoWash pilot tenant may be used with synthetic data under the approved scope; real customer personal data must not be introduced into the current staging environment. A pilot with real data requires a separately approved environment/tenant and explicit PO/CTO authorization. Historical references below to a possible staging-only pilot do not authorize that use. No live Phoenix fiscal issuance or unauthorized real collection is approved by staging acceptance.
+
+Production gates remain in force, including `AUTH-DR-001C`, the security/privacy and recovery requirements, Production Readiness Review and the separately approved fiscal path. [Security](../04_ARCHITECTURE/Security.md), [Testing](Testing.md) and the canonical checkpoints distinguish completed scoped evidence from remaining gates. This clarification performs no deployment, remote check or environment change and authorizes none.
 
 ---
 
@@ -55,7 +63,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 - Auth recovery redirect works for the staging canonical URL.
 - `NEXT_PUBLIC_SITE_INDEXING=false` is used for staging/preview deployments.
 - `SUPABASE_SERVICE_ROLE_KEY` is server-side only for staff invitations and customer access management and must never use a `NEXT_PUBLIC_` prefix.
-- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-side only for the staging customer portal review helper; it must not use a `NEXT_PUBLIC_` prefix and must not be enabled in a future real production environment.
+- Customer Portal Preview is disabled by F02 independently of `ENABLE_STAGING_CUSTOMER_PREVIEW`: the endpoint always returns 404 and the helper always returns `null`. The former flag-enabled staging review behavior is superseded; the flag cannot enable Preview.
 - Staging can use the assigned Vercel domain; a custom domain is not required for the first staging deployment.
 - Staging uses EcoWash Staging Supabase, not a production Supabase project.
 - No production deployment, DNS cutover or production Supabase work is part of staging rehearsal.
@@ -416,7 +424,7 @@ Staging environment contract:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | EcoWash Staging anon key | Must be anon key only; no service-role key. |
 | `NEXT_PUBLIC_SITE_INDEXING` | literal flag | Must be `false`. |
 | `SUPABASE_SERVICE_ROLE_KEY` | server-side secret | Required for staff invitations and customer access management; never expose to browser code and never commit. |
-| `ENABLE_STAGING_CUSTOMER_PREVIEW` | server-side staging flag | May be `true` only on the Vercel staging project for review; never expose to browser code and do not enable in future real production. |
+| `ENABLE_STAGING_CUSTOMER_PREVIEW` | superseded server-side staging flag | F02 disables Preview regardless of this flag: endpoint always 404, helper always `null`. The former flag-enabled review contract is historical and superseded. |
 
 Staging indexing contract:
 
@@ -455,6 +463,6 @@ Current staging status:
 - Indexing is disabled.
 - `/robots.txt` returns `Disallow: /`.
 - Customer portal routes are deployed and protected.
-- Staging customer preview is feature-flagged server-side only.
+- Customer Portal Preview is disabled independently of the flag: endpoint always 404, helper always `null`. The earlier feature-flagged staging status is superseded by F02.
 - Automatic deploy from `main` is working.
 - No real production resource has been created.

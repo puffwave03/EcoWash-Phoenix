@@ -1,8 +1,8 @@
 # Testing
 
-Status: Security evidence index — CTO REVIEW PASS — READY FOR COMMIT
+Status: Current security evidence index
 
-Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
+Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
 ## Current validation policy
 

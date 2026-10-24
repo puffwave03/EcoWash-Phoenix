@@ -1,6 +1,6 @@
 # Database Design
 
-Status: Current authorization model supplement — CTO REVIEW PASS — READY FOR COMMIT
+Status: Current authorization model supplement — CTO REVIEW PASS
 
 Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
 
@@ -26,7 +26,9 @@ The SELECT policies `customers_select_member`, `orders_select_member` and `payme
 
 Application route guards, server-query filters, SQL SELECT policies and RPC authorization are separate layers. For example, Customer Account RPCs enforce Owner/Manager even though operational payment-table SELECT uses membership. See [Customer Account functions](../../supabase/migrations/20260826000100_customer_account_001_financial_summary.sql). UI denial alone cannot establish direct table/RPC denial.
 
-F03 remains a specific evidence/contract gap about Staff reads inside its own tenant. D03 remains a specific gap about multiple identity contexts and suspension: the pre-request checks any qualifying suspended association while Portal selects one canonical context. Neither gap authorizes new policies or an architectural change. [Security](../04_ARCHITECTURE/Security.md) defines the reconciled boundaries and [Project Status](../06_ROADMAP/Project_Status.md) records the pending CTO decisions.
+**F03 — DEFERRED / REASSESS BEFORE SAAS RELEASE:** the current Staff authorization model is retained under the recorded PO/CTO decision. Membership-based direct intra-tenant reads can remain broader than workspace filters; that limitation is unresolved and must be reassessed before SaaS release. No new read-permission model is authorized.
+
+**D03 — COMPLETE / STAGING HTTP UAT PASS (24/10/2026):** [migration `20261023192656_security_d03_multicontext_suspension_001b.sql`](../../supabase/migrations/20261023192656_security_d03_multicontext_suspension_001b.sql) coordinates `platform_assert_request_allowed()` and `app_current_organization_id()`. A usable Staff or canonical Portal context is no longer globally vetoed by another associated suspended tenant. Tenant-specific helpers/RLS/RPC authorization, the unique eligible Staff context, canonical Portal without fallback and separate Platform Admin privileges remain authoritative. The [published D03 checkpoint](../00_START_HERE/SESSION_HANDOVER.md#security-d03-multicontext-suspension-001b--complete--cto-pass--staging-http-uat-pass) records application once on staging, local SQL and authenticated HTTP evidence, and synthetic-fixture cleanup. This closes the earlier D03 gap only within the verified paths; it is not browser UAT, universal RLS/RPC coverage or complete SaaS certification. [Security](../04_ARCHITECTURE/Security.md), [Testing](../05_DEVELOPMENT/Testing.md) and [Project Status](../06_ROADMAP/Project_Status.md) retain the detailed evidence and remaining gates, including `AUTH-DR-001C`.
 
 ## Historical database design — 2026-07-28
 
