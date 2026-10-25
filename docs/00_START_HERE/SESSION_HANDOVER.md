@@ -2,7 +2,19 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-24
+Date: 2026-10-25
+
+## DOCS-BILLING-C2-LOCAL-BOOTSTRAP-CHECKPOINT-001 — 25/10/2026
+
+**DOCUMENTATION-ONLY / CTO REVIEW PASS.** Starting repository baseline: `main`, HEAD = local `origin/main` = `5d93add0be8b844830c67cd705b24b79cd15b5f0`, clean index and worktree. This checkpoint records the Product Owner/CTO-supplied 24/10 laboratory results and the 25/10 read-only persistence verification; it supersedes the earlier local setup checkpoint's statements that Next.js, synthetic identities and bootstrap were still pending. That earlier checkpoint remains historical evidence of the setup stage. No application, migration, database, Docker or configuration change, new UAT, staging/production access, commit, push or deploy occurs in this documentation mission.
+
+**24/10 — isolated Toshiba laboratory:** `/Volumes/DEV/Phoenix-C2-UAT-LOCAL`, Supabase project `phoenix-c2-uat-local-001`, Next.js `http://localhost:3300`. `LOCAL_C2_NETWORK_PASS`, `LOCAL_NEXTJS_READY`, `LOCAL_C2_AUTH_EMAIL_PASS` and `LOCAL_SYNTHETIC_BOOTSTRAP_PASS` are the reported completed gates. Two synthetic Auth identities were created: Platform Admin `6072590e-2f97-40cb-8945-c08680e5694f` and separate Owner `2e796cc3-8314-4f35-bcd1-273bcead3677`. Canonical Phoenix form and Server Action performed the tenant bootstrap, creating organization `d81b5bb3-c3e2-4f9f-b03e-20b4416b1246`, first location `25ac78f6-9b68-48c4-80d5-6ad41dacb789`, active Owner membership `b62538e0-e0db-40f1-bc75-67dbc5e8088a`, a bootstrap receipt and audit entry. Initial entitlements are `core.orders`, `core.customers`, `core.operations` and `catalog.management`. Billing premium and simplified issuance were not enabled. These 24/10 outcomes are supplied acceptance evidence, not tests rerun by this documentation mission.
+
+**25/10 — LOCAL_C2_PERSISTENCE_PASS / CTO REVIEW PASS on Codex's read-only report:** after the VS Code Codex extension restart/version change, the Toshiba copy and local configuration remained present. All four C2 containers were running and PostgreSQL was healthy. Read-only SELECTs found exactly two Auth users, one active Platform Admin, one active organization, one active location, one active Owner membership, the four initial entitlements, one bootstrap receipt and one `tenant_bootstrap` audit entry; all five UUIDs above and their relationships matched. Auth users, organization and receipt had 24/10 UTC creation timestamps. Orders, payments, invoices, Billing invoice-number counters, operational receipts and their counters were all zero. Next.js was already listening on `127.0.0.1:3300` and returned HTTP 307; this is reachability with a redirect, not a new functional browser/HTTP UAT. The main repository was clean at `5d93add0be8b844830c67cd705b24b79cd15b5f0`. The verification made no changes.
+
+**Remaining Billing C2 gates:** the synthetic tenant's Billing entitlement is still off; its synthetic fiscal configuration remains to be prepared; simplified issuance is not authorized; the advance/final browser/HTTP UAT and IGIC reconciliation remain **OPEN**. The expected, unexecuted €7.00 IGIC-inclusive scenario is €2.00 advance (€1.87 taxable base + €0.13 IGIC) and €5.00 balance (€4.67 taxable base + €0.33 IGIC), totaling €6.54 taxable base + €0.46 IGIC. No real issuance or external fiscal integration is approved. Historical staging Phase B2 remains unauthorized, and the real EcoWash La Tejita Tenerife tenant is excluded.
+
+**Credential boundary:** previously shared local credentials require reassessment before network exposure or use with real data. Passwords, tokens, keys, `.env.local` contents and sensitive authentication URLs are not recorded here. [Testing](../05_DEVELOPMENT/Testing.md) separates the 24/10 supplied results from the 25/10 read-only checks.
 
 ## DOCS-BILLING-C2-LOCAL-UAT-CHECKPOINT-001 — 24/10/2026
 

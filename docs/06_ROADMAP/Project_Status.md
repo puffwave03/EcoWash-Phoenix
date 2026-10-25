@@ -2,7 +2,15 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026.
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026. Local Billing C2 bootstrap checkpoint: 25/10/2026.
+
+## BILLING-C2 local bootstrap and persistence checkpoint — 25/10/2026
+
+`DOCS-BILLING-C2-LOCAL-BOOTSTRAP-CHECKPOINT-001 — DOCUMENTATION / CTO REVIEW PASS`. Starting `main` HEAD = local `origin/main` = `5d93add0be8b844830c67cd705b24b79cd15b5f0`, clean index/worktree. The isolated Toshiba copy `/Volumes/DEV/Phoenix-C2-UAT-LOCAL` (`phoenix-c2-uat-local-001`) reached `LOCAL_C2_NETWORK_PASS`, `LOCAL_NEXTJS_READY`, `LOCAL_C2_AUTH_EMAIL_PASS` and `LOCAL_SYNTHETIC_BOOTSTRAP_PASS` on 24/10. At `http://localhost:3300`, the canonical Phoenix form/Server Action bootstrapped a synthetic organization with separate Platform Admin and Owner Auth users, one location, active Owner membership, four initial entitlements, receipt and audit. Billing premium and simplified issuance remained disabled.
+
+`LOCAL_C2_PERSISTENCE_PASS — CTO REVIEW PASS` on the 25/10 read-only Codex report: Toshiba copy/configuration present, four C2 containers running, PostgreSQL healthy; both Auth users, Platform Admin, organization, location, Owner membership, four entitlements, receipt and audit persisted with all five expected UUIDs matching. Orders, payments, invoices and Billing invoice-number counters were zero; operational receipts/counters were also zero. Already-running Next.js returned HTTP 307, proving a redirect response only. Main repository remained clean at the baseline SHA. No changes or new functional UAT occurred. The earlier 24/10 setup section below is historical for its then-pending Next.js/identity/bootstrap state; its network and staging evidence remain valid.
+
+**Open:** synthetic Billing entitlement, synthetic fiscal setup, authorization for simplified issuance, C2 advance/final browser/HTTP UAT and IGIC reconciliation. The €7.00 IGIC-inclusive advance/balance scenario remains unexecuted; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) records its exact amounts and the five identifiers. Historical staging Phase B2 remains unauthorized; the real EcoWash La Tejita Tenerife tenant and external fiscal integration remain excluded. Previously shared local credentials require reassessment before network exposure or real-data use; none are reproduced. [Testing](../05_DEVELOPMENT/Testing.md) separates evidence levels. This documentation checkpoint changes no application, migration, database, Docker or configuration state and performs no staging/production access, commit, push or deploy.
 
 ## BILLING-C2 local UAT checkpoint — 24/10/2026
 
