@@ -67,22 +67,64 @@ supabase db dump --linked --schema public --file "${SCHEMA_FILE}"
 supabase db dump --linked --data-only --schema public --use-copy --file "${DATA_FILE}"
 chmod 600 "${ROLES_FILE}" "${SCHEMA_FILE}" "${DATA_FILE}"
 
-for ARTIFACT in "${ROLES_FILE}" "${SCHEMA_FILE}" "${DATA_FILE}"; do
-  test -s "${ARTIFACT}"
-  iconv -f UTF-8 -t UTF-8 "${ARTIFACT}" >/dev/null
-  awk 'NF { last = $0 } END { exit(last ~ /^\\unrestrict / ? 0 : 1) }' "${ARTIFACT}"
-done
+validate_sql_artifact() {
+  local artifact="$1"
+  local kind="$2"
+  test -s "${artifact}"
+  iconv -f UTF-8 -t UTF-8 "${artifact}" >/dev/null
+  awk -v kind="${kind}" '
+    /^[[:space:]]*$/ || /^--/ { next }
+    {
+      if (in_copy) {
+        if ($0 == "\\.") {
+          in_copy = 0
+          copy_terminators++
+          terminated = 1
+        } else {
+          terminated = 0
+        }
+        next
+      }
+      if ($0 ~ /^\\unrestrict [^[:space:]]+$/) {
+        if (unrestricted || !terminated) invalid = 1
+        unrestricted = 1
+        next
+      }
+      if (unrestricted) invalid = 1
+      if ($0 ~ /^\\restrict [^[:space:]]+$/) next
+      if ($0 == "\\.") {
+        invalid = 1
+        next
+      }
+      if ($0 ~ /^COPY /) {
+        if (kind != "data") invalid = 1
+        copy_sections++
+        in_copy = 1
+        terminated = 0
+        next
+      }
+      terminated = ($0 ~ /;[[:space:]]*$/)
+    }
+    END {
+      if (invalid || in_copy || !terminated || copy_sections != copy_terminators) exit 1
+    }
+  ' "${artifact}"
+}
+
+validate_sql_artifact "${ROLES_FILE}" roles
+validate_sql_artifact "${SCHEMA_FILE}" schema
+validate_sql_artifact "${DATA_FILE}" data
 
 readonly ROLE_STATEMENTS="$(awk '/^CREATE ROLE / || /^ALTER ROLE / { count++ } END { print count + 0 }' "${ROLES_FILE}")"
 readonly SCHEMA_TABLES="$(awk '/^CREATE TABLE / { count++ } END { print count + 0 }' "${SCHEMA_FILE}")"
 readonly SCHEMA_GRANTS="$(awk '/^GRANT / { count++ } END { print count + 0 }' "${SCHEMA_FILE}")"
 readonly DATA_COPY_SECTIONS="$(awk '/^COPY / { count++ } END { print count + 0 }' "${DATA_FILE}")"
 readonly DATA_COPY_TERMINATORS="$(awk '/^\\\.$/ { count++ } END { print count + 0 }' "${DATA_FILE}")"
-[[ "${ROLE_STATEMENTS}" -gt 0 ]]
-[[ "${SCHEMA_TABLES}" -gt 0 ]]
-[[ "${SCHEMA_GRANTS}" -gt 0 ]]
-[[ "${DATA_COPY_SECTIONS}" -gt 0 ]]
-[[ "${DATA_COPY_SECTIONS}" -eq "${DATA_COPY_TERMINATORS}" ]]
+[[ "${ROLE_STATEMENTS}" -gt 0 ]] || exit 1
+[[ "${SCHEMA_TABLES}" -gt 0 ]] || exit 1
+[[ "${SCHEMA_GRANTS}" -gt 0 ]] || exit 1
+[[ "${DATA_COPY_SECTIONS}" -gt 0 ]] || exit 1
+[[ "${DATA_COPY_SECTIONS}" -eq "${DATA_COPY_TERMINATORS}" ]] || exit 1
 
 readonly FINISHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 readonly FINISHED_EPOCH="$(date -u +%s)"
