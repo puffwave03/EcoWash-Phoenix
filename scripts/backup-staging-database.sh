@@ -17,8 +17,8 @@ if [[ ! -f "${LINKED_REF_FILE}" ]]; then
   exit 1
 fi
 
-IFS= read -r LINKED_PROJECT_REF < "${LINKED_REF_FILE}"
-if [[ "${LINKED_PROJECT_REF}" != "${EXPECTED_PROJECT_REF}" ]]; then
+if ! cmp -s "${LINKED_REF_FILE}" <(printf '%s' "${EXPECTED_PROJECT_REF}") &&
+   ! cmp -s "${LINKED_REF_FILE}" <(printf '%s\n' "${EXPECTED_PROJECT_REF}"); then
   echo "Refusing backup: linked Supabase ref is not the approved staging target." >&2
   exit 1
 fi
