@@ -2,7 +2,15 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026. Local Billing C2 bootstrap checkpoint: 25/10/2026.
+Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026. Local Billing C2 bootstrap checkpoint: 25/10/2026; local C2 UAT checkpoint: 26/10/2026.
+
+## BILLING-C2 local fiscal UAT closeout — 26/10/2026
+
+**LOCAL C2 UAT PASS / PRODUCTION FISCAL READINESS NOT APPROVED.** Isolated synthetic Toshiba project `phoenix-c2-uat-local-001`: order `C2UAT-000001`, EUR 7.00 with 7% IGIC included; confirmed POS advance EUR 2.00 and balance EUR 5.00. Simplified invoice `2026-UAT-S-000001` records base 1.87 / IGIC 0.13 / gross 2.00; final `2026-UAT-S-000002` records base 4.67 / IGIC 0.33 / gross 5.00. Combined base **6.54**, IGIC **0.46**, gross **7.00**. The original EUR 7.00 draft became the EUR 5.00 final invoice without a duplicate document. Read-only local SELECT audit: two issued invoices, no residual draft, sequences 1–2 and `UAT-S` counter `next_value=3`, two distinct POS payments each attributed once, coherent advance/final links. Fiscal `service_performed_on=2026-10-26` is declared, not independent proof of handoff.
+
+The Billing `42501` read-policy correction ([migration](../../supabase/migrations/20261026105505_billing_c2_rls_42501_fix_001.sql), [test](../../tests/billing-c2-rls-42501-fix-001.test.mjs)) is published in `5c9a81a93e10b2118341758a97ec11fbd2c4033a`; local `main` = local `origin/main`, clean index/worktree at the documentation baseline. It was applied only to C2. Previously reported PostgreSQL 17 disposable checks: Billing **7 PASS**, D03 **16 PASS**; local browser `42501` UAT and CTO security review **PASS**. No test or UAT is repeated here. The 24–25/10 local pending statements below are historical for their dates, not the current C2 UAT state. Historical staging Phase B2 and real-tenant issuance remain unauthorized; no cloud change is intentionally made or inferred from local checks.
+
+**Still open:** untested C2 backup restore, obsolete Spanish simplified-issuance help text, broader SaaS and fiscal checks, `AUTH-DR-001C` and Production Readiness Review. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#billing-c2-uat-docs-closeout-001--26102026) owns the detailed checkpoint; [Testing](../05_DEVELOPMENT/Testing.md) separates evidence types. No code, schema, database, Docker or cloud change, commit, push or deploy occurs in this documentation mission.
 
 ## BILLING-C2 local bootstrap and persistence checkpoint — 25/10/2026
 

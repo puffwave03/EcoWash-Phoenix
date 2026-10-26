@@ -4,6 +4,17 @@ Status: Current security evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## Billing C2 local RLS and fiscal UAT evidence — 26/10/2026
+
+| Evidence | Result and limit |
+| --- | --- |
+| RLS regression, PostgreSQL 17 disposable | Previously reported [Billing test](../../tests/billing-c2-rls-42501-fix-001.test.mjs) **7 PASS** and D03 **16 PASS**. Synthetic isolated database, not staging/production; no rerun in this documentation mission. |
+| C2 RLS application and browser | [Migration `20261026105505`](../../supabase/migrations/20261026105505_billing_c2_rls_42501_fix_001.sql) applied only to local C2; browser `42501` UAT **PASS** and CTO security review **PASS** as previously reported. Direct resolver EXECUTE remains denied to `PUBLIC`, `anon` and `authenticated`; the new helper provides only the guarded Billing declaration SELECT. No cloud application is claimed. |
+| Local fiscal scenario | Order `C2UAT-000001` gross **EUR 7.00**, IGIC 7% included; confirmed POS advance **2.00** and balance **5.00**. Simplified documents `2026-UAT-S-000001` (**1.87** base + **0.13** IGIC) and `2026-UAT-S-000002` (**4.67** base + **0.33** IGIC) reconcile to **6.54** base + **0.46** IGIC = **7.00** gross. |
+| Read-only post-issuance audit | Local PostgreSQL SELECTs **PASS**: exactly two issued numbered invoices and no residual final draft; original draft UUID `a3d76e49-335c-4434-be1f-3eb4d6a98460` is the final document; unique sequences 1–2, counter `next_value=3`; two distinct confirmed POS payments, each linked once, no refunds; advance/final references preserved. `service_performed_on=2026-10-26` is a declared fiscal date; operational production completion is separate and does not independently prove handoff. |
+
+These are scoped C2 laboratory and previously reported browser/test results, not new tests in this documentation phase. Local SELECTs observed one synthetic organization; they cannot establish that no historical cloud change occurred. The published correction is commit `5c9a81a93e10b2118341758a97ec11fbd2c4033a` on `origin/main`, with clean local baseline before these edits. The 24–25/10 local UAT-pending statements below are preserved as historical checkpoints and superseded for this isolated scenario. C2 backup restore remains untested, the Spanish recipient-help sentence about simplified issuance is obsolete, and broader SaaS/fiscal checks remain open: **production fiscal readiness NOT APPROVED**. See [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#billing-c2-uat-docs-closeout-001--26102026).
+
 ## Billing C2 local bootstrap and persistence evidence — 25/10/2026
 
 The 24/10 isolated Toshiba laboratory (`/Volumes/DEV/Phoenix-C2-UAT-LOCAL`, `phoenix-c2-uat-local-001`, Next.js `http://localhost:3300`) reported `LOCAL_C2_NETWORK_PASS`, `LOCAL_NEXTJS_READY`, `LOCAL_C2_AUTH_EMAIL_PASS` and `LOCAL_SYNTHETIC_BOOTSTRAP_PASS`. Canonical Phoenix form/Server Action created separate synthetic Platform Admin and Owner Auth identities, one organization, one location, active Owner membership, four initial entitlements (`core.orders`, `core.customers`, `core.operations`, `catalog.management`), bootstrap receipt and audit. Billing premium and simplified issuance stayed off. These 24/10 results are supplied evidence; this documentation mission does not repeat those flows.

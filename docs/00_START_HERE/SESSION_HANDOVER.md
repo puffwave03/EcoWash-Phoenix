@@ -2,7 +2,17 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-25
+Date: 2026-10-26
+
+## BILLING-C2-UAT-DOCS-CLOSEOUT-001 — 26/10/2026
+
+**DOCUMENTATION-ONLY / READY FOR CTO REVIEW.** The reviewed Billing `42501` correction and its test were published in commit `5c9a81a93e10b2118341758a97ec11fbd2c4033a` on `origin/main`; local `main`, local `origin/main`, index and worktree matched that clean baseline before this documentation edit. The correction is [migration `20261026105505`](../../supabase/migrations/20261026105505_billing_c2_rls_42501_fix_001.sql) with its [focused test](../../tests/billing-c2-rls-42501-fix-001.test.mjs). It changes only the Billing advance-declaration SELECT policy through a bounded `SECURITY DEFINER` helper; direct `EXECUTE` on `app_current_organization_id()` remains denied to `PUBLIC`, `anon` and `authenticated`. The migration was applied only to the isolated C2 laboratory. Previously reported PostgreSQL 17 disposable results are Billing **7 PASS** and D03 **16 PASS**; the subsequent local browser `42501` UAT and CTO security review are **PASS**. These are prior results, not tests repeated by this documentation mission.
+
+**Local fiscal UAT PASS — synthetic tenant only:** in `/Volumes/DEV/Phoenix-C2-UAT-LOCAL` (`phoenix-c2-uat-local-001`), order `C2UAT-000001` totals **EUR 7.00 with 7% IGIC included**. A confirmed POS advance of EUR 2.00 was attributed once to simplified invoice `2026-UAT-S-000001` (taxable base **1.87**, IGIC **0.13**). A separate confirmed POS balance of EUR 5.00 was attributed once to simplified final invoice `2026-UAT-S-000002` (base **4.67**, IGIC **0.33**). The original draft `a3d76e49-335c-4434-be1f-3eb4d6a98460` became that final document; it was not duplicated. Across both invoices: **base EUR 6.54 + IGIC EUR 0.46 = gross EUR 7.00**.
+
+**Read-only C2 post-issuance audit PASS:** local PostgreSQL SELECTs found exactly two issued, numbered invoices and no residual draft; `UAT-S` sequences 1 and 2 with `next_value=3`; two distinct confirmed, non-refunded POS payments with session and one fiscal attribution each; the advance/final links and the original full-order snapshot were preserved. `service_performed_on=2026-10-26` is the declared fiscal service date. Production completion appears separately in the operational history on 26/10; neither that status nor the declaration independently proves customer handoff. [Testing](../05_DEVELOPMENT/Testing.md) records the evidence levels. The 24–25/10 statements below that the *local C2* Billing entitlement, issuance and UAT were still pending are historical and superseded for this isolated scenario; their staging and bootstrap evidence remains intact.
+
+**Boundary and open gates:** local C2 UAT **PASS** is not production fiscal readiness: **PRODUCTION NOT APPROVED**. The C2 backup restore has not been tested; the Spanish recipient-help text still incorrectly says simplified issuance is disabled; further SaaS, fiscal, recovery and production-readiness checks remain open. Historical staging Phase B2 stays unauthorized, real tenants are excluded and no external fiscal provider or submission is involved. Staging/production were not intentionally changed by these local missions; local SELECTs cannot certify the absence of historical cloud changes. This documentation mission changes only the authorized Markdown files and performs no database operation, new UAT, commit, push or deploy.
 
 ## DOCS-BILLING-C2-LOCAL-BOOTSTRAP-CHECKPOINT-001 — 25/10/2026
 
