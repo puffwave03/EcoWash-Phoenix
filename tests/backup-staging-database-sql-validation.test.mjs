@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -14,7 +14,7 @@ const FIXTURES = {
   data: "-- PostgreSQL database dump\nCOPY public.synthetic (id) FROM stdin;\n1\n\\.\nSET statement_timeout = 0;\n",
 };
 
-function runBackup(testContext, replacements = {}, failedExport = "") {
+function runBackup(testContext, replacements = {}, failedExport = "", fromDifferentDirectory = false) {
   const fixtureRoot = mkdtempSync(join(tmpdir(), "phoenix-database-validation-"));
   testContext.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
   const scriptDirectory = join(fixtureRoot, "scripts");
@@ -34,6 +34,7 @@ function runBackup(testContext, replacements = {}, failedExport = "") {
   writeFileSync(join(commandDirectory, "git"), "#!/bin/sh\ncase \"$*\" in\n  *branch*) echo main ;;\n  *rev-parse*) echo synthetic-head ;;\nesac\n", { mode: 0o700 });
   writeFileSync(join(commandDirectory, "supabase"), `#!/bin/sh
 if [ "$1" = --version ]; then echo test; exit 0; fi
+pwd -P >> "$DUMP_CWD_LOG"
 kind=schema
 for argument do
   case "$argument" in
@@ -50,15 +51,24 @@ if [ "$FAILED_EXPORT" = "$kind" ]; then exit 41; fi
 `, { mode: 0o700 });
   const backupParent = mkdtempSync(join(tmpdir(), "phoenix-database-validation-output-"));
   testContext.after(() => rmSync(backupParent, { recursive: true, force: true }));
+  const invocationDirectory = join(backupParent, "other-project");
+  if (fromDifferentDirectory) {
+    const otherRefDirectory = join(invocationDirectory, "supabase", ".temp");
+    mkdirSync(otherRefDirectory, { recursive: true });
+    writeFileSync(join(otherRefDirectory, "project-ref"), "different-project-ref");
+  }
   const backupRoot = join(backupParent, "backup");
+  const dumpCwdLog = join(fixtureRoot, "dump-cwds.txt");
   const result = spawnSync("bash", [scriptCopy, backupRoot], {
     encoding: "utf8",
     timeout: 10000,
+    cwd: fromDifferentDirectory ? invocationDirectory : undefined,
     env: {
       ...process.env,
       PATH: `${commandDirectory}:${process.env.PATH}`,
       FIXTURE_DIRECTORY: fixtureDirectory,
       FAILED_EXPORT: failedExport,
+      DUMP_CWD_LOG: dumpCwdLog,
     },
   });
   const backupEntries = existsSync(backupRoot) ? readdirSync(backupRoot) : [];
@@ -71,7 +81,8 @@ if [ "$FAILED_EXPORT" = "$kind" ]; then exit 41; fi
       }
     }
   }
-  return { result, backupDirectory };
+  const dumpWorkdirs = existsSync(dumpCwdLog) ? readFileSync(dumpCwdLog, "utf8").trim().split("\n") : [];
+  return { result, backupDirectory, repositoryRoot: realpathSync(fixtureRoot), invocationDirectory, dumpWorkdirs };
 }
 
 function assertIncomplete(run) {
@@ -98,6 +109,13 @@ function assertComplete(run) {
 
 test("valid roles, schema and data without optional trailer produce metadata and checksums", (testContext) => {
   assertComplete(runBackup(testContext));
+});
+
+test("all three dumps use the verified repository root from another linked project directory", (testContext) => {
+  const run = runBackup(testContext, {}, "", true);
+  assertComplete(run);
+  assert.notEqual(realpathSync(run.invocationDirectory), run.repositoryRoot);
+  assert.deepEqual(run.dumpWorkdirs, Array(3).fill(run.repositoryRoot));
 });
 
 test("valid roles, schema and data with optional trailer produce metadata and checksums", (testContext) => {

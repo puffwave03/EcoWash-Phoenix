@@ -2,7 +2,15 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-26
+Date: 2026-10-27
+
+## PHOENIX-RECOVERY-RETRY-002-001 — logical recovery documentation closeout (27/10/2026)
+
+**RECOVERY_RETRY_002_PASS / CTO documentation review PASS; local commit authorized, push pending.** Isolated Recovery `lslomiphzvpatmqpsstg` (`eu-west-1`, PostgreSQL 17.11) received the protected 26/10 RETRY-002 logical checkpoint from staging `exthnplfokcucaqydney`: **107/107** checkpoint migrations, excluding later `20261026105505`; `schema.sql` comparison only; 20 migration seeds reconciled; **56/56 COPY** sections and **3019/3019** public rows; **420/420** Storage objects re-downloaded and SHA-256 verified (414 public brand, 6 private order, 0 accounting exports; 46,162,357 bytes). The Recovery project was independently observed `ACTIVE_HEALTHY`, with 107 migrations and 420 Storage records. Schema, 73 tenant relationships, financial aggregates and numbering passed. The only public FK orphans are expected managed-Auth links: 19 profiles and 2 Portal-access records retain their original UUIDs. Five active photo references resolve; eight inactive historical references lacked files already in the source checkpoint. No source staging write, fiscal change or SaaS cutover occurred. [Recovery Runbook](../05_DEVELOPMENT/Recovery_Runbook.md) now records the bounded evidence and repeatable phase order.
+
+**Current state and next action:** the Recovery project is **still active**; decommissioning has **not** occurred. `AUTH-DR-001C` and complete authenticated disaster recovery remain unverified hard pre-production gates, and Production Readiness is open. The DB and Storage snapshots are not atomic. The separate FitIQtracker project was reported suspended; it is outside Phoenix's write scope and no reactivation occurred. CTO approved this documentation and the focused backup working-directory fix; retain the laboratory evidence for the separate decommissioning decision. Only after distinct approval may an authorized operator delete the exact Recovery project; any FitIQ action belongs to its separate owner. Preserve both backup copies. The PO authorized one local five-file commit; push, deploy and cleanup remain unauthorized.
+
+**Git baseline for this edit:** `main` HEAD `b10c76b924aa48b144d6619acf6c300609806a46`, three local commits ahead of `origin/main` (`dfb2e2e4671212125325858325770a6b386a0915`), clean index. The existing local `AGENTS.md` modification is preserved untouched. This documentation edit is limited to the runbook, this handover and Project Status. CTO review passed; the PO authorized the local five-file commit, while push still needs separate consent.
 
 ## BILLING-C2-UAT-DOCS-CLOSEOUT-001 — 26/10/2026
 

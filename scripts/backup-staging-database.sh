@@ -62,6 +62,7 @@ readonly DATA_FILE="${BACKUP_DIRECTORY}/data.sql"
 readonly METADATA_FILE="${BACKUP_DIRECTORY}/backup-metadata.txt"
 readonly CHECKSUM_FILE="${BACKUP_DIRECTORY}/SHA256SUMS"
 
+cd "${REPOSITORY_ROOT}"
 supabase db dump --linked --role-only --file "${ROLES_FILE}"
 supabase db dump --linked --schema public --file "${SCHEMA_FILE}"
 supabase db dump --linked --data-only --schema public --use-copy --file "${DATA_FILE}"
