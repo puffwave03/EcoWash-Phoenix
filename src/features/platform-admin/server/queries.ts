@@ -7,6 +7,7 @@ import type {
   PlatformOrganization,
   PlatformOrganizationSummary,
   PlatformOverview,
+  PlatformSimplifiedInvoicingStatus,
 } from "@/features/platform-admin/types";
 import type { FeatureKey } from "@/features/entitlements/feature-catalog";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
@@ -69,6 +70,14 @@ type AuditRow = {
   target: string;
 };
 
+type SimplifiedInvoicingStatusRow = {
+  simplified_invoicing_enabled: boolean;
+  billing_entitlement_enabled: boolean;
+  simplified_series_ready: boolean;
+  fiscal_profile_ready: boolean;
+  issuer_configuration_ready: boolean;
+};
+
 function mapOrganization(row: OrganizationRow): PlatformOrganization {
   return {
     commercialPlanLabel: row.commercial_plan_label,
@@ -116,7 +125,7 @@ export async function listPlatformOrganizations(locale: string, options: {
 export async function getPlatformOrganizationDetail(locale: string, organizationId: string) {
   await requirePlatformAdmin(locale);
   const supabase = await createSupabaseServerClient();
-  const [summaryResult, entitlementResult, auditResult] = await Promise.all([
+  const [summaryResult, entitlementResult, auditResult, simplifiedInvoicingResult] = await Promise.all([
     supabase.rpc("platform_get_organization_summary", {
       target_organization_id: organizationId,
     }).maybeSingle<SummaryRow>(),
@@ -127,10 +136,14 @@ export async function getPlatformOrganizationDetail(locale: string, organization
       target_limit: 25,
       target_organization_id: organizationId,
     }).returns<AuditRow[]>(),
+    supabase.rpc("platform_get_simplified_invoicing_status", {
+      target_organization_id: organizationId,
+    }).single<SimplifiedInvoicingStatusRow>(),
   ]);
 
   if (summaryResult.error || !summaryResult.data) notFound();
-  if (entitlementResult.error || auditResult.error) throw new Error("platform_organization_detail_unavailable");
+  if (entitlementResult.error || auditResult.error || simplifiedInvoicingResult.error
+    || !simplifiedInvoicingResult.data) throw new Error("platform_organization_detail_unavailable");
   const row = summaryResult.data;
   const summary: PlatformOrganizationSummary = {
     brandingCommercialName: row.branding_commercial_name,
@@ -166,5 +179,12 @@ export async function getPlatformOrganizationDetail(locale: string, organization
     id: item.id,
     target: item.target,
   }));
-  return { audit, entitlements, summary };
+  const simplifiedInvoicing: PlatformSimplifiedInvoicingStatus = {
+    enabled: simplifiedInvoicingResult.data.simplified_invoicing_enabled,
+    billingEntitlementEnabled: simplifiedInvoicingResult.data.billing_entitlement_enabled,
+    simplifiedSeriesReady: simplifiedInvoicingResult.data.simplified_series_ready,
+    fiscalProfileReady: simplifiedInvoicingResult.data.fiscal_profile_ready,
+    issuerConfigurationReady: simplifiedInvoicingResult.data.issuer_configuration_ready,
+  };
+  return { audit, entitlements, simplifiedInvoicing, summary };
 }

@@ -56,3 +56,11 @@ export type PlatformAuditEntry = {
   id: string;
   target: string;
 };
+
+export type PlatformSimplifiedInvoicingStatus = {
+  enabled: boolean;
+  billingEntitlementEnabled: boolean;
+  simplifiedSeriesReady: boolean;
+  fiscalProfileReady: boolean;
+  issuerConfigurationReady: boolean;
+};

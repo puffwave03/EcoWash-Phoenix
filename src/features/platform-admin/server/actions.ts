@@ -23,8 +23,33 @@ function optionalTimestamp(formData: FormData, name: string) {
   return Number.isNaN(parsed.valueOf()) ? "invalid" : parsed.toISOString();
 }
 
-function finish(locale: string, organizationId: string, result: "saved" | "error") {
+function finish(locale: string, organizationId: string, result: "saved" | "error" | "simplifiedEnabled" | "simplifiedDisabled" | "unchanged") {
   redirect(`/${locale}/platform/organizations/${organizationId}?result=${result}`);
+}
+
+export async function savePlatformSimplifiedInvoicingAction(
+  locale: string,
+  organizationId: string,
+  formData: FormData,
+) {
+  await requirePlatformAdmin(locale);
+  const enabledValue = text(formData, "enabled", 10);
+  if ((enabledValue !== "true" && enabledValue !== "false")
+    || formData.get("confirmChange") !== "confirmed") {
+    finish(locale, organizationId, "error");
+  }
+
+  const enabled = enabledValue === "true";
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("platform_set_simplified_invoicing_enabled", {
+    target_enabled: enabled,
+    target_organization_id: organizationId,
+  });
+  if (error) finish(locale, organizationId, "error");
+  revalidatePath(`/${locale}/platform`);
+  revalidatePath(`/${locale}/platform/organizations`);
+  revalidatePath(`/${locale}/platform/organizations/${organizationId}`);
+  finish(locale, organizationId, data === false ? "unchanged" : enabled ? "simplifiedEnabled" : "simplifiedDisabled");
 }
 
 export async function savePlatformEntitlementAction(
