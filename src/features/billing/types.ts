@@ -134,6 +134,7 @@ export type BillingPayment = {
 };
 
 export type BillingInvoiceDetail = {
+  fullPrepayment?: boolean;
   simplifiedIssuanceReady?: boolean;
   operationalCompletedAt?: string | null;
   invoice: BillingInvoice;

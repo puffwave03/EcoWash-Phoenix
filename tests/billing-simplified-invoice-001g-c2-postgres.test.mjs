@@ -60,9 +60,9 @@ test("001G-C2 isolated exact advance/final reconciliation", {
   const db = parsed.pathname.slice(1);
   const env = { ...process.env, PGDATABASE: db, PGUSER: decodeURIComponent(parsed.username),
     PGPASSWORD: decodeURIComponent(parsed.password), PGHOST: parsed.hostname,
-    PGPORT: parsed.port || "5432", PGSSLMODE: "disable", PGOPTIONS: "",
-    PGSERVICE: "", PGSERVICEFILE: "", PGCONNECT_TIMEOUT: "3" };
-  delete env.PGHOSTADDR;
+    PGPORT: parsed.port || "5432", PGSSLMODE: "disable", PGCONNECT_TIMEOUT: "3" };
+  // Unset inherited libpq overrides: an empty service-file path is not absent.
+  for (const key of ["PGHOSTADDR", "PGOPTIONS", "PGSERVICE", "PGSERVICEFILE"]) delete env[key];
   const args = ["-X", "-qAt", "-v", "ON_ERROR_STOP=1"];
   const raw = input => spawnSync("psql", args, { env, input, encoding: "utf8", timeout: 25000 });
   const sql = input => { const result = raw(input); if (result.error) throw result.error;
@@ -95,6 +95,7 @@ test("001G-C2 isolated exact advance/final reconciliation", {
   sql(read("20261018000200_billing_simplified_invoice_001g_b_advance_link_foundation.sql"));
   sql(read("20261018000300_billing_simplified_invoice_001g_c1_advance_event_foundation.sql"));
   sql(read("20261019000100_billing_simplified_invoice_001g_c2_exact_reconciliation.sql"));
+  sql(read("20261028163423_billing_full_prepayment_001.sql"));
   assert.equal(sql("select simplified_invoicing_enabled from organization_billing_settings"), "f");
   sql(owner + "update organization_billing_settings set fiscal_territory_code='ES-CN',declared_tax_regime_code='IGIC-GENERAL',simplified_invoicing_enabled=true;");
   let counter = 100;
@@ -280,6 +281,80 @@ test("001G-C2 isolated exact advance/final reconciliation", {
         if (!s.exited && !s.child.stdin.writableEnded) s.child.stdin.end("rollback;\n");
         await s.done;
       }
+    }
+  }
+
+  // Full prepayment: real SQL assertions, not claimed as PASS without this harness.
+  const fullOrder = order(35), fullDraft = draft(fullOrder), fullPayment = payment(fullOrder,35);
+  declare(fullOrder,fullPayment);
+  const fullItems = () => sql(`select jsonb_agg(to_jsonb(it) order by id) from invoice_items it where invoice_id='${fullDraft}'`);
+  const originalItems = fullItems();
+  const fullNext = Number(sql("select next_value from billing_invoice_number_counters where series='S'"));
+  const fullNumber = advance(fullDraft,fullPayment);
+  assert.equal(advance(fullDraft,fullPayment),fullNumber);
+  assert.equal(fullItems(),originalItems);
+  assert.equal(sql(`select id||'/'||document_status||'/'||billing_event_kind||'/'||total||'/'||taxable_base||'/'||tax_total||'/'||(service_performed_on is null) from invoices where id='${fullDraft}'`), `${fullDraft}/issued/advance/35.00/32.71/2.29/true`);
+  assert.equal(sql(`select count(*) from invoice_orders where order_id='${fullOrder}'`),'1');
+  assert.equal(sql(`select billing_link_role||'/'||invoice_id||'/'||attributed_amount from billing_invoice_payment_links where payment_id='${fullPayment}'`),`final/${fullDraft}/35.00`);
+  assert.equal(Number(sql("select next_value from billing_invoice_number_counters where series='S'")),fullNext+1);
+  fails(owner+`set role authenticated;select * from issue_billing_final_after_advances('${fullDraft}','${fullPayment}',current_date,'local_laundry_dry_cleaning','consumer',true);`,/billing_final_already_issued/);
+  fails(owner+`set role authenticated;select delete_billing_draft('${fullDraft}');`,/billing_invalid_draft/);
+  const fullSnapshot = () => sql(`select to_jsonb(i) from invoices i where id='${fullDraft}'`);
+  const frozenFull = fullSnapshot();
+  sql(`update orders set production_status='completed' where id='${fullOrder}';`);
+  assert.equal(fullSnapshot(),frozenFull);
+  user(`select record_pos_refund('${fullPayment}',1,'Synthetic refund','${id(7)}','${id(90002)}');`);
+  sql(`update orders set production_status='cancelled' where id='${fullOrder}';`);
+  assert.equal(fullSnapshot(),frozenFull);
+  assert.equal(fullItems(),originalItems);
+  assert.equal(advance(fullDraft,fullPayment),fullNumber);
+  assert.equal(sql(owner+`select billing_paid_total_for_invoice('${fullDraft}','${org}');`),'34.00');
+  assert.equal(sql(`select count(*) from invoice_orders where order_id='${fullOrder}'`),'1');
+  fails(owner+`set app.billing_advance_link_mutation='on';insert into billing_invoice_payment_links
+    (organization_id,order_id,invoice_id,billing_link_role,payment_id,attributed_amount)
+    values('${org}','${fullOrder}','${fullDraft}','final','${fullPayment}',35);`,/billing_payment_link_exceeds_invoice|duplicate key/);
+  assert.equal(fullSnapshot(),frozenFull);
+
+  const fullCall = (d,p) => `select * from issue_billing_advance_invoice('${d}','${p}','local_laundry_dry_cleaning','consumer',true);`;
+  for (const scenario of ['over','extra','pending','rounding','refunded','undeclared','wrongDate','staff','tenant','entitlement','disabled']) {
+    const o = order(35), d = draft(o), p = payment(o,scenario==='over'?36:35,
+      scenario==='wrongDate'?"now()-interval '1 day'":"now()");
+    if(scenario!=='undeclared') declare(o,p);
+    if(scenario==='extra') payment(o,1);
+    if(scenario==='refunded') user(`select record_pos_refund('${p}',1,'Synthetic prior refund','${id(7)}','${id(++counter+90000)}');`);
+    if(scenario==='pending') { const extra=payment(o,1); sql(`update payments set status='pending' where id='${extra}'`); }
+    if(scenario==='rounding') sql(owner+`set app.billing_mutation='on';update invoices set taxable_base=32.70,tax_total=2.30 where id='${d}';`);
+    const prefix = scenario==='staff'?"set test.role='staff';":scenario==='tenant'?`set test.org='${other}';`:scenario==='entitlement'?"set test.entitled='false';":"";
+    if(scenario==='disabled') sql(owner+"update organization_billing_settings set simplified_invoicing_enabled=false;");
+    const n=sql("select next_value from billing_invoice_number_counters where series='S'");
+    fails(owner+prefix+"set role authenticated;"+fullCall(d,p),/billing_/);
+    assert.equal(sql(`select document_status from invoices where id='${d}'`),'draft');
+    assert.equal(sql(`select count(*) from billing_invoice_payment_links where payment_id='${p}'`),'0');
+    assert.equal(sql("select next_value from billing_invoice_number_counters where series='S'"),n);
+    if(scenario==='disabled') sql(owner+"update organization_billing_settings set simplified_invoicing_enabled=true;");
+  }
+
+  // Competing full-prepayment calls serialize and return the same document.
+  const co=order(35), cd=draft(co), cp=payment(co,35); declare(co,cp);
+  const cn=Number(sql("select next_value from billing_invoice_number_counters where series='S'"));
+  const first=session('full_prepayment_winner',fullCall(cd,cp)+"select 'full_lock_held';");
+  let second;
+  try {
+    await waitFor(()=>first.stdout.includes('full_lock_held')||first.exited,'first full issuance did not reach barrier');
+    assert.equal(first.exited,false,first.stderr);
+    second=session('full_prepayment_waiter',fullCall(cd,cp));
+    second.child.stdin.end('commit;\n');
+    await waitFor(()=>sql("select count(*) from pg_stat_activity where application_name='full_prepayment_waiter' and wait_event_type='Lock'")==='1','second full issuance did not wait');
+    first.child.stdin.end('commit;\n');
+    assert.equal(await first.done,0,first.stderr);
+    assert.equal(await second.done,0,second.stderr);
+    assert.equal(Number(sql("select next_value from billing_invoice_number_counters where series='S'")),cn+1);
+    assert.equal(sql(`select count(*) from billing_invoice_payment_links where payment_id='${cp}'`),'1');
+    assert.equal(sql(`select count(*) from invoice_orders where order_id='${co}'`),'1');
+  } finally {
+    for(const current of [first,second].filter(Boolean)) {
+      if(!current.exited&&!current.child.stdin.writableEnded) current.child.stdin.end('rollback;\n');
+      await current.done;
     }
   }
 });

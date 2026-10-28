@@ -92,7 +92,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         <div className="billing-invoice-content p-5 sm:p-8">
           <header className="grid gap-6 border-b border-border pb-6 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t(invoice.billingEventKind === "advance" ? "advanceFlow.advanceInvoice" : invoice.operationTotal != null ? "advanceFlow.finalInvoice" : invoice.fiscalDocumentType === "simplified" ? "document.simplifiedInvoice" : "document.invoice")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">{t(detail.fullPrepayment ? "advanceFlow.fullPrepaymentInvoice" : invoice.billingEventKind === "advance" ? "advanceFlow.advanceInvoice" : invoice.operationTotal != null ? "advanceFlow.finalInvoice" : invoice.fiscalDocumentType === "simplified" ? "document.simplifiedInvoice" : "document.invoice")}</p>
+              {detail.fullPrepayment ? <p className="mt-2 text-sm text-muted">{t("advanceFlow.fullPrepaymentHelp")}</p> : null}
               <h2 className="mt-2 text-3xl font-semibold text-primary">{invoice.invoiceNumber ?? t("draftNumber")}</h2>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div><dt className="text-muted">{t("fields.issueDate")}</dt><dd className="font-semibold">{formatDate(invoice.issueDate, locale)}</dd></div>
@@ -242,8 +243,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
                   {declared.has(payment.id) ? <form action={issueBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
                     <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
                     <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
-                    <label className="flex gap-3 text-sm"><input name="advanceIssueConfirmed" required type="checkbox" value="confirmed" /><span>{t("advanceFlow.advanceIssueConfirm")}</span></label>
-                    <Button type="submit">{t("advanceFlow.issueAdvance")}</Button>
+                    <label className="flex gap-3 text-sm"><input name="advanceIssueConfirmed" required type="checkbox" value="confirmed" /><span>{t(payment.amount === invoice.total ? "advanceFlow.fullPrepaymentConfirm" : "advanceFlow.advanceIssueConfirm")}</span></label>
+                    <Button type="submit">{t(payment.amount === invoice.total ? "advanceFlow.issueFullPrepayment" : "advanceFlow.issueAdvance")}</Button>
                   </form>
                     : <form action={declareBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
                       <label className="flex gap-3 text-sm"><input name="preServiceConfirmed" required type="checkbox" value="confirmed" /><span>{t("advanceFlow.preServiceConfirm")}</span></label>

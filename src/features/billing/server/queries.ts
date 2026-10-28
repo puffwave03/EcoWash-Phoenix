@@ -547,6 +547,9 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     }
   }
   return {
+    // Immutable attribution, never the current mutable order total.
+    fullPrepayment: invoice.billingEventKind === "advance" && invoice.documentStatus === "issued"
+      && paymentLinks.some((link) => link.invoiceId === invoice.id && link.role === "final"),
     invoice,
     advanceDeclarations,
     paymentLinks,

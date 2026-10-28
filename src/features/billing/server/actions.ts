@@ -23,6 +23,7 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_advance_full_")) return "fullPrepaymentBlocked";
   if (message?.includes("billing_exact_reconciliation_required") || message?.includes("billing_final_payment_links_invalid")) return "advanceBlocked";
   if (message?.includes("billing_advance_") || message?.includes("billing_final_")) return "advanceBlocked";
   if (message?.includes("billing_advance_workflow_required")) return "advanceBlocked";
@@ -375,10 +376,11 @@ export async function issueBillingAdvanceAction(locale: string, invoiceId: strin
     message = result.error?.message;
   } catch { /* Resolve from the immutable payment attribution below. */ }
   const { data: link, error: linkError } = await supabase.from("billing_invoice_payment_links")
-    .select("invoice_id").eq("organization_id", membership.organization.id)
-    .eq("payment_id", paymentId).eq("billing_link_role", "advance")
-    .maybeSingle<{ invoice_id: string }>();
-  if (!linkError && link) {
+    .select("invoice_id, billing_link_role").eq("organization_id", membership.organization.id)
+    .eq("payment_id", paymentId)
+    .maybeSingle<{ invoice_id: string; billing_link_role: "advance" | "final" }>();
+  if (!linkError && link && (link.billing_link_role === "advance"
+    || (link.billing_link_role === "final" && link.invoice_id === invoiceId))) {
     const { data: issued, error } = await supabase.from("invoices")
       .select("id").eq("organization_id", membership.organization.id)
       .eq("id", link.invoice_id).eq("document_status", "issued")
