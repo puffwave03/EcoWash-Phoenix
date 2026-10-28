@@ -6,11 +6,13 @@ Version: 0.1
 
 Last Updated: 2026-10-28
 
+Latest published documentation checkpoint: `924a5a4b8a613ee0251979f466ef9fa211ec9bed`
+
 ---
 
 ## Purpose
 
-Start here when resuming EcoWash Phoenix work. The latest 28/10/2026 checkpoint is [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026): functional staging UAT PASS, security evidence pending, document closeout under CTO review. Git `main` is at `69ea49c68c8e7689aafd54f9251eb948e05fcd21`. The next proposed environment-readiness phase is recorded there but has not started. The older snapshot on this page is historical.
+Start here when resuming EcoWash Phoenix work. At the published documentation checkpoint `924a5a4`, [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026) has completed implementation, Platform Admin functional staging UAT and documentation closeout; runtime security evidence remains open. The next proposed environment-readiness phase is recorded in the handover but has not started. The older snapshot on this page is historical.
 
 ## Official procedures and current state
 
