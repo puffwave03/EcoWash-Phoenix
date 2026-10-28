@@ -2,7 +2,28 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 19/10/2026. Fiscal onboarding and save-feedback closeout: 20/10/2026. Local Billing C2 bootstrap checkpoint: 25/10/2026; local C2 UAT checkpoint: 26/10/2026.
+Current checkpoint: 2026-10-28. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — 28/10/2026
+
+**IMPLEMENTED / FUNCTIONAL UAT PASS — SECURITY EVIDENCE PENDING.** The 12 CTO-reviewed functional files were published in `69ea49c68c8e7689aafd54f9251eb948e05fcd21` on GitHub `main`. Migration `20261028090700` is applied to Supabase staging `exthnplfokcucaqydney`; both RPCs and the Billing-entitlement trigger matched the approved local SQL in the earlier read-only definition check. Automatic deployment `dpl_F2NsptMYkGFp9kTUVDuedyWwtJ4T` on `ecowash-phoenix-staging` was reported **READY** for that commit. The PO confirms Platform Admin enable and disable on staging: **functional UAT PASS**. Five static contracts, local Webpack build and TypeScript previously passed; no application test was repeated here.
+
+**Residual evidence, separate from defects:** authenticated runtime denial for Owner/other non-authorized users is not yet proven, and the PO report does not separately establish Billing-off disable or audit-row behavior. Static SQL review and definition parity are not runtime permission evidence. No commercial production, external fiscal provider or full fiscal compliance is approved. The six related Billing/POS reports below require CTO triage individually; none is implemented by this documentation update.
+
+## Billing and POS findings — 28/10/2026
+
+| ID | Current classification and evidence |
+| --- | --- |
+| `BILLING-FULL-PREPAYMENT-001` | **OPEN / CONFIRMED WORKFLOW GAP.** For `EW-000154`, a confirmed EUR 35.00 POS payment was collected before service against a EUR 35.00 simplified draft. Read-only staging data and PostgreSQL log confirm C2 `issue_billing_advance_invoice` rejected it as `billing_invalid_draft` (`22023`): the current advance rule requires payment below the full draft total. The existing direct simplified issuer rejects prior payment history; final-after-advances requires an issued advance and distinct balance. Fiscal handling of a 100% pre-service payment needs CTO decision before changing issuance. |
+| `BILLING-ISSUE-FEEDBACK-001` | **OPEN / CONFIRMED FEEDBACK DEFECT.** `issueBillingAdvanceAction` passes `billing_invalid_draft` to `billingError`, which has no mapping for it and returns `generic`; the user sees no actionable reason. Keep the expected Billing rejection distinct from this presentation defect. |
+| `BILLING-SIMPLIFIED-HELP-001` | **OPEN / CONFIRMED CONTENT DRIFT.** The previously recorded Spanish simplified-recipient help text still says simplified issuance is disabled. This ID names that existing observation; no new duplicate finding or copy change. |
+| `BILLING-RECIPIENT-PREFILL-001` | **OPEN / PO UX OBSERVATION.** Selecting an identified recipient does not prefill the registered customer's fiscal details. Confirm the intended source and behavior before scoping a change. |
+| `POS-MIXED-PAYMENT-INPUT-001` | **OPEN / PO UX OBSERVATION.** Entering amounts in Cash/Card fields is difficult. Financial calculation or persistence defect is not established. |
+| `POS-ADVANCE-UX-001` | **BACKLOG / DESIGN TO EVALUATE.** Consider collecting an advance directly during Order creation by reusing canonical POS; no new payment model or implementation is approved. |
+
+**Positive staging observations, not closure of the findings:** PO observed `EW-000155` ordinary invoice `2026-A-000004` issued. `EW-000156` totals EUR 35.00, with a confirmed EUR 10.00 POS advance, EUR 25.00 balance and correct history; its ordinary invoice remains a draft, **not issued**. Prior isolated local C2 partial advance/final tax reconciliation PASS remains valid only for that synthetic laboratory. See [Testing](../05_DEVELOPMENT/Testing.md) for evidence levels and [Handover](../00_START_HERE/SESSION_HANDOVER.md) for continuation.
+
+**Next phase, not started:** **PHOENIX ENGINEERING ENVIRONMENT / CODEX CLOUD READINESS**. Inventory open tasks and SaaS prerequisites before any configuration; then scope a private Codex Cloud environment linked to GitHub with canonical documents, verifiable procedures, shared technical memory and ordered issue management. One authorized mission at a time. The older 27/10 and C2 checkpoints below are historical for their dates.
 
 ## PHOENIX-RECOVERY-RETRY-002-001 — 27/10/2026
 

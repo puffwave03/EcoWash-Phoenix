@@ -4,7 +4,7 @@ Status: Current deployment reference — staging test environment / production d
 
 Version: 0.1
 
-Current-state clarification: 2026-10-24. Original release-plan update: 2026-08-22.
+Current publication procedure: 2026-10-28. Earlier environment clarification: 2026-10-24. Original release-plan update: 2026-08-22.
 
 Historical operational checkpoint (2026-08-22): Operational role/workspace phase validated. This is not the current mission.
 
@@ -16,6 +16,14 @@ Staging remains a test/UAT environment. The existing EcoWash pilot tenant may be
 
 Production gates remain in force, including `AUTH-DR-001C`, the security/privacy and recovery requirements, Production Readiness Review and the separately approved fiscal path. [Security](../04_ARCHITECTURE/Security.md), [Testing](Testing.md) and the canonical checkpoints distinguish completed scoped evidence from remaining gates. This clarification performs no deployment, remote check or environment change and authorizes none.
 
+## Canonical ordinary staging publication
+
+The verified ordinary Phoenix path is: CTO review → explicit Product Owner commit/push authorization → reviewed mission commit on GitHub `main` and authorized push → automatic deployment to the dedicated Vercel project `ecowash-phoenix-staging` → verify source commit and deployment state → scoped Product Owner staging UAT → canonical documentation closeout. [Git Workflow](Git_Workflow.md) owns the file-selection and approval sequence; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) identifies the latest checkpoint. The Vercel target labelled `production` inside **this staging project** is not commercial Phoenix production. No Vercel CLI or direct local-worktree deployment is required for the ordinary path.
+
+Before choosing another method, the CTO checks the current documents, code, project link and last verified deployment evidence. Use the established path when sufficient. A different deployment procedure requires a demonstrated technical limitation, a bounded risk/benefit explanation and explicit Product Owner approval; it is not inferred from a missing local CLI. Do not create a new environment, tool or dependency merely to replace a working route. A method change remains a separate approved phase, with exact target proof and no commercial-production access by implication.
+
+Staging SQL application is a separate authorized phase; an applied migration does not publish the UI. Do not repeat it during application deployment. After automatic deployment, verify the new source SHA and `READY` state rather than inferring success from an earlier deployment. The `69ea49c` mission followed this path: `dpl_F2NsptMYkGFp9kTUVDuedyWwtJ4T` was READY on the staging project, followed by PO functional enable/disable UAT PASS; its remaining security evidence is recorded in [Testing](Testing.md). No commit, push or deployment is authorized by this document alone.
+
 ---
 
 ## Purpose
@@ -26,14 +34,14 @@ Track the current staging deployment contract and preserve the production-deferr
 
 ## Contents
 
-Current release result: staging is online and validated; real production is deferred until the pilot product is functionally complete.
+Historical release result: staging was online and validated at the recorded checkpoint; real production remains deferred. The latest dated handover and status supersede earlier mission labels below.
 
 This document is a plan. It does not declare EcoWash Phoenix production-ready and does not authorize deployment, DNS changes, environment changes, Supabase project creation, Auth redirect changes or migration application.
 
-## Current Release Position
+## Historical Release Position — August 2026
 
 - `main` is the only release branch.
-- Latest confirmed operational baseline before DOCS-OPS-017: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`.
+- Baseline at that checkpoint before DOCS-OPS-017: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
 - RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
@@ -49,7 +57,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Staging Requirements
 
 - Git local and remote `main` are synchronized at an approved commit.
-- Working tree is clean.
+- The approved release commit contains only reviewed mission files; unrelated local changes remain excluded.
 - `npm run lint` passes.
 - `npm run build` passes.
 - `git diff --check` passes.
@@ -271,7 +279,7 @@ Use this checklist first for staging rehearsal. Production deployment is not aut
 Pre-deploy:
 
 - Release commit approved.
-- Working tree clean.
+- Release commit and included file list verified; unrelated local changes excluded.
 - `npm run lint` passes.
 - `npm run build` passes.
 - Environment matrix approved.
@@ -283,8 +291,8 @@ Pre-deploy:
 
 Deploy:
 
-- Deploy from approved commit only.
-- Use the selected hosting provider's staging or production deployment path according to the approved task.
+- Publish only the approved GitHub `main` commit through the existing automatic staging integration.
+- Use another hosting or deployment path only under a separate justified PO approval.
 - Do not change DNS until the deployment passes health checks and a production cutover task explicitly authorizes DNS work.
 - Keep previous deployment available for rollback.
 

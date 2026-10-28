@@ -2,9 +2,19 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-27
+Date: 2026-10-28
 
-## PHOENIX-FISCAL-BASELINE-RECONCILIATION-001 — current resume point (27/10/2026)
+## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — functional UAT closeout (28/10/2026)
+
+**IMPLEMENTED / FUNCTIONAL UAT PASS — SECURITY EVIDENCE PENDING.** The 12 reviewed functional files were committed and pushed as `69ea49c68c8e7689aafd54f9251eb948e05fcd21` on GitHub `main`. Migration `20261028090700_platform_simplified_invoicing_tenant_control_001.sql` is applied to Supabase staging `exthnplfokcucaqydney`; the earlier read-only definition comparison matched both RPCs and the narrowed Billing-entitlement trigger. Automatic Vercel staging deployment `dpl_F2NsptMYkGFp9kTUVDuedyWwtJ4T` reached **READY** for that commit on `ecowash-phoenix-staging`. The Product Owner confirms Platform Admin enable and disable on staging: **functional UAT PASS**. Five dedicated static contracts and the local Webpack production build (including TypeScript) had already passed; they were not rerun for this documentation phase.
+
+**Evidence still open:** runtime denial to non-authorized users, including Owner, is not yet demonstrated. Preserve it as a security evidence gap, not a confirmed bypass or a PASS. The prior static SQL review and function-definition parity do not replace an authenticated role test. The PO report does not separately establish Billing-off disable or audit-row behavior. [Testing](../05_DEVELOPMENT/Testing.md) distinguishes these from functional UAT; no commercial-production or external fiscal integration is authorized.
+
+**New PO staging observations:** `EW-000155` ordinary invoice `2026-A-000004` was observed issued; `EW-000156` has a EUR 35.00 order, confirmed EUR 10.00 POS advance, EUR 25.00 balance and correct history, while its ordinary draft is **not issued**. The previously verified isolated local C2 EUR 2.00 advance + EUR 5.00 final reconciliation remains PASS for its own synthetic scope. For `EW-000154`, read-only staging diagnosis found a confirmed EUR 35.00 pre-service payment equal to the EUR 35.00 simplified draft: the C2 advance RPC intentionally raises `billing_invalid_draft` (`22023`), while the action maps it to `generic`. The PO observations and the six Billing/POS reports are registered once in [Project Status](../06_ROADMAP/Project_Status.md#billing-and-pos-findings--28102026); no correction or fiscal decision is authorized here.
+
+**Next phase, not started:** **PHOENIX ENGINEERING ENVIRONMENT / CODEX CLOUD READINESS**. First inventory open work and SaaS prerequisites; then scope a private Codex Cloud environment with GitHub, canonical documents, verifiable procedures, shared technical memory and ordered issue management. CTO review and PO authorization remain separate gates. The earlier 27/10 checkpoint and older sections below retain their historical evidence; they do not set today's Git baseline or current task.
+
+## PHOENIX-FISCAL-BASELINE-RECONCILIATION-001 — historical resume point (27/10/2026)
 
 **Verified repository baseline:** local `main` = local `origin/main` = `6daa4b9a835ab449ccc0f4982fe73ad96b997186` before this documentation edit; index clean, with only the pre-existing unstaged `AGENTS.md` change. The 26/10 synthetic Toshiba Billing C2 advance/final UAT and read-only post-issuance audit are **PASS**, as detailed in the [dated C2 checkpoint](#billing-c2-uat-docs-closeout-001--26102026) and [Testing](../05_DEVELOPMENT/Testing.md). The 24–25/10 local UAT-pending statements remain historical and are superseded for that isolated scenario. The last documented Phoenix staging (`exthnplfokcucaqydney`) migration inventory has **107 applied migrations** through `20261023192656`; published [`20261026105505_billing_c2_rls_42501_fix_001.sql`](../../supabase/migrations/20261026105505_billing_c2_rls_42501_fix_001.sql) was applied to local C2 only and is **not applied on staging** in that inventory. No staging authenticated UAT of the `42501` correction or real fiscal issuance is established or authorized.
 

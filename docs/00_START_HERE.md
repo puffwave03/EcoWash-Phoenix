@@ -4,21 +4,32 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-23
-
-Current Mission: PORTAL-002.1 customer ordering and pickup requests completed and validated
-
-Next Action: preserve the PORTAL-002.1 baseline and approve the next Portal increment before implementation
+Last Updated: 2026-10-28
 
 ---
 
 ## Purpose
 
-Start here when resuming EcoWash Phoenix work. This file identifies the current committed baseline and the exact next action.
+Start here when resuming EcoWash Phoenix work. The latest 28/10/2026 checkpoint is [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026): functional staging UAT PASS, security evidence pending, document closeout under CTO review. Git `main` is at `69ea49c68c8e7689aafd54f9251eb948e05fcd21`. The next proposed environment-readiness phase is recorded there but has not started. The older snapshot on this page is historical.
+
+## Official procedures and current state
+
+- [Session Handover](00_START_HERE/SESSION_HANDOVER.md) — latest dated checkpoint and next handoff.
+- [Project Status](06_ROADMAP/Project_Status.md) — current mission, acceptance level and open gates.
+- [Billing and POS findings](06_ROADMAP/Project_Status.md#billing-and-pos-findings--28102026) — current reported issues, evidence and decisions still needed.
+- [Git Workflow](05_DEVELOPMENT/Git_Workflow.md) — review, explicit file selection, commit/push approval and release sequence.
+- [Deployment](05_DEVELOPMENT/Deployment.md) — existing GitHub `main` → automatic Vercel staging path and environment boundaries.
+- [Testing](05_DEVELOPMENT/Testing.md) — evidence levels and verification still open.
+- [Security](04_ARCHITECTURE/Security.md) and [AGENTS.md](../AGENTS.md) — architecture and repository operating boundaries.
+
+Read the newest dated checkpoint first. Earlier checkpoints remain evidence of their date and do not assign the current mission.
 
 ---
 
-## Current State
+<details>
+<summary>Historical PORTAL-002.1 resume snapshot — 23/08/2026</summary>
+
+## Historical State
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
@@ -149,3 +160,5 @@ Next planning sequence:
 2. Keep customer address flexibility and delivery preferences as the next known Portal work, to be scoped and approved separately.
 3. Keep clearer Customers access in owner/manager navigation as a separate UX backlog item.
 4. Do not start PORTAL-002.2 without a separate approved mission; keep one task per logical commit.
+
+</details>

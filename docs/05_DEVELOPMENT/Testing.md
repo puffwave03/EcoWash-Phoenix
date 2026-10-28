@@ -1,8 +1,22 @@
 # Testing
 
-Status: Current security evidence index
+Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
+
+## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — closeout evidence at 28/10/2026
+
+| Evidence | Result and limit |
+| --- | --- |
+| Dedicated local static contracts | **5/5 PASS** for Platform Admin guard/grants, Billing-off disable exception, enable prerequisites, audit/no-op boundary and localized panel wiring. These inspect source; they do not exercise live PostgreSQL roles or browser behavior. |
+| Application build | Local `next build --webpack` **PASS**, including TypeScript and page generation. The default Turbopack build failed in the sandbox while binding a port (`Operation not permitted`); this does not establish an application defect. |
+| Staging migration presence and definition parity | Supabase staging `exthnplfokcucaqydney` lists `20261028090700` once; read-only hashes of both applied RPC bodies and the narrowed Billing-entitlement trigger match the local migration. This is not a behavioral permission test. |
+| Publication | Exactly 12 reviewed functional files committed/pushed as `69ea49c68c8e7689aafd54f9251eb948e05fcd21`. Automatic Vercel deployment `dpl_F2NsptMYkGFp9kTUVDuedyWwtJ4T` on `ecowash-phoenix-staging` was verified **READY**, sourced from that SHA. The pre-existing `AGENTS.md` change and six prepared documents were excluded. |
+| Product Owner staging functional UAT | **PASS**, explicitly reported for Platform Admin enable and disable of simplified invoicing. This report does not separately prove a non-admin denial, Billing-off disable, or persisted audit row. |
+
+**Security evidence still open:** authenticated runtime denial for Owner and other non-authorized roles; the PO report also leaves Billing-off disable and audit-row behavior individually unconfirmed. Static SQL review and definition parity cannot be counted as behavioral PASS. No commercial production or external provider integration is approved. This documentation update runs no new application, database, staging or browser tests; it records prior evidence without repeating PASS results.
+
+**Separate Billing/POS staging observations:** PO reports `EW-000155` ordinary invoice `2026-A-000004` issued; `EW-000156` EUR 35.00 order with confirmed EUR 10.00 POS advance, EUR 25.00 balance, correct history and an **unissued** ordinary draft. For `EW-000154`, the prior read-only staging diagnosis found draft/payment both EUR 35.00 and PostgreSQL `billing_invalid_draft` (`22023`) in `issue_billing_advance_invoice`; application mapping produced `generic`. This establishes the rejection and feedback cause, not a new fiscal acceptance path. The isolated local C2 partial-advance/final reconciliation PASS below retains its own scope. The [current findings register](../06_ROADMAP/Project_Status.md#billing-and-pos-findings--28102026) holds classifications and unresolved decisions.
 
 ## Billing C2 local RLS and fiscal UAT evidence — 26/10/2026
 
