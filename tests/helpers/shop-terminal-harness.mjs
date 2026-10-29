@@ -43,9 +43,9 @@ const button = (tree, label) => nodes(tree).find((node) => node.type === "button
 
 // Execute the real TSX, handlers and cleanup with deferred action promises and
 // in-memory storage. Hooks are simulated; this does not test React scheduling or DOM layout.
-function terminal({ restored = null, refreshing = false, workspace = 1, storageValues = new Map() } = {}) {
+function terminal({ restored = null, refreshing = false, workspace = 1, storageValues = new Map(), confirmResult = true } = {}) {
   const state = new Map(), refs = new Map(), actionSlots = new Map(), modules = new Map();
-  const calls = { submit: [], status: [], occupied: [] };
+  const calls = { submit: [], status: [], occupied: [], confirm: [] };
   const response = deferred();
   let stateIndex, refIndex, actionIndex, effects, timers = [];
   const storage = {
@@ -99,7 +99,8 @@ function terminal({ restored = null, refreshing = false, workspace = 1, storageV
     } }).outputText;
     runInNewContext(code, {
       module: compiledModule, exports: compiledModule.exports, require: localRequire, crypto: webcrypto,
-      window: { sessionStorage: storage, setTimeout: (callback) => timers.push(callback), clearTimeout() {} },
+      window: { sessionStorage: storage, setTimeout: (callback) => timers.push(callback), clearTimeout() {},
+        confirm(message) { calls.confirm.push(message); return confirmResult; } },
       FormData: class extends Map { get(key) { return super.get(key) ?? null; } },
     }, { filename: file });
     return compiledModule.exports;
