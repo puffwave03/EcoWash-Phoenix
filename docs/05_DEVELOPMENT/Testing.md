@@ -4,6 +4,20 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## TERMINAL-DOCUMENTS-NAV-001 — verification and UAT evidence (29/10/2026)
+
+| Evidence | Result and limit |
+| --- | --- |
+| Publication | Eight application files were published in commit `65ce351c37eb934b5a60dd88e19bc2a3a29adb4a`. |
+| Focused suite | `node --test tests/billing-direct-entry-001.test.mjs tests/print-contract.test.mjs`: **62 PASS / 0 FAIL / 0 SKIP**. These are prior results; no tests were rerun for this documentation patch. |
+| Billing fixture comparison | The initial **11** Billing failures were reproduced on the published baseline and classified as stale fixtures missing `billing_link_role`. Fixture alignment alone restored the contract; Billing resolver, SQL and fiscal logic were not changed. The final count includes the Terminal document-navigation tests. |
+| Staging deployment | Deployment `dpl_43HGGa59Qfr6TPPhka1qmQzoKVyr` was reported READY by the PO/CTO for the application commit. This documentation update did not independently query Vercel. |
+| Product Owner browser UAT | «Documenti dell’ordine» section and receipt pre-issue warning passed visual review; ticket `EW-000162` opened and its contents passed visual review; registered-customer Billing navigation for `EW-000162` passed with the order preselected. |
+| UAT limits | Physical printing, QR scanning and new operational-receipt or fiscal-invoice issuance were **NOT TESTED** in this UAT. The navigation UAT is not completion of the full operating/fiscal lifecycle. |
+| EW-000163 diagnosis | Supplied read-only staging evidence identifies persisted `draft` as explicitly excluded by the simplified occasional-customer resolver. Anonymous status and missing address/NIF were not the cause. No invoice or fiscal payment attribution was present. This is diagnosis, not a runtime re-test or an issuance test; `received` alone does not satisfy remaining declaration, payment and fiscal-date requirements. |
+
+See [Project Status](../06_ROADMAP/Project_Status.md#terminal-and-order-workflow-findings--29102026) for the new Terminal findings and the existing recovery UAT boundary. No application tests, database operations or staging checks are performed in this documentation phase.
+
 ## BILLING-FULL-PREPAYMENT-001 — closeout evidence at 29/10/2026
 
 | Evidence | Result and limit |
