@@ -4,6 +4,18 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## BILLING-FULL-PREPAYMENT-001 — closeout evidence at 29/10/2026
+
+| Evidence | Result and limit |
+| --- | --- |
+| Publication and database history | GitHub `main` commit `c79de74896fcda88111b4562eba0af49cd8e7d36`; migration `20261028163423_billing_full_prepayment_001.sql` applied to Supabase staging `exthnplfokcucaqydney`. Subsequent migration list showed **110/110 aligned**. This is migration presence, not an authenticated staging SQL behavior audit. |
+| Vercel staging | Automatic deployment `dpl_7PUeXQoqVB1L6nsMtCcVcHhq82CS` on `ecowash-phoenix-staging` was independently observed **READY** for that commit. The Vercel `production` target within this staging project is not commercial production. |
+| Isolated local PostgreSQL C2 | **1 PASS / 0 FAIL / 0 SKIP** in a separate `phoenix_series_test_*` database on the already-running C2 server. The test exercised 35/35 original-draft issuance, fiscal totals, single attribution/number, trigger guards, replay, concurrence, negative cases, subsequent refund/cancellation and the existing C2 partial path. Historical C2 order/payment/invoice/counter fingerprints were unchanged. This synthetic SQL proof does not establish the staging browser path. |
+| Product Owner staging browser UAT | **PASS** on synthetic walk-in order `EW-000159`: EUR 28.50 full card prepayment, simplified full-prepayment invoice `2026-UAT-S-000001`, EUR 26.64 taxable base + EUR 1.86 IGIC 7%, EUR 0.00 outstanding, Paid. Customer and laundry printable views passed visual inspection. This is PO-supplied browser evidence; no new SQL audit or physical print is claimed. |
+| Separate operational documents | Non-fiscal receipt `REC-2026-000029` and internal work ticket `EW-000159` with operational QR were observed as distinct from the fiscal invoice. Order and payment remain separate facts. |
+
+**Evidence still open:** physical printing and subsequent operational completion without a second invoice were not verified by the PO. VeriFactu/AEAT integration was not implemented and definitive fiscal compliance is not certified. The Terminal direct «Fattura» discrepancy remains a separate observation without a confirmed cause; no new auto-issuance rule follows. Earlier 28/10 full-prepayment OPEN and older migration/UAT-pending statements are **HISTORICAL / SUPERSEDED** for this mission by the dated checkpoint above. Prior C2 partial and Platform Admin evidence below retain their own scope; no tests are repeated for this documentation patch.
+
 ## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — closeout evidence at 28/10/2026
 
 | Evidence | Result and limit |

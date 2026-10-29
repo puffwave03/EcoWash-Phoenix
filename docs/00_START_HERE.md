@@ -4,21 +4,22 @@ Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-10-28
+Last Updated: 2026-10-29
 
-Latest published documentation checkpoint: `924a5a4b8a613ee0251979f466ef9fa211ec9bed`
+Latest published documentation baseline: `3300033b20607dd54ec89ccd06523aa5e343d943`; latest published application commit: `c79de74896fcda88111b4562eba0af49cd8e7d36`. Billing closeout checkpoint: 2026-10-29.
 
 ---
 
 ## Purpose
 
-Start here when resuming EcoWash Phoenix work. At the published documentation checkpoint `924a5a4`, [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026) has completed implementation, Platform Admin functional staging UAT and documentation closeout; runtime security evidence remains open. The next proposed environment-readiness phase is recorded in the handover but has not started. The older snapshot on this page is historical.
+Start here when resuming EcoWash Phoenix work. The [29/10 Billing full-prepayment checkpoint](00_START_HERE/SESSION_HANDOVER.md#billing-full-prepayment-001--technical-and-staging-uat-closeout-29102026) records **COMPLETE / VERIFIED** technical and staging UAT for `BILLING-FULL-PREPAYMENT-001`, with fiscal and operational evidence limits stated there. The earlier [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026) closeout retains its separate runtime security evidence gap. Older snapshots on this page are historical.
 
 ## Official procedures and current state
 
 - [Session Handover](00_START_HERE/SESSION_HANDOVER.md) — latest dated checkpoint and next handoff.
 - [Project Status](06_ROADMAP/Project_Status.md) — current mission, acceptance level and open gates.
 - [Billing and POS findings](06_ROADMAP/Project_Status.md#billing-and-pos-findings--28102026) — current reported issues, evidence and decisions still needed.
+- [Full-prepayment closeout evidence](05_DEVELOPMENT/Testing.md#billing-full-prepayment-001--closeout-evidence-at-29102026) — local PostgreSQL proof, deployment, Product Owner staging UAT and limits.
 - [Git Workflow](05_DEVELOPMENT/Git_Workflow.md) — review, explicit file selection, commit/push approval and release sequence.
 - [Deployment](05_DEVELOPMENT/Deployment.md) — existing GitHub `main` → automatic Vercel staging path and environment boundaries.
 - [Testing](05_DEVELOPMENT/Testing.md) — evidence levels and verification still open.

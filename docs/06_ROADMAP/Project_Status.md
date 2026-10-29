@@ -2,7 +2,13 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-10-28. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-10-29. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## BILLING-FULL-PREPAYMENT-001 — 29/10/2026
+
+**COMPLETE / VERIFIED — technical and staging UAT scope.** Commit `c79de74896fcda88111b4562eba0af49cd8e7d36`, staging migration `20261028163423` on `exthnplfokcucaqydney` with **110/110** migration history aligned, and Vercel staging deployment `dpl_7PUeXQoqVB1L6nsMtCcVcHhq82CS` **READY** are verified in their respective publication checks. Isolated C2 PostgreSQL test **1 PASS / 0 FAIL / 0 SKIP**. PO staging browser UAT **PASS** for synthetic `EW-000159`: full EUR 28.50 card prepayment; simplified full-prepayment invoice `2026-UAT-S-000001`, taxable base EUR 26.64, IGIC 7% EUR 1.86, outstanding EUR 0.00, Paid; customer/laundry printable views visually PASS. Operational receipt `REC-2026-000029` is non-fiscal; ticket `EW-000159` has an operational QR and is distinct from the invoice. [Handover](../00_START_HERE/SESSION_HANDOVER.md#billing-full-prepayment-001--technical-and-staging-uat-closeout-29102026) and [Testing](../05_DEVELOPMENT/Testing.md#billing-full-prepayment-001--closeout-evidence-at-29102026) state the acceptance limits.
+
+**Separate evidence limits:** physical print and later order completion without a second invoice are **PARTIAL / EVIDENCE GAP**. VeriFactu/AEAT integration and definitive fiscal compliance are **DEFERRED / PRE-PRODUCTION**. The observed discrepancy in the Terminal's direct «Fattura» route awaits separate triage; cause and defect classification are not established. No fiscal auto-issuance behavior is approved. Codex Cloud is part of the workflow, but active sessions are not verifiable from published Git refs. The 28/10 open finding below is preserved as historical context; other Billing/POS findings remain unchanged.
 
 ## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — 28/10/2026
 
@@ -14,7 +20,7 @@ Current checkpoint: 2026-10-28. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCU
 
 | ID | Current classification and evidence |
 | --- | --- |
-| `BILLING-FULL-PREPAYMENT-001` | **OPEN / CONFIRMED WORKFLOW GAP.** For `EW-000154`, a confirmed EUR 35.00 POS payment was collected before service against a EUR 35.00 simplified draft. Read-only staging data and PostgreSQL log confirm C2 `issue_billing_advance_invoice` rejected it as `billing_invalid_draft` (`22023`): the current advance rule requires payment below the full draft total. The existing direct simplified issuer rejects prior payment history; final-after-advances requires an issued advance and distinct balance. Fiscal handling of a 100% pre-service payment needs CTO decision before changing issuance. |
+| `BILLING-FULL-PREPAYMENT-001` | **COMPLETE / VERIFIED — technical and staging UAT scope (29/10 checkpoint above).** The 28/10 `EW-000154` rejection of a EUR 35.00 pre-service payment was a confirmed historical workflow gap, now **HISTORICAL / SUPERSEDED** for the supported single full-prepayment path. The earlier direct-issuer and final-after-advances limitations remain descriptions of those separate paths. Later PO UAT on synthetic `EW-000159` and the bounded evidence limits are recorded above; no general fiscal-compliance claim follows. |
 | `BILLING-ISSUE-FEEDBACK-001` | **OPEN / CONFIRMED FEEDBACK DEFECT.** `issueBillingAdvanceAction` passes `billing_invalid_draft` to `billingError`, which has no mapping for it and returns `generic`; the user sees no actionable reason. Keep the expected Billing rejection distinct from this presentation defect. |
 | `BILLING-SIMPLIFIED-HELP-001` | **OPEN / CONFIRMED CONTENT DRIFT.** The previously recorded Spanish simplified-recipient help text still says simplified issuance is disabled. This ID names that existing observation; no new duplicate finding or copy change. |
 | `BILLING-RECIPIENT-PREFILL-001` | **OPEN / PO UX OBSERVATION.** Selecting an identified recipient does not prefill the registered customer's fiscal details. Confirm the intended source and behavior before scoping a change. |

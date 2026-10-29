@@ -2,7 +2,15 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-28
+Date: 2026-10-29
+
+## BILLING-FULL-PREPAYMENT-001 — technical and staging UAT closeout (29/10/2026)
+
+**COMPLETE / VERIFIED — technical and staging UAT scope.** GitHub `main` contains the 12-file implementation in `c79de74896fcda88111b4562eba0af49cd8e7d36`; local `main` and fetched `origin/main` matched that SHA with clean index/worktree at the 29/10 precheck. Migration `20261028163423_billing_full_prepayment_001.sql` was applied only to Supabase staging `exthnplfokcucaqydney`; the post-application migration history was **110/110 aligned**. Automatic deployment `dpl_7PUeXQoqVB1L6nsMtCcVcHhq82CS` on `ecowash-phoenix-staging` was verified **READY** for that SHA. The isolated PostgreSQL C2 test passed **1 PASS / 0 FAIL / 0 SKIP**, exercising full 35/35 attribution, trigger guards, replay, concurrency, rejections and the existing partial-advance/final path without touching the historical C2 database. [Testing](../05_DEVELOPMENT/Testing.md#billing-full-prepayment-001--closeout-evidence-at-29102026) keeps these evidence levels separate.
+
+**Product Owner staging browser UAT: PASS for the observed workflow.** Synthetic order `EW-000159`, walk-in customer, had one EUR 28.50 full pre-service card payment and simplified full-prepayment invoice `2026-UAT-S-000001`: taxable base EUR 26.64, IGIC 7% EUR 1.86, outstanding EUR 0.00, status Paid. Customer and laundry printable views passed visual inspection; physical printing was not tested. The separate `REC-2026-000029` is a non-fiscal operational receipt, and ticket `EW-000159` is an internal work document with an operational QR. Neither replaces the Billing fiscal invoice. Order, payment and fiscal document remain distinct canonical facts.
+
+**Limits and handover:** subsequent operational completion and absence of a second invoice through that workflow were not observed by the PO. VeriFactu/AEAT integration was not implemented here; definitive fiscal compliance is not certified. A discrepancy was observed in the Terminal's direct «Fattura» route; its cause and scope remain unverified and require separate triage, without treating it as a confirmed Billing defect or opening another mission here. Any later fiscal automation must preserve the distinction between order, payment, operational receipt, internal ticket and fiscal invoice; no new automatic-issuance rule is approved. Codex Cloud is an additional Phoenix work environment per PO, while active Cloud sessions are not verifiable from the available Git references. The 28/10 `BILLING-FULL-PREPAYMENT-001` OPEN finding and older 107/109-migration or pending-UAT statements below are **HISTORICAL / SUPERSEDED** for this bounded mission; other findings and security gates retain their own status. No documentation commit or push is authorized in this patch phase.
 
 ## SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001 — functional UAT closeout (28/10/2026)
 
