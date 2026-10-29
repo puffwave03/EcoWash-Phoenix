@@ -26,7 +26,7 @@ Define the current Git workflow for EcoWash Phoenix so application work, review,
 
 Development, CTO review, tests, commit/push, automatic deployment and Product Owner UAT are distinct gates. A different publication method or test environment requires explicit scope and approval; this document alone grants no commit, push or deployment authority.
 
-**Order clarification for this approved staging workflow:** [AGENTS.md](../../AGENTS.md) §§2 and 14 contain an older generic sequence that places PO E2E before commit/push and asks for a clean worktree after push. The verified GitHub `main` integration deploys this staging application only after the authorized push, so staging PO UAT follows that deployment. The mission-specific CTO/PO authorization controls that sequence. Preserve unrelated local work and verify its inventory after push; do not reset it to satisfy the older clean-worktree wording. Alignment of the permanent AGENTS contract remains a separate CTO/PO decision; this document does not edit it.
+**Current authority:** [AGENTS.md](../../AGENTS.md) §§2 and 14 state the verified sequence: authorized push to GitHub `main`, automatic staging deployment, then scoped PO UAT. Preserve unrelated local changes and verify their inventory after push; do not reset them to produce a clean worktree.
 
 ## Rules
 

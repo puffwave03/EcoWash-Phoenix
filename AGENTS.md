@@ -41,13 +41,19 @@ Owns:
 
 Codex must not independently invent product requirements, business rules, architecture, financial semantics, fiscal semantics or roadmap priorities. When a decision would change business or architectural semantics, stop and report instead of choosing silently.
 
+Codex local is the primary technical implementer for authorized missions. Codex Cloud, previously configured for this repository, may be assigned isolated technical analysis, additional review or development tasks only within an explicitly authorized mission. It cannot publish changes autonomously, receive production administrative credentials or bypass CTO review and Product Owner approval. This rule does not assert that tool permissions enforce those limits or require Cloud participation in every mission.
+
+ChatGPT Work supports research, analysis, documentation, information organization and reports. Repository or service access still requires the applicable authorization; Work has no standing permission to change Phoenix or operate production. The Product Owner retains final authority, the CTO coordinates and reviews, and no agent may authorize its own work or expand its assignment.
+
 ## 2. Standard Phoenix task lifecycle
 
 The canonical lifecycle is:
 
 Product Owner finding or requirement → CTO scope and architecture decision, with narrow read-only inspection when needed → Codex implementation, focused validation and evidence report → CTO review → explicit Product Owner commit/push authorization → reviewed commit and push to GitHub `main` → automatic Vercel staging deployment → Product Owner staging E2E → canonical docs/status closeout → next task. Any required Supabase staging migration has its own target verification and explicit phase authorization; commit/push approval does not authorize a database change.
 
-The 28/10/2026 order clarification in `docs/05_DEVELOPMENT/Git_Workflow.md` describes the previous wording of sections 2 and 14; the verified sequence above supersedes that historical note. Never skip directly from implementation to done. One task equals one isolated mission.
+The current sequence is detailed in `docs/05_DEVELOPMENT/Git_Workflow.md`. Never skip directly from implementation to done. One task equals one isolated mission.
+
+Mission labels describe risk, not alternative approval authority. **FAST** applies only to genuinely low-risk work such as documentation, translations or small visual changes without functional impact; validation is proportionate to the change. **GUARDED** applies to payments/POS, Billing/fiscality, authorization/security, tenant isolation, database migrations/integrity, real data and other critical economic or operational behavior; use focused tests, CTO risk review, applicable authorizations and Product Owner UAT when relevant. Reclassify a FAST mission before continuing if a critical risk emerges. Both labels preserve the existing diff review, commit/push approvals, separate database and production permissions, and the automatic staging deployment consequence of an authorized push; they neither replace the lifecycle nor add redundant gates.
 
 ## 3. Scope discipline
 
@@ -226,6 +232,8 @@ Staging and production are separate. Before any remote mutation:
 
 Do not touch production during staging validation. Direct local-worktree preview deployment is acceptable only when explicitly approved and targeting the established staging project.
 
+Do not provide production administrative credentials to development agents. Handle privileged keys, fiscal secrets and production credentials separately under controlled, least-privilege access; never use them as a testing or debugging shortcut. Any exception requires explicit design, Product Owner authorization and traceability. `docs/04_ARCHITECTURE/Security.md` remains the source for technical security boundaries.
+
 ## 14. Git discipline
 
 Normal implementation state is no commit and no push unless the task phase explicitly authorizes them.
@@ -298,6 +306,8 @@ Stop instead of guessing when:
 - required credentials are unavailable;
 - a material regression appears;
 - source scope unexpectedly widens.
+
+For a significant incident, classify severity separately from roadmap priority: **INC-P1** concerns possible compromise of security, tenant isolation, payment or fiscal integrity, real data or general availability; **INC-P2** is a significant but bounded operational failure; **INC-P3** has no substantial security, integrity or operational impact. Report and classify the incident, obtain CTO impact/risk assessment and an authorized diagnosis and containment/correction plan, then verify recovery and closure. Record real incidents in the existing finding/status register in `docs/06_ROADMAP/Project_Status.md` with ID, severity, symptoms, impact, affected tenants without unnecessary personal data, human owner, status, evidence, decision and closure. No agent may autonomously roll back production, change fiscal data or production databases, expand privileges or perform an emergency deployment. Application rollback does not itself restore data.
 
 ## 19. Documentation discipline
 
