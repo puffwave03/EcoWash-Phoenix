@@ -97,6 +97,8 @@ export type OrderActionState = {
   success?: boolean;
 };
 
+export type OrderFinancialMutationError = "financialPayment" | "financialDocument" | "financialConflict";
+
 export type OrderListFilters = {
   active: ActiveFilter;
   priority: "all" | OrderPriority;

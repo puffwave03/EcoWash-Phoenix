@@ -1839,7 +1839,10 @@
       "remove": "Rimuovi",
       "removing": "Rimozione...",
       "saving": "Salvataggio...",
-      "error": "La riga non può essere salvata."
+      "error": "La riga non può essere salvata.",
+      "financialPayment": "Esiste uno storico di pagamenti per questo ordine. Importi e righe economiche non sono più modificabili.",
+      "financialDocument": "L'ordine è collegato a una fattura o a una ricevuta attiva. Rimuovi prima la bozza Billing, se consentito, oppure consulta il responsabile.",
+      "financialConflict": "L'ordine è cambiato o non è più disponibile. Ricarica la pagina e riprova."
     },
     "workflow": {
       "pickupReceiptBlocked": "Completa il ritiro programmato prima di segnare l’ordine come ricevuto.",

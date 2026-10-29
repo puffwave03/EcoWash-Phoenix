@@ -1909,7 +1909,10 @@
       "remove": "Remove",
       "removing": "Removing...",
       "saving": "Saving...",
-      "error": "The item could not be saved."
+      "error": "The item could not be saved.",
+      "financialPayment": "Payment history exists for this order. Its financial lines and amounts can no longer be changed.",
+      "financialDocument": "This order is linked to an invoice or an active receipt. Remove the Billing draft first if permitted, or contact a manager.",
+      "financialConflict": "The order changed or is no longer available. Reload the page and try again."
     },
     "workflow": {
       "pickupReceiptBlocked": "Complete the scheduled pickup before marking the order as received.",

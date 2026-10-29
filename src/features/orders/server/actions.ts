@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { OrderActionState, ProductionStatus } from "@/features/orders/types";
+import type { OrderActionState, OrderFinancialMutationError, ProductionStatus } from "@/features/orders/types";
 import {
   isUuid,
   optionalDbValue,
@@ -58,6 +58,13 @@ function fail(
   fieldErrors: Record<string, string> = {},
 ): OrderActionState {
   return { fieldErrors, formError, success: false };
+}
+
+function orderFinancialMutationError(error: { code?: string; message?: string }): OrderFinancialMutationError | null {
+  if (error.message?.includes("order_financial_payment_locked")) return "financialPayment";
+  if (error.message?.includes("order_financial_document_locked")) return "financialDocument";
+  if (error.message?.includes("order_financial_conflict") || error.code === "40001") return "financialConflict";
+  return null;
 }
 
 function revalidateOrders(locale: string, orderId?: string) {
@@ -204,6 +211,8 @@ export async function saveOrderItemAction(
 
   if (error) {
     console.error("Order item save failed", error.code);
+    const financialError = orderFinancialMutationError(error);
+    if (financialError) return fail(financialError);
     return fail("generic");
   }
 
@@ -215,7 +224,7 @@ export async function removeOrderItemAction(
   locale: string,
   orderId: string,
   itemId: string,
-) {
+): Promise<OrderFinancialMutationError | null> {
   await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("remove_order_item", {
@@ -223,9 +232,13 @@ export async function removeOrderItemAction(
     target_order_id: orderId,
   });
 
-  if (error) console.error("Order item remove failed", error.code);
+  if (error) {
+    console.error("Order item remove failed", error.code);
+    return orderFinancialMutationError(error);
+  }
 
   revalidateOrders(locale, orderId);
+  return null;
 }
 
 export async function updateOrderDiscountAction(
@@ -244,6 +257,9 @@ export async function updateOrderDiscountAction(
   });
 
   if (error) console.error("Order discount update failed", error.code);
+
+  const financialError = error ? orderFinancialMutationError(error) : null;
+  if (financialError) redirect(`/${locale}/app/orders/${orderId}?financialError=${financialError}#items`);
 
   revalidateOrders(locale, orderId);
 }

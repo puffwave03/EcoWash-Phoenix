@@ -80,7 +80,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; pickup?: string; returnError?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string }>;
 };
 
 function SectionShell({
@@ -186,6 +186,13 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     <div className="space-y-6">
       {routeSearch.itemsError === "1" ? (
         <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("orderItemsRequired")}</p>
+      ) : null}
+      {routeSearch.financialError === "financialPayment" || routeSearch.financialError === "financialDocument" || routeSearch.financialError === "financialConflict" ? (
+        <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-950" role="alert">
+          {routeSearch.financialError === "financialPayment" ? t("items.financialPayment")
+            : routeSearch.financialError === "financialDocument" ? t("items.financialDocument")
+              : t("items.financialConflict")}
+        </p>
       ) : null}
       <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -307,6 +314,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
                   addItem: t("items.add"),
                   description: t("items.description"),
                   error: t("items.error"),
+                  financialConflict: t("items.financialConflict"),
+                  financialDocument: t("items.financialDocument"),
+                  financialPayment: t("items.financialPayment"),
                   notes: t("items.notes"),
                   categoryLabels: catalogT.raw("categories") as Record<string, string>,
                   quantity: t("items.quantity"),
@@ -332,6 +342,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
                 description: t("items.description"),
                 edit: t("edit"),
                 error: t("items.error"),
+                financialConflict: t("items.financialConflict"),
+                financialDocument: t("items.financialDocument"),
+                financialPayment: t("items.financialPayment"),
                 lineTotal: t("items.lineTotal"),
                 categoryLabels: catalogT.raw("categories") as Record<string, string>,
                 quantity: t("items.quantity"),

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/Button";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
-import type { Order, OrderActionState, OrderItem } from "@/features/orders/types";
+import type { Order, OrderActionState, OrderFinancialMutationError, OrderItem } from "@/features/orders/types";
 import type { Service } from "@/features/services/types";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
 
@@ -12,6 +12,9 @@ type OrderItemsText = {
   description: string;
   edit: string;
   error: string;
+  financialConflict: string;
+  financialDocument: string;
+  financialPayment: string;
   lineTotal: string;
   categoryLabels: Record<string, string>;
   quantity: string;
@@ -41,7 +44,7 @@ export function OrderItems({
 }: {
   items: OrderItem[];
   locale: string;
-  onRemove: (itemId: string) => Promise<void>;
+  onRemove: (itemId: string) => Promise<OrderFinancialMutationError | null>;
   onSave: (state: OrderActionState, formData: FormData) => Promise<OrderActionState>;
   order: Order;
   services: Service[];
@@ -49,9 +52,14 @@ export function OrderItems({
 }) {
   const [isPending, startTransition] = useTransition();
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<OrderFinancialMutationError | null>(null);
+  const actionErrorMessage = actionError === "financialPayment" ? text.financialPayment
+    : actionError === "financialDocument" ? text.financialDocument
+      : actionError === "financialConflict" ? text.financialConflict : null;
 
   return (
     <div className="space-y-4">
+      {actionErrorMessage ? <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-950" role="alert">{actionErrorMessage}</p> : null}
       <div className="overflow-hidden rounded-card border border-border bg-white shadow-card">
         <div className="hidden md:grid md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:gap-4 md:border-b md:border-border md:px-5 md:py-3 md:text-sm md:font-semibold md:text-primary">
           <span>{text.description}</span><span>{text.quantity}</span><span>{text.unitPrice}</span><span>{text.lineTotal}</span><span />
@@ -83,7 +91,7 @@ export function OrderItems({
                 </Button>
                 <Button
                   disabled={isPending}
-                  onClick={() => startTransition(() => { void onRemove(item.id); })}
+                  onClick={() => startTransition(async () => { setActionError(await onRemove(item.id)); })}
                   type="button"
                   variant="secondary"
                 >
@@ -104,6 +112,9 @@ export function OrderItems({
                       cancel: text.cancel,
                       description: text.description,
                       error: text.error,
+                      financialConflict: text.financialConflict,
+                      financialDocument: text.financialDocument,
+                      financialPayment: text.financialPayment,
                       notes: "",
                       categoryLabels: text.categoryLabels,
                       quantity: text.quantity,

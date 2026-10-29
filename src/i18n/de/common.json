@@ -1796,7 +1796,10 @@
       "remove": "Entfernen",
       "removing": "Entfernen...",
       "saving": "Speichern...",
-      "error": "Die Position konnte nicht gespeichert werden."
+      "error": "Die Position konnte nicht gespeichert werden.",
+      "financialPayment": "Für diesen Auftrag gibt es eine Zahlungshistorie. Beträge und wirtschaftliche Positionen können nicht mehr geändert werden.",
+      "financialDocument": "Dieser Auftrag ist mit einer Rechnung oder einem aktiven Beleg verknüpft. Löschen Sie zuerst den Billing-Entwurf, falls zulässig, oder wenden Sie sich an eine zuständige Person.",
+      "financialConflict": "Der Auftrag wurde geändert oder ist nicht mehr verfügbar. Laden Sie die Seite neu und versuchen Sie es erneut."
     },
     "workflow": {
       "pickupReceiptBlocked": "Schließen Sie die geplante Abholung ab, bevor Sie den Auftrag als eingegangen markieren.",

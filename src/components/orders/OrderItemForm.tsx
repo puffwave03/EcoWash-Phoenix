@@ -14,6 +14,9 @@ type OrderItemFormText = {
   addItem: string;
   cancel?: string;
   description: string;
+  financialConflict: string;
+  financialDocument: string;
+  financialPayment: string;
   error: string;
   notes: string;
   categoryLabels: Record<string, string>;
@@ -67,6 +70,9 @@ export function OrderItemForm({ action, item, locale, onCancel, onSuccess, servi
     [selectedServiceId, services],
   );
   const isLocked = isPending || isSubmitLocked;
+  const errorMessage = state.formError === "financialPayment" ? text.financialPayment
+    : state.formError === "financialDocument" ? text.financialDocument
+      : state.formError === "financialConflict" ? text.financialConflict : text.error;
   const visibleServices = useMemo(() => {
     const query = serviceSearch.trim().toLocaleLowerCase(locale);
     return !query ? services : services.filter((service) => (
@@ -105,7 +111,7 @@ export function OrderItemForm({ action, item, locale, onCancel, onSuccess, servi
   return (
     <form action={formAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem_auto] xl:items-end" onSubmit={handleSubmit}>
       <input name="itemId" type="hidden" value={item?.id ?? ""} />
-      {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 md:col-span-2 xl:col-span-6">{text.error}</p> : null}
+      {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 md:col-span-2 xl:col-span-6" role="alert">{errorMessage}</p> : null}
       <label className="space-y-2 text-sm font-semibold text-primary md:col-span-2 xl:col-span-6">
         <span>{text.search}</span>
         <input className={fieldClass(false)} disabled={isLocked} onChange={(event) => setServiceSearch(event.target.value)} placeholder={text.searchPlaceholder} type="search" value={serviceSearch} />
