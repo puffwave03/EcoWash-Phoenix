@@ -59,11 +59,42 @@ for(const options of [{role:'staff'},{entitled:false}])test(`action gates before
   const h=actionHarness(options);await assert.rejects(h.run(),/DENIED/);assert.equal(h.calls.length,0);
 });
 
-test('new full-prepayment rejection is specific; legacy invalid-draft finding stays separate',async()=>{
-  for(const [message,expected] of [['billing_advance_full_reconciliation_required','fullPrepaymentBlocked'],['billing_invalid_draft','generic']]) {
+test('advance issuance maps invalid draft to actionable feedback without changing other rejections',async()=>{
+  for(const [message,expected] of [['billing_advance_full_reconciliation_required','fullPrepaymentBlocked'],['billing_invalid_draft','invalidDraft'],['unexpected database error','generic']]) {
     const h=actionHarness({missing:true,rpcError:message});
     await assert.rejects(h.run(),e=>e.href===`/it/app/billing/${draft}?error=${expected}`);
     assert.equal(h.calls.length,1);
+  }
+});
+
+test('invoice detail displays invalid-draft feedback in all five locales',async()=>{
+  const exports={};
+  const detail={invoice:{id:draft}};
+  const jsx=(type,props)=>({type,props});
+  runInNewContext(ts.transpileModule(read('src/app/[locale]/app/(dashboard)/billing/[invoiceId]/page.tsx'),{
+    compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX},
+  }).outputText,{
+    exports,require(name){
+      if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'fragment'};
+      if(name==='next-intl/server')return {getTranslations:async({locale})=>key=>{
+        assert.equal(key,'errors.invalidDraft');
+        return JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors.invalidDraft;
+      }};
+      if(name==='@/features/billing/server/queries')return {getBillingInvoice:async()=>detail};
+      if(name==='@/components/billing/BillingInvoiceView')return {BillingInvoiceView:'BillingInvoiceView'};
+      throw Error(`Unexpected import ${name}`);
+    },
+  });
+  for(const locale of ['it','es','en','fr','de']){
+    const message=JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors.invalidDraft;
+    assert.ok(message?.length>25,`${locale} invalid-draft feedback missing`);
+    const tree=await exports.default({params:Promise.resolve({invoiceId:draft,locale}),searchParams:Promise.resolve({error:'invalidDraft'})});
+    const [alert,view]=tree.props.children;
+    assert.equal(alert.props.role,'alert');
+    assert.equal(alert.props.children,message);
+    assert.equal(view.props.detail,detail);
+    const ordinary=await exports.default({params:Promise.resolve({invoiceId:draft,locale}),searchParams:Promise.resolve({})});
+    assert.equal(ordinary.props.children[0],null);
   }
 });
 

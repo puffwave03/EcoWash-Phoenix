@@ -455,10 +455,10 @@ test("issued/foreign edits and simplified issue rejection propagate without allo
   assert.equal(ui.rows.invoices[0].invoice_number, null);
   ui.rows.invoices[0].document_status = "issued";
   const before = JSON.stringify(ui.rows);
-  await assert.rejects(ui.update(request()), (e) => e.href?.endsWith("error=generic"));
+  await assert.rejects(ui.update(request()), (e) => e.href?.endsWith("error=invalidDraft"));
   assert.equal(JSON.stringify(ui.rows), before);
   ui.rows.invoices[0].document_status = "draft"; ui.rows.invoices[0].organization_id = "tenant-b";
   await assert.rejects(ui.readInvoice(), /NOT_FOUND/);
-  await assert.rejects(ui.update(request()), (e) => e.href?.endsWith("error=generic"));
+  await assert.rejects(ui.update(request()), (e) => e.href?.endsWith("error=invalidDraft"));
   // Rejection above is a double; live PostgreSQL enforcement remains untested.
 });

@@ -23,6 +23,7 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
+  if (message?.includes("billing_invalid_draft")) return "invalidDraft";
   if (message?.includes("billing_advance_full_")) return "fullPrepaymentBlocked";
   if (message?.includes("billing_exact_reconciliation_required") || message?.includes("billing_final_payment_links_invalid")) return "advanceBlocked";
   if (message?.includes("billing_advance_") || message?.includes("billing_final_")) return "advanceBlocked";
