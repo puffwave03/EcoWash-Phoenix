@@ -36,8 +36,8 @@ function sale(options) {
   ui.state.set("discount", 2);
   ui.state.set("cardReference", "Card reference");
   ui.state.set("showSplitPayment", true);
-  ui.state.set("splitCash", 1);
-  ui.state.set("splitCard", 2);
+  ui.state.set("splitCash", "1");
+  ui.state.set("splitCard", "2");
   ui.state.set("productionAssigneeId", "staff-a");
   ui.render();
   ui.state.set("delivery", { ...ui.state.get("delivery"), requested: true, assignedTo: "staff-a", notes: "Delivery note", addressLine1: "Street 1", scheduledAt: "2026-10-17T12:00" });
