@@ -4,6 +4,12 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-10-30. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## BILLING-ISSUE-FEEDBACK-001 — visual UAT closeout (30/10/2026)
+
+**COMPLETE / TECHNICAL PASS / STAGING RELEASE VERIFIED / PO VISUAL UAT PASS — bounded UX scope.** Commit `a7786c3135c198cc2c2fc451c61db825b9383314` corrects the previously unmapped `billing_invalid_draft` error: `billingError` returns `invalidDraft`, and the invoice page displays a localized alert in IT/ES/EN/FR/DE. CTO review, **50 PASS / 0 FAIL / 0 SKIP** focused tests, TypeScript, scoped lint and diff-check passed. Automatic Vercel staging deployment `dpl_CYTEigmDEGwLQf2fbv2XrMmxhExm` was verified **READY** for that commit. No SQL, payment, tax calculation, invoice issuance or numbering rule changed.
+
+PO staging visual UAT on 30/10 passed for normal draft opening without an alert and for the Italian `?error=invalidDraft` message; invoice data remained unchanged and no invoice was issued. A real browser issuance rejection and visual review of the other four languages were not performed. The focused automated tests cover the application error path and translation contracts; [Testing](../05_DEVELOPMENT/Testing.md#billing-issue-feedback-001--closeout-evidence-30102026) separates those checks from the observed UAT. The older `OPEN` finding is historical for this correction; other Billing/POS findings remain open.
+
 ## TERMINAL-COUNTER-ORDER-RECEIVED-001 — staging UAT closeout (30/10/2026)
 
 **COMPLETE / STAGING VERIFIED / PO UAT PASS — bounded Terminal intake scope.** Commit `0fd8ad7a79b14fc9d1f29ce1bc06559d7d9cc823` publishes the new migration and focused test. Local isolated PostgreSQL validation reported **18 PASS / 0 FAIL / 0 SKIP**. Vercel deployment `dpl_3gBdS4vhbf4ejk1E8dZBji8oUQUv` on `ecowash-phoenix-staging` is **READY** for that commit. Supabase staging `exthnplfokcucaqydney` has migration `20261029224950` applied once and **113/113** history aligned; the RPC definition, EXECUTE privileges and existing custody trigger were checked in read-only postflight.
@@ -58,7 +64,7 @@ The existing `BILLING-SIMPLIFIED-HELP-001`, `BILLING-ISSUE-FEEDBACK-001`, `BILLI
 | ID | Current classification and evidence |
 | --- | --- |
 | `BILLING-FULL-PREPAYMENT-001` | **COMPLETE / VERIFIED — technical and staging UAT scope (29/10 checkpoint above).** The 28/10 `EW-000154` rejection of a EUR 35.00 pre-service payment was a confirmed historical workflow gap, now **HISTORICAL / SUPERSEDED** for the supported single full-prepayment path. The earlier direct-issuer and final-after-advances limitations remain descriptions of those separate paths. Later PO UAT on synthetic `EW-000159` and the bounded evidence limits are recorded above; no general fiscal-compliance claim follows. |
-| `BILLING-ISSUE-FEEDBACK-001` | **OPEN / CONFIRMED FEEDBACK DEFECT.** `issueBillingAdvanceAction` passes `billing_invalid_draft` to `billingError`, which has no mapping for it and returns `generic`; the user sees no actionable reason. Keep the expected Billing rejection distinct from this presentation defect. |
+| `BILLING-ISSUE-FEEDBACK-001` | **COMPLETE / TECHNICAL PASS / STAGING RELEASE VERIFIED / PO VISUAL UAT PASS — 30/10 closeout above.** The earlier missing mapping and absent invoice-page alert are resolved. The original Billing rejection rule is unchanged; browser UAT verified the Italian alert through the URL parameter, while focused automated tests cover the application error path. |
 | `BILLING-SIMPLIFIED-HELP-001` | **OPEN / CONFIRMED CONTENT DRIFT.** The previously recorded Spanish simplified-recipient help text still says simplified issuance is disabled. This ID names that existing observation; no new duplicate finding or copy change. |
 | `BILLING-RECIPIENT-PREFILL-001` | **OPEN / PO UX OBSERVATION.** Selecting an identified recipient does not prefill the registered customer's fiscal details. Confirm the intended source and behavior before scoping a change. |
 | `POS-MIXED-PAYMENT-INPUT-001` | **OPEN / PO UX OBSERVATION.** Entering amounts in Cash/Card fields is difficult. Financial calculation or persistence defect is not established. |

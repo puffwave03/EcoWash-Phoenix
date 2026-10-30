@@ -4,6 +4,17 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## BILLING-ISSUE-FEEDBACK-001 — closeout evidence (30/10/2026)
+
+| Evidence | Result and limit |
+| --- | --- |
+| Code and review | Application commit `a7786c3135c198cc2c2fc451c61db825b9383314` maps `billing_invalid_draft` to `invalidDraft` and renders an invoice-page alert translated in IT/ES/EN/FR/DE. CTO patch review PASS. SQL, payments, tax calculations, issuance and numbering were unchanged. |
+| Automated validation | Focused tests: **50 PASS / 0 FAIL / 0 SKIP**; TypeScript, scoped lint and diff-check PASS. These tests cover the application error path and translation contracts; they are prior results, not rerun in this documentation closeout. |
+| Staging release | Automatic deployment `dpl_CYTEigmDEGwLQf2fbv2XrMmxhExm` on `ecowash-phoenix-staging` verified **READY** for the application commit. |
+| PO browser visual UAT | **PASS (30/10):** normal draft opening showed no alert; `?error=invalidDraft` displayed the expected Italian message. Invoice and data remained unchanged; no invoice was issued. A real issuance rejection was not provoked in the browser and the other four languages were not visually checked. |
+
+The earlier observed `generic` response is historical for this resolved feedback defect. This closeout records existing evidence and runs no new application tests or fiscal operations.
+
 ## TERMINAL-COUNTER-ORDER-RECEIVED-001 — closeout evidence (30/10/2026)
 
 | Evidence | Result and limit |

@@ -4,6 +4,12 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-30
 
+## BILLING-ISSUE-FEEDBACK-001 — visual UAT closeout (30/10/2026)
+
+**COMPLETE / TECHNICAL PASS / STAGING RELEASE VERIFIED / PO VISUAL UAT PASS — within the observed scope.** Application commit `a7786c3135c198cc2c2fc451c61db825b9383314` is published on GitHub `main`; automatic deployment `dpl_CYTEigmDEGwLQf2fbv2XrMmxhExm` on `ecowash-phoenix-staging` was verified **READY** for that SHA. The correction maps `billing_invalid_draft` to `invalidDraft` and displays a localized invoice-page alert in IT/ES/EN/FR/DE. SQL, payments, calculations, invoice issuance and fiscal numbering were unchanged. CTO patch review passed; focused tests reported **50 PASS / 0 FAIL / 0 SKIP**, with TypeScript, scoped lint and diff-check PASS.
+
+**PO visual staging UAT (30/10): PASS for the Italian display.** Normal opening of a draft showed no alert; opening it with `?error=invalidDraft` displayed the clear Italian message. Invoice data remained unchanged and no invoice was issued. The browser UAT did not provoke an actual issuance rejection or check the other four languages; the application error path and translation contracts are covered by the focused automated tests. The earlier `OPEN` feedback finding and dated description of the `generic` result below are **HISTORICAL / SUPERSEDED** for this UX correction. Other Billing/POS findings and fiscal gates remain open under their own scope. See [Project Status](../06_ROADMAP/Project_Status.md#billing-issue-feedback-001--visual-uat-closeout-30102026) and [Testing](../05_DEVELOPMENT/Testing.md#billing-issue-feedback-001--closeout-evidence-30102026).
+
 ## TERMINAL-COUNTER-ORDER-RECEIVED-001 — staging UAT closeout (30/10/2026)
 
 **COMPLETE / STAGING VERIFIED / PO UAT PASS — within the observed scope.** Application commit `0fd8ad7a79b14fc9d1f29ce1bc06559d7d9cc823` is published on GitHub `main`. The focused isolated PostgreSQL test reported **18 PASS / 0 FAIL / 0 SKIP**, including custody, inbound, rollback, replay, roles, tenant boundaries, unchanged Portal and generic Staff creation, and preserved Billing/REC guards. Automatic Vercel deployment `dpl_3gBdS4vhbf4ejk1E8dZBji8oUQUv` is **READY** on `ecowash-phoenix-staging`; migration `20261029224950_terminal_counter_order_received_001.sql` is applied once on Supabase staging `exthnplfokcucaqydney`, with **113/113** migration history aligned. The RPC body, privileges and active inbound-custody trigger passed the post-migration read-only checks.
