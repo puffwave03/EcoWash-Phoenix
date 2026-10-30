@@ -2,7 +2,15 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-10-29
+Date: 2026-10-30
+
+## TERMINAL-COUNTER-ORDER-RECEIVED-001 — staging UAT closeout (30/10/2026)
+
+**COMPLETE / STAGING VERIFIED / PO UAT PASS — within the observed scope.** Application commit `0fd8ad7a79b14fc9d1f29ce1bc06559d7d9cc823` is published on GitHub `main`. The focused isolated PostgreSQL test reported **18 PASS / 0 FAIL / 0 SKIP**, including custody, inbound, rollback, replay, roles, tenant boundaries, unchanged Portal and generic Staff creation, and preserved Billing/REC guards. Automatic Vercel deployment `dpl_3gBdS4vhbf4ejk1E8dZBji8oUQUv` is **READY** on `ecowash-phoenix-staging`; migration `20261029224950_terminal_counter_order_received_001.sql` is applied once on Supabase staging `exthnplfokcucaqydney`, with **113/113** migration history aligned. The RPC body, privileges and active inbound-custody trigger passed the post-migration read-only checks.
+
+**Product Owner browser UAT (30/10): PASS for the observed paths.** Synthetic Terminal order `EW-000166` transitioned `draft → received` and entered `00 · Stoccaggio` automatically. `EW-000167` was confirmed for EUR 9.50 with EUR 0.00 paid; its status was not checked separately. A customer Portal order remained `draft` without warehouse position before pickup, and manual receipt was blocked while pickup was scheduled. These observations do not establish every payment or fulfillment path.
+
+The 29/10 proposal and its former `OPEN` classification are **HISTORICAL / SUPERSEDED** for this mission. Other open cancellation/refund, Billing/POS, security and fiscal decisions retain their own status. No commercial production operation is approved by this checkpoint. See [Project Status](../06_ROADMAP/Project_Status.md#terminal-counter-order-received-001--staging-uat-closeout-30102026) and [Testing](../05_DEVELOPMENT/Testing.md#terminal-counter-order-received-001--closeout-evidence-30102026) for the bounded evidence.
 
 ## ORDER-FINANCIAL-INTEGRITY-GUARD-001 2A + BILLING-SIMPLIFIED-ISSUE-LOCK-ORDER-001 — staging closeout (29/10/2026)
 

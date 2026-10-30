@@ -2,7 +2,15 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-10-29. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-10-30. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## TERMINAL-COUNTER-ORDER-RECEIVED-001 — staging UAT closeout (30/10/2026)
+
+**COMPLETE / STAGING VERIFIED / PO UAT PASS — bounded Terminal intake scope.** Commit `0fd8ad7a79b14fc9d1f29ce1bc06559d7d9cc823` publishes the new migration and focused test. Local isolated PostgreSQL validation reported **18 PASS / 0 FAIL / 0 SKIP**. Vercel deployment `dpl_3gBdS4vhbf4ejk1E8dZBji8oUQUv` on `ecowash-phoenix-staging` is **READY** for that commit. Supabase staging `exthnplfokcucaqydney` has migration `20261029224950` applied once and **113/113** history aligned; the RPC definition, EXECUTE privileges and existing custody trigger were checked in read-only postflight.
+
+**PO browser UAT (30/10):** synthetic counter order `EW-000166` moved `draft → received` with automatic placement in `00 · Stoccaggio`. Confirmed `EW-000167` totaled EUR 9.50 with EUR 0.00 paid; its state was not separately verified. Portal creation retained `draft` without a warehouse position before pickup, and manual receipt was denied with a scheduled pickup. Generic Staff creation, historical drafts, replay, authorization and rollback passed in local runtime scope, not as separate browser observations. [Testing](../05_DEVELOPMENT/Testing.md#terminal-counter-order-received-001--closeout-evidence-30102026) preserves the evidence levels.
+
+The 29/10 proposal, now updated in the findings table below, is **HISTORICAL / SUPERSEDED** for this mission. Other findings, fiscal scope and commercial-production gates remain unchanged.
 
 ## Financial Integrity Guard 2A and Billing lock order — staging closeout (29/10/2026)
 
@@ -27,7 +35,7 @@ Current checkpoint: 2026-10-29. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCU
 | ID | Current classification and boundary |
 | --- | --- |
 | `TERMINAL-LAST-ORDER-RECOVERY-001` | **PROPOSED / SCOPE RECONCILIATION REQUIRED — high priority proposed.** `TERMINAL-TRANSACTIONAL-RECOVERY-UAT-001` remains **COMPLETE / CTO REVIEW PASS / PO BROWSER UAT PASS** for its specific unknown-outcome lookup/recovery scenarios `EW-000152` and `EW-000153`. This candidate must be narrowed to any distinct last-order refresh/interruption UX gap before a new scope; no confirmed defect and no reopening of the completed recovery UAT is recorded. |
-| `TERMINAL-COUNTER-ORDER-RECEIVED-001` | **OPEN / PO FUNCTIONAL DIRECTION RECORDED — high priority proposed.** Confirmed physical counter handover should be able to start the order as `received`, with `draft` retained before confirmation. Implementation and channel boundaries remain to be designed. |
+| `TERMINAL-COUNTER-ORDER-RECEIVED-001` | **COMPLETE / STAGING VERIFIED / PO UAT PASS — 30/10 closeout above.** The 29/10 proposal for confirmed physical counter handover is historical; its implementation and observed limits are recorded in the later checkpoint. Portal and generic Staff creation retain their existing workflows. |
 | `ORDER-CANCELLATION-REFUND-FISCAL-001` | **OPEN / PO FUNCTIONAL DIRECTION RECORDED — high priority proposed.** Define controlled pre-work cancellation, reason/audit, price-change acceptance, canonical refund handling and explicit debt evidence where a refund remains owed. Preserve payment and receipt history; fiscal correction of issued invoices requires separate design. No implementation or fiscal rule is approved. |
 | `TERMINAL-RECEIPT-UX-001` | **OPEN / UX FOLLOW-UP — medium priority proposed.** The pre-issue warning passed visual UAT, while a state-aware distinction between first issue and reprint remains a follow-up; this is not evidence of duplicate issuance or a confirmed document defect. |
 

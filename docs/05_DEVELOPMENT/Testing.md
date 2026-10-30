@@ -4,6 +4,16 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## TERMINAL-COUNTER-ORDER-RECEIVED-001 — closeout evidence (30/10/2026)
+
+| Evidence | Result and limit |
+| --- | --- |
+| Isolated PostgreSQL runtime | [Focused test](../../tests/terminal-counter-order-received-001.test.mjs): **18 PASS / 0 FAIL / 0 SKIP** in `/Volumes/DEV/Phoenix-FINANCIAL-GUARD-2A-LOCAL`. It exercised Terminal paid and unpaid creation, inbound custody and rejection, rollback, replay and historical drafts, Staff/Portal/tenant permissions, Quick Drop, Billing/REC guards and RPC ACL. Test transactions rolled back; laboratory rows, counters, definitions and migration history were preserved. This is local synthetic runtime evidence. |
+| Publication and staging postflight | Commit `0fd8ad7a79b14fc9d1f29ce1bc06559d7d9cc823`; Vercel staging deployment `dpl_3gBdS4vhbf4ejk1E8dZBji8oUQUv` **READY** for that SHA. Migration `20261029224950` was applied once to Supabase staging `exthnplfokcucaqydney`, advancing history **112 → 113/113**. Read-only SQL confirmed the RPC body matches the migration, `SECURITY DEFINER`, `search_path`, EXECUTE ACL and active `order_received_inbound_storage` trigger. These checks do not substitute for browser UAT. |
+| Product Owner browser UAT | **PASS within observed paths (30/10):** `EW-000166` moved `draft → received` and entered `00 · Stoccaggio`; `EW-000167` was confirmed at EUR 9.50 with EUR 0.00 paid, without a separate status check. Portal order stayed `draft` without warehouse position before pickup; scheduled pickup blocked manual receipt. No broader payment, fulfillment or fiscal behavior is claimed from these observations. |
+
+The 29/10 `OPEN` proposal is historical for this mission; other findings retain their documented status. No application or database test is repeated in this documentation closeout.
+
 ## Financial Integrity Guard 2A and Billing lock order — evidence (29/10/2026)
 
 | Evidence | Result and limit |
