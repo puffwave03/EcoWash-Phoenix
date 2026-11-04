@@ -4,6 +4,16 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-04
 
+## COUNTER-OPERATIONS-GAP-REVIEW-001 — documentation closeout (04/11/2026)
+
+**COMPLETE — CTO REVIEW PASS for READ ONLY analysis, with conditions on future implementation.** [Complete technical report and CTO conditions](../04_ARCHITECTURE/Counter_Operations_Gap_Review_001.md). Analyzed baseline: `3d5360ad5a48976f40510952b6f8b7ff585d9ae4`. Static inspection only; no new tests or UAT, application changes or database operations. PO authorizes only this bounded documentation closeout, commit and push.
+
+**Reusable foundations:** Orders, POS, Billing and Accounting. Confirmed gaps concern payment classification, final invoicing after advances, customer-facing printing and fiscal thermal printing. Fiscal issuance, payment registration and paper printing remain distinct; FATTURATO and PAGATO are independent. The approved direction keeps REC out of the mandatory future ordinary flow while preserving historical documents and their integrity controls. A uniform thermal layout, normally two copies, must retain distinct document identities, customer notes and confidential internal-note separation. No fiscal compliance certification or completed implementation is implied.
+
+**CTO conditions:** `BILLING-EVENT-CONTRACT-001` must precede any change to fiscal rules. `COUNTER-NOTES-VISIBILITY-001` is the first possible independent application correction, requiring separate authorization. Neither mission is started. The P0/P1/P2/P3 roadmap in the report is proposed only, not implementation authority; all identified gaps and IGIC decisions remain open.
+
+This checkpoint supersedes only the earlier PLANNED / NOT STARTED status of this review in the benchmark closeout. Prior checkpoints, test/UAT evidence and fiscal/security gates remain preserved with their original scope.
+
 ## FISCAL-DOCUMENT-BENCHMARK-001 — documentation closeout (04/11/2026)
 
 **COMPLETE — CTO REVIEW PASS.** The [complete benchmark report and approved closeout](../04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md) preserve the READ ONLY comparison with FacturaScripts and Dolibarr at Phoenix baseline `e40c33d7f3cf8ffc1c57f6b79a0890e9f45ac2eb`. No new tests, database operations or implementation were performed. PO authorizes this documentation-only closeout, commit and push; previous mission evidence remains historical and unchanged.
