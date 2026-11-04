@@ -4,6 +4,18 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-04. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## FISCAL-DOCUMENT-BENCHMARK-001 — documentation closeout (04/11/2026)
+
+**COMPLETE — CTO REVIEW PASS.** [Complete report and approved closeout](../04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md). Phoenix baseline analyzed: `e40c33d7f3cf8ffc1c57f6b79a0890e9f45ac2eb`; execution READ ONLY; no new tests, database operations or implementation. PO authorizes the bounded documentation commit/push. The report distinguishes verified code, plugin documentation and unvalidated fiscal matters.
+
+**Approved direction only:** Orders/EW for services/orders/work, POS/Payments for money received/advances/balances/refunds, Billing for fiscal documentation/numbering/IGIC/traceability. Issuance, collection and printing are separate. REC is not mandatory in the future ordinary flow; historical REC must be preserved integrally. This is not implemented behavior or fiscal certification.
+
+**PO functional basis approved, technical specification pending:** uniform thermal format normally in duplicate; appropriate document type/content; customer notes preserved and confidential internal notes separated; services/prices/expected date/total/paid/residual; occasional-customer fiscal coverage without requiring a nominative-invoice request; independent FATTURATO/PAGATO; professional monthly invoices; no duplicate collection/invoice/taxation; fiscal thermal printing from actually issued Billing data. The dedicated report enumerates all ten requirements.
+
+**OPEN:** advance fiscal classification; simplified issuance after payment; final invoicing with open credit; advance/balance reconciliation; mixed payments and refunds; ordinary invoice after simplified invoice; duplicate-free monthly invoicing; IGIC requirements; Billing fiscal thermal printing; REC dependencies. Previous findings and historical test/UAT results retain their own scope; benchmark completion does not close these gaps.
+
+**`COUNTER-OPERATIONS-GAP-REVIEW-001` — PLANNED / NOT STARTED:** READ ONLY comparison of functional requirements, current management-system evidence, benchmark and Phoenix code. No implementation or start of that mission is authorized by this closeout.
+
 ## BILLING-ADVANCE-FINAL-UX-001 — Phase A closeout (04/11/2026)
 
 **COMPLETE / CTO PASS / STAGING READY / PO VISUAL UAT PASS — error-message scope only.** Commit `7a0d92a39978d023cb4a36c3c405611ea78d026a` is published on GitHub `main`; automatic deployment `dpl_6KDxUNbQ5f4X5xdfaR7yED7SnArc` is **READY** on `ecowash-phoenix-staging` for that SHA. The patch began on baseline `7e762cacf610458334e270c77b24d812c6f13512`. Invoice detail feedback covers explicitly allowed Billing error codes, unknown-code generic fallback and no-alert normal navigation, preserving `invalidDraft`. Only `advanceBlocked` and `issueUncertain` text changed in IT/ES/EN/FR/DE. Server Actions, fiscal/payment rules and database objects are unchanged.

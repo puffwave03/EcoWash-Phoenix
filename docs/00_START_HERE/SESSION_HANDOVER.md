@@ -4,6 +4,18 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-04
 
+## FISCAL-DOCUMENT-BENCHMARK-001 — documentation closeout (04/11/2026)
+
+**COMPLETE — CTO REVIEW PASS.** The [complete benchmark report and approved closeout](../04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md) preserve the READ ONLY comparison with FacturaScripts and Dolibarr at Phoenix baseline `e40c33d7f3cf8ffc1c57f6b79a0890e9f45ac2eb`. No new tests, database operations or implementation were performed. PO authorizes this documentation-only closeout, commit and push; previous mission evidence remains historical and unchanged.
+
+**Approved architectural direction, not implemented and not fiscal certification:** Orders/EW owns services, orders and work; POS/Payments owns receipts of money, advances, balances and refunds; Billing owns fiscal documents, numbering, IGIC and traceability. Fiscal issuance, payment registration and paper printing remain distinct. REC is not required as a mandatory step in the future ordinary workflow; all historical REC documents must remain fully preserved.
+
+**Approved PO functional basis, not technically validated specifications:** a uniform thermal-ticket format, normally two copies, with document type/content appropriate to the operation; preserve customer-facing notes separately from confidential internal notes; include services, prices, expected date, total, paid and outstanding amounts. Cover occasional customers without a nominative-invoice request, independent FATTURATO/PAGATO states, professional monthly invoicing, no duplicate collection/invoice/taxation, and fiscal thermal output sourced from actually issued Billing data. The report records all ten requirements separately from technical evidence.
+
+**Still open:** fiscal classification of advances; simplified issuance after an existing payment; final invoicing with open credit; advance/balance reconciliation; mixed payments and refunds; ordinary invoice after simplified invoice; monthly invoicing without duplication; IGIC validation; Billing fiscal thermal printing; REC dependency analysis. No issue is resolved by this documentation closeout.
+
+**Next mission: `COUNTER-OPERATIONS-GAP-REVIEW-001` — PLANNED / NOT STARTED.** Intended scope: READ ONLY comparison of functional requirements, evidence from the current management system, benchmark and Phoenix code. Do not begin it under this closeout authorization. This checkpoint supersedes older next-task prose only for continuation; it preserves all prior findings and acceptance boundaries.
+
 ## BILLING-ADVANCE-FINAL-UX-001 — Phase A closeout (04/11/2026)
 
 **COMPLETE / CTO PASS / STAGING READY / PO VISUAL UAT PASS — error-message scope only.** Commit `7a0d92a39978d023cb4a36c3c405611ea78d026a` is published on GitHub `main`; automatic deployment `dpl_6KDxUNbQ5f4X5xdfaR7yED7SnArc` on `ecowash-phoenix-staging` is verified **READY** for that SHA. The 30/10 local checkpoint started from `7e762cacf610458334e270c77b24d812c6f13512`. Invoice detail now selects existing `billing.errors` messages through an explicit allowlist, falls back to generic for unknown nonempty codes and shows no alert without an error. The existing alert style/role and `invalidDraft` behavior are preserved. IT/ES/EN/FR/DE `advanceBlocked` wording no longer directs the operator back to the same workflow or assumes a cause; `issueUncertain` distinguishes an unverified outcome from rejection and instructs checking the same invoice without repeating issuance.
