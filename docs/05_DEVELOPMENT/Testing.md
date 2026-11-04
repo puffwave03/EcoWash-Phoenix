@@ -4,6 +4,17 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## BILLING-ADVANCE-FINAL-UX-001 — Phase A closeout evidence (04/11/2026)
+
+| Evidence | Result and limit |
+| --- | --- |
+| Patch and publication | CTO patch review PASS. Commit `7a0d92a39978d023cb4a36c3c405611ea78d026a` changed only the nine approved feedback, translation, test and canonical-document files. No SQL, payment, fiscal rule, Server Action classification or database change. |
+| Historical local automated validation | `node --test --test-name-pattern='invoice feedback\|advance issuance maps' tests/billing-full-prepayment-001.test.mjs`: **28 PASS / 0 FAIL / 0 SKIP** for the selected local harness cases; scoped ESLint, `tsc --noEmit --incremental false` and `git diff --check` passed. These results predate publication and were not rerun for this documentation closeout. They do not exercise real fiscal issuance or database state. |
+| Staging release | Automatic deployment `dpl_6KDxUNbQ5f4X5xdfaR7yED7SnArc` on `ecowash-phoenix-staging` verified **READY** for the application commit SHA. |
+| Product Owner visual UAT | **PASS for the three planned scenarios**, as reported by the PO. A supplied `issueUncertain` screenshot shows the warning not to repeat issuance. This is visual evidence for the observed error messages, not evidence of an actual issuance outcome, fiscal correctness or a database mutation. |
+
+Advance classification, simplified invoice issuance, final invoicing, refund treatment and full payment through multiple advances remain open. This documentation closeout runs no new application tests.
+
 ## BILLING-ISSUE-FEEDBACK-001 — closeout evidence (30/10/2026)
 
 | Evidence | Result and limit |

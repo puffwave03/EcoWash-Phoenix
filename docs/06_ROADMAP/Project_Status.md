@@ -2,13 +2,13 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-10-30. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-04. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
-## BILLING-ADVANCE-FINAL-UX-001 — Phase A local feedback (30/10/2026)
+## BILLING-ADVANCE-FINAL-UX-001 — Phase A closeout (04/11/2026)
 
-**IMPLEMENTED LOCALLY / CTO REVIEW, STAGING AND UAT PENDING — overall mission not closed.** On baseline `7e762cacf610458334e270c77b24d812c6f13512`, invoice detail feedback now covers explicitly allowed Billing error codes, unknown-code generic fallback and no-alert normal navigation, preserving `invalidDraft`. Existing translations are reused; only `advanceBlocked` and `issueUncertain` text is revised in five languages to avoid unsupported causes, circular workflow advice and blind retries. Server Actions, fiscal/payment rules and database objects are unchanged.
+**COMPLETE / CTO PASS / STAGING READY / PO VISUAL UAT PASS — error-message scope only.** Commit `7a0d92a39978d023cb4a36c3c405611ea78d026a` is published on GitHub `main`; automatic deployment `dpl_6KDxUNbQ5f4X5xdfaR7yED7SnArc` is **READY** on `ecowash-phoenix-staging` for that SHA. The patch began on baseline `7e762cacf610458334e270c77b24d812c6f13512`. Invoice detail feedback covers explicitly allowed Billing error codes, unknown-code generic fallback and no-alert normal navigation, preserving `invalidDraft`. Only `advanceBlocked` and `issueUncertain` text changed in IT/ES/EN/FR/DE. Server Actions, fiscal/payment rules and database objects are unchanged.
 
-Focused existing-harness validation: **28 PASS / 0 FAIL / 0 SKIP**, scoped ESLint, TypeScript and diff-check PASS; the exact command and coverage are in the [Phase A handover](../00_START_HERE/SESSION_HANDOVER.md#billing-advance-final-ux-001--phase-a-local-feedback-checkpoint-30102026). These are local presentation/action-harness checks, not browser or database issuance evidence. No commit, push or deployment. Full payment through multiple advances remains a separate open case; `EW-000169` was not accessed and its issuance cause is not determined by this patch. Other findings and previous closeouts remain unchanged.
+Historical local harness validation: **28 PASS / 0 FAIL / 0 SKIP**, scoped ESLint, TypeScript and diff-check PASS. Separately, the Product Owner reports visual staging UAT PASS for the three planned scenarios, with an `issueUncertain` screenshot showing the no-repeat warning. Neither evidence level verifies a real fiscal issuance or database outcome. Advance classification, simplified invoice issuance, final invoicing, refund treatment and full payment through multiple advances remain open; `EW-000169` was not accessed and its issuance cause is not determined by this patch. Other findings and previous closeouts remain unchanged. See [Testing](../05_DEVELOPMENT/Testing.md#billing-advance-final-ux-001--phase-a-closeout-evidence-04112026).
 
 ## BILLING-ISSUE-FEEDBACK-001 — visual UAT closeout (30/10/2026)
 
