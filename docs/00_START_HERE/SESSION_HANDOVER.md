@@ -4,6 +4,12 @@ Status: Active — canonical resume instructions
 
 Date: 2026-10-30
 
+## BILLING-ADVANCE-FINAL-UX-001 — Phase A local feedback checkpoint (30/10/2026)
+
+**IMPLEMENTED LOCALLY / CTO REVIEW, STAGING AND UAT PENDING.** Baseline `main`: `7e762cacf610458334e270c77b24d812c6f13512`, initially clean. Invoice detail previously displayed only `invalidDraft`; it now selects existing `billing.errors` messages through an explicit allowlist, falls back to generic for unknown nonempty codes and shows no alert without an error. The existing alert style/role and `invalidDraft` behavior are preserved. IT/ES/EN/FR/DE `advanceBlocked` wording no longer directs the operator back to the same workflow or assumes a cause; `issueUncertain` distinguishes an unverified outcome from rejection and instructs checking the same invoice without repeating issuance.
+
+**Local validation:** `node --test --test-name-pattern='invoice feedback|advance issuance maps' tests/billing-full-prepayment-001.test.mjs` — **28 PASS / 0 FAIL / 0 SKIP** (selected tests only). Existing harnesses exercise all 18 public feedback codes in five languages, absent/empty errors, safe fallback, unchanged invoice data and advance-action redirects including uncertain responses without retry. Scoped ESLint, `tsc --noEmit --incremental false` and `git diff --check`: PASS. No browser/remote issuance was tested; no SQL, fiscal rules, Server Action classifications or database data changed. No commit/push/deploy. The overall mission remains open: full payment across multiple advances is separate and unresolved; PO case `EW-000169` was neither queried nor modified. Earlier checkpoints retain their historical scope.
+
 ## BILLING-ISSUE-FEEDBACK-001 — visual UAT closeout (30/10/2026)
 
 **COMPLETE / TECHNICAL PASS / STAGING RELEASE VERIFIED / PO VISUAL UAT PASS — within the observed scope.** Application commit `a7786c3135c198cc2c2fc451c61db825b9383314` is published on GitHub `main`; automatic deployment `dpl_CYTEigmDEGwLQf2fbv2XrMmxhExm` on `ecowash-phoenix-staging` was verified **READY** for that SHA. The correction maps `billing_invalid_draft` to `invalidDraft` and displays a localized invoice-page alert in IT/ES/EN/FR/DE. SQL, payments, calculations, invoice issuance and fiscal numbering were unchanged. CTO patch review passed; focused tests reported **50 PASS / 0 FAIL / 0 SKIP**, with TypeScript, scoped lint and diff-check PASS.

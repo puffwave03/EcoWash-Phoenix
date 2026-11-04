@@ -60,14 +60,14 @@ for(const options of [{role:'staff'},{entitled:false}])test(`action gates before
 });
 
 test('advance issuance maps invalid draft to actionable feedback without changing other rejections',async()=>{
-  for(const [message,expected] of [['billing_advance_full_reconciliation_required','fullPrepaymentBlocked'],['billing_invalid_draft','invalidDraft'],['unexpected database error','generic']]) {
+  for(const [message,expected] of [['billing_advance_full_reconciliation_required','fullPrepaymentBlocked'],['billing_invalid_draft','invalidDraft'],['billing_recipient_invalid','customer'],['billing_exact_reconciliation_required','advanceBlocked'],['unexpected database error','generic']]) {
     const h=actionHarness({missing:true,rpcError:message});
     await assert.rejects(h.run(),e=>e.href===`/it/app/billing/${draft}?error=${expected}`);
     assert.equal(h.calls.length,1);
   }
 });
 
-test('invoice detail displays invalid-draft feedback in all five locales',async()=>{
+function invoicePageHarness() {
   const exports={};
   const detail={invoice:{id:draft}};
   const jsx=(type,props)=>({type,props});
@@ -77,25 +77,79 @@ test('invoice detail displays invalid-draft feedback in all five locales',async(
     exports,require(name){
       if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'fragment'};
       if(name==='next-intl/server')return {getTranslations:async({locale})=>key=>{
-        assert.equal(key,'errors.invalidDraft');
-        return JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors.invalidDraft;
+        assert.equal(key.split('.')[0],'errors');
+        const errors=JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors;
+        assert.ok(Object.hasOwn(errors,key.slice(7)),`Unknown translation ${key}`);
+        return errors[key.slice(7)];
       }};
       if(name==='@/features/billing/server/queries')return {getBillingInvoice:async()=>detail};
       if(name==='@/components/billing/BillingInvoiceView')return {BillingInvoiceView:'BillingInvoiceView'};
       throw Error(`Unexpected import ${name}`);
     },
   });
+  return {detail,render:(locale,error)=>exports.default({
+    params:Promise.resolve({invoiceId:draft,locale}),searchParams:Promise.resolve({error}),
+  })};
+}
+
+const feedbackKeys=['settingsInvalid','generic','issuer','customer','duplicate','unauthorized','orders',
+  'documentType','simplifiedUnavailable','simplifiedSeriesInvalid','simplifiedSeriesUsed',
+  'simplifiedSeriesSettings','invalidDraft','fullPrepaymentBlocked','advanceBlocked','serviceDate',
+  'serviceDeclaration','issueUncertain'];
+for(const code of feedbackKeys)test(`invoice feedback displays ${code} in all five locales`,async()=>{
+  const h=invoicePageHarness();
   for(const locale of ['it','es','en','fr','de']){
-    const message=JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors.invalidDraft;
-    assert.ok(message?.length>25,`${locale} invalid-draft feedback missing`);
-    const tree=await exports.default({params:Promise.resolve({invoiceId:draft,locale}),searchParams:Promise.resolve({error:'invalidDraft'})});
-    const [alert,view]=tree.props.children;
+    const errors=JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors;
+    assert.deepEqual(Object.keys(errors).sort(),[...feedbackKeys].sort(),`${locale} error keys`);
+    const message=errors[code];
+    assert.ok(message?.length>10,`${locale} ${code} feedback missing`);
+    const [alert,view]=(await h.render(locale,code)).props.children;
+    assert.equal(alert.type,'p');
     assert.equal(alert.props.role,'alert');
+    assert.equal(alert.props.className,'mb-4 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700');
     assert.equal(alert.props.children,message);
-    assert.equal(view.props.detail,detail);
-    const ordinary=await exports.default({params:Promise.resolve({invoiceId:draft,locale}),searchParams:Promise.resolve({})});
-    assert.equal(ordinary.props.children[0],null);
+    assert.equal(view.props.detail,h.detail);
+    assert.equal(view.props.locale,locale);
   }
+});
+test('invoice feedback is absent without a nonempty error',async()=>{
+  const h=invoicePageHarness();
+  for(const error of [undefined,'']) {
+    const [alert,view]=(await h.render('it',error)).props.children;
+    assert.equal(alert,null);
+    assert.equal(view.props.detail,h.detail);
+  }
+});
+test('invoice feedback uses generic for unknown or repeated URL codes without exposing input',async()=>{
+  const h=invoicePageHarness();
+  for(const locale of ['it','es','en','fr','de']) {
+    const generic=JSON.parse(read(`src/i18n/${locale}/common.json`)).billing.errors.generic;
+    for(const error of ['unknown','__proto__','constructor','errors.customer','SQLSTATE P0001: private details',' ',['customer','advanceBlocked']]) {
+      const [alert]=(await h.render(locale,error)).props.children;
+      assert.equal(alert.props.role,'alert');
+      assert.equal(alert.props.children,generic);
+    }
+  }
+});
+for(const [rpcError,code] of [
+  ['billing_recipient_invalid','customer'],
+  ['billing_exact_reconciliation_required','advanceBlocked'],
+  ['billing_advance_not_declared','advanceBlocked'],
+  ['billing_service_date_invalid','serviceDate'],
+  ['billing_simplified_declaration_required','serviceDeclaration'],
+  ['billing_advance_full_reconciliation_required','fullPrepaymentBlocked'],
+  [undefined,'issueUncertain'],
+])test(`invoice feedback receives advance action redirect ${rpcError??'lost response'}`,async()=>{
+  const h=actionHarness({missing:true,rpcError,lost:!rpcError});
+  let href;
+  await assert.rejects(h.run(),error=>{
+    href=error.href;
+    return href===`/it/app/billing/${draft}?error=${code}`;
+  });
+  const page=invoicePageHarness();
+  const [alert]=(await page.render('it',new URL(href,'https://test.invalid').searchParams.get('error'))).props.children;
+  assert.equal(alert.props.children,JSON.parse(read('src/i18n/it/common.json')).billing.errors[code]);
+  assert.equal(h.calls.length,1,'No blind retry when presenting an error or an uncertain outcome');
 });
 
 test('migration preserves the partial writer and adds no zero-final or alternate payment model',()=>{

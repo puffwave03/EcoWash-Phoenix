@@ -4,6 +4,12 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-10-30. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## BILLING-ADVANCE-FINAL-UX-001 — Phase A local feedback (30/10/2026)
+
+**IMPLEMENTED LOCALLY / CTO REVIEW, STAGING AND UAT PENDING — overall mission not closed.** On baseline `7e762cacf610458334e270c77b24d812c6f13512`, invoice detail feedback now covers explicitly allowed Billing error codes, unknown-code generic fallback and no-alert normal navigation, preserving `invalidDraft`. Existing translations are reused; only `advanceBlocked` and `issueUncertain` text is revised in five languages to avoid unsupported causes, circular workflow advice and blind retries. Server Actions, fiscal/payment rules and database objects are unchanged.
+
+Focused existing-harness validation: **28 PASS / 0 FAIL / 0 SKIP**, scoped ESLint, TypeScript and diff-check PASS; the exact command and coverage are in the [Phase A handover](../00_START_HERE/SESSION_HANDOVER.md#billing-advance-final-ux-001--phase-a-local-feedback-checkpoint-30102026). These are local presentation/action-harness checks, not browser or database issuance evidence. No commit, push or deployment. Full payment through multiple advances remains a separate open case; `EW-000169` was not accessed and its issuance cause is not determined by this patch. Other findings and previous closeouts remain unchanged.
+
 ## BILLING-ISSUE-FEEDBACK-001 — visual UAT closeout (30/10/2026)
 
 **COMPLETE / TECHNICAL PASS / STAGING RELEASE VERIFIED / PO VISUAL UAT PASS — bounded UX scope.** Commit `a7786c3135c198cc2c2fc451c61db825b9383314` corrects the previously unmapped `billing_invalid_draft` error: `billingError` returns `invalidDraft`, and the invoice page displays a localized alert in IT/ES/EN/FR/DE. CTO review, **50 PASS / 0 FAIL / 0 SKIP** focused tests, TypeScript, scoped lint and diff-check passed. Automatic Vercel staging deployment `dpl_CYTEigmDEGwLQf2fbv2XrMmxhExm` was verified **READY** for that commit. No SQL, payment, tax calculation, invoice issuance or numbering rule changed.
