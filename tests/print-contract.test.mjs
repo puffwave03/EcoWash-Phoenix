@@ -184,7 +184,7 @@ test("24 no printing code creates orders or mutates financial data", async () =>
 test("25 all five locales expose complete print vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
-    assert.deepEqual(Object.keys(messages.print.actions).sort(), ["back", "labels", "print", "receipt", "ticket"]);
+    assert.deepEqual(Object.keys(messages.print.actions).sort(), ["back", "customer-copy", "labels", "print", "receipt", "ticket"]);
     assert.equal(Object.keys(messages.print.units).length, 6);
     assert.equal(Object.keys(messages.print.paymentMethods).length, 4);
     assert.equal(Object.keys(messages.print.paymentStatuses).length, 5);

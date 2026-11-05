@@ -12,7 +12,7 @@ import { ScannableQrCode } from "@/components/barcode/ScannableQrCode";
 import { createOrderCode } from "@/features/barcode/payload";
 import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
-export type OrderPrintMode = "labels" | "receipt" | "ticket";
+export type OrderPrintMode = "labels" | "receipt" | "ticket" | "customer-copy";
 
 function formatDate(value: string | null, locale: string, timezone: string, includeTime = false) {
   if (!value) return "—";
@@ -32,7 +32,7 @@ function paymentMethodTotals(context: PrintOrderContext) {
   return Array.from(totals.entries()).filter(([, amount]) => amount !== 0);
 }
 
-function BrandHeader({ context, compact = false }: { context: PrintOrderContext; compact?: boolean }) {
+function BrandHeader({ context, compact = false }: { context: Pick<PrintOrderContext, "branding" | "organizationName" | "locationName">; compact?: boolean }) {
   const name = context.branding.brand.name ?? context.organizationName;
   return (
     <header className={`print-brand-header ${compact ? "print-brand-header-compact" : ""}`}>
@@ -126,15 +126,55 @@ async function Labels({ context, locale, profile }: { context: PrintOrderContext
   return <div className={`print-label-grid ${customStyle ? "print-label-grid-custom" : ""}`} style={customStyle}>{labels.map(({ copyIndex, label }) => <article className="print-label" key={`${copyIndex}-${label.codePayload}`}><div className="print-label-position">{label.index}/{label.total}</div><p className="print-label-org">{context.branding.brand.name ?? context.organizationName}{label.locationName ? ` · ${label.locationName}` : ""}</p><h2>{label.orderNumber}</h2><h3>{label.customerName}</h3><p className="print-label-service">{label.serviceName}{label.unitLabel ? ` · ${label.unitLabel}` : ""}</p>{label.dueAt ? <p>{t("fields.expectedReady")}: <strong>{formatDate(label.dueAt, locale, context.timezone)}</strong></p> : null}{context.barcodeEnabled ? <div className="print-label-code"><ScannableQrCode ariaLabel={codeT("labelAria")} className="print-label-qr" payload={label.codePayload} /></div> : null}</article>)}</div>;
 }
 
+// Customer output accepts only an explicit allowlist, never the full order or item.
+async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueAt, customerNotes, items, currency, subtotal, discountAmount, total, totalPaid, balanceDue, locale, timezone }: {
+  header: Pick<PrintOrderContext, "branding" | "organizationName" | "locationName">;
+  orderNumber: string; customerName: string; createdAt: string; dueAt: string | null;
+  customerNotes: string | null; locale: string; timezone: string;
+  currency: string; subtotal: number; discountAmount: number; total: number; totalPaid: number; balanceDue: number;
+  items: Array<Pick<PrintOrderContext["items"][number], "id" | "description" | "quantity" | "unitType" | "unitPrice" | "lineTotal">>;
+}) {
+  const t = await getTranslations({ locale, namespace: "common.print" });
+  return (
+    <article className="print-sheet print-ticket-sheet">
+      <BrandHeader compact context={header} />
+      <section className="print-ticket-code-block">
+        <div className="print-ticket-number"><p>{t("customerCopy.title")}</p><h2>{orderNumber}</h2></div>
+      </section>
+      <dl className="print-ticket-grid">
+        <div><dt>{t("fields.customer")}</dt><dd>{customerName}</dd></div>
+        <div><dt>{t("fields.created")}</dt><dd>{formatDate(createdAt, locale, timezone, true)}</dd></div>
+        <div><dt>{t("fields.expectedReady")}</dt><dd>{formatDate(dueAt, locale, timezone, true)}</dd></div>
+      </dl>
+      <table className="print-items-table print-ticket-items">
+        <thead><tr><th>{t("fields.service")}</th><th>{t("fields.quantity")}</th><th>{t("fields.unit")}</th><th>{t("customerCopy.unitPrice")}</th><th>{t("fields.lineTotal")}</th></tr></thead>
+        <tbody>{items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{formatQuantity(item.quantity, locale)}</td><td>{t(`units.${item.unitType}`)}</td><td>{formatCurrency(item.unitPrice, currency, locale)}</td><td>{formatCurrency(item.lineTotal, currency, locale)}</td></tr>)}</tbody>
+      </table>
+      <section>
+        <h3>{t("customerCopy.currentSummary")}</h3>
+        <dl className="print-totals">
+          <div><dt>{t("fields.subtotal")}</dt><dd>{formatCurrency(subtotal, currency, locale)}</dd></div>
+          <div><dt>{t("fields.discount")}</dt><dd>−{formatCurrency(discountAmount, currency, locale)}</dd></div>
+          <div className="print-total-strong"><dt>{t("fields.total")}</dt><dd>{formatCurrency(total, currency, locale)}</dd></div>
+          <div><dt>{t("fields.paid")}</dt><dd>{formatCurrency(totalPaid, currency, locale)}</dd></div>
+          <div><dt>{t("fields.outstanding")}</dt><dd>{formatCurrency(balanceDue, currency, locale)}</dd></div>
+        </dl>
+      </section>
+      {customerNotes ? <section className="print-ticket-notes"><h3>{t("customerCopy.notes")}</h3><p>{customerNotes}</p></section> : null}
+      <footer><p className="print-legal-boundary">{t("customerCopy.notFiscal")}</p></footer>
+    </article>
+  );
+}
+
 export async function OrderPrintDocument({ context, locale, mode }: { context: PrintOrderContext; locale: string; mode: OrderPrintMode }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
-  const purpose = mode === "labels" ? "label" : mode;
+  const purpose = mode === "labels" ? "label" : mode === "customer-copy" ? "ticket" : mode;
   const profile = context.printerProfiles[purpose] ?? null;
   const profileClass = mode === "receipt"
     ? profile?.paperFormat === "receipt_58mm" ? "order-print-receipt-58mm" : profile?.paperFormat === "browser_pdf" ? "order-print-receipt-pdf" : "order-print-receipt-80mm"
     : mode === "labels" && profile?.paperFormat === "label_custom" ? "order-print-labels-custom" : "";
   return (
-    <div className={`order-print-document order-print-${mode} ${profileClass}`}>
+    <div className={`order-print-document order-print-${mode === "customer-copy" ? "ticket" : mode} ${profileClass}`}>
       <div className="print-preview-toolbar print:hidden">
         <div className="print-preview-actions">
           <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href={`/app/orders/${context.order.id}`} locale={locale}>← {t("actions.back")}</Link>
@@ -145,7 +185,15 @@ export async function OrderPrintDocument({ context, locale, mode }: { context: P
           <span>{profile && profile.connectionMode !== "browser" ? t("profile.adapterFallback") : t("profile.browserOnly")}</span>
         </p>
       </div>
-      {mode === "receipt" ? <Receipt context={context} locale={locale} profile={profile} /> : mode === "ticket" ? <Ticket context={context} locale={locale} /> : <Labels context={context} locale={locale} profile={profile} />}
+      {mode === "customer-copy" ? <CustomerCopy
+        header={{ branding: context.branding, organizationName: context.organizationName, locationName: context.locationName }}
+        orderNumber={context.order.orderNumber} customerName={context.order.customerName}
+        createdAt={context.order.createdAt} dueAt={context.order.dueAt} customerNotes={context.order.customerNotes}
+        items={context.items.map(({ id, description, quantity, unitType, unitPrice, lineTotal }) => ({ id, description, quantity, unitType, unitPrice, lineTotal }))}
+        currency={context.order.currency} subtotal={context.order.subtotal} discountAmount={context.order.discountAmount} total={context.order.total}
+        totalPaid={context.paymentSummary.totalPaid} balanceDue={context.paymentSummary.balanceDue}
+        locale={locale} timezone={context.timezone}
+      /> : mode === "receipt" ? <Receipt context={context} locale={locale} profile={profile} /> : mode === "ticket" ? <Ticket context={context} locale={locale} /> : <Labels context={context} locale={locale} profile={profile} />}
     </div>
   );
 }

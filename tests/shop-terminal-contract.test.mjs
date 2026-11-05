@@ -173,7 +173,7 @@ test("28 five locales expose complete terminal vocabulary", async () => {
   for (const locale of ["it", "en", "es", "fr", "de"]) {
     const messages = JSON.parse(await source(`src/i18n/${locale}/common.json`));
     assert.equal(typeof messages.auth.dashboard.shop, "string");
-    assert.equal(Object.keys(messages.shopTerminal.labels).length, 114);
+    assert.equal(Object.keys(messages.shopTerminal.labels).length, 129);
     assert.equal(typeof messages.shopTerminal.labels.segmentCatalog, "string");
     assert.equal(Object.keys(messages.barcode.terminal).length, 6);
   }
