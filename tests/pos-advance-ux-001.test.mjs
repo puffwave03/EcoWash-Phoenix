@@ -47,6 +47,32 @@ const prepare = (app, intent = 'split') => {
   return { event, form, payload: app.state.get('attempt') ? JSON.parse(app.state.get('attempt').payload) : null };
 };
 
+// POS-MIXED-PAYMENT-INPUT-001: execute the actual focus handlers. The hook
+// harness verifies behavior, not native mobile selection or browser zoom.
+for (const method of ['cash', 'card']) test(`mixed ${method} input selects existing text on focus without changing financial state`, () => {
+  const app = ui();
+  enter(app, 'cash', '10,25'); enter(app, 'card', '15.20');
+  const field = method === 'cash' ? 'splitCash' : 'splitCard';
+  const label = nodes(app.render()).find(n => n.type === 'label' && content(n).trim() === labels[field]);
+  const input = nodes(label).find(n => n.type === 'input');
+  assert.equal(input.props.inputMode, 'decimal');
+  assert.match(input.props.className, /\btext-base\b/);
+  const before = [...app.state.entries()];
+  const storedBefore = app.storage.getItem('diagnostic:1:drafts');
+  let selections = 0;
+  input.props.onFocus({ currentTarget: { select() { selections++; } } });
+  assert.equal(selections, 1);
+  assert.deepEqual([...app.state.entries()], before);
+  assert.equal(app.storage.getItem('diagnostic:1:drafts'), storedBefore);
+  assert.equal(app.calls.submit.length, 0);
+  assert.equal(app.state.get('attempt'), null);
+  // Selection must not be reapplied on every edit/click: normal caret editing
+  // remains available while the input stays focused.
+  assert.equal(input.props.onClick, undefined);
+  input.props.onChange({ target: { value: '0,29' } });
+  assert.equal(app.state.get(field), '0,29');
+});
+
 test('editable amounts keep blank and intermediate decimal text; normalize only valid cents', () => {
   const app = ui();
   for (const value of ['1', '10', '', '0,', '0,1', '0,10', '12.']) {
