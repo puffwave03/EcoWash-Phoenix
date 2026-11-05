@@ -3,9 +3,9 @@
 import { Link } from "@/i18n/navigation";
 
 export type PrintActionText = { "customer-copy": string; labels: string; receipt: string; ticket: string };
-export type PrintOrderMode = keyof PrintActionText;
+export type PrintOrderMode = Exclude<keyof PrintActionText, "receipt">;
 
-export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "receipt", "ticket", "labels"], orderId, text }: {
+export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "ticket", "labels"], orderId, text }: {
   className?: string;
   locale: string;
   orderId: string;
@@ -14,7 +14,6 @@ export function PrintOrderActions({ className = "", locale, modes = ["customer-c
 }) {
   const actions = [
     { href: `/app/orders/${orderId}/print/customer-copy`, label: text["customer-copy"], mode: "customer-copy" as const },
-    { href: `/app/orders/${orderId}/print/receipt`, label: text.receipt, mode: "receipt" as const },
     { href: `/app/orders/${orderId}/print/ticket`, label: text.ticket, mode: "ticket" as const },
     { href: `/app/orders/${orderId}/print/labels`, label: text.labels, mode: "labels" as const },
   ].filter((action) => modes.includes(action.mode));

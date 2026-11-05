@@ -55,6 +55,9 @@ function harness({ role = "owner", entitled = true, rpcError = null, transportFa
         check(["owner", "manager"]); if (!entitled) throw Error("ENTITLEMENT_DENIED");
         calls.entry.push({ locale, orderId }); if (entryError) throw entryError; return entry;
       } };
+      if (name === "@/features/printing/server/access") return { requirePrintAccess: async () => {
+        check(["owner", "manager", "staff"]); if (!entitled) throw Error("ENTITLEMENT_DENIED");
+      } };
       if (name === "@/features/sales-documents/server/actions") return { issueOperationalReceipt: async () => {
         calls.operationalReceipt++; return { status: "issued", id: "operational-memory" };
       } };
@@ -442,11 +445,11 @@ for (const mode of ["", "ordinary", ["fiscal", "fiscal"], ["fiscal", "other"]]) 
   assert.equal(ui.calls.operationalReceipt, 0); assert.equal(ui.calls.entry.length, 0);
 });
 
-test("original receipt URL preserves the operational issue and persisted REC print route", async () => {
+test("original receipt URL redirects to order without issuing a REC", async () => {
   const ui = harness();
   await assert.rejects(ui.load(receiptPage).default({ params: Promise.resolve({ locale: "es", orderId: "memory-order" }) }),
-    (e) => e.href === "/es/app/accounting/documents/receipts/operational-memory/print");
-  assert.equal(ui.calls.operationalReceipt, 1); assert.equal(ui.calls.entry.length, 0);
+    (e) => e.href === "/es/app/orders/memory-order");
+  assert.equal(ui.calls.operationalReceipt, 0); assert.equal(ui.calls.entry.length, 0);
 });
 
 test("two-copy page rule is scoped to the single Billing print container", () => {

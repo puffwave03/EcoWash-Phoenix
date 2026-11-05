@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
+import { createRequire } from "node:module";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import test from "node:test";
 import ts from "typescript";
 
@@ -56,10 +59,8 @@ test("only the exact empty-items RPC error gets the controlled result", async ()
   await assert.rejects(issue("it", "order-1"), /operational_receipt_issue_failed:unknown/);
 });
 
-test("known failure returns to Order items alert; success still prints persisted receipt", async () => {
-  assert.match(printPage, /const receipt = await issueOperationalReceipt\(locale, orderId\)/);
-  assert.match(printPage, /if \(receipt\.status === "items_required"\) \{\s*redirect\(`\/\$\{locale\}\/app\/orders\/\$\{orderId\}\?itemsError=1#items`\);\s*\}/);
-  assert.match(printPage, /redirect\(`\/\$\{locale\}\/app\/accounting\/documents\/receipts\/\$\{receipt\.id\}\/print`\)/);
+test("residual backend action retains its result contract; legacy GET cannot invoke it", async () => {
+  assert.doesNotMatch(printPage, /issueOperationalReceipt|sales-documents\/server\/actions/);
   assert.match(orderPage, /routeSearch\.itemsError === "1"[\s\S]*role="alert">\{commonT\("orderItemsRequired"\)\}/);
   const { issue } = issueWith({ data: { receipt_id: "receipt-1", receipt_number: "REC-1" }, error: null });
   const receipt = await issue("it", "order-1");
@@ -78,5 +79,54 @@ test("ticket and label print paths remain separate; five existing alert translat
   for (const locale of ["it", "es", "en", "fr", "de"]) {
     const text = JSON.parse(read(`src/i18n/${locale}/common.json`)).orderItemsRequired;
     assert.ok(text?.length > 30, locale);
+  }
+});
+
+function loadPreview(path, imports) {
+  const compiled = { exports: {} };
+  const nativeRequire = createRequire(import.meta.url);
+  const code = ts.transpileModule(read(path), { compilerOptions: {
+    module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022,
+  } }).outputText;
+  runInNewContext(code, { module: compiled, exports: compiled.exports, require(name) {
+    if (name === "react/jsx-runtime") return nativeRequire(name);
+    if (Object.hasOwn(imports, name)) return imports[name];
+    throw Error(`Unexpected import (including any issue action): ${name}`);
+  } });
+  return compiled.exports;
+}
+
+test("ordinary GET and refresh only authorize and redirect; denied access never redirects", async () => {
+  const calls = [];
+  const path = "src/app/[locale]/app/(dashboard)/orders/[orderId]/print/receipt/page.tsx";
+  const imports = {
+    "next/navigation": { redirect(href) { calls.push(["redirect", href]); throw Error("REDIRECT"); }, notFound() { throw Error("NOT_FOUND"); } },
+    "@/features/printing/server/access": { requirePrintAccess: async (locale) => { calls.push(["access", locale]); } },
+  };
+  const Page = loadPreview(path, imports).default;
+  for (const searchParams of [undefined, Promise.resolve({}), Promise.resolve({ document: undefined })]) {
+    await assert.rejects(Page({ params: Promise.resolve({ locale: "it", orderId: "synthetic-order" }), searchParams }), /REDIRECT/);
+  }
+  assert.deepEqual(calls, Array.from({ length: 3 }, () => [["access", "it"], ["redirect", "/it/app/orders/synthetic-order"]]).flat());
+  calls.length = 0;
+  const DeniedPage = loadPreview(path, { ...imports,
+    "@/features/printing/server/access": { requirePrintAccess: async () => { throw Error("DENIED"); } },
+  }).default;
+  await assert.rejects(DeniedPage({ params: Promise.resolve({ locale: "it", orderId: "foreign-order" }) }), /DENIED/);
+  assert.deepEqual(calls, []);
+});
+
+test("real shared print actions expose only EW customer, internal ticket and labels in every locale", () => {
+  const { PrintOrderActions } = loadPreview("src/components/printing/PrintOrderActions.tsx", {
+    "@/i18n/navigation": { Link: ({ href, children }) => createElement("a", { href }, children) },
+  });
+  for (const locale of ["it", "es", "en", "fr", "de"]) {
+    const text = JSON.parse(read(`src/i18n/${locale}/common.json`)).print.actions;
+    const html = renderToStaticMarkup(PrintOrderActions({ locale, orderId: "synthetic-order", text }));
+    assert.doesNotMatch(html, /\/print\/receipt/);
+    for (const mode of ["customer-copy", "ticket", "labels"]) assert.ok(html.includes(`/print/${mode}`));
+    // Even a stale runtime caller cannot restore the removed receipt link.
+    const legacy = renderToStaticMarkup(PrintOrderActions({ locale, orderId: "synthetic-order", text, modes: ["receipt"] }));
+    assert.doesNotMatch(legacy, /<a/);
   }
 });

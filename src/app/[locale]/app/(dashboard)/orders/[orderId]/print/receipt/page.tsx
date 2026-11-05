@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { issueOperationalReceipt } from "@/features/sales-documents/server/actions";
+import { requirePrintAccess } from "@/features/printing/server/access";
 
 export default async function OrderReceiptPrintPage({ params, searchParams }: {
   params: Promise<{ locale: string; orderId: string }>;
@@ -19,9 +19,7 @@ export default async function OrderReceiptPrintPage({ params, searchParams }: {
     // enforces eligibility/recipient rules and shows the disabled-type message.
     redirect(`/${locale}/app/billing/new?orderId=${encodeURIComponent(orderId)}&error=simplifiedUnavailable`);
   }
-  const receipt = await issueOperationalReceipt(locale, orderId);
-  if (receipt.status === "items_required") {
-    redirect(`/${locale}/app/orders/${orderId}?itemsError=1#items`);
-  }
-  redirect(`/${locale}/app/accounting/documents/receipts/${receipt.id}/print`);
+  // Legacy operational URL: opening or refreshing must never issue a REC.
+  await requirePrintAccess(locale);
+  redirect(`/${locale}/app/orders/${encodeURIComponent(orderId)}`);
 }

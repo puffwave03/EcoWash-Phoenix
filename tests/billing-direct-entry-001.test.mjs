@@ -277,7 +277,7 @@ for (const canInvoice of [true, false]) for (const isWalkIn of [true, false]) te
   assert.equal(ui.calls.status.length, 0);
 });
 
-for (const confirmResult of [false, true]) test(`Terminal order documents: receipt navigation confirmation=${confirmResult}`, async () => {
+for (const confirmResult of [false, true]) test(`Terminal order documents: no REC action with confirmation preference=${confirmResult}`, async () => {
   const ui = terminal({ confirmResult });
   ui.props.canPrint = true;
   ui.props.canInvoice = true;
@@ -289,14 +289,9 @@ for (const confirmResult of [false, true]) test(`Terminal order documents: recei
   assert.ok(nodes(tree).some((node) => node.props.id === "order-documents-title" && content(node) === ui.props.text.orderDocuments));
   assert.ok(nodes(tree).some((node) => node.props.href === "/app/orders/order-a/print/ticket"));
   const receipt = nodes(tree).find((node) => node.props.href === "/app/orders/order-a/print/receipt");
-  assert.ok(receipt);
-  assert.match(content(receipt), /Emitir.*recibo operativo/);
+  assert.equal(receipt, undefined);
   assert.ok(nodes(tree).some((node) => node.props.href === "/app/billing/new?orderId=order-a&source=shop"));
-  assert.equal(ui.calls.confirm.length, 0, "render must not ask for confirmation or issue a receipt");
-  const event = { prevented: false, preventDefault() { this.prevented = true; } };
-  receipt.props.onClick(event);
-  assert.equal(event.prevented, !confirmResult);
-  assert.deepEqual(ui.calls.confirm, [ui.props.text.documentReceiptConfirm]);
+  assert.equal(ui.calls.confirm.length, 0);
   assert.equal(ui.calls.submit.length, 1);
   assert.equal(ui.calls.status.length, 0);
 });

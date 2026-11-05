@@ -1183,10 +1183,6 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {canPrint ? <PrintOrderActions locale={locale} modes={["customer-copy"]} orderId={result.orderId} text={printText} /> : null}
               {canPrint ? <Link className="flex min-h-12 items-center justify-center rounded-control border border-primary px-4 text-center font-bold !text-primary" href={`/app/orders/${result.orderId}/print/ticket`} locale={locale}>{text.documentTicket}</Link> : null}
-              {canPrint ? <div className="space-y-2">
-                <Link className="flex min-h-12 items-center justify-center rounded-control border border-primary px-4 text-center font-bold !text-primary" href={`/app/orders/${result.orderId}/print/receipt`} locale={locale} onClick={(event) => { if (!window.confirm(text.documentReceiptConfirm)) event.preventDefault(); }}>{text.documentReceipt}</Link>
-                <p className="text-xs text-muted">{text.documentReceiptHelp}</p>
-              </div> : null}
               {canInvoice ? <div className="space-y-2">
                 <Link className="flex min-h-12 items-center justify-center rounded-control bg-primary-strong px-4 text-center font-bold !text-white" href={`/app/billing/new?orderId=${result.orderId}&source=shop`} locale={locale}>{text.documentInvoice}</Link>
                 <p className="text-xs text-muted">{text.documentInvoiceHelp}</p>

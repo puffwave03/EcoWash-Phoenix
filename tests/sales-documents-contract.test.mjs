@@ -71,7 +71,7 @@ test("11b cancelled receipts remain historical and allow a newly numbered issued
   assert.doesNotMatch(issue, /document_status = 'cancelled'/);
 });
 
-test("12-14 receipt issue redirects to a readable persisted snapshot reprint while ticket and labels stay live", async () => {
+test("12-14 legacy order entry does not issue; historical snapshot reprint and live EW remain available", async () => {
   const [actions, issuePage, receiptPage, receiptDocument, printCss, ticketPage, labelsPage] = await Promise.all([
     source("src/features/sales-documents/server/actions.ts"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/print/receipt/page.tsx"),
@@ -87,12 +87,9 @@ test("12-14 receipt issue redirects to a readable persisted snapshot reprint whi
   );
   assert.match(issueAction, /supabase\.rpc\("issue_operational_receipt"/);
   assert.doesNotMatch(issueAction, /revalidatePath/);
-  assert.match(issuePage, /issueOperationalReceipt\(locale, orderId\)/);
-  assert.match(issuePage, /documents\/receipts\/\$\{receipt\.id\}\/print/);
-  // The explicit fiscal branch never issues REC documents. In the unchanged
-  // operational branch the persisted receipt must still precede its redirect.
-  const operationalBranch = issuePage.slice(issuePage.indexOf("const receipt = await issueOperationalReceipt"));
-  assert.ok(operationalBranch.indexOf("issueOperationalReceipt(locale, orderId)") < operationalBranch.indexOf("redirect("));
+  assert.doesNotMatch(issuePage, /issueOperationalReceipt|sales-documents\/server\/actions/);
+  assert.match(issuePage, /requirePrintAccess\(locale\)/);
+  assert.match(issuePage, /redirect\(`\/\$\{locale\}\/app\/orders\/\$\{encodeURIComponent\(orderId\)\}`\)/);
   assert.match(receiptPage, /getOperationalReceipt\(locale, receiptId\)/);
   assert.match(receiptDocument, /receipt\.snapshot/);
   assert.match(receiptDocument, /print-preview-toolbar operational-receipt-toolbar print:hidden/);

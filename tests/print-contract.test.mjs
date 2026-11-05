@@ -29,7 +29,10 @@ test("3 bootstrap is scoped to the EcoWash reference tenant", async () => {
 test("4 all three dedicated print routes exist", async () => {
   for (const route of routes) {
     const page = await source(`src/app/[locale]/app/(dashboard)/orders/[orderId]/print/${route}/page.tsx`);
-    if (route === "receipt") assert.match(page, /issueOperationalReceipt\(locale, orderId\)/);
+    if (route === "receipt") {
+      assert.doesNotMatch(page, /issueOperationalReceipt/);
+      assert.match(page, /requirePrintAccess\(locale\)/);
+    }
     else assert.match(page, /getPrintOrderContext\(locale, orderId\)/);
   }
 });
@@ -154,7 +157,7 @@ test("21 print output is isolated from the authenticated app shell", async () =>
   assert.match(css, /\.order-print-document,[\s\S]*\.order-print-document \*[\s\S]*visibility: visible/);
 });
 
-test("22 Shop Terminal success integrates all three preview actions", async () => {
+test("22 Shop Terminal success integrates EW previews without REC issuance", async () => {
   const [page, workspace, actions] = await Promise.all([
     source("src/app/[locale]/app/(dashboard)/shop/page.tsx"),
     source("src/components/shop-terminal/ShopTerminalWorkspace.tsx"),
@@ -162,7 +165,9 @@ test("22 Shop Terminal success integrates all three preview actions", async () =
   ]);
   assert.match(page, /FEATURES\.printing/);
   assert.match(workspace, /PrintOrderActions/);
-  for (const route of routes) assert.match(actions, new RegExp(`/print/${route}`));
+  for (const route of ["customer-copy", "ticket", "labels"]) assert.match(actions, new RegExp(`/print/${route}`));
+  assert.doesNotMatch(actions, /\/print\/receipt/);
+  assert.doesNotMatch(workspace, /\/print\/receipt/);
 });
 
 test("23 order detail integrates printing behind entitlement and capability", async () => {
