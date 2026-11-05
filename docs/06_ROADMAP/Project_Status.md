@@ -4,6 +4,16 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-04. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## BILLING-EVENT-CONTRACT-001 — documentation closeout (04/11/2026)
+
+**COMPLETE — TECHNICAL CTO REVIEW PASS.** [Full report, S01–S15 contract and D01–D11 decision register](../04_ARCHITECTURE/Billing_Event_Contract_001.md). Baseline analyzed: `b53ec2e44dc41bfa7ddc456aa8d1711a2fdc55fa`. Execution READ ONLY; implementation NONE; new testing/UAT NONE; database changes NONE. **Fiscal compliance approval: NOT GRANTED.** This publication is documentation only, with PO-authorized commit/push.
+
+**CTO conditions:** C1 — payment existence alone does not prove an advance; actual service/payment timing needs reliable evidence and same-day dates are insufficient. C2 — keep commercial value, received payments, documented fiscal amounts, remaining fiscal coverage and customer credit separate; approve the final fiscal representation before implementation. C3 — normally one customer and one merchant copy of the same appropriate document; multiple prints never create multiple fiscal emissions or independent originals. C4 — distinguish canje, correction and rectification; do not generalize SII F3 without validating tenant applicability.
+
+**Open:** D01–D11 retain their actual review states. Service tax point/evidence, advances/full prepayment, final invoicing with credit, multiple settlement payments, simplified-to-ordinary relationships, refunds/corrections, professional monthly billing, IGIC rates/exceptions and statutory records/digital compliance are not completed fiscal decisions. Technical analysis completion does not authorize fiscal-rule changes or historical reclassification.
+
+**Future work:** `BILLING-SERVICE-PAYMENT-CLASSIFICATION-001` — PLANNED / NOT STARTED; implementation blocked until required fiscal and evidence-contract decisions are approved. Preserve `COUNTER-NOTES-VISIBILITY-001` as an independently proposed correction requiring separate authorization; NOT STARTED. Neither mission begins here. This checkpoint supersedes only the earlier not-started status of the event-contract analysis; prior reports and historical evidence remain intact.
+
 ## COUNTER-OPERATIONS-GAP-REVIEW-001 — documentation closeout (04/11/2026)
 
 **COMPLETE — CTO REVIEW PASS for READ ONLY analysis, with conditions on future implementation.** [Complete technical report and CTO conditions](../04_ARCHITECTURE/Counter_Operations_Gap_Review_001.md). Analyzed baseline: `3d5360ad5a48976f40510952b6f8b7ff585d9ae4`. Static inspection only; no new tests or UAT, application changes or database operations. PO authorizes only this bounded documentation closeout, commit and push.
