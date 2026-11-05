@@ -24,6 +24,14 @@ This document records approved targets and sequencing constraints. [Project Stat
 - Distinguish ordinary invoicing, SIF/VERI*FACTU and B2B electronic invoice exchange. A provider integration must preserve canonical orders/payments/Billing, idempotency, tenant/fiscal identity and history.
 - Do not turn the older M1/P0/P1 candidate lists below into a new queue or invent completion percentages/dates. New implementation requires explicit CTO scope and PO authorization.
 
+## REC-OPTIONAL-WORKFLOW-001 — implemented closeout (05/11/2026)
+
+**IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`; staging deployment `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` READY verified by the CTO. See [Project Status](../06_ROADMAP/Project_Status.md) for prior Codex results, the PO functional UAT on `EW-000171` / `EW-000172`, preserved historical `REC-2026-000035` and evidence limits.
+
+REC issuance is absent from ordinary Terminal/Order print actions. The protected legacy GET returns to Order detail without emission; its fiscal Billing branch remains available. EW customer copy, internal ticket and labels are the ordinary operational output. All historical REC records, including test-tenant records, numbering, immutable snapshots, consultation/reprinting, cancellations, audit and economic guards are preserved. The existing server action and RPC remain: backend issuance is not technically disabled by this UI correction. No database, POS, IGIC or Billing change was made.
+
+This closeout supersedes the earlier REC PLANNED / NOT STARTED statements. Physical printing, unauthorized-role browser checks and direct backend-blocking verification were not performed; no full hardware/security UAT is claimed. The A4 / 58–80 mm requirements below remain future scope of `COUNTER-THERMAL-DOCUMENTS-001`; Billing fiscal gates remain open. No new mission is authorized here.
+
 ## COUNTER-THERMAL-DOCUMENTS-001 — PO format requirements (05/11/2026)
 
 **PLANNED / NOT STARTED — existing future mission; requirements recorded, implementation not authorized.** `COUNTER-NOTES-VISIBILITY-001` is **IMPLEMENTED / CTO PASS / STAGING READY / PO VISUAL UAT PASS** at application commit `9760605d0155d3451aab6e5dcb92dda0ef202688`; see [Project Status](../06_ROADMAP/Project_Status.md) for test, staging and scoped UAT evidence and its limits. Format selection and the normally two-copy workflow are not completed features of that correction.
@@ -45,6 +53,8 @@ Fiscal-document presentation remains subject to the applicable fiscal requiremen
 | Monthly invoice | A4 preferred | Preserve canonical Billing content and the applicable fiscal contract |
 
 Billing remains the canonical source of fiscal documents. Emission, payment and printing stay distinct; format work must not modify already issued documents. The operational customer copy and internal work ticket do not become fiscal documents by changing paper format.
+
+**Historical REC planning checkpoint — superseded by the implemented closeout above:**
 
 **`REC-OPTIONAL-WORKFLOW-001` — PLANNED / NOT STARTED.** Preserve the approved direction: REC will not be mandatory in the future ordinary workflow. Preserve its complete history, numbering, immutable snapshots and reprinting. No REC behavior change is implemented or authorized by this documentation closeout. Neither roadmap mission is launched here.
 

@@ -4,6 +4,24 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-05. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## REC-OPTIONAL-WORKFLOW-001 — final closeout (05/11/2026)
+
+**IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`. Staging deployment: `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` — **READY verified by the CTO**, supplied as closeout evidence. This checkpoint supersedes earlier PLANNED / NOT STARTED statements for this mission; historical checkpoints remain intact.
+
+**Implemented scope:** REC issuance was removed from ordinary Terminal and Order print actions. EW customer copy, internal work ticket and labels remain available. The protected ordinary GET `/orders/[orderId]/print/receipt` redirects to Order detail without emission; the existing `?document=fiscal` branch toward Billing is preserved. Historical REC documents, including the test tenant's records, numbering, snapshots, consultation, reprinting, cancellations, audit and economic guards are unchanged. No migration or database, POS, IGIC or Billing change was made. **The REC server action and RPC still exist: backend issuance is NOT claimed to be technically disabled.**
+
+**Prior Codex evidence:** 183 tests PASS and 1 Billing FAIL identified as pre-existing and reproduced on the baseline; 16 targeted fiscal-route tests PASS; TypeScript PASS; lint PASS; diff check PASS. No tests or functional checks were repeated during this documentation closeout.
+
+**Product Owner functional UAT — 05/11/2026:**
+
+- Terminal and orders `EW-000171` / `EW-000172`: REC buttons absent — PASS.
+- EW customer copy, internal ticket and label previews available — PASS.
+- Historical `REC-2026-000035`, order `EW-000171`, **€4.50**: number and content preserved; opening and reprint preview — PASS.
+- Manual opening of the legacy `/print/receipt` URL for `EW-000172`: returned to Order detail without opening a receipt — PASS.
+- Accounting registry after the check: `REC-2026-000035` remained the most recent visible REC; no new REC for `EW-000172` was detected in the list — PASS. This is PO UI evidence, not a direct database audit.
+
+**Limits:** no physical-printer test; no negative browser test with an unauthorized role; no direct verification of backend RPC blocking. Full hardware/security UAT is not claimed. `COUNTER-THERMAL-DOCUMENTS-001` remains PLANNED / NOT STARTED, with the approved A4 / 58–80 mm and future copy-count requirements preserved in [Roadmap](../01_PRODUCT/Roadmap.md#counter-thermal-documents-001--po-format-requirements-05112026). Billing fiscal gates remain open; Billing stays canonical for fiscal documents. No new mission is started here.
+
 ## COUNTER-NOTES-VISIBILITY-001 — final closeout (05/11/2026)
 
 **IMPLEMENTED / CTO PASS / STAGING READY / PO VISUAL UAT PASS.** Application commit: `9760605d0155d3451aab6e5dcb92dda0ef202688`. Staging deployment: `dpl_379NksCtRvRgkMjhNZxfsoRbBxTG` — **READY verified by the CTO**, as supplied for this closeout. This checkpoint closes the approved customer/internal note-visibility scope and supersedes its earlier NOT STARTED statements below; historical evidence and unrelated fiscal decisions remain preserved.
