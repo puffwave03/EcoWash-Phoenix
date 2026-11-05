@@ -4,6 +4,20 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-05. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## PHOENIX-DOCS-RECONCILIATION-001 — P0–P2 checkpoint (05/11/2026)
+
+**Documentation reconciliation P0–P2: COMPLETE / VERIFIED — 13 documents.** The three commit identities and file scopes are verified against GitHub; staging READY is recorded from the CTO-verified evidence supplied with this checkpoint, without a new deployment check.
+
+| Lot | Published commit | Documentation scope | Acceptance |
+|---|---|---|---|
+| P0 — Session entrypoints | [`f03dec2011ad0dec906b9e181986fecf7b2ad1f9`](https://github.com/puffwave03/EcoWash-Phoenix/commit/f03dec2011ad0dec906b9e181986fecf7b2ad1f9) | 5: README, Start Here, Codex compatibility pointer/context and Roadmap | CTO PASS / GitHub published / staging READY verified |
+| P1 — Operational guides | [`e511fcbf920ef8c6a05a8e8420fac853604e3880`](https://github.com/puffwave03/EcoWash-Phoenix/commit/e511fcbf920ef8c6a05a8e8420fac853604e3880) | 4: Features, Workflow, Testing and pilot findings | CTO PASS / GitHub published / staging READY verified |
+| P2 — Domain and data model | [`2a6c2c61982e0850875956a7cbcaea080cd64eee`](https://github.com/puffwave03/EcoWash-Phoenix/commit/2a6c2c61982e0850875956a7cbcaea080cd64eee) | 4: Business Rules, Domain Model, Entities and ER Diagram | CTO PASS / GitHub published / staging READY verified |
+
+Completion is **exclusively documentational**: no application, database or migration changes were made by these lots. Fiscal-conformity approval and Production Readiness are unchanged. Preserve all open application, security, Auth/DR, physical-printing and Billing gates, including the [Billing Event Contract](../04_ARCHITECTURE/Billing_Event_Contract_001.md) conditions C1–C4 and actual D01–D11 decision states. This checkpoint adds no new application tests or UAT and does not turn missing evidence into PASS.
+
+P3 technical guides remain **PROPOSED / NOT STARTED**; the Phoenix V1.2 functional specification remains **NOT STARTED**. No next mission is authorized. Earlier checkpoints and evidence remain intact; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) retains continuation responsibility.
+
 ## REC-OPTIONAL-WORKFLOW-001 — final closeout (05/11/2026)
 
 **IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`. Staging deployment: `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` — **READY verified by the CTO**, supplied as closeout evidence. This checkpoint supersedes earlier PLANNED / NOT STARTED statements for this mission; historical checkpoints remain intact.

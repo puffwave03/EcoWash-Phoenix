@@ -4,6 +4,14 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-05
 
+## PHOENIX-DOCS-RECONCILIATION-001 — P0–P2 checkpoint (05/11/2026)
+
+**P0 / P1 / P2 — COMPLETE / CTO PASS / PUBLISHED / STAGING READY.** Thirteen documents reconciled: session entrypoints (5), operational guides (4), domain/data model (4). [Lot commits, scope and acceptance](../06_ROADMAP/Project_Status.md#phoenix-docs-reconciliation-001--p0p2-checkpoint-05112026). GitHub publication is verified; staging READY for all three lots is supplied as verified CTO evidence in this checkpoint's authorization, not rechecked here.
+
+**Latest verified published commit:** `2a6c2c61982e0850875956a7cbcaea080cd64eee`. According to the Codex publication postflights, no local P0/P1/P2 work remained pending; this checkpoint also began with clean index/worktree. This SHA identifies the documentation checkpoint, not a new product baseline. These lots made no application, database or migration changes; existing acceptance and release gates remain unchanged.
+
+**Continuation:** P3 technical guides — **PROPOSED / NOT STARTED**. Phoenix V1.2 functional specification — **NOT STARTED**. Neither is opened by this checkpoint. Resume via [START_HERE](../00_START_HERE.md) → [AGENTS](../../AGENTS.md) → this Handover → [Project Status](../06_ROADMAP/Project_Status.md) → actual Git verification against the explicit next authorized task. Preserve all dated checkpoints below.
+
 ## REC-OPTIONAL-WORKFLOW-001 — final closeout (05/11/2026)
 
 **IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`. Staging deployment: `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` — **READY verified by the CTO**, supplied as closeout evidence. This checkpoint supersedes earlier PLANNED / NOT STARTED statements for this mission; historical checkpoints remain intact.
