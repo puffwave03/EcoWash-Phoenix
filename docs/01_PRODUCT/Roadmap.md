@@ -17,7 +17,7 @@ This document records approved targets and sequencing constraints. [Project Stat
 ## Sequencing constraints
 
 - Reuse implemented Terminal, production/quality, Warehouse, fulfillment, POS, Accounting, Billing, tenant configuration and onboarding. Do not repeat completed missions from archived priority lists.
-- Review and accept the current protected Billing WIP independently of this documentation-only task. Session Handover defines the pending gates; no release is authorized here.
+- Use Session Handover for current continuation and any preserved WIP, and Project Status for Billing acceptance and open gates. Historical WIP checkpoints do not establish an active patch. Each implementation or publication requires its own explicit authorization.
 - Complete outstanding real-store validation and continuity procedures under separate scopes. Configured browser printing is distinct from acceptance of physical Windows USB hardware; implemented till reconciliation is distinct from UX refinements.
 - Preserve order-level V1 operations; per-garment tracking, scan history and partial ready/fulfillment remain deferred.
 - Preserve tax-inclusive commercial pricing. Habitual simplified invoices where permitted and an external fiscal provider are approved directions, with implementation and fiscal timing still separately gated.

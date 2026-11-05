@@ -12,7 +12,7 @@ The filename is retained for existing references. This file no longer owns a mut
 2. Read [Project Status](06_ROADMAP/Project_Status.md) for implementation, UAT and outstanding gates.
 3. Follow [AGENTS.md](../AGENTS.md) and the explicit task prompt. [Codex Execution Context](CODEX_EXECUTION_CONTEXT.md) is supplementary execution guidance.
 
-Do not update a second feature/status inventory here after each task. Do not reset Git to a historical SHA or execute an archived next-work list. In particular, preserve the current seven-file Billing WIP identified in Session Handover.
+Do not update a second feature/status inventory here after each task. Do not reset Git to a historical SHA or execute an archived next-work list. Inspect actual Git state and preserve any existing work identified by the current task and Session Handover; do not infer active WIP from historical checkpoints.
 
 ## Historical baseline — 2026-09-29
 

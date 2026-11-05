@@ -4,7 +4,8 @@ EcoWash Phoenix is a multi-tenant laundry operations platform with a multilingua
 
 ## Documentation and resume
 
-- [Session Handover](docs/00_START_HERE/SESSION_HANDOVER.md): start here for current Git, protected work in progress and continuation.
+- [Start Here](docs/00_START_HERE.md): entry point and essential reading paths for new CTO/Codex sessions.
+- [Session Handover](docs/00_START_HERE/SESSION_HANDOVER.md): continuation, handoff, Git checkpoints and any preserved work.
 - [Project Status](docs/06_ROADMAP/Project_Status.md): current implementation, UAT and outstanding release gates.
 - [AGENTS.md](AGENTS.md): stable roles, safety, architecture and execution boundaries.
 - [Features](docs/01_PRODUCT/Features.md): product/domain boundaries.
@@ -18,7 +19,7 @@ The older README and Codex baseline are not a separate source for the next task.
 
 The existing application covers customer/order management, tenant catalogs/pricing, five Terminal Venta workspaces with drafts, production and quality, order-level Warehouse custody, pickup/handoff/delivery, POS payments/refunds, operational Accounting/Daily Close, Billing, browser printing and customer Portal workflows. The authoritative acceptance inventory and limitations are in Project Status; code existence is not production readiness.
 
-Operational receipts are non-fiscal. Billing and tax-inclusive pricing are implemented foundations; simplified fiscal invoices and the external fiscal provider remain future separately approved work. Full fiscal compliance and commercial-production readiness are not claimed.
+Operational receipts remain non-fiscal. Billing includes ordinary and simplified document types and bounded service, advance and final-invoice paths, with implementation and acceptance evidence recorded in [Project Status](docs/06_ROADMAP/Project_Status.md). Advance classification, remaining simplified-issuance cases, final reconciliation and refund/rectification treatment still have open decisions or limitations. External fiscal-provider integration remains future separately approved work. Existing Billing paths do not establish approved fiscal compliance or commercial-production readiness.
 
 ## Technical foundation
 

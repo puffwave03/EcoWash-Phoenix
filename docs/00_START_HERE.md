@@ -1,31 +1,43 @@
 # Start Here
 
-Status: Active
+Status: Active — entry point for new Phoenix sessions
 
-Version: 0.1
+Last updated: 2026-11-05
 
-Last Updated: 2026-10-29
+## Start a session
 
-Latest published documentation baseline: `3300033b20607dd54ec89ccd06523aa5e343d943`; latest published application commit: `c79de74896fcda88111b4562eba0af49cd8e7d36`. Billing closeout checkpoint: 2026-10-29.
+Read [AGENTS.md](../AGENTS.md), then the newest relevant checkpoints in [Session Handover](00_START_HERE/SESSION_HANDOVER.md) and [Project Status](06_ROADMAP/Project_Status.md), followed by the explicit task prompt. Verify actual branch, HEAD, origin/main, index and worktree against that task's expected baseline before acting. This entry point does not maintain a second SHA, active-mission list or product inventory.
 
----
+Read the newest relevant evidence first. Earlier checkpoints describe their own dates and scopes; a historical “next task”, WIP or pending gate does not establish current work or permission to start it. Keep automated tests, database evidence, deployment verification and Product Owner UAT distinct.
 
-## Purpose
+## Document authority
 
-Start here when resuming EcoWash Phoenix work. The [29/10 Billing full-prepayment checkpoint](00_START_HERE/SESSION_HANDOVER.md#billing-full-prepayment-001--technical-and-staging-uat-closeout-29102026) records **COMPLETE / VERIFIED** technical and staging UAT for `BILLING-FULL-PREPAYMENT-001`, with fiscal and operational evidence limits stated there. The earlier [`SAAS-SIMPLIFIED-INVOICING-TENANT-CONTROL-001`](00_START_HERE/SESSION_HANDOVER.md#saas-simplified-invoicing-tenant-control-001--functional-uat-closeout-28102026) closeout retains its separate runtime security evidence gap. Older snapshots on this page are historical.
+- [Session Handover](00_START_HERE/SESSION_HANDOVER.md): continuation and handoff, Git checkpoints and any preserved work.
+- [Project Status](06_ROADMAP/Project_Status.md): implementation state, UAT, findings and open gates.
+- [AGENTS.md](../AGENTS.md): stable roles, governance and architectural boundaries.
+- [Roadmap](01_PRODUCT/Roadmap.md): approved targets, sequencing and future requirements; an entry does not authorize implementation.
+- [Git Workflow](05_DEVELOPMENT/Git_Workflow.md): review, explicit commit/push approval and automatic staging publication procedure.
+- [Testing](05_DEVELOPMENT/Testing.md): evidence levels and dated validation records. Use later Handover/Status closeouts where the evidence index has not yet been updated.
 
-## Official procedures and current state
+The compatibility file [CODEX_CURRENT_BASELINE.md](CODEX_CURRENT_BASELINE.md) owns neither a separate mutable baseline nor the next task. [CODEX_EXECUTION_CONTEXT.md](CODEX_EXECUTION_CONTEXT.md) supplements AGENTS and the authorized task. The separate Handover/Status responsibilities above remain in force.
 
-- [Session Handover](00_START_HERE/SESSION_HANDOVER.md) — latest dated checkpoint and next handoff.
-- [Project Status](06_ROADMAP/Project_Status.md) — current mission, acceptance level and open gates.
-- [Billing and POS findings](06_ROADMAP/Project_Status.md#billing-and-pos-findings--28102026) — current reported issues, evidence and decisions still needed.
-- [Full-prepayment closeout evidence](05_DEVELOPMENT/Testing.md#billing-full-prepayment-001--closeout-evidence-at-29102026) — local PostgreSQL proof, deployment, Product Owner staging UAT and limits.
-- [Git Workflow](05_DEVELOPMENT/Git_Workflow.md) — review, explicit file selection, commit/push approval and release sequence.
-- [Deployment](05_DEVELOPMENT/Deployment.md) — existing GitHub `main` → automatic Vercel staging path and environment boundaries.
-- [Testing](05_DEVELOPMENT/Testing.md) — evidence levels and verification still open.
-- [Security](04_ARCHITECTURE/Security.md) and [AGENTS.md](../AGENTS.md) — architecture and repository operating boundaries.
+## Essential reading by mission
 
-Read the newest dated checkpoint first. Earlier checkpoints remain evidence of their date and do not assign the current mission.
+Use the common session path above, then add only the references needed for the authorized scope:
+
+| Session or mission | Additional reading |
+|---|---|
+| New CTO session | [Roadmap](01_PRODUCT/Roadmap.md), [Git Workflow](05_DEVELOPMENT/Git_Workflow.md), then the relevant approved architecture report and current acceptance evidence. |
+| New Codex session | [Codex Execution Context](CODEX_EXECUTION_CONTEXT.md), [Git Workflow](05_DEVELOPMENT/Git_Workflow.md), [Setup](05_DEVELOPMENT/Setup.md) only when environment work is in scope. Its older bootstrap/next-task prose must be reconciled with later canonical checkpoints. |
+| Billing / fiscal | [Billing Event Contract](04_ARCHITECTURE/Billing_Event_Contract_001.md), including CTO conditions C1–C4 and open D01–D11; [Fiscal Document Benchmark](04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md); latest Billing evidence in Handover, Status and Testing. Read [Security](04_ARCHITECTURE/Security.md) and [Database Design](03_DATABASE/Database_Design.md) when authorization or database work is involved. Technical review does not grant fiscal-compliance approval. |
+| Printing | Notes-visibility and REC-workflow closeouts in Handover/Status; future `COUNTER-THERMAL-DOCUMENTS-001` requirements in [Roadmap](01_PRODUCT/Roadmap.md); [Counter Operations Gap Review](04_ARCHITECTURE/Counter_Operations_Gap_Review_001.md) as dated evidence, applying subsequent closeouts. |
+| Operational incident / recovery | AGENTS incident and environment rules; [Recovery Runbook](05_DEVELOPMENT/Recovery_Runbook.md), [Deployment](05_DEVELOPMENT/Deployment.md), [Security](04_ARCHITECTURE/Security.md), and relevant Testing evidence. Prove the authorized target and applicable checkpoint before any mutation; historical recovery project IDs and counts are evidence, not reusable defaults. |
+
+This correction does not reconstruct a Phoenix V1.2 specification or reorganize Handover/Status. Those remain separate documentation decisions requiring their own scope.
+
+## Historical snapshots
+
+The snapshots below remain intact. Their baselines, environment observations, mission names and recommended sequences are dated evidence, not current execution instructions.
 
 ---
 

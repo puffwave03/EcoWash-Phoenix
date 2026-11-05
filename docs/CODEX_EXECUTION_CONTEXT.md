@@ -49,7 +49,7 @@ Reuse these existing sources of truth:
 - Billing: canonical invoice records derived from established order/payment truth.
 - Online payments: provider attempts are separate from confirmed canonical payments.
 - Shop Terminal: counter UX over customers, catalog, pricing, orders, till and payments.
-- Printing: persistent historical operational receipts with immutable snapshots and issue-time numbering; tickets/labels reuse canonical order/item data. Opening a receipt issue route may write a document; reprint/history are distinct from payments and Accounting. Operational receipts remain non-fiscal.
+- Printing: EW customer order copies, internal work tickets and labels reuse canonical order/item data. REC issuance is removed from ordinary Terminal/Order UI. The ordinary GET `/orders/[orderId]/print/receipt` requires the existing printing access and redirects to Order detail without issuing a receipt; its `?document=fiscal` Billing branch is preserved. Historical REC documents retain immutable snapshots, issue-time numbering, consultation, reprint, cancellation and audit. The REC server action and RPC still exist under their established access checks; backend issuance is not technically disabled by the UI change. Operational copies and REC remain non-fiscal; printing and document history stay distinct from payments and Accounting.
 - Entitlements: centralized feature catalog and organization entitlement state.
 - Platform Admin: separate SaaS control context with audited cross-tenant administration.
 
