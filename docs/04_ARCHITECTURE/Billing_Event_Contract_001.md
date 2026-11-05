@@ -1,5 +1,17 @@
 # BILLING-EVENT-CONTRACT-001
 
+## PO operational clarification — BILLING-D02-OPERATIONAL-CONTRACT-001 (05/11/2026)
+
+**OPERATIONAL RULE CONFIRMED BY PO.** Documentation-only clarification at repository baseline `76f49cf7ce8b222f4baeb56838e019c78d42c1e0`; no application, SQL or database implementation follows from this entry.
+
+- The laundry service is finished when staff actually complete the work: `SERVICE_PERFORMED` describes that operational fact, not merely when an application action is recorded.
+- The order is operationally closed when the goods are collected by or delivered to the customer: `SERVICE_DELIVERED` is distinct from production completion. This clarification does not add a new persisted order status.
+- `PAYMENT_RECEIVED` is independent of both events. Payment may be full, partial, in advance or subsequent; service completion or delivery does not imply settlement.
+- An order can therefore be finished and still awaiting collection, independently of its economic state. Preserve the implemented production/fulfillment/custody separation.
+- Record each collection once. Documenting or printing it must not duplicate the financial movement or fiscal coverage of the same operation.
+
+This operational clarification does **not** certify the fiscal tax point or automatically approve D01–D04. Conditions C1–C4 and the complete D01–D11 register below retain their actual states. In particular, actual execution, its registration timestamp and the fiscal interpretation must remain distinct. The reliability of a specific completion/payment chronology, treatment of late or contradictory records and verifiable retention of S06 evidence still require the technical contract and applicable fiscal validation. No historical reclassification or fiscal implementation is authorized by this entry.
+
 ## Documentation closeout — 04/11/2026
 
 **COMPLETE — TECHNICAL CTO REVIEW PASS.** Baseline analyzed: `b53ec2e44dc41bfa7ddc456aa8d1711a2fdc55fa`. Execution: READ ONLY. Implementation: NONE. New testing/UAT: NONE. Database changes: NONE. **Fiscal compliance approval: NOT GRANTED.** PO authorization covers only this documentation closeout, commit and push.
