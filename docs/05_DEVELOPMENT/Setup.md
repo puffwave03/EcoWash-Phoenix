@@ -1,5 +1,39 @@
 # Setup
 
+Status: Current setup orientation with historical bootstrap preserved
+
+Reconciled: 2026-11-05; repository checkpoint `d91dc9faba0f040055176a853afad3527f3a0813`.
+
+## Current session and local development
+
+Start with [Start Here](../00_START_HERE.md), [AGENTS](../../AGENTS.md), the relevant [Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md), then verify Git against the explicit task. Setup is not an instruction to recreate the tenant, apply SQL or resume a historical “next task”.
+
+[package.json](../../package.json) and the committed lockfile define the repository dependencies and scripts. The current `dev` script is `next dev --webpack`; use the existing script for authorized development. This documentation correction does not install dependencies, start a server or certify a new runtime/CLI version. For environment or recovery work, reuse the last verified procedure in [Recovery Runbook](Recovery_Runbook.md); do not substitute a different database environment silently.
+
+## Configuration and credential boundaries
+
+- The existing public configuration names are `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`; the localhost/example values in the original below are examples, not staging credentials. The [Supabase configuration loader](../../src/lib/supabase/env.ts) requires URL/anon key for user clients. Match the authorized environment; do not copy a staging URL into production or treat an old project ref as a current target default.
+- `.env.local` stays local and Git-ignored; never commit or print credentials. `SUPABASE_SERVICE_ROLE_KEY` is used by the existing privileged configuration loader for specifically authorized server functions, not ordinary browser/user clients. Never prefix privileged keys with `NEXT_PUBLIC_`, give production administrative credentials to development agents or use them to bypass tenant/RLS checks. [Security](../04_ARCHITECTURE/Security.md) and AGENTS remain authoritative.
+- Preserve the locale-aware password-recovery redirect and environment-specific allowlist checks described below. Historical localhost patterns are not permission to broaden hosted redirect allowlists; verify the canonical HTTPS target when such configuration work is authorized.
+- Supabase Auth/PostgreSQL/private Storage are already implemented. First-owner/staging bootstrap below is completed historical evidence, not a fresh installation checklist or authorization for public signup/browser-side owner assignment.
+
+## Migration history: historical pending notice superseded
+
+INFRA-001.1 **completed** the remote history reconciliation for `20260730000100`; the later Handover explicitly records that local and remote both include that migration. The old “reconciliation pending” and “Next Infrastructure Task” statements below are superseded historical instructions. Later staging checkpoints also record subsequent migrations and aligned history; those counts describe their own dates and do not prove the live target's present state.
+
+Evidence: [Session Handover — Migration History State](../00_START_HERE/SESSION_HANDOVER.md#migration-history-state); [Project Status](../06_ROADMAP/Project_Status.md), INFRA-001.1 completion and smoke reconciliation evidence. No migration is presumed pending merely because an old bootstrap paragraph says so. This P3 correction performs no live history, database or credential check.
+
+Do not reapply approved SQL or rerun bootstrap. Preserve the original warning: no `supabase db reset --linked`, `supabase migration up`, `supabase db push` or `supabase migration repair` without diagnosis and explicit approval. Before any separately authorized remote mutation, prove the exact staging/production target, compatible environment and relevant migration history. Commit/push authorization alone never authorizes database mutation. Use the existing [Git Workflow](Git_Workflow.md) and Recovery Runbook; no new migration/recovery procedure is introduced here.
+
+## Historical original — 2026-07-30
+
+The complete original below is preserved verbatim. Its APP-era exclusions, bootstrap state and next-task instructions are dated evidence, superseded only within the scopes clarified above. They do not authorize current execution.
+
+<details>
+<summary>Original 2026-07-30 guide — historical reference</summary>
+
+# Setup
+
 Status: Active
 
 Version: 0.1
@@ -101,3 +135,5 @@ INFRA-001.1 must verify local and remote migration history before any further mi
 5. Verify whether `20260730000100_infra_001_smoke_fix_order_helper_and_embeds.sql` is present in remote history.
 6. Decide the safe reconciliation method before running any migration or repair command.
 7. Verify `order-media` and run read-only database checks.
+
+</details>
