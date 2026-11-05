@@ -24,6 +24,30 @@ This document records approved targets and sequencing constraints. [Project Stat
 - Distinguish ordinary invoicing, SIF/VERI*FACTU and B2B electronic invoice exchange. A provider integration must preserve canonical orders/payments/Billing, idempotency, tenant/fiscal identity and history.
 - Do not turn the older M1/P0/P1 candidate lists below into a new queue or invent completion percentages/dates. New implementation requires explicit CTO scope and PO authorization.
 
+## COUNTER-THERMAL-DOCUMENTS-001 — PO format requirements (05/11/2026)
+
+**PLANNED / NOT STARTED — existing future mission; requirements recorded, implementation not authorized.** `COUNTER-NOTES-VISIBILITY-001` is **IMPLEMENTED / CTO PASS / STAGING READY / PO VISUAL UAT PASS** at application commit `9760605d0155d3451aab6e5dcb92dda0ef202688`; see [Project Status](../06_ROADMAP/Project_Status.md) for test, staging and scoped UAT evidence and its limits. Format selection and the normally two-copy workflow are not completed features of that correction.
+
+Approved Product Owner requirements for the future mission:
+
+- **Customer EW order copy:** thermal 58/80 mm or A4.
+- **Internal EW work ticket:** thermal 58/80 mm or A4, retaining confidential staff content only in the internal representation.
+- **Operator selection:** choose the format directly from the order. A configurable printer/profile default must allow manual override.
+- **One document, canonical data:** changing the format must not create new document numbers, payments or emissions. Adapt the layout for readable output in both formats; preserve the customer/internal content boundary.
+- **Copies:** printing normally in two copies remains a future requirement, not an implemented or hardware-validated capability.
+
+Fiscal-document presentation remains subject to the applicable fiscal requirements:
+
+| Billing document | Future format direction | Approval boundary |
+|---|---|---|
+| Simplified invoice | A4 and thermal | Mandatory content, readability and fiscal validation required |
+| Ordinary invoice | A4 initially; thermal possibility to evaluate | Thermal is not yet approved as a complete fiscal solution |
+| Monthly invoice | A4 preferred | Preserve canonical Billing content and the applicable fiscal contract |
+
+Billing remains the canonical source of fiscal documents. Emission, payment and printing stay distinct; format work must not modify already issued documents. The operational customer copy and internal work ticket do not become fiscal documents by changing paper format.
+
+**`REC-OPTIONAL-WORKFLOW-001` — PLANNED / NOT STARTED.** Preserve the approved direction: REC will not be mandatory in the future ordinary workflow. Preserve its complete history, numbering, immutable snapshots and reprinting. No REC behavior change is implemented or authorized by this documentation closeout. Neither roadmap mission is launched here.
+
 ## Historical roadmap checkpoints
 
 All prior roadmap content follows unchanged, including approval, UAT and migration evidence. Its “current”, “next”, “missing” and future-task wording describes its original checkpoint. Use the canonical current documents above to distinguish completed work from remaining scope.

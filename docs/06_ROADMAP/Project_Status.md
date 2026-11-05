@@ -2,7 +2,21 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-04. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-05. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## COUNTER-NOTES-VISIBILITY-001 — final closeout (05/11/2026)
+
+**IMPLEMENTED / CTO PASS / STAGING READY / PO VISUAL UAT PASS.** Application commit: `9760605d0155d3451aab6e5dcb92dda0ef202688`. Staging deployment: `dpl_379NksCtRvRgkMjhNZxfsoRbBxTG` — **READY verified by the CTO**, as supplied for this closeout. This checkpoint closes the approved customer/internal note-visibility scope and supersedes its earlier NOT STARTED statements below; historical evidence and unrelated fiscal decisions remain preserved.
+
+**Implemented:** Terminal fields clearly distinguish customer-facing notes/treatment warnings from confidential staff notes. The staff-authorized customer order copy uses an explicit field allowlist, excludes internal notes, unclassified item notes, operator identity and internal logistics/financial references, and shows canonical services, quantities/units, unit prices, line amounts, subtotal, discount, order total, paid and outstanding amounts. Its economic summary is current operational data, not a historical fiscal snapshot. The internal work ticket retains customer, internal and item notes. Five-language coverage: IT/ES/EN/FR/DE.
+
+**Automated evidence from Phase B.1:** 128 tests PASS; TypeScript PASS; scoped lint PASS; diff check PASS. These are prior Codex results, not tests rerun during this documentation closeout. No new application tests, functional checks or database operations were performed here.
+
+**PO visual UAT — synthetic order `EW-000171`:** distinct customer/internal fields PASS; customer copy shows customer notes and excludes internal notes PASS; prices and total **€4.50**, paid **€0.00**, outstanding **€4.50** PASS; internal ticket retains both notes PASS. QR label preview was visible. `REC-2026-000035` was voluntarily issued by the PO for comparison; the customer-copy action did not automatically generate it.
+
+**Evidence limits:** physical printing NOT VERIFIED; QR scanning NOT VERIFIED; browser check with a role denied printing NOT EXECUTED. This is scoped visual UAT acceptance, not full hardware/security UAT approval.
+
+**Continuation:** [approved future print-format requirements](../01_PRODUCT/Roadmap.md#counter-thermal-documents-001--po-format-requirements-05112026) belong to existing `COUNTER-THERMAL-DOCUMENTS-001`, **PLANNED / NOT STARTED**. Thermal/A4 selection and the normally two-copy workflow are future scope. `REC-OPTIONAL-WORKFLOW-001` remains **PLANNED / NOT STARTED**: REC is not mandatory in the future ordinary flow; preserve all existing history, numbering, snapshots and reprints. Billing remains canonical for fiscal documents; no issued document is changed. Neither future mission is opened by this documentation publication.
 
 ## BILLING-EVENT-CONTRACT-001 — documentation closeout (04/11/2026)
 
