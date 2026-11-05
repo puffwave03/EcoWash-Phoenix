@@ -1,3 +1,36 @@
+# Pilot Findings — current reconciliation
+
+Status: Reconciled reference; original pilot record preserved below
+
+Reconciled: 2026-11-05, using approved later checkpoints only. [Project Status](../06_ROADMAP/Project_Status.md) owns current findings, acceptance and gates; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns continuation. The original P1/P2/P3 ordering and next-task list are historical and must not be executed as the current queue. This document assigns no new mission or priority.
+
+## Findings mapped to later evidence
+
+| Original finding | Reconciled status and exact evidence | Remaining boundary |
+|---|---|---|
+| `TERMINAL-MULTI-DRAFT-001` | **SUPERSEDED for the evidenced draft-loss scenario.** [Five-workspace UAT, 15/10](../06_ROADMAP/Project_Status.md#terminal-five-workspaces-recovery--2026-10-15-staging-uat) records commit `8cca0c4374a92776202f592967930a73e354b151`, five independent Venta workspaces, cart isolation, registered-customer A/B/A, distinct occasional customers and refresh recovery PASS. [Transactional UAT, 24/10](../06_ROADMAP/Project_Status.md#terminal-transactional-recovery-uat-001--24102026) separately covers pre-send disconnection and a suppressed response with controlled recovery. | The approved workspace model replaces the old assumption that a new draft subsystem is missing. This does not certify every originally suggested per-customer indicator or arbitrary storage-loss/offline scenario; preserve those specific requests for a separately scoped decision if still needed. |
+| `TERMINAL-CLOSE-PRINT-001` | **PARTIAL / EVIDENCE GAP for the full original request.** [Notes closeout](../06_ROADMAP/Project_Status.md#counter-notes-visibility-001--final-closeout-05112026) and [REC closeout](../06_ROADMAP/Project_Status.md#rec-optional-workflow-001--final-closeout-05112026) verify available EW customer/internal/label previews. Calling the ordinary customer output REC is **SUPERSEDED**: the EW copy is operational and non-fiscal; REC issuance is absent from ordinary UI. | A combined selectable “Print and finish” / “Finish without printing” step is not established as complete by those closeouts. Keep that specific request open; physical printing remains unverified. Future format/copy requirements belong to [COUNTER-THERMAL-DOCUMENTS-001](../01_PRODUCT/Roadmap.md#counter-thermal-documents-001--po-format-requirements-05112026). |
+| `PRINTER-CONFIG-002` | **PARTIAL / EVIDENCE GAP for the full original request.** Current [printer profile types](../../src/features/printer-settings/types.ts) and [queries](../../src/features/printer-settings/server/queries.ts) already represent location, purpose, defaults, connection mode, paper format and label settings. The [implemented baseline](../06_ROADMAP/Project_Status.md#implemented-baseline-and-acceptance-limits) records browser output, profiles and QR. | Do not propose these foundations again as absent. Real transport/test-print, the two physical USB printers, full routing acceptance and future manual A4/thermal selection are not certified complete. Existing network/bridge configuration is not a working driver. |
+| `PORTAL-ORDER-VALIDATION-SUMMARY-001` | **CLOSED / COMPLETE / PO UAT PASS / STAGING VERIFIED**, as recorded in [the later status checkpoint](../06_ROADMAP/Project_Status.md#historical-status--2026-10-12-checkpoint), commit `c726182074c82cf85c8326548b51f34f1eb2ca50`, deployment `dpl_BTiUJFZDuwcRMQqGPFcDpqrdZoVC`. | Closure covers order-level feedback, accessible focus and invalid-section navigation, preserving server validation; it does not close all Portal UX findings. |
+| `AUTH-CONFIG-DRIFT-001` | **CLOSED** by the [B4-backed finding checkpoint](../06_ROADMAP/Project_Status.md#open-findings): hosted signup OFF and email confirmation ON verified through Auth public settings and PO Dashboard evidence. | Managed Auth/authenticated recovery `AUTH-DR-001C` remains a separate mandatory pre-production gate. |
+| `POS-DAILY-CLOSE-001` refinements | **PARTIAL; specific later corrections COMPLETE.** [Counted-cash closeout](../06_ROADMAP/Project_Status.md#pos-counted-cash-ux-001--complete--technical-pass--product-owner-uat-pass) and [Daily Close clarity closeout](../06_ROADMAP/Project_Status.md#daily-close-clarity-ux-001--complete--technical-pass--product-owner-visual-uat-pass) record their own scoped implementation, tests and PO acceptance. | Do not reopen those corrected fields/texts as missing. Unspecified remaining refinements need fresh PO/CTO scope; the entire original umbrella is not declared closed. |
+| `NETWORK-FAILURE-UX-001` / `OFFLINE-RESILIENCE-001` | **OPEN for broader operational failure/offline scope.** The 24/10 transactional UAT above proves two bounded Terminal recovery cases. | It does not prove general offline operation, arbitrary network-failure recovery or every operational screen. |
+| Three 12/09 repository fixes and migration `20260912000100` | **HISTORICAL repository completion evidence preserved.** The original report records the three commits; [its later canonical checkpoint](../06_ROADMAP/Project_Status.md#phoenix-uat-closeout-001-checkpoint) preserves the staging/UAT evidence limitation. | This reconciliation does not infer specific staging application or PO UAT closure merely from later aggregate migration counts. Do not reapply SQL or reuse the original next-task instruction automatically. |
+| `BACKUP-DR-001` | **SUPERSEDED as a wholly unimplemented workstream.** [Recovery Runbook](../05_DEVELOPMENT/Recovery_Runbook.md) records verified logical public DB + Storage recovery and RETRY-002 limitations. | Managed Auth, authenticated application recovery, custody/retention and remaining release gates stay open; no full DR claim. |
+
+## Requests retained without automatic closure
+
+The original line/global amount/percentage discount proposal, mobile visual regression, locale/menu consistency and any unverified printing details remain preserved below. No change to the canonical monetary discount model or product priorities follows from this reconciliation. Billing has existing bounded workflows, while fiscal timing, remaining advance/final/rectification decisions and external-provider integration retain the open gates in [Billing Event Contract](../04_ARCHITECTURE/Billing_Event_Contract_001.md) and Project Status. The original global “paused” fiscal wording is a historical checkpoint, not a statement that current Billing is absent.
+
+No application tests, database checks, deployment checks or new UAT were performed here. Specific evidence gaps remain gaps, not confirmed new defects.
+
+## Original pilot record — historical, preserved verbatim
+
+The record below retains its original dates, wording, priorities and evidence limits. Later mapped checkpoints above take precedence for the stated scopes only.
+
+<details>
+<summary>Original September pilot findings and recommended sequence — historical reference</summary>
+
 # EcoWash Phoenix — Pilot Findings
 
 Date: 2026-09-06
@@ -128,3 +161,5 @@ Connection architecture stays separated from logical routing:
 4. `NETWORK-FAILURE-UX-001`
 5. `AUTH-CONFIG-DRIFT-001` under the mandatory Auth pre-production gate
 6. Continue `TERMINAL-MULTI-DRAFT-001`, `TERMINAL-CLOSE-PRINT-001`, `PRINTER-CONFIG-002` and remaining pilot findings one isolated task at a time
+
+</details>

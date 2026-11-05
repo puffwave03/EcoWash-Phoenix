@@ -78,7 +78,7 @@ The displayed operational status is already derived from production, inbound pic
 
 Fulfillment uses canonical pickup, delivery and customer-handoff records linked to the order. Pickup is inbound customer→EcoWash; delivery is outbound EcoWash→customer.
 
-APP-007 implements pickup and delivery records as separate logistics dimensions. Pickup/delivery completion does not change production status, and production `completed` does not imply customer collection or delivery completion.
+Pickup and delivery records are separate logistics dimensions. The canonical inbound-pickup completion is an intake exception: when its parent order is still `draft`, it can atomically establish physical receipt and advance the order to `received`, recording receipt time and production history. This is acceptance into EcoWash custody, not completion of laundry production or outbound fulfillment. See [inbound custody synchronization](../../supabase/migrations/20260927000300_inbound_custody_sync_001.sql). Outbound delivery completion remains distinct from production; production `completed` alone does not imply customer collection or delivery completion.
 
 Payments and refunds remain separate canonical financial facts. POS recording/refund requires established POS access and an open session for every POS method; Staff additionally needs explicit POS capability. Owner/Manager manual-external payment/refund has its own sessionless boundary. Net collected is confirmed payments minus separate refunds. Legacy `void_payment`/`refund_payment` must not be re-enabled. Payment or receipt issue does not complete production or handoff.
 

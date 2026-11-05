@@ -4,6 +4,26 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## REC-OPTIONAL-WORKFLOW-001 — closeout evidence (05/11/2026)
+
+| Evidence level | Recorded result and limit |
+|---|---|
+| Reviewed code and staging release | Application commit `98bea20f61b8c6b15deb827e335b648a237242f2`; CTO code review PASS. Deployment `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` READY verified by CTO, as recorded in the [canonical closeout](../06_ROADMAP/Project_Status.md#rec-optional-workflow-001--final-closeout-05112026). Ordinary Terminal/Order REC actions were removed; ordinary legacy GET authorizes and redirects without emission; the fiscal Billing branch and historical REC paths remain preserved. |
+| Prior local automated validation | **183 PASS / 1 FAIL** in the combined suite. The Billing failure is pre-existing and reproduced on the baseline: an older test expects simplified selection to be blocked while the baseline permits it. It was left unchanged, not counted as PASS. Separately selected fiscal-route cases: **16 PASS**. TypeScript, scoped lint and diff check PASS. Tests use local contracts/application execution with doubles; no new live database or fiscal-operation proof follows. |
+| PO functional browser UAT | **PASS on 05/11/2026:** REC buttons absent in Terminal and `EW-000171` / `EW-000172`; EW customer/internal/label previews available; `REC-2026-000035` for `EW-000171`, EUR 4.50, retained number/content and opened for reprint preview. Legacy `/print/receipt` for `EW-000172` returned to Order detail. The registry still showed `REC-2026-000035` as the most recent REC, with no new REC for `EW-000172` observed in the list. This is UI evidence, not a direct database audit. |
+| Limits | Physical hardware printing and unauthorized-role negative browser UAT were not performed. The REC server action/RPC remain; backend issuance blocking was not verified and is not claimed. No full hardware/security UAT approval. |
+
+## COUNTER-NOTES-VISIBILITY-001 — closeout evidence (05/11/2026)
+
+| Evidence level | Recorded result and limit |
+|---|---|
+| Reviewed code and staging release | Application commit `9760605d0155d3451aab6e5dcb92dda0ef202688`; CTO PASS. Deployment `dpl_379NksCtRvRgkMjhNZxfsoRbBxTG` READY verified by CTO, supplied in the [canonical closeout](../06_ROADMAP/Project_Status.md#counter-notes-visibility-001--final-closeout-05112026). Customer-copy rendering uses an explicit allowlist and current canonical economic values; the internal ticket retains all note sources. |
+| Prior Phase B.1 local automated validation | **128 PASS**; TypeScript, scoped lint and diff check PASS. Executable TSX/React rendering covers paid, unpaid and partially paid orders in IT/ES/EN/FR/DE, customer-visible warnings and exclusion of confidential fields. This is local rendering/contract evidence, not browser or PostgreSQL runtime authorization proof. |
+| PO visual browser UAT | **PASS**, synthetic `EW-000171`: distinct customer/internal fields; customer notes visible and internal notes excluded on customer copy; prices, total EUR 4.50, paid EUR 0.00 and outstanding EUR 4.50; both notes present on internal ticket. QR label preview visible. `REC-2026-000035` was issued voluntarily by PO for comparison, not automatically by customer-copy navigation. |
+| Limits | Physical printing and QR scanning were not verified; unauthorized-role negative browser UAT was not executed. No full hardware/security UAT approval or fiscal-compliance approval. |
+
+These entries index existing evidence only. No test, UAT, deployment check or database operation is repeated by this P1 documentation correction. Later REC workflow acceptance supersedes the older receipt pre-issue navigation expectations below; their dated evidence remains preserved. A4/thermal selection and configurable copies remain future `COUNTER-THERMAL-DOCUMENTS-001` scope.
+
 ## BILLING-ADVANCE-FINAL-UX-001 — Phase A closeout evidence (04/11/2026)
 
 | Evidence | Result and limit |
