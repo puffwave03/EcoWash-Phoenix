@@ -41,6 +41,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
   const declared = new Set(detail.advanceDeclarations ?? []);
   const openPayments = payments.filter((payment) => payment.status === "confirmed" && !attributed.has(payment.id));
   const hasIssuedAdvances = (detail.advanceDocuments ?? []).some((document) => document.invoiceNumber);
+  const hasPostServiceEvidence = invoice.orderIds.length === 1 && payments.length === 1
+    && payments[0].status === "confirmed" && detail.postServiceEvidence?.paymentId === payments[0].id;
   const statusLabel = t(`statuses.${invoice.paymentStatus}`);
   const taxRate = items[0]?.taxRate ?? 0;
   const issuerAddress = address([invoice.issuerAddressLine1, invoice.issuerAddressLine2, invoice.issuerPostalCode, invoice.issuerCity, invoice.issuerRegion, invoice.issuerCountryCode]);
@@ -236,7 +238,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <h2 className="text-xl font-semibold text-primary">{t("issue.title")}</h2>
             <p className="text-sm leading-6 text-muted">{t("issue.description")}</p>
             {invoice.fiscalDocumentType === "ordinary" ? <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
-              : detail.simplifiedIssuanceReady && payments.length > 0 ? <div className="space-y-5">
+              : detail.simplifiedIssuanceReady && payments.length > 0 && !hasPostServiceEvidence ? <div className="space-y-5">
                 <p className="text-sm text-muted">{t("advanceFlow.help")}</p>
                 {openPayments.map((payment) => <div className="space-y-3 border-t border-border pt-4" key={payment.id}>
                   <p className="font-semibold">{formatDate(payment.paidAt, locale)} · {formatCurrency(payment.amount, invoice.currency, locale)}</p>
@@ -263,8 +265,9 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
               </div>
               : detail.simplifiedIssuanceReady ? <form action={issueSimplifiedBillingInvoiceAction.bind(null, locale, invoice.id)} className="space-y-4">
                 <p className="text-sm text-muted">{t("serviceIssue.help")}</p>
+                {hasPostServiceEvidence ? <p className="text-sm text-primary">{t("serviceIssue.postServiceEvidence")}</p> : null}
                 {detail.operationalCompletedAt ? <p className="text-sm text-muted">{t("serviceIssue.reference")}: {formatDate(detail.operationalCompletedAt, locale)}</p> : null}
-                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" name="servicePerformedOn" required type="date" /></label>
+                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={hasPostServiceEvidence ? detail.postServiceEvidence?.servicePerformedOn : undefined} name="servicePerformedOn" required type="date" /></label>
                 <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
                 <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
                 <label className="flex gap-3 text-sm"><input className="mt-1" name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>

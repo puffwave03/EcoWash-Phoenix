@@ -1,5 +1,6 @@
 "use server";
 
+import { parsePostServiceConfirmation } from "@/features/billing/postservice-declaration";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requirePosAccess } from "@/features/pos/server/access";
@@ -35,15 +36,18 @@ export async function recordPosPaymentAction(locale: string, _state: PosActionSt
   void _state;
   const parsed = parsePosPayment(formData);
   if (!parsed.valid) return fail(parsed.fieldErrors, "validation");
+  const postServiceConfirmed = parsePostServiceConfirmation(formData);
+  if (postServiceConfirmed === null) return fail({}, "validation");
   await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("record_pos_payment", {
+  const { error } = await supabase.rpc(postServiceConfirmed ? "record_pos_postservice_payment" : "record_pos_payment", {
+    ...(postServiceConfirmed ? { target_confirmed: true } : {}),
     target_amount: parsed.input.amount, target_external_status: parsed.input.method === "card" ? "recorded_manual" : null,
     target_idempotency_key: parsed.input.idempotencyKey, target_method: parsed.input.method, target_notes: parsed.input.notes || null,
     target_order_id: parsed.input.orderId, target_pos_session_id: parsed.input.sessionId, target_provider: parsed.input.method === "card" ? MANUAL_CARD_PROVIDER : null,
     target_provider_reference: parsed.input.method === "card" ? parsed.input.reference || null : null, target_reference: parsed.input.reference || null,
   });
-  if (error) { console.error("POS payment failed", error.code); return fail({}, isBusinessDayClosedError(error) ? "closedDay" : "payment"); }
+  if (error) { console.error("POS payment failed", error.code); return fail({}, isBusinessDayClosedError(error) ? "closedDay" : error.message?.includes("billing_postservice_") ? "postservice" : "payment"); }
   refresh(locale, parsed.input.orderId);
   return { ...initialState, success: true };
 }

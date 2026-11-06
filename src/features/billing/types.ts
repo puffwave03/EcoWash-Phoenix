@@ -134,6 +134,7 @@ export type BillingPayment = {
 };
 
 export type BillingInvoiceDetail = {
+  postServiceEvidence?: { paymentId: string; servicePerformedOn: string; declaredAt: string };
   fullPrepayment?: boolean;
   simplifiedIssuanceReady?: boolean;
   operationalCompletedAt?: string | null;

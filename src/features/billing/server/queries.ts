@@ -528,6 +528,20 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     || (payment.status === "refunded" && payment.refunded_from_payment_id != null
       && documentPaymentIds.has(payment.refunded_from_payment_id)));
 
+  let postServiceEvidence: BillingInvoiceDetail["postServiceEvidence"];
+  if (invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "draft"
+    && invoice.orderIds.length === 1 && visiblePayments.length === 1
+    && visiblePayments[0].status === "confirmed") {
+    const evidence = await supabase.from("billing_postservice_payment_evidence")
+      .select("payment_id, service_performed_on, declared_at")
+      .eq("organization_id", membership.organization.id).eq("order_id", invoice.orderIds[0])
+      .eq("payment_id", visiblePayments[0].id).eq("declaration_timing", "contemporaneous")
+      .maybeSingle<{ payment_id: string; service_performed_on: string; declared_at: string }>();
+    if (evidence.error) throw evidence.error;
+    if (evidence.data) postServiceEvidence = { paymentId: evidence.data.payment_id,
+      servicePerformedOn: evidence.data.service_performed_on, declaredAt: evidence.data.declared_at };
+  }
+
   let simplifiedIssuanceReady = false;
   let operationalCompletedAt: string | null = null;
   if (invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "draft") {
@@ -547,6 +561,7 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     }
   }
   return {
+    postServiceEvidence,
     // Immutable attribution, never the current mutable order total.
     fullPrepayment: invoice.billingEventKind === "advance" && invoice.documentStatus === "issued"
       && paymentLinks.some((link) => link.invoiceId === invoice.id && link.role === "final"),
