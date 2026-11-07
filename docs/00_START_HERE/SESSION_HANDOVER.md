@@ -2,7 +2,19 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-05
+Date: 2026-11-07
+
+## Operational closeout — 07/11/2026
+
+**`PHOENIX-RECUPERO-GESTIONALE-ORIGINALE` and `POS-DAILY-CLOSE-REFUND-BALANCE-001` — COMPLETE / CTO PASS / STAGING READY / PO UAT PASS within the observed scope.** Latest verified published commit: `99db4369b0d1cf766f37b162ee2351ae0de1a5bd`; documentation preflight found `main` = `origin/main`, with clean index/worktree.
+
+**Management recovery:** commit `eea59af85519092bcce3bdcac3dac7fcbf12ffa0`. REC is again an explicitly issued, duplicate-protected **non-fiscal** operational document. PO UAT passed for the EW customer copy, internal ticket, labels, REC and idempotent reprint, using `EW-000175` and `REC-2026-000036`. POS, partial payments, refunds and ordinary invoicing passed in the observed paths. This checkpoint **supersedes the operational REC arrangement of `REC-OPTIONAL-WORKFLOW-001` dated 05/11/2026**; its historical evidence below remains intact.
+
+**Refund balances:** valid, non-cancelled orders use `max(order total - confirmed collections + registered refunds, 0)`, using lifetime movements for the same order and tenant. New definitive closes use `pos-daily-close-p2a-v2`; four historical v1 snapshots and their versions are preserved. The 07/11 staging result is EUR **8.00** confirmed, **4.00** refunds, **4.00** net collected and **14.00** outstanding. The test POS session was closed/reconciled and definitive close `3c71058e-4ce9-49b9-838b-43fd99b62112` saved as v2 with verified SHA-256 snapshot hash.
+
+**Evidence and continuation:** [Project Status](../06_ROADMAP/Project_Status.md#operational-closeout--07112026) records the two READY deployments and applied/working staging migrations. [Testing](../05_DEVELOPMENT/Testing.md#operational-closeout-evidence--07112026) separates prior Codex validation (**20 SQL-suite checks PASS / 88 targeted regressions PASS**) from supplied PO/CTO staging verification and PO UAT. No UAT, tests or remote checks were repeated during this documentation-only closeout; no application/database change or publication is performed here. No next mission is opened.
+
+**Still open:** IGIC/VERI*FACTU compliance; the separate future fiscal module and fiscal simplified invoices; physical-printer and QR-scanning tests; security certification and Production Readiness; staging fictitious-data cleanup. REC remains explicitly **non-fiscal**. All other dated checkpoints and unrelated gates remain preserved.
 
 ## PHOENIX-DOCS-RECONCILIATION-001 — P0–P2 checkpoint (05/11/2026)
 

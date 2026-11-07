@@ -4,6 +4,21 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## Operational closeout evidence — 07/11/2026
+
+This section indexes previously completed evidence. **No tests, UAT, staging queries, migrations or deployment checks are rerun by this documentation-only phase.** [Project Status](../06_ROADMAP/Project_Status.md#operational-closeout--07112026) owns current acceptance and release identifiers; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#operational-closeout--07112026) owns continuation. Staging and PO results below are supplied as verified evidence in the 07/11 authorization, separately from prior Codex execution.
+
+| Scope / evidence level | Recorded result and boundary |
+|---|---|
+| Management recovery — staging release | Commit `eea59af85519092bcce3bdcac3dac7fcbf12ffa0`; deployment `dpl_973cTwugB7Zy5Jtxw9HuiRnzwTt7` **READY**; migration `20261106195446_restore_operational_documents_001` applied and verified on staging. These are supplied release-verification results, not new checks during this closeout. |
+| Management recovery — PO functional UAT | **PASS** for customer order copy, internal ticket, labels, explicit non-fiscal REC issuance and idempotent reprint; `EW-000175` and `REC-2026-000036` used as evidence. POS, partial payments, refunds and ordinary invoicing passed in the observed paths only. No universal workflow/security or hardware acceptance follows. This supersedes the REC operational arrangement documented on 05/11; its evidence below remains intact. |
+| Refund balance — prior Codex local execution | **20 PASS / 0 FAIL / 0 SKIP** in the [focused SQL suite](../../tests/pos-daily-close-refund-balance-sql-001.test.mjs), including static contracts and actual Supabase PostgreSQL 17.6 tests with transaction rollback. Covers partial payments, full/partial/later refunds, cancellation, lifetime movements, site/tenant isolation, cent precision, v1/v2 persistence and idempotent replay, semantic conflicts, authorization and cash-session blockers. Saved history and pre-existing laboratory state remained unchanged. Targeted compatibility was verified; this is not full staging-schema parity or PO UAT. |
+| Refund balance — prior Codex regressions | **88 PASS / 0 FAIL / 0 SKIP** across [P2A](../../tests/pos-daily-close-p2a-contract.test.mjs), [P2B](../../tests/pos-daily-close-p2b-contract.test.mjs), [post-close gate](../../tests/daily-close-post-close-gate-contract.test.mjs) and [post-close UX](../../tests/daily-close-post-close-ux-contract.test.mjs) contracts. Counts come from the prior execution report and are not rerun or combined with PO UAT. |
+| Refund balance — staging release | Commit `99db4369b0d1cf766f37b162ee2351ae0de1a5bd`; deployment `dpl_3P3n4MyMP8pDbWkLDvyiszZ4wfVz` **READY**; migration `20261107113342_pos_daily_close_refund_balance_001` present and functioning on staging. Separate supplied staging verification supersedes the earlier post-push BUILDING / migration-pending state. |
+| Refund balance — PO UAT and separate staging SQL verification | **PASS on 07/11/2026:** confirmed EUR **8.00**, refunds **4.00**, net collected **4.00**, outstanding **14.00**. Test POS session closed/reconciled; definitive close `3c71058e-4ce9-49b9-838b-43fd99b62112` saved with `pos-daily-close-p2a-v2` in record/snapshot and a verified SHA-256 snapshot hash. Four historical v1 snapshots and their versions remain preserved. These staging/browser findings are distinct from Codex local tests. |
+
+**Not established by this acceptance:** IGIC/VERI*FACTU compliance, the separate future fiscal module or fiscal simplified invoices, physical-printer operation, QR scanning, security certification, Production Readiness, or cleanup of fictitious staging data. REC remains explicitly **non-fiscal**. All historical evidence and unrelated gates below retain their original scope.
+
 ## REC-OPTIONAL-WORKFLOW-001 — closeout evidence (05/11/2026)
 
 | Evidence level | Recorded result and limit |

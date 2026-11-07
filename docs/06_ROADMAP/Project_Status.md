@@ -2,7 +2,33 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-05. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-07. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## Operational closeout — 07/11/2026
+
+**COMPLETE / CTO PASS / STAGING READY / PO UAT PASS for the two scopes below.** Staging deployment/migration checks, snapshot verification and PO UAT are verified evidence supplied in the 07/11 closeout authorization; Codex does not repeat them in this documentation phase. [Testing evidence](../05_DEVELOPMENT/Testing.md#operational-closeout-evidence--07112026) distinguishes prior local execution from staging and browser acceptance.
+
+### PHOENIX-RECUPERO-GESTIONALE-ORIGINALE
+
+Published commit: `eea59af85519092bcce3bdcac3dac7fcbf12ffa0`. Staging deployment `dpl_973cTwugB7Zy5Jtxw9HuiRnzwTt7` **READY verified**; migration [`20261106195446_restore_operational_documents_001`](../../supabase/migrations/20261106195446_restore_operational_documents_001.sql) **applied and verified on staging**.
+
+Operational **non-fiscal REC** is available again through explicit issuance with duplicate protection and historical/idempotent reprinting. **PO UAT PASS:** customer order copy, internal ticket, labels, REC and idempotent reprint; evidence includes `EW-000175` and `REC-2026-000036`. POS, partial payments, refunds and ordinary invoicing were verified in the observed paths only. This current arrangement supersedes the 05/11 `REC-OPTIONAL-WORKFLOW-001` operational checkpoint; that checkpoint and its test/UAT evidence remain historical and unchanged.
+
+### POS-DAILY-CLOSE-REFUND-BALANCE-001
+
+Published commit: `99db4369b0d1cf766f37b162ee2351ae0de1a5bd`. Staging deployment `dpl_3P3n4MyMP8pDbWkLDvyiszZ4wfVz` **READY verified**; migration [`20261107113342_pos_daily_close_refund_balance_001`](../../supabase/migrations/20261107113342_pos_daily_close_refund_balance_001.sql) **present and functioning on staging**. This supersedes the earlier publication-only state awaiting staging migration.
+
+Canonical outstanding for valid, non-cancelled orders is `max(order total - confirmed collections + registered refunds, 0)`, using lifetime financial facts linked to the same order and tenant. Refunds do not change the sale price; sales, gross collections, refunds and net collection calculations remain unchanged. New closes persist `pos-daily-close-p2a-v2` in both snapshot and record; four historical v1 snapshots and their `calculation_version` are preserved.
+
+**Prior Codex execution:** **20 SQL-suite checks PASS / 88 targeted regressions PASS**. **Separate PO UAT and staging SQL verification PASS — 07/11/2026:**
+
+| Confirmed collections | Refunds | Net collected | Outstanding |
+|---|---|---|---|
+| EUR 8.00 | EUR 4.00 | EUR 4.00 | EUR 14.00 |
+
+The test POS session is closed and reconciled. Definitive close **`3c71058e-4ce9-49b9-838b-43fd99b62112`** is saved with a v2 snapshot, verified SHA-256 hash and correct values; prior history is preserved.
+
+**Open gates remain unchanged:** IGIC/VERI*FACTU fiscal compliance; the separate future fiscal module and fiscal simplified invoices; physical printing and QR scanning; security certification and Production Readiness; cleanup of fictitious staging data. REC remains **non-fiscal**. This documentation closeout changes no application, database, migration, configuration or test, performs no new UAT and opens no next mission.
 
 ## PHOENIX-DOCS-RECONCILIATION-001 — P0–P2 checkpoint (05/11/2026)
 
