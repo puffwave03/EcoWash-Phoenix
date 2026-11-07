@@ -10,7 +10,7 @@ import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
 import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
-import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
+import { PrintOrderActions, type PrintActionText, type CustomerCopyFormatText } from "@/components/printing/PrintOrderActions";
 import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
 import { WarehouseMovementHistory, type WarehouseMovementText } from "@/components/warehouse/WarehouseMovementHistory";
 import type { ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
@@ -221,7 +221,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           </div>
           <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
             {canManageAssignments && entitlementEnabled(entitlements, FEATURES.billingInvoicing) ? <BillingOrderEntry locale={locale} orderId={order.id} /> : null}
-            {canPrint ? <PrintOrderActions locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
+            {canPrint ? <PrintOrderActions customerCopyFormats={printT.raw("customerCopy.formats") as CustomerCopyFormatText} locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
             {pendingQuickDrop ? <a className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-white px-4 font-semibold text-primary lg:w-auto" href="#items">{quickDropT("detailOrder")}</a> : null}
             <Link className="w-full lg:w-auto" href={`/app/orders/${order.id}/edit`} locale={locale}>
               <Button className="w-full lg:w-auto" variant="secondary">{t("edit")}</Button>

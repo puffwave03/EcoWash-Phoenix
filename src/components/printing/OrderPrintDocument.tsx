@@ -13,6 +13,7 @@ import { createOrderCode } from "@/features/barcode/payload";
 import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 export type OrderPrintMode = "labels" | "receipt" | "ticket" | "customer-copy";
+export type CustomerCopyFormat = "a4" | "58mm" | "80mm";
 
 function formatDate(value: string | null, locale: string, timezone: string, includeTime = false) {
   if (!value) return "—";
@@ -147,8 +148,8 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
         <div><dt>{t("fields.expectedReady")}</dt><dd>{formatDate(dueAt, locale, timezone, true)}</dd></div>
       </dl>
       <table className="print-items-table print-ticket-items">
-        <thead><tr><th>{t("fields.service")}</th><th>{t("fields.quantity")}</th><th>{t("fields.unit")}</th><th>{t("customerCopy.unitPrice")}</th><th>{t("fields.lineTotal")}</th></tr></thead>
-        <tbody>{items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{formatQuantity(item.quantity, locale)}</td><td>{t(`units.${item.unitType}`)}</td><td>{formatCurrency(item.unitPrice, currency, locale)}</td><td>{formatCurrency(item.lineTotal, currency, locale)}</td></tr>)}</tbody>
+        <thead><tr><th scope="col">{t("fields.service")}</th><th scope="col">{t("fields.quantity")}</th><th scope="col">{t("fields.unit")}</th><th scope="col">{t("customerCopy.unitPrice")}</th><th scope="col">{t("fields.lineTotal")}</th></tr></thead>
+        <tbody>{items.map((item) => <tr key={item.id}><td>{item.description}</td><td data-label={t("fields.quantity")}>{formatQuantity(item.quantity, locale)}</td><td data-label={t("fields.unit")}>{t(`units.${item.unitType}`)}</td><td data-label={t("customerCopy.unitPrice")}>{formatCurrency(item.unitPrice, currency, locale)}</td><td data-label={t("fields.lineTotal")}>{formatCurrency(item.lineTotal, currency, locale)}</td></tr>)}</tbody>
       </table>
       <section>
         <h3>{t("customerCopy.currentSummary")}</h3>
@@ -166,23 +167,24 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
   );
 }
 
-export async function OrderPrintDocument({ context, locale, mode }: { context: PrintOrderContext; locale: string; mode: OrderPrintMode }) {
+export async function OrderPrintDocument({ context, customerCopyFormat = "a4", locale, mode }: { context: PrintOrderContext; customerCopyFormat?: CustomerCopyFormat; locale: string; mode: OrderPrintMode }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
   const purpose = mode === "labels" ? "label" : mode === "customer-copy" ? "ticket" : mode;
   const profile = context.printerProfiles[purpose] ?? null;
   const profileClass = mode === "receipt"
     ? profile?.paperFormat === "receipt_58mm" ? "order-print-receipt-58mm" : profile?.paperFormat === "browser_pdf" ? "order-print-receipt-pdf" : "order-print-receipt-80mm"
     : mode === "labels" && profile?.paperFormat === "label_custom" ? "order-print-labels-custom" : "";
+  const customerCopyClass = mode === "customer-copy" ? `order-print-customer-copy order-print-customer-${customerCopyFormat}${customerCopyFormat === "a4" ? "" : " order-print-customer-thermal"}` : "";
   return (
-    <div className={`order-print-document order-print-${mode === "customer-copy" ? "ticket" : mode} ${profileClass}`}>
+    <div className={`order-print-document order-print-${mode === "customer-copy" ? "ticket" : mode} ${profileClass}${customerCopyClass ? ` ${customerCopyClass}` : ""}`}>
       <div className="print-preview-toolbar print:hidden">
         <div className="print-preview-actions">
           <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href={`/app/orders/${context.order.id}`} locale={locale}>← {t("actions.back")}</Link>
           <PrintButton label={t("actions.print")} />
         </div>
         <p className="print-profile-status">
-          <strong>{profile ? `${t("profile.selected")}: ${profile.displayName}` : t("profile.browserFallback")}</strong>
-          <span>{profile && profile.connectionMode !== "browser" ? t("profile.adapterFallback") : t("profile.browserOnly")}</span>
+          <strong>{mode === "customer-copy" ? t(`customerCopy.formats.${customerCopyFormat}`) : profile ? `${t("profile.selected")}: ${profile.displayName}` : t("profile.browserFallback")}</strong>
+          <span>{mode === "customer-copy" ? t("customerCopy.paperHint") : profile && profile.connectionMode !== "browser" ? t("profile.adapterFallback") : t("profile.browserOnly")}</span>
         </p>
       </div>
       {mode === "customer-copy" ? <CustomerCopy

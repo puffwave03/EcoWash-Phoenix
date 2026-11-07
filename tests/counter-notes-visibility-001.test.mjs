@@ -70,47 +70,52 @@ async function resolveTree(node) {
   const children = await resolveTree(node.props.children);
   return React.cloneElement(node, {}, ...(Array.isArray(children) ? children : [children]));
 }
-async function render(context, locale, mode) {
-  return renderToStaticMarkup(await resolveTree(await Document({ context, locale, mode })));
+async function render(context, locale, mode, customerCopyFormat) {
+  return renderToStaticMarkup(await resolveTree(await Document({ context, locale, mode, customerCopyFormat })));
 }
 for (const locale of ["it", "es", "en", "fr", "de"]) {
-  test(`${locale}: actual customer output contains warnings and excludes all private markers`, async () => {
-    const context = fixture();
-    const before = JSON.stringify(context);
-    const html = await render(context, locale, "customer-copy");
-    assert.match(html, /CUSTOMER_WARNING: cold wash/);
-    assert.match(html, /EW-TEST/);
-    assert.match(html, /Shirt/);
-    assert.doesNotMatch(html, /CONFIDENTIAL|UNCLASSIFIED|PRIVATE|FUTURE_PRIVATE/);
-    assert.ok(html.includes(messages(locale).print.customerCopy.title));
-    assert.equal(JSON.stringify(context), before);
-  });
-  for (const [paymentStatus, totalPaid, balanceDue] of [["unpaid", 0, 76], ["paid", 76, 0], ["partially_paid", 31.25, 44.75]]) {
-    test(`${locale}: current customer amounts for ${paymentStatus} use canonical values and exclude private information`, async () => {
+  for (const format of ["a4", "58mm", "80mm"]) {
+    test(`${locale}/${format}: actual customer output contains warnings and excludes all private markers`, async () => {
       const context = fixture();
-      context.paymentSummary = { ...context.paymentSummary, paymentStatus, totalPaid, balanceDue };
       const before = JSON.stringify(context);
-      const html = await render(context, locale, "customer-copy");
-      const t = messages(locale).print;
-      for (const value of [t.customerCopy.unitPrice, t.customerCopy.currentSummary, t.fields.lineTotal,
-        t.fields.subtotal, t.fields.discount, t.fields.total, t.fields.paid, t.fields.outstanding]) {
-        assert.ok(html.includes(value), `Missing ${locale} label: ${value}`);
-      }
-      for (const amount of [context.items[0].unitPrice, context.items[0].lineTotal]) {
-        assert.ok(html.includes(`<td>${formatCurrency(amount, context.order.currency, locale)}</td>`));
-      }
-      assert.ok(html.includes(`<td>${formatQuantity(context.items[0].quantity, locale)}</td>`));
-      assert.ok(html.includes(`<td>${t.units.piece}</td>`));
-      for (const [label, amount, prefix = ""] of [
-        [t.fields.subtotal, context.order.subtotal], [t.fields.discount, context.order.discountAmount, "−"],
-        [t.fields.total, context.order.total], [t.fields.paid, totalPaid], [t.fields.outstanding, balanceDue],
-      ]) {
-        assert.ok(html.includes(`<dt>${label}</dt><dd>${prefix}${formatCurrency(amount, context.order.currency, locale)}</dd>`), `Wrong ${locale} ${label}`);
-      }
+      const html = await render(context, locale, "customer-copy", format);
       assert.match(html, /CUSTOMER_WARNING: cold wash/);
+      assert.match(html, /EW-TEST/);
+      assert.match(html, /Shirt/);
       assert.doesNotMatch(html, /CONFIDENTIAL|UNCLASSIFIED|PRIVATE|FUTURE_PRIVATE/);
+      assert.ok(html.includes(messages(locale).print.customerCopy.title));
       assert.equal(JSON.stringify(context), before);
     });
+    for (const [paymentStatus, totalPaid, balanceDue] of [["unpaid", 0, 76], ["paid", 76, 0], ["partially_paid", 31.25, 44.75], ["refunded", 0, 76]]) {
+      test(`${locale}/${format}: current customer amounts for ${paymentStatus} use canonical values and exclude private information`, async () => {
+        const context = fixture();
+        context.paymentSummary = { ...context.paymentSummary, paymentStatus, totalPaid, balanceDue };
+        // Contradictory raw entries prove presentation reads the canonical summary,
+        // rather than recalculating amounts from the financial ledger.
+        context.payments = [{ status: "confirmed", amount: 999, method: "cash", reference: "PRIVATE_PAYMENT_REFERENCE" }];
+        const beforeRender = JSON.stringify(context);
+        const html = await render(context, locale, "customer-copy", format);
+        const t = messages(locale).print;
+        for (const value of [t.customerCopy.unitPrice, t.customerCopy.currentSummary, t.fields.lineTotal,
+          t.fields.subtotal, t.fields.discount, t.fields.total, t.fields.paid, t.fields.outstanding]) {
+          assert.ok(html.includes(value), `Missing ${locale} label: ${value}`);
+        }
+        for (const [label, amount] of [[t.customerCopy.unitPrice, context.items[0].unitPrice], [t.fields.lineTotal, context.items[0].lineTotal]]) {
+          assert.ok(html.includes(`<td data-label="${label}">${formatCurrency(amount, context.order.currency, locale)}</td>`));
+        }
+        assert.ok(html.includes(`<td data-label="${t.fields.quantity}">${formatQuantity(context.items[0].quantity, locale)}</td>`));
+        assert.ok(html.includes(`<td data-label="${t.fields.unit}">${t.units.piece}</td>`));
+        for (const [label, amount, prefix = ""] of [
+          [t.fields.subtotal, context.order.subtotal], [t.fields.discount, context.order.discountAmount, "−"],
+          [t.fields.total, context.order.total], [t.fields.paid, totalPaid], [t.fields.outstanding, balanceDue],
+        ]) {
+          assert.ok(html.includes(`<dt>${label}</dt><dd>${prefix}${formatCurrency(amount, context.order.currency, locale)}</dd>`), `Wrong ${locale} ${label}`);
+        }
+        assert.match(html, /CUSTOMER_WARNING: cold wash/);
+        assert.doesNotMatch(html, /CONFIDENTIAL|UNCLASSIFIED|PRIVATE|FUTURE_PRIVATE/);
+        assert.equal(JSON.stringify(context), beforeRender);
+      });
+    }
   }
   test(`${locale}: staff ticket retains all three note sources`, async () => {
     const html = await render(fixture(), locale, "ticket");
@@ -161,4 +166,89 @@ test("all locales distinguish customer action, internal ticket and receipt", () 
   const actions = read("src/components/printing/PrintOrderActions.tsx");
   assert.match(actions, /\/print\/customer-copy/);
   assert.match(read("src/components/shop-terminal/ShopTerminalWorkspace.tsx"), /modes=\{\["customer-copy", "receipt"\]\}/);
+});
+
+test("customer preview server allowlist defaults safely and never bypasses order access", async () => {
+  for (const [input, expected] of [[undefined, "a4"], ["a4", "a4"], ["58mm", "58mm"], ["80mm", "80mm"],
+    ["", "a4"], ["receipt_58mm", "a4"], ["../ticket", "a4"], ["58mm extra", "a4"], [["58mm", "80mm"], "a4"]]) {
+    const calls = [];
+    const Page = load(route, {
+      "@/components/printing/OrderPrintDocument": { OrderPrintDocument: Document },
+      "@/features/printing/server/queries": { getPrintOrderContext: async (...args) => { calls.push(args); return fixture(); } },
+    }).default;
+    const params = Promise.resolve({ locale: "it", orderId: "order-test" });
+    const searchParams = Promise.resolve({ format: input, organization_id: "foreign", receiptId: "ignored" });
+    const html = renderToStaticMarkup(await resolveTree(await Page({ params, searchParams })));
+    assert.match(html, new RegExp(`order-print-customer-${expected}[ "]`));
+    assert.equal(html.includes("order-print-customer-thermal"), expected !== "a4");
+    assert.deepEqual(calls, [["it", "order-test"]]);
+    const DeniedPage = load(route, {
+      "@/components/printing/OrderPrintDocument": { OrderPrintDocument: () => { assert.fail("must not render denied order"); } },
+      "@/features/printing/server/queries": { getPrintOrderContext: async () => { throw Error("access denied"); } },
+    }).default;
+    await assert.rejects(DeniedPage({ params, searchParams }), /access denied/);
+  }
+});
+
+test("default A4 equals explicit A4; customer format never affects staff, labels or legacy receipt", async () => {
+  const context = fixture();
+  context.printerProfiles.ticket = { displayName: "Staff profile", connectionMode: "local_bridge", paperFormat: "ticket_a4" };
+  assert.equal(await render(context, "it", "customer-copy"), await render(context, "it", "customer-copy", "a4"));
+  for (const mode of ["ticket", "labels", "receipt"]) {
+    for (const format of ["a4", "58mm", "80mm"]) {
+      assert.equal(await render(context, "it", mode, format), await render(context, "it", mode));
+    }
+  }
+  const html = await render(context, "it", "customer-copy", "58mm");
+  assert.doesNotMatch(html, /Staff profile/);
+  assert.ok(html.includes(messages("it").print.customerCopy.paperHint));
+});
+
+test("many services, long descriptions and public notes remain complete in every format and locale", async () => {
+  for (const locale of ["it", "es", "en", "fr", "de"]) {
+    const context = fixture();
+    const longText = "Caffè, più qualità — Étiquette très délicate, Größe 123456789012345678901234567890";
+    context.items = Array.from({ length: 45 }, (_, i) => ({ ...context.items[0], id: `item-${i}`, description: `${longText} — ${i}`, quantity: 1.25, unitType: "weight" }));
+    context.order.customerNotes = `${longText}\n${longText}`;
+    for (const format of ["a4", "58mm", "80mm"]) {
+      const html = await render(context, locale, "customer-copy", format);
+      const tbody = html.split("<tbody>")[1].split("</tbody>")[0];
+      assert.equal((tbody.match(/<tr>/g) ?? []).length, 45);
+      assert.ok(html.includes(`${longText} — 44`));
+      assert.ok(html.includes(formatQuantity(1.25, locale)));
+      assert.ok(html.includes("€"));
+      assert.ok(html.includes(messages(locale).print.customerCopy.notFiscal));
+      assert.doesNotMatch(html, /CONFIDENTIAL|UNCLASSIFIED|PRIVATE/);
+    }
+  }
+});
+
+test("only Order detail opts into format links; actions navigate to preview without issuing or printing", async () => {
+  let issued = 0;
+  const { PrintOrderActions } = load("src/components/printing/PrintOrderActions.tsx", {
+    "@/i18n/navigation": { Link: ({ href, locale, children }) => React.createElement("a", { href: `/${locale}${href}` }, children) },
+    "react-dom": { useFormStatus: () => ({ pending: false }) },
+    "@/features/sales-documents/server/actions": { issueOperationalReceiptAction: () => { issued += 1; } },
+  });
+  for (const locale of ["it", "es", "en", "fr", "de"]) {
+    const t = messages(locale).print;
+    assert.deepEqual(Object.keys(t.customerCopy.formats).sort(), ["58mm", "80mm", "a4"]);
+    assert.ok(t.customerCopy.paperHint.length > 0);
+    const base = { locale, orderId: "order-test", text: t.actions, modes: ["customer-copy", "ticket", "labels"] };
+    const html = renderToStaticMarkup(await resolveTree(PrintOrderActions({ ...base, customerCopyFormats: t.customerCopy.formats })));
+    for (const format of ["a4", "58mm", "80mm"]) {
+      assert.ok(html.includes(`href="/${locale}/app/orders/order-test/print/customer-copy?format=${format}"`));
+      assert.ok(html.includes(t.customerCopy.formats[format]));
+    }
+    for (const mode of ["ticket", "labels"]) assert.ok(html.includes(`href="/${locale}/app/orders/order-test/print/${mode}"`));
+    assert.doesNotMatch(html, /<form|<button/);
+    const terminalHtml = renderToStaticMarkup(await resolveTree(PrintOrderActions(base)));
+    assert.ok(terminalHtml.includes(`href="/${locale}/app/orders/order-test/print/customer-copy"`));
+    assert.doesNotMatch(terminalHtml, /\?format/);
+    const restricted = renderToStaticMarkup(await resolveTree(PrintOrderActions({ ...base, customerCopyFormats: t.customerCopy.formats, modes: ["ticket"] })));
+    assert.doesNotMatch(restricted, /customer-copy/);
+  }
+  assert.equal(issued, 0);
+  assert.match(read("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"), /canPrint \? <PrintOrderActions customerCopyFormats=/);
+  assert.doesNotMatch(read(route), /\.rpc\(|issueOperationalReceipt|savePrinter|window\.print/);
 });

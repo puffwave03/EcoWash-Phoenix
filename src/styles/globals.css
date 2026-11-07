@@ -61,6 +61,9 @@
   margin: 12mm;
 }
 
+/* Roll dimensions come from the browser/driver, not a nonstandard page size. */
+@page customer-ew-roll { size: auto; margin: 0; }
+
 @page labels {
   size: A4 portrait;
   margin: 8mm;
@@ -299,6 +302,58 @@
 .print-label-grid-custom .print-label h3 { margin-top: 1mm; font-size: 0.85rem; }
 .print-label-grid-custom .print-label-service { margin-block: 1mm; font-size: 0.72rem; }
 .print-label-grid-custom .print-label-position { top: var(--print-label-margin); right: var(--print-label-margin); font-size: 0.62rem; }
+
+/* Customer EW presentation only: the internal ticket, REC and labels keep
+   their existing layouts. Width includes a conservative inner paper margin. */
+.order-print-customer-58mm { --customer-copy-width: 58mm; }
+.order-print-customer-80mm { --customer-copy-width: 80mm; }
+.order-print-customer-thermal .print-sheet {
+  box-sizing: border-box;
+  width: min(100%, var(--customer-copy-width));
+  padding: 3mm;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.order-print-customer-thermal .print-brand-header { flex-direction: column; text-align: center; gap: 2mm; }
+.order-print-customer-thermal .print-brand-header h1 { font-size: 15px; }
+.order-print-customer-thermal .print-brand-logo { max-width: 100%; height: auto; max-height: 12mm; }
+.order-print-customer-thermal .print-ticket-code-block { display: block; margin-block: 3mm; }
+.order-print-customer-thermal .print-ticket-number { border-width: 1px; padding: 2mm; }
+.order-print-customer-thermal .print-ticket-number p { font-size: 11px; letter-spacing: normal; }
+.order-print-customer-thermal .print-ticket-number h2 { font-size: 22px; line-height: 1.2; }
+.order-print-customer-thermal .print-ticket-grid { grid-template-columns: 1fr; gap: 2mm; }
+.order-print-customer-thermal .print-ticket-grid > div { display: block; padding-bottom: 1mm; }
+.order-print-customer-thermal .print-ticket-grid dd { text-align: left; }
+.order-print-customer-thermal .print-items-table,
+.order-print-customer-thermal .print-items-table tbody { display: block; }
+/* Keep accessible column headers; each compact cell repeats its localized label. */
+.order-print-customer-thermal .print-items-table thead { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.order-print-customer-thermal .print-items-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2mm 3mm; padding-block: 2mm; border-bottom: 1px solid #ccc; }
+.order-print-customer-thermal .print-items-table td { width: auto; min-width: 0; padding: 0; border: 0; text-align: left; }
+.order-print-customer-thermal .print-items-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
+.order-print-customer-thermal .print-items-table td[data-label]::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 700; }
+.order-print-customer-thermal .print-ticket-items { margin-top: 3mm; margin-bottom: 3mm; }
+.order-print-customer-thermal .print-totals { width: 100%; }
+.order-print-customer-thermal .print-totals > div { gap: 2mm; }
+.order-print-customer-thermal .print-totals dd { min-width: 0; text-align: right; }
+.order-print-customer-thermal .print-ticket-notes h3,
+.order-print-customer-thermal .print-legal-boundary { font-size: 10px; }
+.order-print-customer-thermal .print-brand-header,
+.order-print-customer-thermal .print-ticket-code-block,
+.order-print-customer-thermal section:has(.print-totals),
+.order-print-customer-thermal .print-legal-boundary { break-inside: avoid; }
+.order-print-customer-thermal .print-ticket-notes p { orphans: 2; widows: 2; }
+
+@media print {
+  /* Let long customer copies fragment in normal flow. Remove only the shell
+     around this output; no hidden staff content is rendered into the copy. */
+  body:has(.order-print-customer-thermal) { page: customer-ew-roll; }
+  body:has(.order-print-customer-thermal) *:has(.order-print-customer-thermal) { display: contents; }
+  body:has(.order-print-customer-thermal) *:not(:has(.order-print-customer-thermal)):not(.order-print-customer-thermal):not(.order-print-customer-thermal *) { display: none; }
+  .order-print-customer-thermal { page: customer-ew-roll; position: static; inset: auto; width: min(100%, var(--customer-copy-width)); margin: 0; }
+  .order-print-customer-thermal .print-sheet { border: 0; }
+}
 
 @media (max-width: 640px) {
   .print-ticket-grid, .print-label-grid, .print-ticket-code-block { grid-template-columns: 1fr; }
