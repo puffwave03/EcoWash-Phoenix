@@ -4,9 +4,9 @@
  * - salesNet = the same orders' payable total after the canonical order discount;
  * - collectedGross/refunds = confirmed/refunded payment rows by payments.paid_at;
  * - collectedNet = collectedGross - refunds;
- * - outstanding = order total - lifetime confirmed collections. A payment refund is
- *   reported as a cash outflow and does not invent a new receivable without a
- *   canonical order adjustment/return event;
+ * - outstanding = valid order total - lifetime net collections (confirmed minus
+ *   registered refunds), floored at zero. Refunds restore the unpaid balance
+ *   without changing the order price; cancellation/price adjustments are separate;
  * - invoice snapshots are documents, never an additional sale;
  * - pending/void payments and provider attempts are not money;
  * - undetailed Quick Drops are excluded until an active canonical item exists;
@@ -102,6 +102,7 @@ export type AccountingSummaryInput = {
   periodPayments: AccountingPaymentFact[];
   posSessionPayments: AccountingPaymentFact[];
   posSessions: AccountingPosSessionFact[];
+  // Legacy input name: includes lifetime confirmed payments AND registered refunds.
   receivableConfirmedPayments: AccountingPaymentFact[];
   salesOrders: AccountingOrderFact[];
   salesPeriod: AccountingPeriod;
@@ -114,21 +115,22 @@ const sum = <T>(rows: T[], value: (row: T) => number) => round(rows.reduce((tota
 
 export function buildReceivableBalances(
   orders: Pick<AccountingOrderFact, "id" | "total">[],
-  confirmedPayments: Pick<AccountingPaymentFact, "amount" | "orderId" | "status">[],
+  payments: Pick<AccountingPaymentFact, "amount" | "orderId" | "status">[],
 ) {
-  const confirmedByOrder = new Map<string, number>();
+  const netCollectedByOrder = new Map<string, number>();
 
-  for (const payment of confirmedPayments) {
-    if (payment.status !== "confirmed") continue;
-    confirmedByOrder.set(
+  for (const payment of payments) {
+    if (payment.status !== "confirmed" && payment.status !== "refunded") continue;
+    const amount = payment.status === "refunded" ? -payment.amount : payment.amount;
+    netCollectedByOrder.set(
       payment.orderId,
-      round((confirmedByOrder.get(payment.orderId) ?? 0) + payment.amount),
+      round((netCollectedByOrder.get(payment.orderId) ?? 0) + amount),
     );
   }
 
   return new Map(orders.map((order) => [
     order.id,
-    round(Math.max(order.total - (confirmedByOrder.get(order.id) ?? 0), 0)),
+    round(Math.max(order.total - (netCollectedByOrder.get(order.id) ?? 0), 0)),
   ]));
 }
 

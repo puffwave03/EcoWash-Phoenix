@@ -135,7 +135,7 @@ export async function getAccountingSummary(locale: string, filter: AccountingSum
         .eq("organization_id", organizationId).in("order_id", ids).eq("is_active", true).range(from, to)),
       pages<PaymentRow>((from, to) => supabase.from("payments")
         .select("id, order_id, amount, method, status, paid_at, channel, pos_session_id, order:orders!payments_order_same_org!inner(currency, location_id)")
-        .eq("organization_id", organizationId).in("order_id", ids).eq("status", "confirmed").range(from, to)),
+        .eq("organization_id", organizationId).in("order_id", ids).in("status", ["confirmed", "refunded"]).range(from, to)),
     ]);
     for (const source of sources) quickDropIds.add(source.order_id);
     for (const item of items) itemCounts.set(item.order_id, (itemCounts.get(item.order_id) ?? 0) + 1);

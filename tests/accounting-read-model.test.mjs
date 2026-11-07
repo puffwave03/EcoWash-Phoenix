@@ -32,11 +32,11 @@ test("4 split cash/card is counted once and split accurately", () => {
   assert.equal(value.collectedGross, 100); assert.equal(value.cashCollected, 40); assert.equal(value.cardCollected, 60);
 });
 
-test("5 refunds reduce net collected without creating a second sale or receivable", () => {
+test("5 refunds restore the valid order residual without changing sales or duplicating cash", () => {
   const paid = payment();
   const refund = payment({ amount: 20, id: "refund", status: "refunded" });
-  const value = summary({ periodPayments: [paid, refund], receivableConfirmedPayments: [paid], salesOrders: [order({ id: "order-a" })] });
-  assert.equal(value.salesNet, 100); assert.equal(value.refunds, 20); assert.equal(value.collectedNet, 80); assert.equal(value.outstanding, 0);
+  const value = summary({ periodPayments: [paid, refund], receivableConfirmedPayments: [paid, refund], salesOrders: [order({ id: "order-a" })] });
+  assert.equal(value.salesNet, 100); assert.equal(value.refunds, 20); assert.equal(value.collectedNet, 80); assert.equal(value.outstanding, 20);
 });
 
 test("6 invoices are absent from the order-based sales input and cannot double count", async () => {
@@ -97,7 +97,7 @@ test("14 canonical rows, not provider events, are the only payment input", async
   const query = await readFile(new URL("../src/features/accounting/server/queries.ts", import.meta.url), "utf8");
   assert.match(query, /from\("payments"\)/);
   assert.doesNotMatch(query, /online_payment_attempts|online_payment_provider_events/);
-  assert.match(query, /\.eq\("status", "confirmed"\)/);
+  assert.match(query, /\.in\("status", \["confirmed", "refunded"\]\)/);
 });
 
 test("15 cancelled orders stay out of sales while their confirmed collections remain", () => {

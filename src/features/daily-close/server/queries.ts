@@ -50,7 +50,7 @@ type OrderRow = {
 type PaymentRow = {
   amount: number;
   order_id: string;
-  status: "confirmed";
+  status: "confirmed" | "refunded";
 };
 
 type PaymentLocationRow = {
@@ -253,13 +253,13 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
         .in("production_status", ["draft", "received", "washing", "drying", "ironing", "quality_check", "packing", "ready", "on_hold"])
         .or(openOrderFilter).order("created_at").order("id").range(from, to).returns<OrderRow[]>()),
     ]);
-    const confirmedPayments: PaymentRow[] = [];
+    const receivablePayments: PaymentRow[] = [];
     for (const ids of chunks(created.map((order) => order.id))) {
-      confirmedPayments.push(...await pages<PaymentRow>((from, to) => supabase.from("payments")
+      receivablePayments.push(...await pages<PaymentRow>((from, to) => supabase.from("payments")
         .select("order_id, amount, status").eq("organization_id", organizationId)
-        .in("order_id", ids).eq("status", "confirmed").order("paid_at").range(from, to).returns<PaymentRow[]>()));
+        .in("order_id", ids).in("status", ["confirmed", "refunded"]).order("paid_at").range(from, to).returns<PaymentRow[]>()));
     }
-    return { cancelled, confirmedPayments, created, open, productionCompleted };
+    return { cancelled, receivablePayments, created, open, productionCompleted };
   })();
 
   const logisticsPromise = (async () => {
@@ -461,7 +461,7 @@ export async function getDailyCloseData(locale: string, filters: DailyCloseFilte
       const created = ordersResult.value.created.filter((order) => outstandingIds.has(order.id));
       const balances = buildReceivableBalances(
         created.map((order) => ({ id: order.id, total: Number(order.total) })),
-        ordersResult.value.confirmedPayments.map((payment) => ({
+        ordersResult.value.receivablePayments.map((payment) => ({
           amount: Number(payment.amount),
           orderId: payment.order_id,
           status: payment.status,

@@ -94,14 +94,14 @@ test("5-8 payment totals, refunds, methods and outstanding reuse Accounting cano
     payment({ amount: 25, id: "card", method: "card" }),
     payment({ amount: 10, id: "refund", method: "cash", status: "refunded" }),
   ];
-  const value = summary({ payments, receivablePayments: payments.filter((item) => item.status === "confirmed") });
+  const value = summary({ payments });
   assert.equal(value.collectedGross, 85);
   assert.equal(value.refunds, 10);
   assert.equal(value.collectedNet, 75);
   assert.equal(value.cashCollected, 60);
   assert.equal(value.cardCollected, 25);
-  assert.equal(value.outstanding, 15);
-  assert.equal(buildReceivableBalances([order()], payments).get("order-1"), 15);
+  assert.equal(value.outstanding, 25);
+  assert.equal(buildReceivableBalances([order()], payments).get("order-1"), 25);
 });
 
 test("9-11 future logistics is excluded, overdue work included and cancelled parents rejected", async () => {
@@ -181,3 +181,24 @@ for (const [locale, [live, loaded, day, confirmed, scope]] of Object.entries(cla
     assert.doesNotMatch(JSON.stringify(dailyClose), /(?:phase|fase)\s*2/i);
   });
 }
+
+test("refund-balance UAT: two valid orders owe 14.00 with unchanged gross/refunds/net", () => {
+  const orders = [order({ id: "EW-000174", subtotal: 8.5, total: 8.5 }), order({ id: "EW-000175", subtotal: 9.5, total: 9.5 })];
+  const payments = [payment({ id: "paid-174", orderId: "EW-000174", amount: 4 }), payment({ id: "refund-174", orderId: "EW-000174", amount: 4, status: "refunded" }), payment({ id: "paid-175", orderId: "EW-000175", amount: 4 })];
+  const value = summary({ orders, payments });
+  assert.deepEqual(Object.fromEntries(buildReceivableBalances(orders, payments)), { "EW-000174": 8.5, "EW-000175": 5.5 });
+  assert.deepEqual({ sales: value.salesNet, gross: value.collectedGross, refunds: value.refunds, net: value.collectedNet, due: value.outstanding }, { sales: 18, gross: 8, refunds: 4, net: 4, due: 14 });
+});
+
+for (const [name, payments, expected] of [
+  ["partial payment", [payment({ amount: 4 })], 4.5],
+  ["full refund of advance", [payment({ amount: 4 }), payment({ amount: 4, status: "refunded" })], 8.5],
+  ["partial refund", [payment({ amount: 4 }), payment({ amount: 1.25, status: "refunded" })], 5.75],
+  ["pending and void ignored", [payment({ amount: 4 }), payment({ amount: 4, status: "pending" }), payment({ amount: 4, status: "void" })], 4.5],
+  ["cent rounding", [payment({ amount: 0.1 }), payment({ amount: 0.2 }), payment({ amount: 0.1, status: "refunded" })], 8.3],
+  ["paid above total floors due at zero", [payment({ amount: 10 })], 0],
+]) test(`refund-balance: ${name}`, () => {
+  const value = summary({ orders: [order({ total: 8.5, subtotal: 8.5 })], payments });
+  assert.equal(value.outstanding, expected);
+  assert.equal(value.salesNet, 8.5);
+});
