@@ -5,11 +5,10 @@ import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { EligibleBillingOrder } from "@/features/billing/types";
-import { getBillingSettings, listEligibleBillingOrders } from "@/features/billing/server/queries";
+import { listEligibleBillingOrders } from "@/features/billing/server/queries";
 
 type BillingOrderEntry =
-  | { kind: "prepare"; customerId: string; href: string; simplifiedOrder?: EligibleBillingOrder }
+  | { kind: "prepare"; customerId: string; href: string }
   | { kind: "draft" | "issued"; href: string }
   | { kind: "unavailable"; reason: "sharedWalkIn" | "ineligible" };
 
@@ -50,15 +49,7 @@ export async function getBillingOrderEntry(locale: string, orderId: string): Pro
     }
     return { kind: invoice.data.document_status as "draft" | "issued", href: `/app/billing/${invoice.data.id}` };
   }
-  if (customer.data.customer_code === "WALKIN-SHARED") {
-    const settings = await getBillingSettings(locale);
-    if (!settings.simplifiedIssuanceReady) return { kind: "unavailable", reason: "sharedWalkIn" };
-    const row = order.data;
-    if (!row.is_active || ["draft", "cancelled"].includes(row.production_status)) return { kind: "unavailable", reason: "ineligible" };
-    return { kind: "prepare", customerId, href: `/app/billing/new?orderId=${encodeURIComponent(orderId)}`,
-      simplifiedOrder: { id: orderId, customerId, customerName: "", customerActive: true,
-        currency: row.currency, total: Number(row.total), createdAt: row.created_at, orderNumber: row.order_number } };
-  }
+  if (customer.data.customer_code === "WALKIN-SHARED") return { kind: "unavailable", reason: "sharedWalkIn" };
   // Cancelled documents have inactive links. Reuse the existing selector rather
   // than extending eligibility (or treating a read failure as an empty result).
   const { orders } = await listEligibleBillingOrders(locale, customerId, orderId);

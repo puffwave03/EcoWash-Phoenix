@@ -160,5 +160,5 @@ test("all locales distinguish customer action, internal ticket and receipt", () 
   }
   const actions = read("src/components/printing/PrintOrderActions.tsx");
   assert.match(actions, /\/print\/customer-copy/);
-  assert.match(read("src/components/shop-terminal/ShopTerminalWorkspace.tsx"), /modes=\{\["customer-copy"\]\}/);
+  assert.match(read("src/components/shop-terminal/ShopTerminalWorkspace.tsx"), /modes=\{\["customer-copy", "receipt"\]\}/);
 });

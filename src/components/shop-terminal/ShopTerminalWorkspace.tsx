@@ -1181,7 +1181,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
           <div className="rounded-card border border-border bg-white p-5 shadow-card sm:p-7">
             <h3 className="text-xl font-bold text-primary" id="order-documents-title">{text.orderDocuments}</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {canPrint ? <PrintOrderActions locale={locale} modes={["customer-copy"]} orderId={result.orderId} text={printText} /> : null}
+              {canPrint ? <PrintOrderActions locale={locale} modes={["customer-copy", "receipt"]} orderId={result.orderId} text={printText} /> : null}
               {canPrint ? <Link className="flex min-h-12 items-center justify-center rounded-control border border-primary px-4 text-center font-bold !text-primary" href={`/app/orders/${result.orderId}/print/ticket`} locale={locale}>{text.documentTicket}</Link> : null}
               {canInvoice ? <div className="space-y-2">
                 <Link className="flex min-h-12 items-center justify-center rounded-control bg-primary-strong px-4 text-center font-bold !text-white" href={`/app/billing/new?orderId=${result.orderId}&source=shop`} locale={locale}>{text.documentInvoice}</Link>

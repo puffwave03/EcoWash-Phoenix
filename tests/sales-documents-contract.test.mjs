@@ -86,7 +86,8 @@ test("12-14 legacy order entry does not issue; historical snapshot reprint and l
     actions.indexOf("export async function cancelOperationalReceiptAction"),
   );
   assert.match(issueAction, /supabase\.rpc\("issue_operational_receipt"/);
-  assert.doesNotMatch(issueAction, /revalidatePath/);
+  assert.match(issueAction, /export async function issueOperationalReceiptAction/);
+  assert.match(issueAction, /issued.status === "items_required"[\s\S]*itemsError=1/);
   assert.doesNotMatch(issuePage, /issueOperationalReceipt|sales-documents\/server\/actions/);
   assert.match(issuePage, /requirePrintAccess\(locale\)/);
   assert.match(issuePage, /redirect\(`\/\$\{locale\}\/app\/orders\/\$\{encodeURIComponent\(orderId\)\}`\)/);

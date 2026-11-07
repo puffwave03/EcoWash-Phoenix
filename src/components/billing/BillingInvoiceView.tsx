@@ -6,12 +6,8 @@ import { PrintInvoiceButton } from "@/components/billing/PrintInvoiceButton";
 import { Card } from "@/components/Card";
 import {
   cancelBillingInvoiceAction,
-  declareBillingAdvanceAction,
   deleteBillingDraftAction,
   issueBillingInvoiceAction,
-  issueBillingAdvanceAction,
-  issueBillingFinalAfterAdvancesAction,
-  issueSimplifiedBillingInvoiceAction,
   updateBillingDraftAction,
 } from "@/features/billing/server/actions";
 import type { BillingInvoiceDetail } from "@/features/billing/types";
@@ -37,12 +33,6 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
 }): Promise<ReactElement> {
   const t = await getTranslations({ locale, namespace: "common.billing" });
   const { invoice, items, payments } = detail;
-  const attributed = new Set((detail.paymentLinks ?? []).map((link) => link.paymentId));
-  const declared = new Set(detail.advanceDeclarations ?? []);
-  const openPayments = payments.filter((payment) => payment.status === "confirmed" && !attributed.has(payment.id));
-  const hasIssuedAdvances = (detail.advanceDocuments ?? []).some((document) => document.invoiceNumber);
-  const hasPostServiceEvidence = invoice.orderIds.length === 1 && payments.length === 1
-    && payments[0].status === "confirmed" && detail.postServiceEvidence?.paymentId === payments[0].id;
   const statusLabel = t(`statuses.${invoice.paymentStatus}`);
   const taxRate = items[0]?.taxRate ?? 0;
   const issuerAddress = address([invoice.issuerAddressLine1, invoice.issuerAddressLine2, invoice.issuerPostalCode, invoice.issuerCity, invoice.issuerRegion, invoice.issuerCountryCode]);
@@ -65,10 +55,7 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
   }
   const copyLabel = isSimplifiedCopy && printCopy ? t(`document.${printCopy}Copy`) : null;
   const showRecipient = !(invoice.fiscalDocumentType === "simplified") || Boolean((invoice.customerName ?? "").trim() || invoice.customerTaxId || customerAddress || invoice.customerEmail);
-  const printHref = invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "issued"
-    && invoice.orderIds.length === 1 && invoice.billingEventKind !== "advance" && invoice.operationTotal == null
-    ? `/app/orders/${invoice.orderIds[0]}/print/receipt?document=fiscal`
-    : `/app/billing/${invoice.id}/print`;
+  const printHref = `/app/billing/${invoice.id}/print`;
 
   return (
     <div className={copyLabel ? "billing-simplified-print-copy" : printMode ? "invoice-print-document mx-auto max-w-5xl bg-white p-5 sm:p-10" : "space-y-6"}>
@@ -194,7 +181,8 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
         </div>
       </article>
 
-      {!printMode && invoice.documentStatus === "draft" ? (
+      {!printMode && invoice.fiscalDocumentType === "simplified" ? <p className="rounded-control bg-surface px-4 py-3 text-sm text-muted">{t("document.retiredWorkflow")}</p> : null}
+      {!printMode && invoice.documentStatus === "draft" && invoice.fiscalDocumentType === "ordinary" ? (
         <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
           <Card className="bg-white">
             <h2 className="text-xl font-semibold text-primary">{t("draftEdit.title")}</h2>
@@ -202,78 +190,17 @@ export async function BillingInvoiceView({ detail, locale, printRequestedAction,
             <form action={updateBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)} className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.issueDate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.issueDate} name="issueDate" required type="date" /></label>
               <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.dueDate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.dueDate ?? ""} name="dueDate" type="date" /></label>
-              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.series")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.series} name="series" readOnly={invoice.fiscalDocumentType === "simplified"} required /></label>
-              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.taxRate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(taxRate)} inputMode="decimal" max="100" min="0" name="taxRate" readOnly={invoice.fiscalDocumentType === "simplified"} required step="0.01" type="number" /></label>
+              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.series")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={invoice.series} name="series" required /></label>
+              <label className="space-y-2 text-sm font-semibold text-primary"><span>{t("fields.taxRate")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(taxRate)} inputMode="decimal" max="100" min="0" name="taxRate" required step="0.01" type="number" /></label>
               <label className="space-y-2 text-sm font-semibold text-primary sm:col-span-2"><span>{t("fields.notes")}</span><textarea className="min-h-28 w-full rounded-control border border-border p-3" defaultValue={invoice.notes ?? ""} name="notes" /></label>
-              {invoice.fiscalDocumentType === "simplified" ? <fieldset className="space-y-3 sm:col-span-2">
-                <legend className="text-sm font-semibold text-primary">{t("document.billTo")}</legend>
-                <label className="block space-y-2 text-sm font-semibold text-primary">
-                  <span>{t("document.recipientMode")}</span>
-                  <select className="min-h-11 w-full rounded-control border border-border bg-white px-3" defaultValue={invoice.recipientSnapshotMode === "anonymous" ? "anonymous" : "identified"} name="recipientMode">
-                    <option value="anonymous">{t("document.anonymousRecipient")}</option>
-                    <option value="identified">{t("document.identifiedRecipient")}</option>
-                  </select>
-                </label>
-                <p className="text-sm text-muted">{t("document.recipientHelp")}</p>
-                <details open={invoice.recipientSnapshotMode !== "anonymous"}>
-                  <summary className="cursor-pointer text-sm font-semibold text-primary">{t("document.identifiedRecipient")}</summary>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    {[
-                      ["recipientName", "document.recipientName", invoice.customerName, 180],
-                      ["recipientTaxId", "fields.taxId", invoice.customerTaxId, 80],
-                      ["recipientAddressLine1", "create.customerFiscal.addressLine1", invoice.customerAddressLine1, 180],
-                      ["recipientCity", "create.customerFiscal.city", invoice.customerCity, 100],
-                      ["recipientPostalCode", "create.customerFiscal.postalCode", invoice.customerPostalCode, 24],
-                      ["recipientCountryCode", "create.customerFiscal.countryCode", invoice.customerCountryCode, 2],
-                    ].map(([name, label, value, max]) => <label className="space-y-2 text-sm font-semibold text-primary" key={String(name)}>
-                      <span>{t(String(label))}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={String(value ?? "")} maxLength={Number(max)} name={String(name)} />
-                    </label>)}
-                  </div>
-                </details>
-              </fieldset> : null}
               <div className="sm:col-span-2"><Button type="submit" variant="secondary">{t("actions.saveDraft")}</Button></div>
             </form>
           </Card>
           <Card className="space-y-4 bg-white">
             <h2 className="text-xl font-semibold text-primary">{t("issue.title")}</h2>
             <p className="text-sm leading-6 text-muted">{t("issue.description")}</p>
-            {invoice.fiscalDocumentType === "ordinary" ? <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
-              : detail.simplifiedIssuanceReady && payments.length > 0 && !hasPostServiceEvidence ? <div className="space-y-5">
-                <p className="text-sm text-muted">{t("advanceFlow.help")}</p>
-                {openPayments.map((payment) => <div className="space-y-3 border-t border-border pt-4" key={payment.id}>
-                  <p className="font-semibold">{formatDate(payment.paidAt, locale)} · {formatCurrency(payment.amount, invoice.currency, locale)}</p>
-                  {declared.has(payment.id) ? <form action={issueBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
-                    <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
-                    <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
-                    <label className="flex gap-3 text-sm"><input name="advanceIssueConfirmed" required type="checkbox" value="confirmed" /><span>{t(payment.amount === invoice.total ? "advanceFlow.fullPrepaymentConfirm" : "advanceFlow.advanceIssueConfirm")}</span></label>
-                    <Button type="submit">{t(payment.amount === invoice.total ? "advanceFlow.issueFullPrepayment" : "advanceFlow.issueAdvance")}</Button>
-                  </form>
-                    : <form action={declareBillingAdvanceAction.bind(null, locale, invoice.id, payment.id)} className="space-y-3">
-                      <label className="flex gap-3 text-sm"><input name="preServiceConfirmed" required type="checkbox" value="confirmed" /><span>{t("advanceFlow.preServiceConfirm")}</span></label>
-                      <Button type="submit" variant="secondary">{t("advanceFlow.declareAdvance")}</Button>
-                    </form>}
-                </div>)}
-                {hasIssuedAdvances && openPayments.length > 0 ? <form action={issueBillingFinalAfterAdvancesAction.bind(null, locale, invoice.id)} className="space-y-4 border-t border-border pt-4">
-                  <h3 className="font-semibold">{t("advanceFlow.issueFinal")}</h3>
-                  <label className="block space-y-2 text-sm font-semibold"><span>{t("advanceFlow.balancePayment")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" name="balancePaymentId" required>{openPayments.map((payment) => <option key={payment.id} value={payment.id}>{formatDate(payment.paidAt, locale)} · {formatCurrency(payment.amount, invoice.currency, locale)}</option>)}</select></label>
-                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" name="servicePerformedOn" required type="date" /></label>
-                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
-                  <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
-                  <label className="flex gap-3 text-sm"><input name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>
-                  <Button className="w-full" type="submit">{t("advanceFlow.issueFinal")}</Button>
-                </form> : null}
-              </div>
-              : detail.simplifiedIssuanceReady ? <form action={issueSimplifiedBillingInvoiceAction.bind(null, locale, invoice.id)} className="space-y-4">
-                <p className="text-sm text-muted">{t("serviceIssue.help")}</p>
-                {hasPostServiceEvidence ? <p className="text-sm text-primary">{t("serviceIssue.postServiceEvidence")}</p> : null}
-                {detail.operationalCompletedAt ? <p className="text-sm text-muted">{t("serviceIssue.reference")}: {formatDate(detail.operationalCompletedAt, locale)}</p> : null}
-                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.date")}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={hasPostServiceEvidence ? detail.postServiceEvidence?.servicePerformedOn : undefined} name="servicePerformedOn" required type="date" /></label>
-                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.scope")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="operationScope" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="local_laundry_dry_cleaning">{t("serviceIssue.localLaundry")}</option><option value="ordinary_required">{t("serviceIssue.otherOperation")}</option></select></label>
-                <label className="block space-y-2 text-sm font-semibold"><span>{t("serviceIssue.recipient")}</span><select className="min-h-11 w-full rounded-control border border-border px-3" defaultValue="" name="fiscalRecipientRequirement" required><option disabled value="">{t("serviceIssue.choose")}</option><option value="consumer">{t("serviceIssue.consumer")}</option><option value="consumer_identified">{t("serviceIssue.consumerIdentified")}</option><option value="business">{t("serviceIssue.business")}</option><option value="ordinary_required">{t("serviceIssue.ordinaryRequired")}</option></select></label>
-                <label className="flex gap-3 text-sm"><input className="mt-1" name="serviceConfirmed" required type="checkbox" value="confirmed" /><span>{t("serviceIssue.confirm")}</span></label>
-                <Button className="w-full" type="submit">{t("actions.issue")}</Button>
-              </form> : <p className="text-sm text-amber-800" role="status">{t("create.form.simplifiedUnavailable")}</p>}
-            {!(invoice.fiscalDocumentType === "simplified" && hasIssuedAdvances) ? <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form> : null}
+            <form action={issueBillingInvoiceAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit">{t("actions.issue")}</Button></form>
+            <form action={deleteBillingDraftAction.bind(null, locale, invoice.id, invoice.customerId)}><Button className="w-full" type="submit" variant="danger">{t("actions.deleteDraft")}</Button></form>
           </Card>
         </div>
       ) : null}

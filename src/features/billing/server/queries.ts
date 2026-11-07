@@ -94,10 +94,6 @@ type PaymentRow = {
 type SettingsRow = {
   default_series: string;
   default_tax_rate: number;
-  simplified_series: string | null;
-  simplified_invoicing_enabled?: boolean;
-  fiscal_territory_code?: string | null;
-  declared_tax_regime_code?: string | null;
   issuer_address_line1: string | null;
   issuer_address_line2: string | null;
   issuer_city: string | null;
@@ -157,7 +153,7 @@ type InvoiceItemRow = {
 };
 
 const INVOICE_SELECT = "id, billing_event_kind, operation_total, operation_taxable_base, operation_tax_total, documented_advance_total, documented_advance_taxable_base, documented_advance_tax_total, operation_rounding_base_delta, operation_items_snapshot, service_performed_on, recipient_snapshot_mode, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
-const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate, simplified_series, simplified_invoicing_enabled, fiscal_territory_code, declared_tax_regime_code";
+const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
 
 function number(value: number | string | null) {
   const parsed = Number(value ?? 0);
@@ -357,10 +353,6 @@ export async function getBillingSettings(locale: string): Promise<BillingSetting
     autofilledFields,
     defaultSeries: settings?.default_series ?? "A",
     defaultTaxRate: number(settings?.default_tax_rate ?? 0),
-    simplifiedSeries: settings?.simplified_series ?? null,
-    simplifiedIssuanceReady: !settingsResult.error && settings?.simplified_invoicing_enabled === true
-      && settings.fiscal_territory_code === "ES-CN" && settings.declared_tax_regime_code === "IGIC-GENERAL"
-      && settings.issuer_country_code === "ES" && Boolean(settings.simplified_series) && isIssueReady,
     issuerAddressLine1,
     issuerAddressLine2: settings?.issuer_address_line2 ?? "",
     issuerCity,
@@ -480,15 +472,11 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     : { data: [] as PaymentRow[], error: null };
   if (paymentError) throw paymentError;
 
-  let advanceDeclarations: string[] = [];
   let paymentLinks: NonNullable<BillingInvoiceDetail["paymentLinks"]> = [];
   let advanceDocuments: NonNullable<BillingInvoiceDetail["advanceDocuments"]> = [];
   if (invoice.fiscalDocumentType === "simplified" && invoice.orderIds.length === 1) {
     const orderId = invoice.orderIds[0];
-    const [declarationsResult, linksResult, orderLinksResult] = await Promise.all([
-      supabase.from("billing_advance_event_declarations").select("payment_id")
-        .eq("organization_id", membership.organization.id).eq("order_id", orderId)
-        .returns<Array<{ payment_id: string }>>(),
+    const [linksResult, orderLinksResult] = await Promise.all([
       supabase.from("billing_invoice_payment_links").select("payment_id, invoice_id, billing_link_role")
         .eq("organization_id", membership.organization.id).eq("order_id", orderId)
         .returns<Array<{ payment_id: string; invoice_id: string; billing_link_role: "advance" | "final" }>>(),
@@ -496,10 +484,8 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
         .eq("organization_id", membership.organization.id).eq("order_id", orderId)
         .eq("billing_link_role", "advance").returns<Array<{ invoice_id: string }>>(),
     ]);
-    if (declarationsResult.error) throw declarationsResult.error;
     if (linksResult.error) throw linksResult.error;
     if (orderLinksResult.error) throw orderLinksResult.error;
-    advanceDeclarations = (declarationsResult.data ?? []).map((row) => row.payment_id);
     paymentLinks = (linksResult.data ?? []).map((row) => ({
       paymentId: row.payment_id, invoiceId: row.invoice_id, role: row.billing_link_role,
     }));
@@ -528,49 +514,13 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     || (payment.status === "refunded" && payment.refunded_from_payment_id != null
       && documentPaymentIds.has(payment.refunded_from_payment_id)));
 
-  let postServiceEvidence: BillingInvoiceDetail["postServiceEvidence"];
-  if (invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "draft"
-    && invoice.orderIds.length === 1 && visiblePayments.length === 1
-    && visiblePayments[0].status === "confirmed") {
-    const evidence = await supabase.from("billing_postservice_payment_evidence")
-      .select("payment_id, service_performed_on, declared_at")
-      .eq("organization_id", membership.organization.id).eq("order_id", invoice.orderIds[0])
-      .eq("payment_id", visiblePayments[0].id).eq("declaration_timing", "contemporaneous")
-      .maybeSingle<{ payment_id: string; service_performed_on: string; declared_at: string }>();
-    if (evidence.error) throw evidence.error;
-    if (evidence.data) postServiceEvidence = { paymentId: evidence.data.payment_id,
-      servicePerformedOn: evidence.data.service_performed_on, declaredAt: evidence.data.declared_at };
-  }
-
-  let simplifiedIssuanceReady = false;
-  let operationalCompletedAt: string | null = null;
-  if (invoice.fiscalDocumentType === "simplified" && invoice.documentStatus === "draft") {
-    const { data: profile, error } = await supabase.from("organization_billing_settings")
-      .select("simplified_invoicing_enabled, fiscal_territory_code, declared_tax_regime_code, simplified_series")
-      .eq("organization_id", membership.organization.id).maybeSingle<SettingsRow>();
-    if (error) throw error;
-    simplifiedIssuanceReady = profile?.simplified_invoicing_enabled === true
-      && profile.fiscal_territory_code === "ES-CN" && profile.declared_tax_regime_code === "IGIC-GENERAL"
-      && profile.simplified_series === invoice.series;
-    if (simplifiedIssuanceReady) {
-      const reference = await supabase.from("orders").select("completed_at")
-        .eq("organization_id", membership.organization.id).in("id", invoice.orderIds)
-        .maybeSingle<{ completed_at: string | null }>();
-      if (reference.error) throw reference.error;
-      operationalCompletedAt = reference.data?.completed_at ?? null;
-    }
-  }
   return {
-    postServiceEvidence,
     // Immutable attribution, never the current mutable order total.
     fullPrepayment: invoice.billingEventKind === "advance" && invoice.documentStatus === "issued"
       && paymentLinks.some((link) => link.invoiceId === invoice.id && link.role === "final"),
     invoice,
-    advanceDeclarations,
     paymentLinks,
     advanceDocuments,
-    simplifiedIssuanceReady,
-    operationalCompletedAt,
     items: itemsResult.data.map((item) => ({
       description: item.description,
       discountAmount: number(item.discount_amount),

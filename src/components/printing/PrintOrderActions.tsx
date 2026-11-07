@@ -1,11 +1,27 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
+import { useFormStatus } from "react-dom";
+import { issueOperationalReceiptAction } from "@/features/sales-documents/server/actions";
 
 export type PrintActionText = { "customer-copy": string; labels: string; receipt: string; ticket: string };
-export type PrintOrderMode = Exclude<keyof PrintActionText, "receipt">;
+export type PrintOrderMode = keyof PrintActionText;
 
-export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "ticket", "labels"], orderId, text }: {
+function ReceiptIssueButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      aria-busy={pending}
+      className="min-h-11 rounded-control border border-primary/20 bg-white px-3 text-sm font-bold text-primary disabled:opacity-50"
+      disabled={pending}
+      type="submit"
+    >
+      {label}
+    </button>
+  );
+}
+
+export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "ticket", "labels", "receipt"], orderId, text }: {
   className?: string;
   locale: string;
   orderId: string;
@@ -30,6 +46,11 @@ export function PrintOrderActions({ className = "", locale, modes = ["customer-c
           {action.label}
         </Link>
       ))}
+      {modes.includes("receipt") ? (
+        <form action={issueOperationalReceiptAction.bind(null, locale, orderId)}>
+          <ReceiptIssueButton label={text.receipt} />
+        </form>
+      ) : null}
     </div>
   );
 }

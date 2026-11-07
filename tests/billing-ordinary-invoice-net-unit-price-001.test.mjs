@@ -29,9 +29,7 @@ function load(path) {
     if (["@/lib/number-format", "@/features/billing/tax-rate"].includes(name)) return load(`src/${name.slice(2)}.ts`);
     if (name === "@/features/billing/server/actions") return {
       cancelBillingInvoiceAction: forbiddenAction, deleteBillingDraftAction: forbiddenAction,
-      issueBillingInvoiceAction: forbiddenAction, issueSimplifiedBillingInvoiceAction: forbiddenAction, updateBillingDraftAction: forbiddenAction,
-      declareBillingAdvanceAction: forbiddenAction, issueBillingAdvanceAction: forbiddenAction,
-      issueBillingFinalAfterAdvancesAction: forbiddenAction,
+      issueBillingInvoiceAction: forbiddenAction, updateBillingDraftAction: forbiddenAction,
     };
     if (name === "@/components/Button") return { Button: ({ children }) => createElement("button", null, children) };
     if (name === "@/components/Card") return { Card: ({ children }) => createElement("div", null, children) };
@@ -187,12 +185,12 @@ for (const locale of ["it","es","en","fr","de"]) test(`${locale}: issued simplif
  assert.equal(text(html).split(messages[locale].document.customerCopy).length-1,1);
  assert.ok(!text(html).includes("common.billing."));
 });
-test("enabled simplified declaration uses blank explicit date, with operational time only as reference",async()=>{
+test("retired simplified draft has no declaration or issuance controls",async()=>{
  const fixture=JSON.parse(JSON.stringify(detail([line()])));
  Object.assign(fixture.invoice,{fiscalDocumentType:"simplified",documentStatus:"draft",paymentStatus:"draft",recipientSnapshotMode:"anonymous",customerId:null,customerName:null});
  fixture.simplifiedIssuanceReady=true;fixture.operationalCompletedAt="2026-10-17T12:00:00Z";
- const html=await render(fixture,false,"it");assert.match(html,/name="servicePerformedOn"/);
- assert.doesNotMatch(html,/name="servicePerformedOn"[^>]*value=/);assert.match(html,/name="serviceConfirmed"/);
+ const html=await render(fixture,false,"it");assert.doesNotMatch(html,/name="servicePerformedOn"/);
+ assert.doesNotMatch(html,/name="servicePerformedOn"[^>]*value=/);assert.doesNotMatch(html,/name="serviceConfirmed"/);
 });
 
 for (const locale of ["it", "es", "en", "fr", "de"]) test(`C2 ${locale}: document payment heading and refund sign preserve issued snapshot`, async () => {
@@ -208,7 +206,7 @@ for (const locale of ["it", "es", "en", "fr", "de"]) test(`C2 ${locale}: documen
   assert.ok(text(html).includes(text(`${messages[locale].totals.paid} ${formatCurrency(1.5, "EUR", locale)}`)));
 });
 
-test("C2 draft delete action follows issued advances; ordinary and unpaid drafts remain deletable", async () => {
+test("only ordinary drafts retain delete controls", async () => {
   for (const fiscalDocumentType of ["ordinary", "simplified"]) {
     for (const invoiceNumber of [null, "2026-S-000001"]) {
       const snapshot = JSON.parse(JSON.stringify(detail([line()])));
@@ -217,7 +215,7 @@ test("C2 draft delete action follows issued advances; ordinary and unpaid drafts
       snapshot.simplifiedIssuanceReady = false;
       const html = await render(snapshot);
       assert.equal(text(html).includes(messages.it.actions.deleteDraft),
-        fiscalDocumentType === "ordinary" || invoiceNumber === null);
+        fiscalDocumentType === "ordinary");
     }
   }
 });

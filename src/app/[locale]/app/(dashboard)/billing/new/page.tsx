@@ -26,13 +26,10 @@ export default async function NewBillingInvoicePage({ params, searchParams }: {
   }
   // An order entry derives its customer on the server, ignoring URL customer IDs.
   const customerId = entry?.kind === "prepare" ? entry.customerId : query.customerId;
-  const onlySimplified = entry?.kind === "prepare" && Boolean(entry.simplifiedOrder);
   const [discovery, settings, customerContext, t] = await Promise.all([
-    onlySimplified && entry?.kind === "prepare" && entry.simplifiedOrder
-      ? Promise.resolve({ orders: [entry.simplifiedOrder], hasMore: false })
-      : listEligibleBillingOrders(locale, customerId, query.orderId, search),
+    listEligibleBillingOrders(locale, customerId, query.orderId, search),
     getBillingSettings(locale),
-    customerId && !onlySimplified ? getBillingCustomerContext(locale, customerId) : Promise.resolve(null),
+    customerId ? getBillingCustomerContext(locale, customerId) : Promise.resolve(null),
     getTranslations({ locale, namespace: "common.billing" }),
   ]);
   return (
@@ -53,7 +50,7 @@ export default async function NewBillingInvoicePage({ params, searchParams }: {
         {search ? <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" href={customerId ? `/app/billing/new?customerId=${encodeURIComponent(customerId)}` : "/app/billing/new"} locale={locale}>{t("create.search.clear")}</Link> : null}
       </form>
       {discovery.hasMore ? <p className="rounded-control border border-border bg-primary-soft px-4 py-3 text-sm text-primary">{t("create.search.more")}</p> : null}
-      {settings.simplifiedIssuanceReady || !customerContext || customerContext.isFiscalReady ? <BillingCreateForm onlySimplified={onlySimplified} recipientText={t.raw("document") as Record<string, string>} emptyMessage={search ? t("create.search.empty") : undefined} hasMore={discovery.hasMore} locale={locale} orders={onlySimplified ? discovery.orders.map((o) => ({ ...o, customerName: t("document.anonymousRecipient") })) : discovery.orders} selectedOrderId={query.orderId} settings={settings} text={t.raw("create.form") as Record<string, string>} /> : null}
+      {!customerContext || customerContext.isFiscalReady ? <BillingCreateForm emptyMessage={search ? t("create.search.empty") : undefined} hasMore={discovery.hasMore} locale={locale} orders={discovery.orders} selectedOrderId={query.orderId} settings={settings} text={t.raw("create.form") as Record<string, string>} /> : null}
     </div>
   );
 }

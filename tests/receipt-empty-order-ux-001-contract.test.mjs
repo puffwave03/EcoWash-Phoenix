@@ -15,7 +15,7 @@ const sql = read("supabase/migrations/20260908000100_accounting_sales_documents_
 const issueSql = sql.slice(sql.indexOf("create function public.issue_operational_receipt"), sql.indexOf("create function public.cancel_operational_receipt"));
 const issueAction = actions.slice(actions.indexOf("export async function issueOperationalReceipt"), actions.indexOf("export async function cancelOperationalReceiptAction"));
 
-function issueWith(result) {
+function issueWith(result, denied = false) {
   const exports = {};
   const calls = [];
   const code = ts.transpileModule(issueAction, {
@@ -23,7 +23,9 @@ function issueWith(result) {
   }).outputText;
   runInNewContext(code, {
     exports,
-    requirePrintAccess: async (locale) => { calls.push(["access", locale]); },
+    requirePrintAccess: async (locale) => { calls.push(["access", locale]); if (denied) throw Error("DENIED"); },
+    revalidatePath: (path) => { calls.push(["revalidate", path]); },
+    redirect: (href) => { throw Object.assign(Error("REDIRECT"), {href}); },
     createSupabaseServerClient: async () => ({
       rpc: (name, args) => {
         calls.push(["rpc", name, args.target_order_id]);
@@ -31,7 +33,7 @@ function issueWith(result) {
       },
     }),
   });
-  return { issue: exports.issueOperationalReceipt, calls };
+  return { issue: exports.issueOperationalReceipt, post: exports.issueOperationalReceiptAction, calls };
 }
 
 test("database remains the authoritative empty-active-items gate before receipt numbering", () => {
@@ -116,8 +118,10 @@ test("ordinary GET and refresh only authorize and redirect; denied access never 
   assert.deepEqual(calls, []);
 });
 
-test("real shared print actions expose only EW customer, internal ticket and labels in every locale", () => {
+test("real shared print actions expose EW links and an explicit REC POST in every locale", () => {
   const { PrintOrderActions } = loadPreview("src/components/printing/PrintOrderActions.tsx", {
+    "react-dom": { useFormStatus: () => ({pending:false}) },
+    "@/features/sales-documents/server/actions": { issueOperationalReceiptAction: () => {} },
     "@/i18n/navigation": { Link: ({ href, children }) => createElement("a", { href }, children) },
   });
   for (const locale of ["it", "es", "en", "fr", "de"]) {
@@ -125,8 +129,22 @@ test("real shared print actions expose only EW customer, internal ticket and lab
     const html = renderToStaticMarkup(PrintOrderActions({ locale, orderId: "synthetic-order", text }));
     assert.doesNotMatch(html, /\/print\/receipt/);
     for (const mode of ["customer-copy", "ticket", "labels"]) assert.ok(html.includes(`/print/${mode}`));
-    // Even a stale runtime caller cannot restore the removed receipt link.
+    assert.match(html, /<form/);
+    assert.match(html, /type="submit"/);
+    // REC is an explicit action, never a navigation link.
     const legacy = renderToStaticMarkup(PrintOrderActions({ locale, orderId: "synthetic-order", text, modes: ["receipt"] }));
     assert.doesNotMatch(legacy, /<a/);
   }
+});
+
+test("explicit REC POST authorizes once, reuses the RPC result and redirects to its persisted snapshot", async()=>{
+  const h=issueWith({data:{receipt_id:"receipt-1",receipt_number:"REC-1"},error:null});
+  await assert.rejects(h.post("it","order-1"),e=>e.href==="/it/app/accounting/documents/receipts/receipt-1/print");
+  assert.deepEqual(h.calls,[["access","it"],["rpc","issue_operational_receipt","order-1"],["revalidate","/it/app/accounting/documents"]]);
+  const empty=issueWith({data:null,error:{code:"22023",message:"operational_receipt_items_required"}});
+  await assert.rejects(empty.post("es","order-1"),e=>e.href==="/es/app/orders/order-1?itemsError=1");
+  assert.equal(empty.calls.length,2);
+  const denied=issueWith({data:null,error:null},true);
+  await assert.rejects(denied.post("it","foreign"),/DENIED/);
+  assert.deepEqual(denied.calls,[["access","it"]]);
 });

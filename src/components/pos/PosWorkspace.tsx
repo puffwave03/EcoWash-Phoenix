@@ -13,10 +13,10 @@ export type PosText = {
   actions: { close: string; open: string; pay: string; refund: string; search: string };
   close: { counted: string; description: string; difference: string; notes: string; title: string };
   common: { actor: string; amount: string; date: string; location: string; noLocation: string; reference: string };
-  errors: { alreadyOpen: string; close: string; closedDay: string; closedDayOpen: string; generic: string; postservice: string; payment: string; refund: string; validation: string };
+  errors: { alreadyOpen: string; close: string; closedDay: string; closedDayOpen: string; generic: string; payment: string; refund: string; validation: string };
   history: { counted: string; difference: string; empty: string; expected: string; title: string };
   methods: Record<PaymentMethod, string>;
-  orders: { customer: string; empty: string; method: string; notes: string; postServiceConfirm: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };
+  orders: { customer: string; empty: string; method: string; notes: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };
   pagination: { latest: string; navigation: string; newer: string; older: string };
   payments: { empty: string; manualCard: string; phoenixRefund: string; reason: string; title: string };
   session: { cashPayments: string; cashRefunds: string; chooseLocation: string; closed: string; expected: string; noLocations: string; opening: string; openingAmount: string; open: string; paymentRequiresOpen: string; selectLocation: string; title: string; transactions: string };
@@ -75,7 +75,6 @@ function PaymentForm({ action, order, session, text }: { action: Action; order: 
         <option disabled={!session} value="cash">{text.methods.cash}</option><option value="card">{text.methods.card}</option><option value="bank_transfer">{text.methods.bank_transfer}</option><option value="other">{text.methods.other}</option>
       </select></label>
       <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.common.reference}</span><input autoComplete="off" className={inputClass} name="reference" /></label>
-      {order.productionStatus === "completed" ? <label className="flex items-start gap-3 rounded-control border border-border bg-primary-soft p-3 text-sm sm:col-span-2 xl:col-span-4"><input className="mt-1 h-5 w-5 shrink-0" name="postServiceConfirmed" type="checkbox" value="confirmed" /><span>{text.orders.postServiceConfirm}</span></label> : null}
       <input name="notes" type="hidden" /><Button className="min-h-12" disabled={pending} type="submit">{text.actions.pay}</Button>
       <div className="sm:col-span-2 xl:col-span-4">{result(state, text)}</div>
     </form>

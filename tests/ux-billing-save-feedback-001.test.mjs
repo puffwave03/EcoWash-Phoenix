@@ -28,7 +28,7 @@ function harness({ pending = false, role = "owner", locale = "en" } = {}) {
       "react-dom": { useFormStatus: () => ({ pending }) },
       "react/jsx-runtime": require("react/jsx-runtime"),
       "@/components/DisclosureSection": { DisclosureSection: ({ children, defaultOpen, ...props }) => createElement("section", { id: props.id, "data-open": defaultOpen }, children) },
-      "@/features/billing/server/actions": { saveBillingSettingsAction() {}, reserveBillingSimplifiedSeriesAction() {} },
+      "@/features/billing/server/actions": { saveBillingSettingsAction() {} },
       "@/lib/auth/require-role": { requireOwnerOrManager: async () => {
         if (!["owner", "manager"].includes(role)) throw Error("ROLE_DENIED");
         return { membership: { role } };
@@ -128,15 +128,14 @@ test("navigation opens a complete issuer panel only for the distinct successful 
   assert.match(read("src/components/billing/BillingSettingsPanel.tsx"), /key=\{saved \? "issuer-saved" : "issuer-settings"\}/);
 });
 
-test("series reservation keeps its own form/button and cannot trigger issuer confirmation", async () => {
+test("issuer feedback remains usable after retiring series reservation", async () => {
   const h = harness({ pending: true });
   const html = h.panel();
   const forms = [...html.matchAll(/<form\b[\s\S]*?<\/form>/g)].map((m) => m[0]);
-  assert.equal(forms.length, 2);
+  assert.equal(forms.length, 1);
   assert.match(forms[0], /issuer-save-feedback/);
   assert.match(forms[0], /disabled=""/);
-  assert.match(forms[1], /name="simplifiedSeries"/);
-  assert.doesNotMatch(forms[1], /disabled=|issuer-save-feedback|aria-busy/);
+  assert.doesNotMatch(html, /name="simplifiedSeries"/);
   const seriesSaved = await harness().page({ saved: "settings" });
   assert.ok(!seriesSaved.includes(messages("en").settings.saved));
 });

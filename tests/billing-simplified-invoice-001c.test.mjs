@@ -28,6 +28,7 @@ function billing({ role = "owner", entitled = true } = {}) {
       description: "Memory service", unit_type: "service", quantity: 4, unit_price: 9, line_subtotal: 36,
       discount_amount: 0, taxable_base: 33.64, tax_rate: 7, tax_amount: 2.36, line_total: 36, display_order: 0 }],
     organization_billing_settings: [],
+    billing_invoice_payment_links: [],
     invoice_orders: [{ organization_id: "org-a", invoice_id: "invoice-a", order_id: "order-a" }],
     orders: [{ organization_id: "org-a", id: "order-a", order_number: "MEMORY-ORDER" }], payments: [],
   };
@@ -114,7 +115,7 @@ test("legacy and explicit ordinary selection call the unchanged canonical draft 
 for (const values of [["simplified"], ["other"], [""], ["ORDINARY"], ["ordinary", "simplified"], ["ordinary", "ordinary"]]) {
   test(`invalid or unavailable selection cannot create even an ordinary draft: ${JSON.stringify(values)}`, async () => {
     const ui = billing();
-    await assert.rejects(ui.submit(form(values)), (e) => e.href?.endsWith(`error=${values.length === 1 && values[0] === "simplified" ? "simplifiedUnavailable" : "documentType"}`));
+    await assert.rejects(ui.submit(form(values)), (e) => e.href?.endsWith(`error=${"documentType"}`));
     assert.equal(ui.calls.clients, 0); assert.equal(ui.calls.rpc.length, 0);
     assert.equal(ui.calls.auth, 1); assert.equal(ui.calls.entitlement, 1);
   });
@@ -127,7 +128,7 @@ test("uploaded type is rejected; amounts, profile, regime, recipient and flags c
     const ui = billing(), data = form(["simplified"]);
     for (const [key, value] of Object.entries({ total: amount, fiscal_territory_code: "ES-CN", declared_tax_regime_code: "TEST",
       simplified_invoicing_enabled: true, simplified_series: "TEST-S", taxId: "MEMORY", operationCategory: "laundry" })) data.set(key, String(value));
-    await assert.rejects(ui.submit(data), (e) => e.href?.endsWith("error=simplifiedUnavailable"));
+    await assert.rejects(ui.submit(data), (e) => e.href?.endsWith("error=documentType"));
     assert.equal(ui.calls.clients, 0);
   }
 });
@@ -144,16 +145,15 @@ test("canonical duplicate rejection is retained without retry or second draft ca
   assert.equal(ui.calls.rpc.length, 1);
 });
 
-for (const locale of locales) test(`${locale}: real form explains blocked simplified selection; real view/print use the canonical type`, async () => {
+for (const locale of locales) test(`${locale}: real form offers ordinary only; real view/print use the canonical type`, async () => {
   const ui = billing();
   const Form = ui.load("src/components/billing/BillingCreateForm.tsx").BillingCreateForm;
   const html = renderToStaticMarkup(Form({ locale, hasMore: false, settings: { defaultSeries: "TEST-A", defaultTaxRate: 7 },
     orders: [{ id: "order-a", customerId: "customer-a", currency: "EUR", createdAt: "2026-10-16", customerName: "Memory", customerActive: true, total: 36 }],
     text: messages[locale].create.form }));
   assert.match(html, /name="fiscalDocumentType"/);
-  assert.match(html, /<option[^>]*value="ordinary"[^>]*selected=""/);
-  assert.match(html, /<option[^>]*disabled=""[^>]*value="simplified"/);
-  assert.ok(html.includes(messages[locale].create.form.simplifiedUnavailable));
+  assert.match(html, /type="hidden" name="fiscalDocumentType" value="ordinary"/);
+  assert.doesNotMatch(html, /value="simplified"|name="recipientMode"/);
   assert.doesNotMatch(html, /common\.billing\./);
   const View = ui.load("src/components/billing/BillingInvoiceView.tsx").BillingInvoiceView;
   // Synthetic read-only presentation fixture, not a permitted persisted invoice.
@@ -172,15 +172,16 @@ for (const locale of locales) test(`${locale}: real form explains blocked simpli
   }
 });
 
-test("simplified synthetic draft permits editing but cannot offer fiscal issuance", async () => {
+test("retired simplified draft offers neither edit nor issuance", async () => {
   const ui = billing(); ui.rows.invoices[0].fiscal_document_type = "simplified"; ui.rows.invoices[0].document_status = "draft";
   const View = ui.load("src/components/billing/BillingInvoiceView.tsx").BillingInvoiceView;
   const html = renderToStaticMarkup(await View({ detail: await ui.read(), locale: "es" }));
   assert.ok(!html.includes(messages.es.actions.issue));
-  assert.ok(html.includes(messages.es.actions.saveDraft));
+  assert.ok(!html.includes(messages.es.actions.saveDraft));
+  assert.ok(html.includes(messages.es.document.retiredWorkflow));
 });
 
-for (const locale of locales) test(`${locale}: persisted-style anonymous draft reads and renders editable identity without fiscal issue controls`, async () => {
+for (const locale of locales) test(`${locale}: persisted-style anonymous draft remains readable without edit or fiscal issue controls`, async () => {
   const ui = billing();
   Object.assign(ui.rows.invoices[0], { fiscal_document_type: "simplified", document_status: "draft",
     recipient_snapshot_mode: "anonymous", customer_id: null, customer_name: null, customer_tax_id: null,
@@ -190,9 +191,9 @@ for (const locale of locales) test(`${locale}: persisted-style anonymous draft r
   assert.equal(detail.invoice.customerId, null); assert.equal(detail.invoice.recipientSnapshotMode, "anonymous");
   const View = ui.load("src/components/billing/BillingInvoiceView.tsx").BillingInvoiceView;
   const html = renderToStaticMarkup(await View({ detail, locale }));
-  assert.match(html, /name="recipientMode"/); assert.match(html, /name="recipientName"/);
-  assert.ok(html.includes(messages[locale].document.anonymousRecipient));
-  assert.ok(html.includes(messages[locale].actions.saveDraft));
+  assert.doesNotMatch(html, /name="recipientMode"|name="recipientName"/);
+  assert.ok(html.includes(messages[locale].document.retiredWorkflow));
+  assert.ok(!html.includes(messages[locale].actions.saveDraft));
   assert.ok(!html.includes(messages[locale].actions.issue));
   assert.doesNotMatch(html, /common\.billing\.|WALKIN-SHARED/);
 });
@@ -238,7 +239,7 @@ test("series migration is additive only: no assigned series/counter and neither 
   assert.doesNotMatch(sql, /\b(?:default|insert|update|delete|grant|revoke|drop|function|policy|invoices|counter)\b/i);
   // 001D can now read the series column already deployed by 001C. This remains
   // a declaration only; neither the original migration nor either guard changes.
-  assert.match(read("src/features/billing/server/queries.ts"), /simplifiedSeries: settings\?\.simplified_series \?\? null/);
+  assert.doesNotMatch(read("src/features/billing/server/queries.ts"), /simplifiedSeries:/);
   for (const [path, sha] of [
     ["20261016000100_billing_simplified_invoice_001b_fiscal_type_foundation.sql", "74f904597f2e802e684496fd7bd0724410108555763283a332debcc8db5e307b"],
     ["20261016000200_billing_fiscal_profile_001_minimal_configuration.sql", "d0abe9affbd95229233938ba87350bf9bfc352cec098ac569b339c72f4bfe8ab"],

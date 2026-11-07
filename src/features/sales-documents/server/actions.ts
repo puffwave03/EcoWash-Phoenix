@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 import { requirePrintAccess } from "@/features/printing/server/access";
@@ -19,6 +20,17 @@ export async function issueOperationalReceipt(locale: string, orderId: string) {
   }
   if (error || !data) throw new Error(`operational_receipt_issue_failed:${error?.code ?? "unknown"}`);
   return { status: "issued", id: data.receipt_id, receiptNumber: data.receipt_number } as const;
+}
+
+// Explicit POST only. The canonical RPC owns tenant checks, numbering and
+// idempotency; navigation and reprint never call it.
+export async function issueOperationalReceiptAction(locale: string, orderId: string) {
+  const issued = await issueOperationalReceipt(locale, orderId);
+  if (issued.status === "items_required") {
+    redirect(`/${locale}/app/orders/${encodeURIComponent(orderId)}?itemsError=1`);
+  }
+  revalidatePath(`/${locale}/app/accounting/documents`);
+  redirect(`/${locale}/app/accounting/documents/receipts/${issued.id}/print`);
 }
 
 export async function cancelOperationalReceiptAction(locale: string, receiptId: string, formData: FormData) {

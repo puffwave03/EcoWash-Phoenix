@@ -314,25 +314,8 @@ test("Terminal document labels exist in all five locales", () => {
   }
 });
 
-function enableSimplifiedFixture(ui) {
-  ui.rows.organization_billing_settings.push({ organization_id: "org-a", simplified_invoicing_enabled: true,
-    fiscal_territory_code: "ES-CN", declared_tax_regime_code: "IGIC-GENERAL", simplified_series: "S",
-    issuer_country_code: "ES", issuer_legal_name: "Test", issuer_tax_id: "TEST", issuer_address_line1: "Test",
-    issuer_city: "Test", issuer_postal_code: "00000", default_series: "A", default_tax_rate: 7 });
-  Object.assign(ui.rows.orders[0], { currency: "EUR", total: 7, order_number: "MEMORY-ONLY" });
-}
-test("configured occasional entry prepares only simplified, without customer registration or writes", async () => {
- const ui=billing();enableSimplifiedFixture(ui);ui.rows.customers[0].customer_code="WALKIN-SHARED";
- const before=JSON.stringify(ui.rows);const tree=await ui.page({orderId:"order-a",customerId:"forged"});
- const form=nodes(tree).find(n=>n.type?.name==="BillingCreateForm");assert.equal(form.props.onlySimplified,true);
- assert.equal(form.props.orders.length,1);assert.equal(form.props.orders[0].customerId,"customer-a");
- assert.ok(!nodes(tree).some(n=>n.type==="fiscal-panel"));
- const rendered=nodes(ui.form(form.props));assert.equal(rendered.find(n=>n.type==="option"&&n.props.value==="ordinary").props.disabled,true);
- assert.equal(rendered.find(n=>n.type==="option"&&n.props.value==="simplified").props.disabled,false);
- assert.equal(JSON.stringify(ui.rows),before);assert.equal(ui.calls.rpc.length,0);
-});
-test("unsupported profile cannot expose occasional preparation even with submitted enable flag", async()=>{
- const ui=billing();enableSimplifiedFixture(ui);ui.rows.customers[0].customer_code="WALKIN-SHARED";
- ui.rows.organization_billing_settings[0].declared_tax_regime_code="UNKNOWN";
+test("occasional order remains unavailable for new Billing documents even with old fiscal settings",async()=>{
+ const ui=billing();ui.rows.customers[0].customer_code="WALKIN-SHARED";
+ ui.rows.organization_billing_settings.push({organization_id:"org-a",simplified_invoicing_enabled:true,simplified_series:"S"});
  assert.equal((await ui.entry()).kind,"unavailable");assert.equal(ui.calls.rpc.length,0);
 });

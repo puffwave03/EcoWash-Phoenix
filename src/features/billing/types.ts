@@ -13,8 +13,6 @@ export type BillingSettings = {
   autofilledFields: BillingIssuerRequiredField[];
   defaultSeries: string;
   defaultTaxRate: number;
-  simplifiedSeries: string | null;
-  simplifiedIssuanceReady?: boolean;
   issuerAddressLine1: string;
   issuerAddressLine2: string;
   issuerCity: string;
@@ -134,14 +132,10 @@ export type BillingPayment = {
 };
 
 export type BillingInvoiceDetail = {
-  postServiceEvidence?: { paymentId: string; servicePerformedOn: string; declaredAt: string };
   fullPrepayment?: boolean;
-  simplifiedIssuanceReady?: boolean;
-  operationalCompletedAt?: string | null;
   invoice: BillingInvoice;
   items: BillingInvoiceItem[];
   payments: BillingPayment[];
-  advanceDeclarations?: string[];
   paymentLinks?: Array<{ paymentId: string; invoiceId: string; role: "advance" | "final" }>;
   advanceDocuments?: Array<{ id: string; invoiceNumber: string | null; issueDate: string; total: number; taxableBase: number; taxTotal: number }>;
 };
