@@ -24,6 +24,22 @@ This document records approved targets and sequencing constraints. [Project Stat
 - Distinguish ordinary invoicing, SIF/VERI*FACTU and B2B electronic invoice exchange. A provider integration must preserve canonical orders/payments/Billing, idempotency, tenant/fiscal identity and history.
 - Do not turn the older M1/P0/P1 candidate lists below into a new queue or invent completion percentages/dates. New implementation requires explicit CTO scope and PO authorization.
 
+## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 checkpoint (08/11/2026)
+
+**Customer-copy scope completed; overall mission PARTIAL.** A1 is **COMPLETE / CTO PASS / PUBLISHED**. A2 is **COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT PASS** for the browser checks performed on 08/11/2026. [Project Status](../06_ROADMAP/Project_Status.md#counter-thermal-documents-001--a1-and-a2-closeout-08112026) records commits and deployment; [Testing](../05_DEVELOPMENT/Testing.md#counter-thermal-documents-001--a1-and-a2-evidence-08112026) separates automated, synthetic, CTO and PO evidence.
+
+One **Customer copy** command opens the preview with transient A4 / 58 mm / 80 mm links and visible active format. A4 remains default/fallback; manual browser Print and return to Order are preserved. A2 supersedes A1's three separate format buttons. Canonical values, customer/staff note boundaries and five languages remain unchanged; no printer preference is persisted. The copy is **operational and non-fiscal**; REC, internal ticket, labels, Billing and POS behavior are unaffected.
+
+This later checkpoint supersedes the **PLANNED / NOT STARTED** status in the [05/11 specification](#counter-thermal-documents-001--po-format-requirements-05112026) **only for A1/A2 customer-copy delivery**. The original specification below remains intact. Future scope, not implemented by these phases:
+
+- Internal EW ticket layouts at 58/80 mm.
+- Persistent preferences by document/site and document-to-printer-profile association, reusing existing tenant/site profiles.
+- Configurable operational-document copies; the normally two-copy requirement is still future work.
+- Possible alternative operational REC formats, preserving historical documents.
+- Physical Epson TM-U220A / AVPos TC20 checks and real QR scanning, including paper, margins, cutting, drivers and connectivity.
+
+`PRINT-DOCUMENT-PREFERENCES-001` is **PROPOSED / NOT STARTED**, an architectural proposal only; no implementation or new mission is opened. Browser UAT does not certify physical or automatic printing, universal browser compatibility, security, IGIC/VERI*FACTU or commercial SaaS readiness. Existing fiscal-format validation gates below remain open.
+
 ## REC-OPTIONAL-WORKFLOW-001 — implemented closeout (05/11/2026)
 
 **IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`; staging deployment `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` READY verified by the CTO. See [Project Status](../06_ROADMAP/Project_Status.md) for prior Codex results, the PO functional UAT on `EW-000171` / `EW-000172`, preserved historical `REC-2026-000035` and evidence limits.

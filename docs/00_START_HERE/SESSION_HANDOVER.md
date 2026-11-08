@@ -2,7 +2,17 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-07
+Date: 2026-11-08
+
+## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 closeout (08/11/2026)
+
+**Customer EW copy only:** A1 — **COMPLETE / CTO PASS / PUBLISHED**; A2 — **COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT PASS** within the observed browser scope. Latest published application commit: `e6fe1652039aeba17d640cd56b3761094c25a13a`. [Project Status](../06_ROADMAP/Project_Status.md#counter-thermal-documents-001--a1-and-a2-closeout-08112026) records both commits and the verified A2 deployment.
+
+**Current behavior:** one **Customer copy** command opens the existing preview with **A4 / 58 mm / 80 mm** links, visible active format, keyboard navigation, manual Print and return to Order. A4 is the default and invalid-input fallback; the choice is not persisted. Canonical values, private-note exclusion and IT/ES/EN/FR/DE remain preserved. A2 supersedes A1's three separate format buttons in Order detail. The customer copy remains **operational and non-fiscal**; REC, internal ticket, labels, Billing, POS and printer configuration are unchanged.
+
+**Acceptance:** PO functional browser UAT **PASS on 08/11/2026** for the single command, three previews, format selection, readability and amounts in the observed checks. The supplied CTO visual evidence is the 80 mm screenshot of synthetic order `EW-000175`: EUR **9.50** total / **4.00** paid / **5.50** outstanding. [Testing](../05_DEVELOPMENT/Testing.md#counter-thermal-documents-001--a1-and-a2-evidence-08112026) separates these results from historical Codex automated and synthetic-browser/PDF checks; none is rerun here.
+
+**Remaining scope:** the full `COUNTER-THERMAL-DOCUMENTS-001` mission is **PARTIAL**, not complete. Internal 58/80 mm ticket layouts, persistent document/site preferences and document/profile association, configurable operational copies, possible alternative REC formats, physical-printer and QR checks remain future work. `PRINT-DOCUMENT-PREFERENCES-001` is **PROPOSED / NOT STARTED**, not opened. This checkpoint supersedes earlier PLANNED / NOT STARTED claims only for A1/A2; all historical evidence remains intact. See [Roadmap](../01_PRODUCT/Roadmap.md#counter-thermal-documents-001--a1-and-a2-checkpoint-08112026). Hardware, universal-browser, security, fiscal and commercial Production Readiness gates remain open.
 
 ## Operational closeout — 07/11/2026
 

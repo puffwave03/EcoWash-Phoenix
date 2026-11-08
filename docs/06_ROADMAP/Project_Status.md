@@ -2,7 +2,24 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-07. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-08. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 closeout (08/11/2026)
+
+**Customer-copy acceptance is complete; the overall print mission remains PARTIAL.** This checkpoint supersedes the earlier PLANNED / NOT STARTED designation only for A1/A2 and supersedes A1's three-button interface with A2's compact interface. Older checkpoints retain their original evidence.
+
+| Phase | Published application commit | Scope and acceptance |
+|---|---|---|
+| A1 — Customer formats | `af905acc00a876308fbc841da0ec047fc9b4336f` | **COMPLETE / CTO PASS / PUBLISHED.** Existing customer renderer supports A4, 58 mm and 80 mm; A4 default and invalid-input fallback; transient selection, canonical data, confidential-note protection and five languages preserved. |
+| A2 — Compact customer copy | `e6fe1652039aeba17d640cd56b3761094c25a13a` | **COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT PASS** within the browser checks below. One Order command; format links and active-format indicator in preview; keyboard navigation; manual Print and back navigation. |
+
+**Release evidence:** both commits are verified on GitHub. A2 automatic deployment `dpl_E2UcfdzNKQcooHhQvDDoYj8NQfwJ` on `ecowash-phoenix-staging` is **READY**, with source commit matching A2 in the prior Codex postflight; read-only metadata was reconfirmed during this closeout. No persistent printer setting, REC issuance/snapshot/reprint, internal ticket, label, Billing, POS or database behavior changed in these phases.
+
+**PO functional browser UAT — 08/11/2026:** supplied **PASS** for one Customer copy command, A4/58/80 previews, format selection, readability and amounts in the checks performed. **Separate CTO visual evidence:** the supplied observed 80 mm screenshot for synthetic `EW-000175` shows total EUR **9.50**, paid **4.00**, outstanding **5.50**. This is not a new Codex UAT or payment operation. [Testing](../05_DEVELOPMENT/Testing.md#counter-thermal-documents-001--a1-and-a2-evidence-08112026) records the distinct evidence levels and historical test runs without aggregating their counts.
+
+**Open / not implemented:** internal ticket thermal 58/80 mm, persistent document/site preferences, document-to-printer-profile association, configurable operational copy counts, possible alternative REC formats and physical hardware/QR validation. `PRINT-DOCUMENT-PREFERENCES-001` remains an architectural proposal, **PROPOSED / NOT STARTED**; no new mission is opened. [Roadmap](../01_PRODUCT/Roadmap.md#counter-thermal-documents-001--a1-and-a2-checkpoint-08112026) preserves the original specification and future requirements.
+
+**Acceptance limits:** no certification of Epson TM-U220A / AVPos TC20, drivers/connectivity, physical paper/margins/cutting, automatic printing, universal browser compatibility, overall security, IGIC/VERI*FACTU compliance or commercial SaaS readiness. The customer copy remains **operational and non-fiscal**. This phase changes documentation only; no application tests, UAT, database mutation or deployment is performed.
 
 ## Operational closeout — 07/11/2026
 
