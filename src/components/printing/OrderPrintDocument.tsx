@@ -182,6 +182,23 @@ export async function OrderPrintDocument({ context, customerCopyFormat = "a4", l
           <Link className="inline-flex min-h-11 items-center font-bold !text-primary" href={`/app/orders/${context.order.id}`} locale={locale}>← {t("actions.back")}</Link>
           <PrintButton label={t("actions.print")} />
         </div>
+        {mode === "customer-copy" ? (
+          <nav aria-label={t("customerCopy.formatLabel")} className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-bold">{t("customerCopy.formatLabel")}</span>
+            {(["a4", "58mm", "80mm"] as const).map((format) => (
+              <Link
+                aria-current={customerCopyFormat === format ? "page" : undefined}
+                className={`inline-flex min-h-11 min-w-16 items-center justify-center rounded-control border px-3 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${customerCopyFormat === format ? "border-primary bg-primary !text-white" : "border-primary/20 bg-white !text-primary hover:bg-primary-soft"}`}
+                href={`/app/orders/${context.order.id}/print/customer-copy?format=${format}`}
+                key={format}
+                locale={locale}
+                prefetch={false}
+              >
+                {t(`customerCopy.formatOptions.${format}`)}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
         <p className="print-profile-status">
           <strong>{mode === "customer-copy" ? t(`customerCopy.formats.${customerCopyFormat}`) : profile ? `${t("profile.selected")}: ${profile.displayName}` : t("profile.browserFallback")}</strong>
           <span>{mode === "customer-copy" ? t("customerCopy.paperHint") : profile && profile.connectionMode !== "browser" ? t("profile.adapterFallback") : t("profile.browserOnly")}</span>

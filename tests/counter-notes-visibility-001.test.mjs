@@ -55,7 +55,7 @@ const Document = load(documentPath, {
   } },
   "@/components/printing/PrintButton": { PrintButton: ({ label }) => React.createElement("button", null, label) },
   "@/features/printing/labels": { buildPrintLabels: () => [] },
-  "@/i18n/navigation": { Link: ({ href, className, children }) => React.createElement("a", { href, className }, children) },
+  "@/i18n/navigation": { Link: ({ href, locale, className, children, "aria-current": current }) => React.createElement("a", { href: `/${locale}${href}`, className, "aria-current": current }, children) },
   "@/lib/number-format": { formatCurrency, formatQuantity },
   "@/components/barcode/ScannableQrCode": { ScannableQrCode: () => React.createElement("svg") },
   "@/features/barcode/payload": { createOrderCode: (id) => id },
@@ -223,7 +223,7 @@ test("many services, long descriptions and public notes remain complete in every
   }
 });
 
-test("only Order detail opts into format links; actions navigate to preview without issuing or printing", async () => {
+test("Order actions expose one customer preview; Quick Drop and separate REC issuance are preserved", async () => {
   let issued = 0;
   const { PrintOrderActions } = load("src/components/printing/PrintOrderActions.tsx", {
     "@/i18n/navigation": { Link: ({ href, locale, children }) => React.createElement("a", { href: `/${locale}${href}` }, children) },
@@ -232,23 +232,61 @@ test("only Order detail opts into format links; actions navigate to preview with
   });
   for (const locale of ["it", "es", "en", "fr", "de"]) {
     const t = messages(locale).print;
-    assert.deepEqual(Object.keys(t.customerCopy.formats).sort(), ["58mm", "80mm", "a4"]);
-    assert.ok(t.customerCopy.paperHint.length > 0);
-    const base = { locale, orderId: "order-test", text: t.actions, modes: ["customer-copy", "ticket", "labels"] };
-    const html = renderToStaticMarkup(await resolveTree(PrintOrderActions({ ...base, customerCopyFormats: t.customerCopy.formats })));
-    for (const format of ["a4", "58mm", "80mm"]) {
-      assert.ok(html.includes(`href="/${locale}/app/orders/order-test/print/customer-copy?format=${format}"`));
-      assert.ok(html.includes(t.customerCopy.formats[format]));
+    const base = { locale, orderId: "order-test", text: t.actions };
+    const tree = await resolveTree(PrintOrderActions(base));
+    const anchors = nodes(tree).filter((node) => node.type === "a");
+    assert.equal(anchors.length, 3);
+    for (const mode of ["customer-copy", "ticket", "labels"]) {
+      const matches = anchors.filter((node) => node.props.href === `/${locale}/app/orders/order-test/print/${mode}`);
+      assert.equal(matches.length, 1);
+      assert.equal(content(matches[0]), t.actions[mode]);
     }
-    for (const mode of ["ticket", "labels"]) assert.ok(html.includes(`href="/${locale}/app/orders/order-test/print/${mode}"`));
-    assert.doesNotMatch(html, /<form|<button/);
-    const terminalHtml = renderToStaticMarkup(await resolveTree(PrintOrderActions(base)));
-    assert.ok(terminalHtml.includes(`href="/${locale}/app/orders/order-test/print/customer-copy"`));
-    assert.doesNotMatch(terminalHtml, /\?format/);
-    const restricted = renderToStaticMarkup(await resolveTree(PrintOrderActions({ ...base, customerCopyFormats: t.customerCopy.formats, modes: ["ticket"] })));
+    const html = renderToStaticMarkup(tree);
+    assert.doesNotMatch(html, /\?format|\/print\/receipt/);
+    assert.equal(nodes(tree).filter((node) => node.type === "form").length, 1);
+    assert.equal(nodes(tree).filter((node) => node.type === "button" && node.props.type === "submit").length, 1);
+    const restricted = renderToStaticMarkup(await resolveTree(PrintOrderActions({ ...base, modes: ["ticket"] })));
     assert.doesNotMatch(restricted, /customer-copy/);
+    assert.ok(restricted.includes(`/app/orders/order-test/print/ticket`));
+    assert.doesNotMatch(restricted, /<form/);
   }
   assert.equal(issued, 0);
-  assert.match(read("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx"), /canPrint \? <PrintOrderActions customerCopyFormats=/);
+  const orderPage = read("src/app/[locale]/app/(dashboard)/orders/[orderId]/page.tsx");
+  assert.match(orderPage, /canPrint \? <PrintOrderActions locale=/);
+  assert.match(orderPage, /modes=\{pendingQuickDrop \? \["ticket"\] : undefined\}/);
+  assert.doesNotMatch(orderPage, /customerCopyFormats/);
   assert.doesNotMatch(read(route), /\.rpc\(|issueOperationalReceipt|savePrinter|window\.print/);
 });
+
+for (const locale of ["it", "es", "en", "fr", "de"]) {
+  for (const format of ["a4", "58mm", "80mm"]) {
+    test(`${locale}/${format}: preview links select one visible format and preserve the complete customer document`, async () => {
+      const context = fixture();
+      const before = JSON.stringify(context);
+      const tree = await resolveTree(await Document({ context, locale, mode: "customer-copy", customerCopyFormat: format }));
+      const nav = nodes(tree).find((node) => node.type === "nav");
+      const t = messages(locale).print.customerCopy;
+      assert.ok(nav);
+      assert.equal(nav.props["aria-label"], t.formatLabel);
+      assert.deepEqual(Object.keys(t.formatOptions).sort(), ["58mm", "80mm", "a4"]);
+      const links = nodes(nav).filter((node) => node.type === "a");
+      assert.equal(links.length, 3);
+      for (const [index, value] of ["a4", "58mm", "80mm"].entries()) {
+        const link = links[index];
+        assert.equal(link.props.href, `/${locale}/app/orders/order-test/print/customer-copy?format=${value}`);
+        assert.equal(content(link), t.formatOptions[value]);
+        assert.equal(link.props["aria-current"], value === format ? "page" : undefined);
+        assert.equal(link.props.className.split(" ").includes("bg-primary"), value === format);
+        assert.match(link.props.className, /min-h-11/);
+        assert.match(link.props.className, /focus-visible:outline/);
+        assert.equal(link.props.onClick, undefined);
+      }
+      assert.equal(links.filter((link) => link.props["aria-current"] === "page").length, 1);
+      const article = nodes(tree).find((node) => node.type === "article");
+      const a4 = await resolveTree(await Document({ context, locale, mode: "customer-copy" }));
+      assert.equal(renderToStaticMarkup(article), renderToStaticMarkup(nodes(a4).find((node) => node.type === "article")));
+      assert.equal(JSON.stringify(context), before);
+      assert.doesNotMatch(renderToStaticMarkup(tree), /CONFIDENTIAL|UNCLASSIFIED|PRIVATE|FUTURE_PRIVATE/);
+    });
+  }
+}

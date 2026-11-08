@@ -6,7 +6,6 @@ import { issueOperationalReceiptAction } from "@/features/sales-documents/server
 
 export type PrintActionText = { "customer-copy": string; labels: string; receipt: string; ticket: string };
 export type PrintOrderMode = keyof PrintActionText;
-export type CustomerCopyFormatText = { a4: string; "58mm": string; "80mm": string };
 
 function ReceiptIssueButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -22,21 +21,15 @@ function ReceiptIssueButton({ label }: { label: string }) {
   );
 }
 
-export function PrintOrderActions({ className = "", customerCopyFormats, locale, modes = ["customer-copy", "ticket", "labels", "receipt"], orderId, text }: {
+export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "ticket", "labels", "receipt"], orderId, text }: {
   className?: string;
-  customerCopyFormats?: CustomerCopyFormatText;
   locale: string;
   orderId: string;
   modes?: PrintOrderMode[];
   text: PrintActionText;
 }) {
   const actions = [
-    ...(customerCopyFormats
-      ? (["a4", "58mm", "80mm"] as const).map((format) => ({
-        href: `/app/orders/${orderId}/print/customer-copy?format=${format}`,
-        label: customerCopyFormats[format], mode: "customer-copy" as const,
-      }))
-      : [{ href: `/app/orders/${orderId}/print/customer-copy`, label: text["customer-copy"], mode: "customer-copy" as const }]),
+    { href: `/app/orders/${orderId}/print/customer-copy`, label: text["customer-copy"], mode: "customer-copy" as const },
     { href: `/app/orders/${orderId}/print/ticket`, label: text.ticket, mode: "ticket" as const },
     { href: `/app/orders/${orderId}/print/labels`, label: text.labels, mode: "labels" as const },
   ].filter((action) => modes.includes(action.mode));
