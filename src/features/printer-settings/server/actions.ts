@@ -49,7 +49,7 @@ export async function savePrinterProfileAction(
     ? ["receipt_58mm", "receipt_80mm", "browser_pdf"].includes(paperFormat)
     : purpose === "label"
       ? ["label_custom", "browser_pdf"].includes(paperFormat)
-      : ["ticket_a4", "browser_pdf"].includes(paperFormat);
+      : ["ticket_a4", "ticket_58mm", "ticket_80mm", "browser_pdf"].includes(paperFormat);
 
   if (!UUID.test(locationId) || !displayName
     || !PRINTER_PURPOSES.includes(purpose)

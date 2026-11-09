@@ -1,6 +1,6 @@
 export const PRINTER_PURPOSES = ["receipt", "label", "ticket"] as const;
 export const PRINTER_CONNECTION_MODES = ["browser", "network", "local_bridge", "vendor_adapter"] as const;
-export const PRINTER_PAPER_FORMATS = ["receipt_58mm", "receipt_80mm", "browser_pdf", "label_custom", "ticket_a4"] as const;
+export const PRINTER_PAPER_FORMATS = ["receipt_58mm", "receipt_80mm", "browser_pdf", "label_custom", "ticket_a4", "ticket_58mm", "ticket_80mm"] as const;
 export const PRINTER_ORIENTATIONS = ["portrait", "landscape"] as const;
 
 export type PrinterPurpose = (typeof PRINTER_PURPOSES)[number];

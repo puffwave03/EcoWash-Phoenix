@@ -72,7 +72,7 @@ function initialPaperFormat(purpose: PrinterPurpose): PrinterPaperFormat {
 
 function formatsFor(purpose: PrinterPurpose): PrinterPaperFormat[] {
   if (purpose === "label") return ["label_custom", "browser_pdf"];
-  if (purpose === "ticket") return ["ticket_a4", "browser_pdf"];
+  if (purpose === "ticket") return ["ticket_a4", "ticket_58mm", "ticket_80mm", "browser_pdf"];
   return ["receipt_58mm", "receipt_80mm", "browser_pdf"];
 }
 

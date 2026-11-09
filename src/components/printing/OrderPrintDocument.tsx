@@ -83,7 +83,7 @@ async function Receipt({ context, locale, profile }: { context: PrintOrderContex
   );
 }
 
-async function Ticket({ context, locale }: { context: PrintOrderContext; locale: string }) {
+async function Ticket({ context, locale, thermal = false }: { context: PrintOrderContext; locale: string; thermal?: boolean }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
   const quickDropT = await getTranslations({ locale, namespace: "common.quickDrop" });
   const codeT = await getTranslations({ locale, namespace: "common.barcode.print" });
@@ -103,7 +103,7 @@ async function Ticket({ context, locale }: { context: PrintOrderContext; locale:
         {context.createdByName ? <div><dt>{t("fields.operator")}</dt><dd>{context.createdByName}</dd></div> : null}
         <div><dt>{t("fields.paymentStatus")}</dt><dd>{context.quickDropFinancialState === "unpriced" ? quickDropT("unpriced") : t(`paymentStatuses.${context.paymentSummary.paymentStatus}`)}</dd></div>
       </dl>
-      <table className="print-items-table print-ticket-items"><thead><tr><th>{t("fields.service")}</th><th>{t("fields.quantity")}</th><th>{t("fields.unit")}</th><th>{t("fields.itemNotes")}</th></tr></thead><tbody>{context.items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{formatQuantity(item.quantity, locale)}</td><td>{t(`units.${item.unitType}`)}</td><td>{item.notes || "—"}</td></tr>)}</tbody></table>
+      <table className="print-items-table print-ticket-items"><thead><tr><th>{t("fields.service")}</th><th>{t("fields.quantity")}</th><th>{t("fields.unit")}</th><th>{t("fields.itemNotes")}</th></tr></thead><tbody>{context.items.map((item) => <tr key={item.id}><td>{item.description}</td><td data-label={thermal ? t("fields.quantity") : undefined}>{formatQuantity(item.quantity, locale)}</td><td data-label={thermal ? t("fields.unit") : undefined}>{t(`units.${item.unitType}`)}</td><td data-label={thermal ? t("fields.itemNotes") : undefined}>{item.notes || "—"}</td></tr>)}</tbody></table>
       {(context.order.customerNotes || context.order.internalNotes) ? <section className="print-ticket-notes"><h3>{t("fields.treatmentNotes")}</h3>{context.order.customerNotes ? <p>{context.order.customerNotes}</p> : null}{context.order.internalNotes ? <p>{context.order.internalNotes}</p> : null}</section> : null}
       {logistics.some(([, record]) => record) ? <section className="print-logistics"><h3>{t("fields.logistics")}</h3>{logistics.map(([kind, record]) => record ? <p key={kind}><strong>{t(`logistics.${kind}`)}</strong>: {t(`logistics.${record.status}`)}{record.scheduledAt ? ` · ${formatDate(record.scheduledAt, locale, context.timezone, true)}` : ""}</p> : null)}</section> : null}
     </article>
@@ -171,10 +171,16 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
 export async function OrderPrintDocument({ context, customerCopyFormat = "a4", locale, mode }: { context: PrintOrderContext; customerCopyFormat?: CustomerCopyFormat; locale: string; mode: OrderPrintMode }) {
   const t = await getTranslations({ locale, namespace: "common.print" });
   const purpose = mode === "labels" ? "label" : mode === "customer-copy" ? "ticket" : mode;
-  const profile = context.printerProfiles[purpose] ?? null;
+  const selectedProfile = context.printerProfiles[purpose] ?? null;
+  const profile = mode === "ticket" && selectedProfile && (
+    selectedProfile.purpose !== "ticket" || !selectedProfile.enabled || !selectedProfile.isDefault
+    || !["ticket_a4", "ticket_58mm", "ticket_80mm", "browser_pdf"].includes(selectedProfile.paperFormat)
+  ) ? null : selectedProfile;
+  const ticketThermal = mode === "ticket" && (profile?.paperFormat === "ticket_58mm" || profile?.paperFormat === "ticket_80mm");
   const profileClass = mode === "receipt"
     ? profile?.paperFormat === "receipt_58mm" ? "order-print-receipt-58mm" : profile?.paperFormat === "browser_pdf" ? "order-print-receipt-pdf" : "order-print-receipt-80mm"
-    : mode === "labels" && profile?.paperFormat === "label_custom" ? "order-print-labels-custom" : "";
+    : mode === "labels" && profile?.paperFormat === "label_custom" ? "order-print-labels-custom"
+      : ticketThermal ? `order-print-${profile.paperFormat.replace("_", "-")} order-print-ticket-thermal` : "";
   const customerCopyClass = mode === "customer-copy" ? `order-print-customer-copy order-print-customer-${customerCopyFormat}${customerCopyFormat === "a4" ? "" : " order-print-customer-thermal"}` : "";
   return (
     <div className={`order-print-document order-print-${mode === "customer-copy" ? "ticket" : mode} ${profileClass}${customerCopyClass ? ` ${customerCopyClass}` : ""}`}>
@@ -213,7 +219,7 @@ export async function OrderPrintDocument({ context, customerCopyFormat = "a4", l
         currency={context.order.currency} subtotal={context.order.subtotal} discountAmount={context.order.discountAmount} total={context.order.total}
         totalPaid={context.paymentSummary.totalPaid} balanceDue={context.paymentSummary.balanceDue}
         locale={locale} timezone={context.timezone}
-      /> : mode === "receipt" ? <Receipt context={context} locale={locale} profile={profile} /> : mode === "ticket" ? <Ticket context={context} locale={locale} /> : <Labels context={context} locale={locale} profile={profile} />}
+      /> : mode === "receipt" ? <Receipt context={context} locale={locale} profile={profile} /> : mode === "ticket" ? <Ticket context={context} locale={locale} thermal={ticketThermal} /> : <Labels context={context} locale={locale} profile={profile} />}
     </div>
   );
 }
