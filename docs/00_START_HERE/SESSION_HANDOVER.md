@@ -2,7 +2,17 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-08
+Date: 2026-11-09
+
+## PRINT-DOCUMENT-PREFERENCES-001 — Phase A closeout (09/11/2026)
+
+**FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS** for the centralised **Documents and printing** configuration of the **customer EW copy**. Current published application baseline: `a45c6d90aa7af459b6572d201427f32aa905bc6d`; documentation preflight verified `main` = `HEAD` = `origin/main` = GitHub `main`, with clean index/worktree. [Project Status](../06_ROADMAP/Project_Status.md#print-document-preferences-001--phase-a-closeout-09112026) records commit, deployment, migration and acceptance.
+
+**Completed:** persistent A4 / 58 mm / 80 mm customer-copy format by tenant and site, with an optional compatible existing printer profile. Precedence is **valid manual preview selection → saved site preference → A4 fallback**. The manual override is temporary and does not change the saved preference. Existing printer profiles are reused; no automatic hardware printing or creation of documents, numbers, payments or fiscal operations is introduced. The customer copy remains **operational and non-fiscal**; REC, Billing, POS, Accounting, internal ticket and labels are unchanged by Phase A.
+
+**Acceptance:** PO functional browser UAT **PASS on 09/11/2026**, using A4 and 80 mm preferences, temporary override and order `EW-000175`. [Testing](../05_DEVELOPMENT/Testing.md#print-document-preferences-001--phase-a-evidence-09112026) distinguishes the prior Codex checks, staging structural verification and supplied PO acceptance. The local SQL scripts were **NOT RUN** because of Docker infrastructure problems; no test or UAT is repeated by this closeout.
+
+**Continuation:** this checkpoint supersedes the **PROPOSED / NOT STARTED** designation and pending customer-copy preferences/profile association in the 08/11 checkpoint below. The overall `COUNTER-THERMAL-DOCUMENTS-001` mission remains **PARTIAL**. Other supported documents, internal thermal layout, configurable copies, further operational formats and physical printer/QR checks remain future scope in [Roadmap](../01_PRODUCT/Roadmap.md#print-document-preferences-001--phase-a-checkpoint-09112026); none is opened here. Multi-site configuration, authenticated negative-role coverage, complete local SQL execution, backup restore, overall security, fiscal compliance and Production Readiness remain unverified or gated as detailed in Project Status. All historical checkpoints are preserved. This documentation patch is local, unstaged and pending CTO review; no commit/push is authorised for this closeout.
 
 ## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 closeout (08/11/2026)
 

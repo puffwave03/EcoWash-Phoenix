@@ -2,7 +2,22 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-08. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-09. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## PRINT-DOCUMENT-PREFERENCES-001 — Phase A closeout (09/11/2026)
+
+**FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS**, limited to centralised preferences for the **customer EW copy**. This later checkpoint supersedes the **PROPOSED / NOT STARTED** designation and pending customer-copy preferences/profile association below; their dated evidence is preserved. The overall `COUNTER-THERMAL-DOCUMENTS-001` mission remains **PARTIAL**.
+
+| Release / acceptance | Verified evidence and scope |
+|---|---|
+| Application publication | `a45c6d90aa7af459b6572d201427f32aa905bc6d` — `feat: add centralized customer copy print preferences`; exactly **17 mission files** published. Local `main`, `origin/main` and GitHub `main` matched this baseline at documentation preflight. |
+| Vercel staging | `dpl_DRY3MPidBLLZbyJQVUWRN9AiMzgE`, project `ecowash-phoenix-staging`: **READY**, source SHA matching the application commit in the verified publication postflight. |
+| Supabase staging | Project `exthnplfokcucaqydney`; `20261108205704_print_document_preferences_001` applied **once** and recorded in history, increasing migration count **117 → 118**. Table, constraints, indexes, RLS, policies, privileges, functions and triggers verified structurally. No synthetic data was inserted for that migration verification. |
+| CTO / PO | CTO review **PASS**; PO functional browser UAT **PASS — 09/11/2026** as Owner, on EcoWash La Tejita and `EW-000175`, with A4/80 mm preferences and temporary override. Internal ticket A4 and operational REC 80 mm were visually unchanged. This is scoped browser acceptance, not hardware/security certification. |
+
+**Delivered:** **Documents and printing** persists the customer-copy format by tenant/site and optionally associates a compatible existing printer profile. **Valid manual preview selection → saved site preference → A4 fallback**; manual selection is temporary. Supported formats are A4 / 58 mm / 80 mm. No automatic hardware printing, document issuance, numbering, payment or fiscal operation is added. REC, Billing, POS, Accounting, internal ticket and labels are unchanged; the customer copy remains **non-fiscal**. [Testing](../05_DEVELOPMENT/Testing.md#print-document-preferences-001--phase-a-evidence-09112026) separates prior Codex results, staging checks and supplied PO UAT, including tests not run.
+
+**Limits / remaining gates:** physical printers, drivers/cutting/connectivity, automatic printing, actual multi-site configuration, authenticated negative tests across all roles, complete local SQL suite, full backup restore, global security certification, IGIC/VERI*FACTU conformity, Production Readiness and SaaS commercialisation are **not verified by this acceptance**. The backup was produced and verified as an archive; no full restore was performed. Local SQL scripts were **NOT RUN** because of Docker infrastructure problems; staging structural checks are not a substitute PASS for that suite. [Roadmap](../01_PRODUCT/Roadmap.md#print-document-preferences-001--phase-a-checkpoint-09112026) preserves future work without opening missions; [Handover](../00_START_HERE/SESSION_HANDOVER.md#print-document-preferences-001--phase-a-closeout-09112026) owns continuation. No test, UAT, remote operation or publication is performed by this documentation-only closeout.
 
 ## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 closeout (08/11/2026)
 

@@ -8,6 +8,22 @@ Last consolidated: 2026-10-16
 
 This document records approved targets and sequencing constraints. [Project Status](../06_ROADMAP/Project_Status.md) owns implementation/UAT state; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns immediate continuation and Git/WIP. A roadmap entry is not implementation authorization.
 
+## PRINT-DOCUMENT-PREFERENCES-001 — Phase A checkpoint (09/11/2026)
+
+**FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS** for centralised preferences of the **customer EW copy**. [Project Status](../06_ROADMAP/Project_Status.md#print-document-preferences-001--phase-a-closeout-09112026) owns release identifiers and acceptance; [Testing](../05_DEVELOPMENT/Testing.md#print-document-preferences-001--phase-a-evidence-09112026) separates Codex, staging and PO browser evidence and its limits. The overall `COUNTER-THERMAL-DOCUMENTS-001` mission remains **PARTIAL**.
+
+**Delivered:** **Documents and printing**, persistent customer-copy format A4 / 58 mm / 80 mm by tenant/site, optional association with a compatible existing printer profile, and the preserved manual preview selector. Precedence is **valid manual preview selection → saved site preference → A4 fallback**; the override is temporary. No automatic hardware printing, document/number creation, payment or fiscal operation is introduced. REC, Billing, POS, Accounting, internal ticket and labels are unchanged.
+
+This checkpoint **supersedes the PROPOSED / NOT STARTED designation** of `PRINT-DOCUMENT-PREFERENCES-001` in the 08/11 checkpoint below, and supersedes its pending preferences/profile-association scope **only for the customer copy delivered in Phase A**. The dated checkpoints and original requirements remain preserved. The following requirements remain future scope, with **no new mission or implementation authorised here**:
+
+- Extend centralised configuration only to documents actually supported by a separately approved scope.
+- Consider an internal thermal-ticket layout without introducing three format selectors into the operator interface.
+- Configure copy counts when supported; the normally two-copy workflow is not complete.
+- Perform physical-printer and QR checks, including Epson TM-U220A / AVPos TC20, drivers, paper, cutting and connectivity.
+- Evaluate further operational-document formats while preserving canonical data and historical documents.
+
+PO UAT confirms browser behaviour with A4/80 mm preferences and temporary override; it does not certify hardware, automatic printing, multi-site configuration, all-role negative tests, complete local SQL execution, full backup restore, overall security, IGIC/VERI*FACTU or Production Readiness/commercialisation. Existing fiscal and release gates remain open; the customer copy and REC remain **non-fiscal operational documents**.
+
 ## Approved targets
 
 - EcoWash Phoenix operational at EcoWash La Tejita by **20 December 2026**.

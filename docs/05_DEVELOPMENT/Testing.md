@@ -4,6 +4,36 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## PRINT-DOCUMENT-PREFERENCES-001 — Phase A evidence (09/11/2026)
+
+This checkpoint indexes **previous Codex execution, prior staging verification and PO-supplied browser UAT** separately. No application test, SQL script, UAT, migration or deployment is repeated by this documentation-only closeout. [Project Status](../06_ROADMAP/Project_Status.md#print-document-preferences-001--phase-a-closeout-09112026) records official **FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS** acceptance; [Handover](../00_START_HERE/SESSION_HANDOVER.md#print-document-preferences-001--phase-a-closeout-09112026) records continuation.
+
+| Evidence level | Recorded result and boundary |
+|---|---|
+| Codex — prior application checks | **170 tests PASS**, including the **22 specific tests** in [print-document-preferences-001.test.mjs](../../tests/print-document-preferences-001.test.mjs); **22 is a subset, not an additional total**. TypeScript, scoped ESLint and diff check **PASS** in the prior implementation report. No rerun here. |
+| SQL staging — structural verification | Migration `20261108205704_print_document_preferences_001` applied once on `exthnplfokcucaqydney`, history **117 → 118**. Table, constraints, indexes, enabled RLS, policies/privileges, functions and triggers verified. No synthetic data was inserted for the migration verification. These checks do **not** establish a PASS for the entire SQL runtime suite. |
+| Specific local SQL suite | **NOT RUN — Docker infrastructure problems.** Existing [setup](../../tests/sql/print-document-preferences-001-setup.sql) and [assertions](../../tests/sql/print-document-preferences-001-assert.sql) remain available; no isolated local runtime or SQL authorisation-test PASS is claimed. |
+| GitHub / Vercel publication | Commit `a45c6d90aa7af459b6572d201427f32aa905bc6d`, exactly **17 mission files**; deployment `dpl_DRY3MPidBLLZbyJQVUWRN9AiMzgE` on `ecowash-phoenix-staging` **READY**, source SHA matching the commit in the previous publication postflight. GitHub `main` was reconfirmed at documentation preflight. |
+| CTO review | **PASS**, supplied in the closeout mandate; distinct from runtime database, hardware or product-wide security certification. |
+
+**PO functional browser UAT — 09/11/2026: PASS within the following supplied observations.**
+
+1. Access **Documents and printing** as Owner.
+2. Select the EcoWash La Tejita site.
+3. Save a preference with visible confirmation.
+4. Open the customer copy in the configured format.
+5. Select a format manually in the preview.
+6. Confirm the manual selection takes precedence.
+7. Reopen the copy and recover the saved default, confirming the override is temporary.
+8. View the customer copy of `EW-000175` correctly.
+9. Observe that the internal A4 ticket and operational REC 80 mm remain visually unchanged.
+
+The supplied UAT exercised saved **A4 and 80 mm** preferences and temporary override. It does not establish a new PO runtime check for every format, locale, site or role. This visual/functional evidence is separate from automated tests. Precedence remains **valid manual preview selection → saved site preference → A4 fallback**, without updating the saved preference from preview navigation.
+
+**NOT VERIFIED by this acceptance:** physical printing, drivers/cutting/connectivity, automatic printing, actual configuration across multiple sites, authenticated negative checks for all roles, complete local SQL suite, complete backup restore, global security certification, IGIC/VERI*FACTU compliance, Production Readiness or SaaS commercialisation. The staging backup was produced and its archive verified; **no full restore test was executed**. No hardware or automatic-printing capability is claimed.
+
+Phase A leaves REC, Billing, POS, Accounting, internal ticket and labels unchanged. The customer copy remains **operational and non-fiscal**. This checkpoint supersedes the pending customer-copy preferences/profile-association scope below; the overall printing mission remains **PARTIAL**, with future work in [Roadmap](../01_PRODUCT/Roadmap.md#print-document-preferences-001--phase-a-checkpoint-09112026). All historical execution evidence remains intact.
+
 ## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 evidence (08/11/2026)
 
 This section records existing execution evidence and supplied CTO/PO acceptance. **No application test or UAT is rerun.** Read-only GitHub/deployment metadata checks during this closeout confirm the release identifiers; they are not new functional tests. [Project Status](../06_ROADMAP/Project_Status.md#counter-thermal-documents-001--a1-and-a2-closeout-08112026) owns acceptance and [Handover](../00_START_HERE/SESSION_HANDOVER.md#counter-thermal-documents-001--a1-and-a2-closeout-08112026) continuation. A1 and A2 counts are separate executions with overlapping regressions, **not a combined test total**.
