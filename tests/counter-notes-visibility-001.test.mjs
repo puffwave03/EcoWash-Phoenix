@@ -21,6 +21,10 @@ function load(path, imports) {
   runInNewContext(code, { module: compiledModule, exports: compiledModule.exports, require(name) {
     if (name === "react/jsx-runtime") return require(name);
     if (Object.hasOwn(imports, name)) return imports[name];
+    if (name === "@/features/printer-settings/document-preferences") return load("src/features/printer-settings/document-preferences.ts", {});
+    // Legacy no-preference fixtures still exercise the historical A4 fallback.
+    // Actual preference reads and tenant/site filters have their own focused suite.
+    if (name === "@/features/printer-settings/server/document-preference-queries") return { getCustomerCopyPreference: async () => null };
     throw Error(`Unexpected import: ${name}`);
   } }, { filename: path });
   return compiledModule.exports;

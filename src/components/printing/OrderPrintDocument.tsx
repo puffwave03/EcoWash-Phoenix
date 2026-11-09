@@ -5,6 +5,7 @@ import { PrintButton } from "@/components/printing/PrintButton";
 import { buildPrintLabels } from "@/features/printing/labels";
 import type { PrintOrderContext } from "@/features/printing/types";
 import type { PrinterProfile } from "@/features/printer-settings/types";
+import type { CustomerCopyFormat } from "@/features/printer-settings/document-preferences";
 import type { PaymentMethod } from "@/features/payments/types";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
@@ -13,7 +14,7 @@ import { createOrderCode } from "@/features/barcode/payload";
 import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 
 export type OrderPrintMode = "labels" | "receipt" | "ticket" | "customer-copy";
-export type CustomerCopyFormat = "a4" | "58mm" | "80mm";
+export type { CustomerCopyFormat } from "@/features/printer-settings/document-preferences";
 
 function formatDate(value: string | null, locale: string, timezone: string, includeTime = false) {
   if (!value) return "—";
