@@ -1898,6 +1898,8 @@
       "record": "Registra pagamento",
       "saving": "Salvataggio...",
       "empty": "Nessun pagamento registrato.",
+      "readError": "Impossibile caricare pagamenti e saldo. Ricarica la pagina prima di effettuare operazioni o stampare riepiloghi economici.",
+      "unavailable": "Dati pagamento non disponibili",
       "error": "Il pagamento non può essere registrato.",
       "date": "Data",
       "actor": "Registrato da",

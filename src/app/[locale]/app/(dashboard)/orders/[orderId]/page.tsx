@@ -10,6 +10,8 @@ import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
 import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
+import { PaymentReadErrorNotice } from "@/components/payments/PaymentReadErrorNotice";
+import { PaymentReadError } from "@/features/payments/read-error";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
 import { WarehouseMovementHistory, type WarehouseMovementText } from "@/components/warehouse/WarehouseMovementHistory";
@@ -106,7 +108,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
   const { locale, orderId } = await params;
   const routeSearch = await searchParams;
   const warehouseError = routeSearch.warehouse === "inbound-unavailable";
-  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, paymentData, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -115,8 +117,12 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getOrderLogistics(locale, orderId),
     getCustomerHandoff(locale, orderId),
     listAssignableStaff(locale),
-    getOrderPayments(locale, orderId),
-    getOrderPaymentSummary(locale, orderId),
+    Promise.all([getOrderPayments(locale, orderId), getOrderPaymentSummary(locale, orderId)])
+      .then(([payments, summary]) => ({ payments, summary }))
+      .catch((error: unknown) => {
+        if (error instanceof PaymentReadError) return null;
+        throw error;
+      }),
     getOrderPhotos(locale, orderId),
     getQuickDropOrderOrNull(locale, orderId),
     getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing, FEATURES.billingInvoicing]),
@@ -130,6 +136,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getTranslations({ locale, namespace: "common.readyWarehouse" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
+  const paymentSummary = paymentData?.summary;
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const pickupReceiptBlocked = order.productionStatus === "draft"
     && (logistics.pickup?.status === "scheduled" || logistics.pickup?.status === "in_progress");
@@ -184,6 +191,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
   return (
     <div className="space-y-6">
+      {!paymentData ? <PaymentReadErrorNotice locale={locale} /> : null}
       {routeSearch.itemsError === "1" ? (
         <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("orderItemsRequired")}</p>
       ) : null}
@@ -215,7 +223,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
                 {t(`priorities.${order.priority}`)}
               </span>
-              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : paymentStatusLabels[paymentSummary.paymentStatus]}</span>
+              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : paymentSummary ? paymentStatusLabels[paymentSummary.paymentStatus] : t("payments.unavailable")}</span>
               {pendingQuickDrop ? <span className="rounded-control bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-950">{quickDropT("pendingDetail")}</span> : null}
             </div>
           </div>
@@ -294,7 +302,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("payments.balanceDue")}</dt>
-          <dd className="mt-1 text-xl font-semibold text-primary">{pendingQuickDrop ? quickDropT("unpriced") : formatCurrency(paymentSummary.balanceDue, order.currency, locale)}</dd>
+          <dd className="mt-1 text-xl font-semibold text-primary">{pendingQuickDrop ? quickDropT("unpriced") : paymentSummary ? formatCurrency(paymentSummary.balanceDue, order.currency, locale) : t("payments.unavailable")}</dd>
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("photos.title")}</dt>
@@ -511,7 +519,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         />
       </SectionShell>
 
-      {(handoff || canCompleteCustomerHandoff) ? (
+      {paymentSummary && (handoff || canCompleteCustomerHandoff) ? (
         <SectionShell id="customer-handoff" title={t("handoff.title")}>
           <CustomerHandoffPanel
             action={completeCustomerHandoffAction.bind(null, locale, order.id)}
@@ -531,7 +539,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       ) : null}
 
       <SectionShell id="payments" title={t("payments.title")}>
-        {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
+        {!paymentData ? <Card><p className="font-semibold text-primary">{t("payments.unavailable")}</p></Card> : pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
           actions={{
             manualExternal: recordManualExternalPaymentAction.bind(null, locale, order.id),
             manualExternalRefund: recordManualExternalRefundAction.bind(null, locale, order.id),
@@ -544,10 +552,10 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           isOrderCancelled={order.productionStatus === "cancelled"}
           locale={locale}
           orderId={order.id}
-          payments={payments}
+          payments={paymentData.payments}
           posHref={`/app/pos?q=${encodeURIComponent(order.orderNumber)}`}
           posSessionId={posSession?.id ?? null}
-          summary={paymentSummary}
+          summary={paymentData.summary}
           manualExternalText={t.raw("payments.manualExternal")}
           manualExternalRefundText={t.raw("payments.manualExternalRefund")}
           text={{

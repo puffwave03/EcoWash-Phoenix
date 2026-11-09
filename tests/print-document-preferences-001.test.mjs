@@ -21,6 +21,8 @@ function load(path, imports = {}) {
   } }).outputText;
   runInNewContext(code, { module: compiledModule, exports: compiledModule.exports, console: { error() {} }, require(name) {
     if (Object.hasOwn(imports, name)) return imports[name];
+    if (name === "@/features/payments/read-error") return load("src/features/payments/read-error.ts", {});
+    if (name === "@/components/payments/PaymentReadErrorNotice") return { PaymentReadErrorNotice: () => { throw Error("Unexpected payment read failure in success fixture"); } };
     if (name === "react/jsx-runtime") return require(name);
     if (name === "server-only") return {};
     if (name === "@/features/printer-settings/document-preferences") return preferences;

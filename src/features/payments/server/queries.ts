@@ -2,6 +2,7 @@ import "server-only";
 
 import { requireMembership } from "@/lib/auth/require-membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { PaymentReadError } from "@/features/payments/read-error";
 import type {
   Payment,
   PaymentSummary,
@@ -34,21 +35,38 @@ function relationName(value: { display_name?: string } | { display_name?: string
   return row?.display_name ?? null;
 }
 
+async function readPaymentQuery<T>(
+  query: PromiseLike<{ data: T | null; error: { code?: string } | null }>,
+  message: string,
+): Promise<T> {
+  let result;
+  try {
+    result = await query;
+  } catch {
+    // Transport failures can reject instead of returning a PostgREST error.
+    console.error(message, "request_failed");
+    throw new PaymentReadError();
+  }
+  if (result.error || result.data == null) {
+    console.error(message, result.error?.code ?? "missing_data");
+    throw new PaymentReadError();
+  }
+  return result.data;
+}
+
 export async function getOrderPayments(locale: string, orderId: string): Promise<Payment[]> {
   const { membership } = await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("payments")
-    .select("id, amount, channel, method, status, paid_at, reference, proof_photo_id, refunded_from_payment_id, created_at, recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
-    .eq("organization_id", membership.organization.id)
-    .eq("order_id", orderId)
-    .order("created_at", { ascending: false })
-    .returns<PaymentRow[]>();
-
-  if (error || !data) {
-    console.error("Payments query failed", error?.code);
-    return [];
-  }
+  const data = await readPaymentQuery(
+    supabase
+      .from("payments")
+      .select("id, amount, channel, method, status, paid_at, reference, proof_photo_id, refunded_from_payment_id, created_at, recorded_by_profile:profiles!payments_recorded_by_fkey(display_name)")
+      .eq("organization_id", membership.organization.id)
+      .eq("order_id", orderId)
+      .order("created_at", { ascending: false })
+      .returns<PaymentRow[]>(),
+    "Payments query failed",
+  );
 
   return data.map((row) => ({
     amount: row.amount,
@@ -68,14 +86,12 @@ export async function getOrderPayments(locale: string, orderId: string): Promise
 export async function getOrderPaymentSummary(locale: string, orderId: string): Promise<PaymentSummary> {
   await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .rpc("get_order_payment_summary", { target_order_id: orderId })
-    .single<SummaryRow>();
-
-  if (error || !data) {
-    console.error("Payment summary query failed", error?.code);
-    return { balanceDue: 0, paymentStatus: "unpaid", totalDue: 0, totalPaid: 0 };
-  }
+  const data = await readPaymentQuery(
+    supabase
+      .rpc("get_order_payment_summary", { target_order_id: orderId })
+      .single<SummaryRow>(),
+    "Payment summary query failed",
+  );
 
   return {
     balanceDue: data.balance_due,

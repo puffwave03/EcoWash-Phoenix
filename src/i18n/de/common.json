@@ -1855,6 +1855,8 @@
       "record": "Zahlung erfassen",
       "saving": "Speichern...",
       "empty": "Noch keine Zahlungen erfasst.",
+      "readError": "Zahlungen und Restbetrag konnten nicht geladen werden. Laden Sie die Seite neu, bevor Sie Vorgänge ausführen oder finanzielle Zusammenfassungen drucken.",
+      "unavailable": "Zahlungsdaten nicht verfügbar",
       "error": "Die Zahlung konnte nicht erfasst werden.",
       "date": "Datum",
       "actor": "Erfasst von",

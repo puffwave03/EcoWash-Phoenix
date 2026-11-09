@@ -21,6 +21,8 @@ function load(path, imports) {
   runInNewContext(code, { module: compiledModule, exports: compiledModule.exports, require(name) {
     if (name === "react/jsx-runtime") return require(name);
     if (Object.hasOwn(imports, name)) return imports[name];
+    if (name === "@/features/payments/read-error") return load("src/features/payments/read-error.ts", {});
+    if (name === "@/components/payments/PaymentReadErrorNotice") return { PaymentReadErrorNotice: () => { throw Error("Unexpected payment read failure in success fixture"); } };
     if (name === "@/features/printer-settings/document-preferences") return load("src/features/printer-settings/document-preferences.ts", {});
     // Legacy no-preference fixtures still exercise the historical A4 fallback.
     // Actual preference reads and tenant/site filters have their own focused suite.

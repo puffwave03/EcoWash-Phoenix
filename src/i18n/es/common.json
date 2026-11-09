@@ -1855,6 +1855,8 @@
       "record": "Registrar pago",
       "saving": "Guardando...",
       "empty": "Aún no hay pagos registrados.",
+      "readError": "No se pueden cargar los pagos y el saldo. Recarga la página antes de realizar operaciones o imprimir resúmenes económicos.",
+      "unavailable": "Datos de pago no disponibles",
       "error": "No se pudo registrar el pago.",
       "date": "Fecha",
       "actor": "Registrado por",

@@ -1964,6 +1964,8 @@
       "record": "Record payment",
       "saving": "Saving...",
       "empty": "No payments recorded yet.",
+      "readError": "Payments and balance could not be loaded. Reload the page before performing operations or printing financial summaries.",
+      "unavailable": "Payment data unavailable",
       "error": "The payment could not be recorded.",
       "date": "Date",
       "actor": "Recorded by",

@@ -1855,6 +1855,8 @@
       "record": "Enregistrer le paiement",
       "saving": "Enregistrement...",
       "empty": "Aucun paiement enregistré.",
+      "readError": "Impossible de charger les paiements et le solde. Rechargez la page avant toute opération ou impression de récapitulatifs financiers.",
+      "unavailable": "Données de paiement indisponibles",
       "error": "Le paiement n'a pas pu être enregistré.",
       "date": "Date",
       "actor": "Enregistré par",
