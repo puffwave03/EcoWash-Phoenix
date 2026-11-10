@@ -2,7 +2,26 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-09. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-10. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## NETWORK-FAILURE-UX-001 — closeout (10/11/2026)
+
+**COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING READY / PO FUNCTIONAL UAT PASS**, within the authorised POS read-error scope. Earlier generic network-failure entries remain historical or broader pending scope; this acceptance does not establish general offline operation or product-wide network resilience.
+
+| Evidence | Result and boundary |
+|---|---|
+| Application publication | `443d173d05228b4e8161dd3a34d59fac86a24999` — `fix(pos): distinguish read failures from empty lists`; exactly **12 approved files**. Prior postflight verified `HEAD` = `origin/main` = GitHub `main` and clean index/worktree. |
+| Automatic staging deployment | `dpl_H4V5KYjMgZvLJPpam1Nxi3eVPdAy`, project `ecowash-phoenix-staging`: **READY**, source `git`, branch `main`, matching application SHA verified in the publication postflight. No manual deployment. |
+| Codex local validation | **174 tests: 173 PASS / 1 pre-existing FAIL**; the passing total includes **65 mission-specific tests + 108 regressions**, not additional totals. TypeScript, scoped ESLint without warnings and diff check including new files **PASS**. [Testing](../05_DEVELOPMENT/Testing.md#network-failure-ux-001--closeout-evidence-10112026) records evidence levels. |
+| Product Owner acceptance | **Functional staging UAT PASS**, supplied in the 10/11/2026 closeout mandate. No new Codex UAT or detailed per-scenario/role/locale coverage is asserted by this documentation update. |
+
+**Implemented boundary:** [POS queries](../../src/features/pos/server/queries.ts) distinguish successful empty results from RPC/query, transport and missing-data failures in `listPosOrdersDue`, `listPosSessionPayments`, `listPosSessionHistory`, `listPosLocations` and `getPosSessionSummary`. The page/workspace show localised notices, preserve independent sections and hide only dependent operations. A failed summary cannot become an Open till form; absent current session remains a valid separate case. Reload is a normal GET retaining search/cursors. No financial formula, payment/refund, session mutation, pagination rule, tenant/site filter, permission, Staff history visibility, database or migration change.
+
+### TEST-DEBT-POS-NAV-CONTRACT-001
+
+**OPEN / PRE-EXISTING / NON-BLOCKING technical debt.** Test **"5 POS navigation has one canonical item and mutually exclusive role placement"** in [manual-qa-fix-contract.test.mjs](../../tests/manual-qa-fix-contract.test.mjs) contains an obsolete source-pattern assertion: it expects two occurrences of an older navigation spread, while the current source has zero. The same FAIL was reproduced using the original test and navigation files from baseline `4ef9cb66ae8d641336229647ed072d8442a8de1a`; it is not a new regression from this mission. The failing assertion remains unchanged. A separate correction requires its own scope; no navigation or test fix is opened here.
+
+All historical evidence and unrelated findings remain intact. Security, Auth/DR, physical printer/QR, fiscal, broader network resilience and Production Readiness gates are unchanged. This closeout changes documentation only, reruns no tests/UAT and performs no database operation, commit, push or deployment. [Handover](../00_START_HERE/SESSION_HANDOVER.md#network-failure-ux-001--closeout-10112026) owns continuation.
 
 ## PRINT-DOCUMENT-PREFERENCES-001 — Phase A closeout (09/11/2026)
 

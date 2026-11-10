@@ -2,7 +2,15 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-09
+Date: 2026-11-10
+
+## NETWORK-FAILURE-UX-001 — closeout (10/11/2026)
+
+**COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING READY / PO FUNCTIONAL UAT PASS**, limited to the five authorised POS reads and their dependent UI. Application commit: `443d173d05228b4e8161dd3a34d59fac86a24999` (`fix(pos): distinguish read failures from empty lists`). The publication postflight verified GitHub alignment and automatic staging deployment `dpl_H4V5KYjMgZvLJPpam1Nxi3eVPdAy` **READY** for that SHA. This documentation preflight found `main` = `HEAD` = `origin/main` at the application commit, with clean index/worktree.
+
+**Delivered:** real empty results remain valid; failed reads show explicit IT/ES/EN/FR/DE notices for due orders, session movements, session history, locations and session summary. Independent sections remain available. Missing summary data for an existing session no longer exposes the Open till form; closure requires a readable summary. A normal GET reload preserves search and valid cursors without replaying financial actions. Financial formulas, RPCs, tenant/site filters, permissions and Staff history visibility are unchanged; no database migration.
+
+**Acceptance and continuation:** the PO supplies functional UAT **PASS** for this mission. [Testing](../05_DEVELOPMENT/Testing.md#network-failure-ux-001--closeout-evidence-10112026) separates prior Codex checks (**173 PASS / 1 pre-existing FAIL**) from that acceptance; no tests or UAT are repeated here. [Project Status](../06_ROADMAP/Project_Status.md#test-debt-pos-nav-contract-001) records the obsolete navigation assertion as **OPEN / NON-BLOCKING technical debt**, without a correction. Broader network/offline resilience, security, Auth/DR, physical printing/QR, fiscal compliance and Production Readiness gates remain unchanged. This bounded closeout does not close every historical network-failure request or open a new mission. The documentation diff is local and unstaged, awaiting CTO review; no commit/push is performed.
 
 ## PRINT-DOCUMENT-PREFERENCES-001 — Phase A closeout (09/11/2026)
 

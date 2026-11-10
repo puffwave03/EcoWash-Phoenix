@@ -4,6 +4,21 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## NETWORK-FAILURE-UX-001 — closeout evidence (10/11/2026)
+
+This section indexes **prior Codex execution, verified publication/deployment and PO-supplied functional UAT** separately. No application test, UAT, database operation or deployment is repeated by this documentation-only closeout. [Project Status](../06_ROADMAP/Project_Status.md#network-failure-ux-001--closeout-10112026) records acceptance and the retained technical debt; [Handover](../00_START_HERE/SESSION_HANDOVER.md#network-failure-ux-001--closeout-10112026) records continuation.
+
+| Evidence level | Recorded result and limit |
+|---|---|
+| Mission-specific local checks | [network-failure-ux-001.test.mjs](../../tests/network-failure-ux-001.test.mjs): **65 PASS**. Simulated query/RPC success, empty lists, genuine zero summary, error/rejection/missing data, preserved amounts/refunds, tenant/site filters, Staff history exclusion, access-denial propagation, pagination and GET retry context. Actual query/page/workspace code is exercised with test doubles; five-language rendering uses simulated hooks, not a real browser session. |
+| Combined focused/regression execution | **174 tests: 173 PASS / 1 FAIL / 0 SKIP**. The **65** mission-specific tests and **108** passing regressions are subsets of that total. The FAIL is the pre-existing navigation-pattern assertion below; the relevant POS summary-failure expectation was updated to require the warning instead of the Open till fallback. No new financial or database behaviour is inferred from static contracts. |
+| Pre-existing baseline comparison | The obsolete navigation assertion in [manual-qa-fix-contract.test.mjs](../../tests/manual-qa-fix-contract.test.mjs), test **5**, also failed with the original test and `AppNavigation.tsx` from baseline `4ef9cb66ae8d641336229647ed072d8442a8de1a` (**0 matched occurrences; 2 expected**). [TEST-DEBT-POS-NAV-CONTRACT-001](../06_ROADMAP/Project_Status.md#test-debt-pos-nav-contract-001) is **OPEN / NON-BLOCKING**; that assertion was not corrected. |
+| Other prior local checks | `npx tsc --noEmit --incremental false`, scoped ESLint **without warnings**, and diff check including the two then-new files **PASS**. Publication reused the TypeScript/lint results and rechecked exact patch identity plus worktree/staged diff checks. This closeout runs documentation checks only. |
+| GitHub / Vercel | Commit `443d173d05228b4e8161dd3a34d59fac86a24999`, exactly **12 mission files**. Automatic `ecowash-phoenix-staging` deployment `dpl_H4V5KYjMgZvLJPpam1Nxi3eVPdAy` **READY**, with matching source SHA verified in the prior publication postflight. |
+| Product Owner functional UAT | **PASS**, supplied in the 10/11/2026 closeout mandate for the authorised mission. The mandate supplies no detailed scenario/role/locale breakdown; no additional coverage is invented or attributed to the PO. |
+
+Acceptance closes the five-read POS error-handling scope only. It does not certify general offline/network resilience, all-role runtime security, Auth/DR, physical printers/QR, fiscal compliance or Production Readiness. Financial sources/formulas, RPCs and database remain unchanged; all prior evidence and other gates are preserved.
+
 ## PRINT-DOCUMENT-PREFERENCES-001 — Phase A evidence (09/11/2026)
 
 This checkpoint indexes **previous Codex execution, prior staging verification and PO-supplied browser UAT** separately. No application test, SQL script, UAT, migration or deployment is repeated by this documentation-only closeout. [Project Status](../06_ROADMAP/Project_Status.md#print-document-preferences-001--phase-a-closeout-09112026) records official **FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS** acceptance; [Handover](../00_START_HERE/SESSION_HANDOVER.md#print-document-preferences-001--phase-a-closeout-09112026) records continuation.
