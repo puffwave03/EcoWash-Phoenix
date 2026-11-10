@@ -1,4 +1,28 @@
 {
+  "serviceAlbarans": {
+    "title": "Bon de prestation",
+    "notFiscal": "Document commercial non fiscal. Ce document n’est ni une facture ni une preuve de paiement.",
+    "issue": "Émettre le bon A4",
+    "cancel": "Annuler le bon",
+    "reason": "Motif d’annulation",
+    "issued": "Émis",
+    "cancelled": "Annulé",
+    "empty": "Aucun bon émis pour cette commande.",
+    "eligibility": "Disponible pour les commandes actives terminées de clients professionnels, avec un site et des prestations enregistrées.",
+    "error": "Opération non terminée. Rechargez la commande et vérifiez l’historique et les conditions avant de réessayer.",
+    "unavailable": "Bons temporairement indisponibles. Rechargez la page avant de poursuivre.",
+    "back": "Retour à la commande",
+    "print": "Imprimer",
+    "issuedAt": "Émission",
+    "customer": "Client",
+    "property": "Établissement",
+    "order": "Commande",
+    "completedRecordedAt": "Fin de prestation enregistrée",
+    "service": "Prestation",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "recordedEvidence": "La date correspond à l’enregistrement opérationnel de la fin de prestation et ne certifie pas l’heure réelle du travail."
+  },
   "brand": {
     "name": "EcoWash Phoenix",
     "logoLabel": "Accueil EcoWash Phoenix",

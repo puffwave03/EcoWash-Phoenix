@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { BillingOrderEntry } from "@/components/billing/BillingOrderEntry";
+import { ServiceAlbaranPanel } from "@/components/service-albarans/ServiceAlbaranPanel";
 import { CustomerHandoffPanel, type CustomerHandoffText } from "@/components/orders/CustomerHandoffPanel";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
@@ -82,7 +83,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
 };
 
 function SectionShell({
@@ -588,6 +589,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           }}
         />}
       </SectionShell>
+
+      {canPrint ? <ServiceAlbaranPanel canCancel={canManageAssignments} error={routeSearch.albaranError === "1"} hasItems={items.some((item) => item.isActive)} locale={locale} order={order} /> : null}
 
       <SectionShell id="photos" title={t("photos.title")}>
         <OrderPhotosPanel

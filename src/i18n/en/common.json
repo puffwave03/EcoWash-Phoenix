@@ -1,4 +1,28 @@
 {
+  "serviceAlbarans": {
+    "title": "Service delivery note",
+    "notFiscal": "Non-fiscal commercial document. This is neither an invoice nor proof of payment.",
+    "issue": "Issue A4 service note",
+    "cancel": "Cancel service note",
+    "reason": "Cancellation reason",
+    "issued": "Issued",
+    "cancelled": "Cancelled",
+    "empty": "No service notes have been issued for this order.",
+    "eligibility": "Available for active completed business-customer orders with a location and recorded services.",
+    "error": "Operation not completed. Reload the order and check its history and requirements before retrying.",
+    "unavailable": "Service notes are temporarily unavailable. Reload the page before proceeding.",
+    "back": "Back to order",
+    "print": "Print",
+    "issuedAt": "Issued at",
+    "customer": "Customer",
+    "property": "Property",
+    "order": "Order",
+    "completedRecordedAt": "Completion recorded at",
+    "service": "Service",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "recordedEvidence": "This date records the operational completion entry; it does not certify when the work physically occurred."
+  },
   "brand": {
     "name": "EcoWash Phoenix",
     "logoLabel": "EcoWash Phoenix home",

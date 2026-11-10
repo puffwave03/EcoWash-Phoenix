@@ -1,4 +1,28 @@
 {
+  "serviceAlbarans": {
+    "title": "Albarán di servizio",
+    "notFiscal": "Documento commerciale non fiscale. Non è una fattura né una prova di pagamento.",
+    "issue": "Emetti albarán A4",
+    "cancel": "Annulla albarán",
+    "reason": "Motivo annullamento",
+    "issued": "Emesso",
+    "cancelled": "Annullato",
+    "empty": "Nessun albarán emesso per questo ordine.",
+    "eligibility": "Disponibile per ordini attivi completati di clienti professionali, con sede e servizi registrati.",
+    "error": "Operazione non completata. Ricarica l’ordine e verifica lo storico e i requisiti prima di riprovare.",
+    "unavailable": "Albaranes temporaneamente non disponibili. Ricarica la pagina prima di operare.",
+    "back": "Torna all’ordine",
+    "print": "Stampa",
+    "issuedAt": "Emissione",
+    "customer": "Cliente",
+    "property": "Struttura",
+    "order": "Ordine",
+    "completedRecordedAt": "Completamento registrato",
+    "service": "Servizio",
+    "quantity": "Quantità",
+    "unit": "Unità",
+    "recordedEvidence": "La data indica la registrazione operativa del completamento, non certifica l’ora effettiva della lavorazione."
+  },
   "brand": {
     "name": "EcoWash Phoenix",
     "logoLabel": "Home EcoWash Phoenix",

@@ -1,4 +1,28 @@
 {
+  "serviceAlbarans": {
+    "title": "Leistungsnachweis",
+    "notFiscal": "Nicht steuerlicher Geschäftsbeleg. Keine Rechnung und kein Zahlungsnachweis.",
+    "issue": "A4-Leistungsnachweis ausstellen",
+    "cancel": "Nachweis stornieren",
+    "reason": "Stornierungsgrund",
+    "issued": "Ausgestellt",
+    "cancelled": "Storniert",
+    "empty": "Für diesen Auftrag wurden keine Leistungsnachweise ausgestellt.",
+    "eligibility": "Für aktive, abgeschlossene Geschäftskundenaufträge mit Standort und erfassten Leistungen verfügbar.",
+    "error": "Vorgang nicht abgeschlossen. Auftrag neu laden und Verlauf sowie Voraussetzungen vor einem erneuten Versuch prüfen.",
+    "unavailable": "Leistungsnachweise sind vorübergehend nicht verfügbar. Seite vor weiteren Aktionen neu laden.",
+    "back": "Zurück zum Auftrag",
+    "print": "Drucken",
+    "issuedAt": "Ausgestellt am",
+    "customer": "Kunde",
+    "property": "Objekt",
+    "order": "Auftrag",
+    "completedRecordedAt": "Abschluss erfasst am",
+    "service": "Leistung",
+    "quantity": "Menge",
+    "unit": "Einheit",
+    "recordedEvidence": "Dieses Datum bezeichnet die betriebliche Erfassung des Abschlusses und bestätigt nicht den tatsächlichen Zeitpunkt der Arbeit."
+  },
   "brand": {
     "name": "EcoWash Phoenix",
     "logoLabel": "EcoWash Phoenix Startseite",
