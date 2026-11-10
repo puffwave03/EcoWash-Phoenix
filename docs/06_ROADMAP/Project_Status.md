@@ -4,6 +4,32 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-10. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## B2B-ALBARAN-SERVICE-001 — closeout (10/11/2026)
+
+**FUNCTIONAL COMPLETE / FINAL CTO REVIEW PASS / APPLICATION PUBLISHED / STAGING MIGRATION PASS / PO UAT PASS**, under the supplied CTO acceptance. This closes the B2B **service** albaran scope only; the document is commercial and non-fiscal.
+
+| Evidence | Result and boundary |
+|---|---|
+| Application publication | Commit `3b717a3bbc9dfa70d711ecc8e6e6348287530675`; deployment `dpl_CC63NeTVs1sDqMtCWEggA7JFd8a7`, project `ecowash-phoenix-staging`, **READY** with matching SHA in the final audit. |
+| Staging migration | `exthnplfokcucaqydney`; `20261110102208_b2b_albaran_service_001.sql`, SHA-256 `2ce4e7d557c0403f4835cfda363551c53ed1d77599fe9352b769fd449095a55b`. Dry-run proposed only that migration; one application, history **119 → 120**, version recorded once. |
+| Structural/security verification | **PASS:** two new tables, FK/index/constraint checks, RLS and policy, restricted authenticated grants, internal-helper denial, issuance/cancellation RPCs and enabled immutability trigger. Tables were empty immediately after migration; later PO UAT produced two documents and counter **2**. |
+| PO staging UAT | **PASS:** `EW-000172` issuance `ALB-2026-000001`, A4 preview, reasoned cancellation with history, reissue `ALB-2026-000002`, reprint without a new number; issuance denied for `EW-000168` (Business, incomplete) and `EW-000175` (individual, completed). |
+| Financial boundary | **PASS within inspection/comparison scope:** examined B2B application actions, RPCs, helper functions and trigger have no write path to POS, Payments, Billing, REC or Accounting. Seven preexisting management functions remained identical. Financial-table fingerprints matched the pre-UAT checkpoint. |
+| Reported local implementation results | Original: **24 application tests PASS**, **16 SQL cases PASS (runner 17 including group)**, **106 regressions PASS**. Final v2: **24 application tests PASS**, **17 SQL/ACL/concurrency cases PASS (runner 18 including group)**. TypeScript, scoped ESLint and diff checks reported **PASS** in both phases; original lint reported zero warnings and original patch/worktree identity PASS; v2 static six-unit compatibility PASS. Counts come from earlier Codex reports supplied by the PO, not reruns or recovered execution logs. The 106 regressions are not claimed as rerun after v2; no combined execution total is asserted. |
+| Evidence qualification | [Testing](../05_DEVELOPMENT/Testing.md#b2b-albaran-service-001--closeout-evidence-10112026) distinguishes reported local SQL results from observed staging checks, PO acceptance and missing evidence. No synthetic SQL result is presented as a real authenticated staging session. |
+
+**Implemented:** explicit issuance from a completed Business order, autonomous tenant/year commercial numbering, immutable persisted snapshot, reprint of the same document, reasoned cancellation without number reuse and A4 without prices or internal notes. Historical B2B records are retained; the albaran does not replace an invoice or receipt and does not establish fiscal status.
+
+**Comparison qualification:** of **57** preexisting public tables compared against the **10/11/2026 18:59:49 UTC** postflight checkpoint, **54** matched row counts and content fingerprints. `orders` grew **142 → 143** and `order_status_history` **924 → 925** because draft `EW-000176` and its initial event were present at 19:10:08 UTC; excluding those new rows reproduced the original fingerprints exactly. `organization_order_numbering` retained four rows but its content fingerprint changed; precise attribution is **NOT VERIFIED**, not silently treated as unchanged or attributed to B2B. The examined B2B RPCs do not write it. This qualification does not invalidate the matching financial-table comparison.
+
+**Residual limits:** complete real-session staging coverage for Manager, Staff with/without POS and cross-tenant access **NOT VERIFIED**; full restore of the current backup **NOT VERIFIED**; physical A4 printing **NOT VERIFIED**. Historical SQL execution log not recovered in the final audit; local counts are recorded as supplied report evidence. Full-suite validation on the local Supabase schema at 119 migrations was **NOT RUN**. Fiscal certification, Production Readiness and commercial readiness are **not declared**. Delivery albarans and monthly billing remain outside scope.
+
+### PHOENIX-LOCAL-LAB-REORGANIZATION-001
+
+**PROPOSED / NOT STARTED — next proposed activity after B2B closeout.** Future scope: inventory Docker resources, protect volumes, reconcile historical laboratories and establish a reproducible local Supabase environment. No Docker operation, cleanup, recreation or implementation is authorised by this documentation checkpoint.
+
+The application acceptance above is distinct from publication of this closeout: at the time of documentation preparation, these three Markdown edits were local, unstaged and pending CTO review; no documentation commit or publication had occurred. No code/SQL/test/configuration change, new UAT, remote mutation, commit, push or deployment is performed. [Handover](../00_START_HERE/SESSION_HANDOVER.md#b2b-albaran-service-001--closeout-10112026) owns continuation. Historical checkpoints are preserved.
+
 ## NETWORK-FAILURE-UX-001 — closeout (10/11/2026)
 
 **COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING READY / PO FUNCTIONAL UAT PASS**, within the authorised POS read-error scope. Earlier generic network-failure entries remain historical or broader pending scope; this acceptance does not establish general offline operation or product-wide network resilience.

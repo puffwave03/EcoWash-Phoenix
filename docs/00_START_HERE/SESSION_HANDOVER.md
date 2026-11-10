@@ -4,6 +4,20 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-10
 
+## B2B-ALBARAN-SERVICE-001 — closeout (10/11/2026)
+
+**FUNCTIONAL COMPLETE / FINAL CTO REVIEW PASS / APPLICATION PUBLISHED / STAGING MIGRATION PASS / PO UAT PASS**, limited to the non-fiscal B2B service albaran. Application baseline: `3b717a3bbc9dfa70d711ecc8e6e6348287530675`; staging deployment `dpl_CC63NeTVs1sDqMtCWEggA7JFd8a7` **READY** at that SHA. Supabase staging `exthnplfokcucaqydney`: migration `20261110102208` applied once, history **119 → 120**. This documentation preflight confirmed clean `main`, `HEAD` = `origin/main` = the authorised baseline.
+
+**Delivered and accepted:** explicit issuance from a completed Business order; independent tenant/year commercial numbering; immutable snapshot and reprint; reasoned cancellation with retained history; A4 without amounts or internal notes. PO staging UAT passed issuance of `ALB-2026-000001` on `EW-000172`, A4 preview, cancellation, reissue as `ALB-2026-000002`, reprint without a new number, and denial for incomplete Business `EW-000168` and completed individual `EW-000175`. The final read-only audit confirmed the two documents and counter **2**. POS, Payments, Billing, REC and Accounting remain outside the examined B2B write paths.
+
+[Testing](../05_DEVELOPMENT/Testing.md#b2b-albaran-service-001--closeout-evidence-10112026) separates supplied PO UAT, reported synthetic SQL checks, observed staging structure and financial fingerprints. **54/57** preexisting tables matched the pre-UAT postflight; Orders/history differences were accounted for by new draft `EW-000176`, with preexisting rows matching exactly. The numbering-table change was not attributed individually. [Project Status](../06_ROADMAP/Project_Status.md#b2b-albaran-service-001--closeout-10112026) records acceptance and remaining gaps.
+
+**Reported local test chronology:** earlier Codex reports, supplied by the PO for closeout, record original **24 application / 16 SQL cases (runner 17 including group) / 106 regressions PASS**; final v2 **24 application / 17 SQL cases (runner 18 including group) PASS**. TypeScript, scoped ESLint and diff checks were reported PASS in both phases; Testing records the additional phase-specific checks. The 106 regressions were not evidenced as fully rerun after v2; do not combine these counts into one run. These are reported outcomes, distinct from recovered staging evidence and PO browser UAT. Full-suite validation against local Supabase at **119 migrations: NOT RUN**.
+
+**Preserved limits:** complete Manager/Staff/tenant matrix using real authenticated staging sessions, full restore of the current backup and physical A4 printing are **NOT VERIFIED**. The historical SQL suite log was not recovered in the final audit; synthetic role/claim checks are not authenticated staging tests. Fiscal certification and Production Readiness are not declared. Delivery albarans and monthly billing are outside scope.
+
+**Continuation:** at the time of documentation preparation, this three-document closeout was local, unstaged and pending CTO patch review; no documentation commit or push had occurred or was authorised in that phase. After closeout, **PHOENIX-LOCAL-LAB-REORGANIZATION-001 — PROPOSED / NOT STARTED** is the next proposed activity: Docker inventory, volume protection, reconciliation of historical labs and a reproducible local Supabase environment. This checkpoint does not authorise or start that mission. Earlier checkpoints remain intact.
+
 ## NETWORK-FAILURE-UX-001 — closeout (10/11/2026)
 
 **COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING READY / PO FUNCTIONAL UAT PASS**, limited to the five authorised POS reads and their dependent UI. Application commit: `443d173d05228b4e8161dd3a34d59fac86a24999` (`fix(pos): distinguish read failures from empty lists`). The publication postflight verified GitHub alignment and automatic staging deployment `dpl_H4V5KYjMgZvLJPpam1Nxi3eVPdAy` **READY** for that SHA. This documentation preflight found `main` = `HEAD` = `origin/main` at the application commit, with clean index/worktree.
