@@ -2,6 +2,7 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requirePosAccess } from "@/features/pos/server/access";
+import { PosReadError } from "@/features/pos/read-error";
 import { encodePosPaymentCursor, encodePosSessionCursor, paginatePosRows, posCursorBoundary, POS_HISTORY_PAGE_SIZE, type PosPage, type PosPageCursor, type PosPaymentCursor } from "@/features/pos/pagination";
 import type { PosLocation, PosOrderDue, PosPayment, PosSession, PosSessionSummary } from "@/features/pos/types";
 
@@ -69,6 +70,24 @@ function mapSession(row: SessionRow): PosSession {
 
 const SESSION_SELECT = "id, location_id, opened_at, opening_cash, status, closed_at, expected_cash, counted_cash, difference, location:locations!pos_sessions_location_same_org(name), opened_by_profile:profiles!pos_sessions_opened_by_fkey(display_name)";
 
+async function readPosQuery<T>(
+  query: PromiseLike<{ data: T | null; error: { code?: string } | null }>,
+  message: string,
+): Promise<T> {
+  let result;
+  try {
+    result = await query;
+  } catch {
+    console.error(message, "request_failed");
+    throw new PosReadError();
+  }
+  if (result.error || result.data == null) {
+    console.error(message, result.error?.code ?? "missing_data");
+    throw new PosReadError();
+  }
+  return result.data;
+}
+
 export async function getCurrentPosSession(locale: string): Promise<PosSession | null> {
   const { membership, profile } = await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
@@ -84,22 +103,21 @@ export async function getCurrentPosSession(locale: string): Promise<PosSession |
   return data?.[0] ? mapSession(data[0]) : null;
 }
 
-export async function getPosSessionSummary(locale: string, sessionId: string): Promise<PosSessionSummary | null> {
+export async function getPosSessionSummary(locale: string, sessionId: string): Promise<PosSessionSummary> {
   await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("get_pos_session_summary", { target_session_id: sessionId }).single<{
+  // The RPC returns one row even with no movements. A missing row is not a closed till.
+  const data = await readPosQuery(supabase.rpc("get_pos_session_summary", { target_session_id: sessionId }).single<{
     cash_payments: number; cash_refunds: number; expected_cash: number; opening_cash: number; transaction_count: number;
-  }>();
-  if (error || !data) { console.error("POS summary query failed", error?.code); return null; }
+  }>(), "POS summary query failed");
   return { cashPayments: data.cash_payments, cashRefunds: data.cash_refunds, expectedCash: data.expected_cash, openingCash: data.opening_cash, transactionCount: data.transaction_count };
 }
 
 export async function listPosOrdersDue(locale: string, query = ""): Promise<PosOrderDue[]> {
   await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("list_pos_orders_due", { target_limit: 30, target_query: query || null }).returns<DueOrderRow[]>();
-  if (error) { console.error("POS due orders query failed", error.code); return []; }
-  const rows = (data ?? []) as unknown as DueOrderRow[];
+  const data = await readPosQuery(supabase.rpc("list_pos_orders_due", { target_limit: 30, target_query: query || null }).returns<DueOrderRow[]>(), "POS due orders query failed");
+  const rows = data as unknown as DueOrderRow[];
   return rows.map((row) => ({ currency: row.currency, customerName: row.customer_name, id: row.id, locationId: row.location_id, orderNumber: row.order_number, outstanding: row.outstanding, productionStatus: row.production_status, total: row.total, totalPaid: row.total_paid }));
 }
 
@@ -112,9 +130,8 @@ export async function listPosSessionPayments(locale: string, sessionId: string, 
     .eq("organization_id", membership.organization.id).eq("pos_session_id", sessionId)
     .order("created_at", { ascending }).order("id", { ascending });
   if (cursor) query = query.or(posCursorBoundary("created_at", cursor));
-  const { data, error } = await query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<PosPaymentRow[]>();
-  if (error) { console.error("POS payments query failed", error.code); return { items: [], pagination: { newerCursor: null, olderCursor: null } }; }
-  const page = paginatePosRows(data ?? [], cursor, (row) => row.created_at,
+  const data = await readPosQuery(query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<PosPaymentRow[]>(), "POS payments query failed");
+  const page = paginatePosRows(data, cursor, (row) => row.created_at,
     (position, direction) => encodePosPaymentCursor(position, direction, sessionId));
   return {
     items: page.items.map((row) => ({ amount: row.amount, channel: row.channel, id: row.id, method: row.method, orderId: row.order_id, orderNumber: (Array.isArray(row.order) ? row.order[0] : row.order)?.order_number ?? "", paidAt: row.paid_at, provider: row.provider, recordedByName: name(row.recorded_by_profile), refundedFromPaymentId: row.refunded_from_payment_id, status: row.status })),
@@ -131,20 +148,18 @@ export async function listPosSessionHistory(locale: string, cursor: PosPageCurso
     .eq("organization_id", membership.organization.id)
     .order("opened_at", { ascending }).order("id", { ascending });
   if (cursor) query = query.or(posCursorBoundary("opened_at", cursor));
-  const { data, error } = await query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<SessionRow[]>();
-  if (error) { console.error("POS history query failed", error.code); return { items: [], pagination: { newerCursor: null, olderCursor: null } }; }
-  const page = paginatePosRows(data ?? [], cursor, (row) => row.opened_at, encodePosSessionCursor);
+  const data = await readPosQuery(query.limit(POS_HISTORY_PAGE_SIZE + 1).returns<SessionRow[]>(), "POS history query failed");
+  const page = paginatePosRows(data, cursor, (row) => row.opened_at, encodePosSessionCursor);
   return { items: page.items.map(mapSession), pagination: page.pagination };
 }
 
 export async function listPosLocations(locale: string): Promise<PosLocation[]> {
   const { membership } = await requirePosAccess(locale);
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("locations").select("id, name")
+  const data = await readPosQuery(supabase.from("locations").select("id, name")
     .eq("organization_id", membership.organization.id).eq("is_active", true).is("deleted_at", null)
-    .order("name").limit(50).returns<PosLocation[]>();
-  if (error) { console.error("POS locations query failed", error.code); return []; }
-  return data ?? [];
+    .order("name").limit(50).returns<PosLocation[]>(), "POS locations query failed");
+  return data;
 }
 
 export async function getPosCurrency(locale: string): Promise<string> {

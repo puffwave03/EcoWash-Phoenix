@@ -19,6 +19,7 @@ export type PosText = {
   orders: { customer: string; empty: string; method: string; notes: string; outstanding: string; paid: string; placeholder: string; title: string; total: string };
   pagination: { latest: string; navigation: string; newer: string; older: string };
   payments: { empty: string; manualCard: string; phoenixRefund: string; reason: string; title: string };
+  readErrors: { history: string; locations: string; orders: string; payments: string; retry: string; summary: string };
   session: { cashPayments: string; cashRefunds: string; chooseLocation: string; closed: string; expected: string; noLocations: string; opening: string; openingAmount: string; open: string; paymentRequiresOpen: string; selectLocation: string; title: string; transactions: string };
   statuses: Record<PaymentRecordStatus, string>;
   subtitle: string;
@@ -29,6 +30,16 @@ export type PosText = {
 type Action = (state: PosActionState, data: FormData) => Promise<PosActionState>;
 const initialState: PosActionState = { fieldErrors: {}, formError: null, success: false };
 const inputClass = "min-h-12 w-full rounded-control border border-border bg-white px-3 text-base text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20";
+
+function ReadErrorNotice({ message, retryHref, retryLabel }: { message: string; retryHref: string; retryLabel: string }) {
+  return (
+    <div className="rounded-control border border-amber-300 bg-amber-50 p-4 text-amber-950" role="alert">
+      <p className="font-semibold">{message}</p>
+      {/* A normal GET reload retries reads without replaying a financial action. */}
+      <a className="mt-2 inline-flex min-h-11 items-center font-semibold underline" href={retryHref}>{retryLabel}</a>
+    </div>
+  );
+}
 
 function PaginationNav({ navigation, text, title }: { navigation: PosNavigation; text: PosText["pagination"]; title: string }) {
   if (!navigation.olderHref && !navigation.newerHref && !navigation.latestHref) return null;
@@ -111,9 +122,9 @@ function CloseSessionForm({ action, session, text }: { action: Action; session: 
   );
 }
 
-export function PosWorkspace({ actions, canSeeHistory, currency, history, historyNavigation, locale, locations, orders, payments, paymentNavigation, query, session, summary, text }: {
+export function PosWorkspace({ actions, canSeeHistory, currency, history, historyNavigation, locale, locations, orders, payments, paymentNavigation, query, retryHref, session, summary, text }: {
   actions: { close: Action; open: Action; pay: Action; refund: Action };
-  canSeeHistory: boolean; currency: string; history: PosSession[]; historyNavigation: PosNavigation; locale: string; locations: PosLocation[]; orders: PosOrderDue[]; payments: PosPayment[]; paymentNavigation: PosNavigation; query: string; session: PosSession | null; summary: PosSessionSummary | null; text: PosText;
+  canSeeHistory: boolean; currency: string; history: PosSession[] | null; historyNavigation: PosNavigation; locale: string; locations: PosLocation[] | null; orders: PosOrderDue[] | null; payments: PosPayment[] | null; paymentNavigation: PosNavigation; query: string; retryHref: string; session: PosSession | null; summary: PosSessionSummary | null; text: PosText;
 }) {
   return (
     <div className="space-y-6">
@@ -126,13 +137,14 @@ export function PosWorkspace({ actions, canSeeHistory, currency, history, histor
             {[[text.session.opening, summary.openingCash], [text.session.cashPayments, summary.cashPayments], [text.session.cashRefunds, summary.cashRefunds], [text.session.expected, summary.expectedCash]].map(([label, amount]) => <div className="rounded-control bg-[#f7f8f7] p-3" key={String(label)}><dt className="text-xs text-muted">{label}</dt><dd className="mt-1 text-lg font-semibold text-primary">{formatCurrency(Number(amount), currency, locale)}</dd></div>)}
             <div className="rounded-control bg-[#f7f8f7] p-3"><dt className="text-xs text-muted">{text.session.transactions}</dt><dd className="mt-1 text-lg font-semibold text-primary">{summary.transactionCount}</dd></div>
           </dl>
-        ) : <OpenSessionForm action={actions.open} locations={locations} text={text} />}
+        ) : session ? <ReadErrorNotice message={text.readErrors.summary} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : locations !== null ? <OpenSessionForm action={actions.open} locations={locations} text={text} /> : null}
+        {locations === null ? <ReadErrorNotice message={text.readErrors.locations} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : null}
       </Card>
 
       <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><h3 className="text-xl font-semibold text-primary">{text.orders.title}</h3><form className="flex gap-2"><input className={inputClass} defaultValue={query} name="q" placeholder={text.orders.placeholder} />{paymentNavigation.currentCursor ? <input name="paymentCursor" type="hidden" value={paymentNavigation.currentCursor} /> : null}{historyNavigation.currentCursor ? <input name="historyCursor" type="hidden" value={historyNavigation.currentCursor} /> : null}<Button type="submit" variant="secondary">{text.actions.search}</Button></form></div>
         {!session ? <p className="rounded-control border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950" role="status">{text.session.paymentRequiresOpen}</p> : null}
-        <div className="grid gap-4 xl:grid-cols-2">{orders.length === 0 ? <Card><p className="text-sm text-muted">{text.orders.empty}</p></Card> : orders.map((order) => (
+        <div className="grid gap-4 xl:grid-cols-2">{orders === null ? <ReadErrorNotice message={text.readErrors.orders} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : orders.length === 0 ? <Card><p className="text-sm text-muted">{text.orders.empty}</p></Card> : orders.map((order) => (
           <Card key={order.id}><div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><p className="text-xl font-semibold text-primary">{formatCurrency(order.outstanding, order.currency, locale)}</p></div>
             <dl className="mt-3 grid grid-cols-3 gap-2 text-sm"><div><dt className="text-muted">{text.orders.total}</dt><dd>{formatCurrency(order.total, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.paid}</dt><dd>{formatCurrency(order.totalPaid, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.outstanding}</dt><dd>{formatCurrency(order.outstanding, order.currency, locale)}</dd></div></dl>
             {session ? <PaymentForm action={actions.pay} order={order} session={session} text={text} /> : null}
@@ -140,11 +152,11 @@ export function PosWorkspace({ actions, canSeeHistory, currency, history, histor
         ))}</div>
       </section>
 
-      {session ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.payments.title}</h3>{payments.length === 0 ? <p className="text-sm text-muted">{text.payments.empty}</p> : <div className="divide-y divide-border">{payments.map((payment) => <div className="py-4" key={payment.id}><div className="grid gap-2 sm:grid-cols-4"><div><p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p><p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p></div><p className="text-sm text-muted">{payment.orderNumber}</p><p className="text-sm text-muted">{new Date(payment.paidAt).toLocaleString(locale)}</p><p className="text-sm text-muted">{payment.recordedByName ?? "-"}</p></div>{payment.method === "card" ? <p className="mt-2 text-xs text-muted">{text.payments.manualCard}</p> : null}{payment.status === "confirmed" && payment.channel === "pos" ? <><p className="mt-2 text-xs font-medium text-muted">{text.payments.phoenixRefund}</p><RefundForm action={actions.refund} payment={payment} sessionId={session.id} text={text} /></> : null}</div>)}</div>}<PaginationNav navigation={paymentNavigation} text={text.pagination} title={text.payments.title} /></Card> : null}
+      {session ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.payments.title}</h3>{payments === null ? <ReadErrorNotice message={text.readErrors.payments} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : payments.length === 0 ? <p className="text-sm text-muted">{text.payments.empty}</p> : <div className="divide-y divide-border">{payments.map((payment) => <div className="py-4" key={payment.id}><div className="grid gap-2 sm:grid-cols-4"><div><p className="font-semibold text-primary">{formatCurrency(payment.amount, currency, locale)}</p><p className="text-sm text-muted">{text.methods[payment.method]} · {text.statuses[payment.status]}</p></div><p className="text-sm text-muted">{payment.orderNumber}</p><p className="text-sm text-muted">{new Date(payment.paidAt).toLocaleString(locale)}</p><p className="text-sm text-muted">{payment.recordedByName ?? "-"}</p></div>{payment.method === "card" ? <p className="mt-2 text-xs text-muted">{text.payments.manualCard}</p> : null}{payment.status === "confirmed" && payment.channel === "pos" ? <><p className="mt-2 text-xs font-medium text-muted">{text.payments.phoenixRefund}</p><RefundForm action={actions.refund} payment={payment} sessionId={session.id} text={text} /></> : null}</div>)}</div>}{payments !== null ? <PaginationNav navigation={paymentNavigation} text={text.pagination} title={text.payments.title} /> : null}</Card> : null}
 
       {session && summary ? <CloseSessionForm action={actions.close} session={session} text={text} /> : null}
 
-      {canSeeHistory ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.history.title}</h3>{history.length === 0 ? <p className="text-sm text-muted">{text.history.empty}</p> : <div className="overflow-x-auto"><table className="w-full min-w-[44rem] text-left text-sm"><thead><tr className="border-b border-border text-muted"><th className="p-3">{text.common.date}</th><th className="p-3">{text.common.actor}</th><th className="p-3">{text.session.opening}</th><th className="p-3">{text.history.expected}</th><th className="p-3">{text.history.counted}</th><th className="p-3">{text.history.difference}</th></tr></thead><tbody>{history.map((item) => <tr className="border-b border-border" key={item.id}><td className="p-3">{new Date(item.openedAt).toLocaleString(locale)}</td><td className="p-3">{item.openedByName ?? "-"}</td><td className="p-3">{formatCurrency(item.openingCash, currency, locale)}</td><td className="p-3">{item.expectedCash === null ? "-" : formatCurrency(item.expectedCash, currency, locale)}</td><td className="p-3">{item.countedCash === null ? "-" : formatCurrency(item.countedCash, currency, locale)}</td><td className="p-3">{item.difference === null ? "-" : formatCurrency(item.difference, currency, locale)}</td></tr>)}</tbody></table></div>}<PaginationNav navigation={historyNavigation} text={text.pagination} title={text.history.title} /></Card> : null}
+      {canSeeHistory ? <Card className="space-y-4"><h3 className="text-xl font-semibold text-primary">{text.history.title}</h3>{history === null ? <ReadErrorNotice message={text.readErrors.history} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : history.length === 0 ? <p className="text-sm text-muted">{text.history.empty}</p> : <div className="overflow-x-auto"><table className="w-full min-w-[44rem] text-left text-sm"><thead><tr className="border-b border-border text-muted"><th className="p-3">{text.common.date}</th><th className="p-3">{text.common.actor}</th><th className="p-3">{text.session.opening}</th><th className="p-3">{text.history.expected}</th><th className="p-3">{text.history.counted}</th><th className="p-3">{text.history.difference}</th></tr></thead><tbody>{history.map((item) => <tr className="border-b border-border" key={item.id}><td className="p-3">{new Date(item.openedAt).toLocaleString(locale)}</td><td className="p-3">{item.openedByName ?? "-"}</td><td className="p-3">{formatCurrency(item.openingCash, currency, locale)}</td><td className="p-3">{item.expectedCash === null ? "-" : formatCurrency(item.expectedCash, currency, locale)}</td><td className="p-3">{item.countedCash === null ? "-" : formatCurrency(item.countedCash, currency, locale)}</td><td className="p-3">{item.difference === null ? "-" : formatCurrency(item.difference, currency, locale)}</td></tr>)}</tbody></table></div>}{history !== null ? <PaginationNav navigation={historyNavigation} text={text.pagination} title={text.history.title} /> : null}</Card> : null}
     </div>
   );
 }

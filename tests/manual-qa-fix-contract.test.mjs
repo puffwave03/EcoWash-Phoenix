@@ -89,7 +89,8 @@ test("9 POS workspace shows an existing session and never renders Open till besi
   const workspace = await source("src/components/pos/PosWorkspace.tsx");
 
   assert.match(workspace, /session \? text\.session\.open : text\.session\.closed/);
-  assert.match(workspace, /session && summary \? \([\s\S]*\) : <OpenSessionForm/);
+  assert.match(workspace, /session && summary \? \([\s\S]*\) : session \? <ReadErrorNotice message=\{text\.readErrors\.summary\}/);
+  assert.match(workspace, /locations !== null \? <OpenSessionForm/);
   assert.match(workspace, /value=\{session\?\.id \?\? ""\}/);
 });
 

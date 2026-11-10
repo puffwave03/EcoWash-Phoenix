@@ -88,9 +88,9 @@ test("001F both queries filter and order before the 26-row limit without offset"
     assert.doesNotMatch(body, /\.range\(|\.offset\(|limit\(100\)|limit\(25\)/);
   }
   assert.match(payments, /eq\("pos_session_id", sessionId\)/);
-  assert.match(payments, /paginatePosRows\(data \?\? \[\], cursor, \(row\) => row\.created_at/);
+  assert.match(payments, /paginatePosRows\(data, cursor, \(row\) => row\.created_at/);
   assert.match(history, /membership\.role === "staff"\) return \{ items: \[\]/);
-  assert.match(history, /paginatePosRows\(data \?\? \[\], cursor, \(row\) => row\.opened_at/);
+  assert.match(history, /paginatePosRows\(data, cursor, \(row\) => row\.opened_at/);
 });
 
 test("001F page and UI retain independent navigation while summary and refund stay canonical", async () => {
