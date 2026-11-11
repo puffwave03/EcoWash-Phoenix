@@ -1404,6 +1404,8 @@
     "lastActivity": "Last activity",
     "actions": {"createOrder": "Create order", "addProperty": "Add property", "accountAdmin": "Account settings"},
     "financial": {
+      "unavailable": "The customer’s summary, orders and payments could not be loaded. Reload the page to try again.",
+      "reload": "Reload page",
       "eyebrow": "Commercial relationship", "title": "Financial summary", "description": "Order and payment truth from the current operational records.",
       "empty": "No eligible orders yet.", "currencyGroup": "Amounts in {currency}", "outstanding": "Outstanding", "outstandingOrders": "{count} orders with balance",
       "grossValue": "Order value", "netPaid": "Net paid", "orders": "Orders", "averageOrder": "Average order", "refunds": "Refunds",

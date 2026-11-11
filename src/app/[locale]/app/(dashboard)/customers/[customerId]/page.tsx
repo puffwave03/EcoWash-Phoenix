@@ -48,6 +48,7 @@ export default async function CustomerDetailPage({
       eligibility={eligibility}
       financials={financials}
       locale={locale}
+      timeZone={access.membership.organization.timezone}
       period={period}
       portalAccess={portalAccess}
       previewUrl={previewUrl}

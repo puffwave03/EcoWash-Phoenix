@@ -1366,6 +1366,8 @@
     "lastActivity": "Ultima attività",
     "actions": {"createOrder": "Crea ordine", "addProperty": "Aggiungi proprietà", "accountAdmin": "Impostazioni account"},
     "financial": {
+      "unavailable": "Non è stato possibile caricare il riepilogo, gli ordini e i pagamenti del cliente. Ricarica la pagina per riprovare.",
+      "reload": "Ricarica la pagina",
       "eyebrow": "Relazione commerciale", "title": "Riepilogo finanziario", "description": "Valori reali di ordini e pagamenti dai registri operativi correnti.",
       "empty": "Nessun ordine valido presente.", "currencyGroup": "Importi in {currency}", "outstanding": "Da incassare", "outstandingOrders": "{count} ordini con saldo",
       "grossValue": "Valore ordini", "netPaid": "Pagato netto", "orders": "Ordini", "averageOrder": "Ordine medio", "refunds": "Rimborsi",

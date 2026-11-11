@@ -194,10 +194,10 @@ test('CustomerAccountView integrates the history only for Business and retains t
     '@/components/properties/PropertyList': { PropertyList: stub }, '@/components/service-albarans/CustomerServiceAlbaranHistory': { CustomerServiceAlbaranHistory: History },
     '@/features/catalog-segments/server/actions': { assignCustomerSegmentAction: action }, '@/features/customers/server/actions': { deactivateCustomerAction: action, reactivateCustomerAction: action },
     '@/features/portal/server/actions': { inviteCustomerPortalAction: action, manageCustomerPortalAccessAction: action }, '@/i18n/navigation': { Link },
-    '@/lib/number-format': load('src/lib/number-format.ts'), '@/features/customer-account/pagination': accountPagination,
+    '@/lib/number-format': load('src/lib/number-format.ts'), '@/features/customer-account/pagination': accountPagination, '@/lib/organization-timezone': timezone,
   }).CustomerAccountView;
   for (const customerType of ['business', 'individual']) {
-    const tree = await View({ albaranPage: '3', customer: { id: id(301), customerType, displayName: 'Business A', isActive: true, updatedAt: '2026-11-11T10:00:00Z' }, locale: 'en', period: 'all', financials: { summaries: [], orders: [], payments: [], pagination: { orderCursor: 'order', paymentCursor: 'payment', orders: {}, payments: {} } }, properties: [], segmentAssignment: { segments: [] }, billingOverview: null, eligibility: null, portalAccess: null, previewUrl: null });
+    const tree = await View({ albaranPage: '3', customer: { id: id(301), customerType, displayName: 'Business A', isActive: true, updatedAt: '2026-11-11T10:00:00Z' }, locale: 'en', timeZone: 'Atlantic/Canary', period: 'all', financials: { state: 'ready', summaries: [], orders: [], payments: [], pagination: { orderCursor: 'order', paymentCursor: 'payment', orders: {}, payments: {} } }, properties: [], segmentAssignment: { segments: [] }, billingOverview: null, eligibility: null, portalAccess: null, previewUrl: null });
     const histories = []; const ids = [];
     function walk(node) { React.Children.forEach(node, child => { if (!React.isValidElement(child)) return; if (child.type === History) histories.push(child); if (child.props.id) ids.push(child.props.id); walk(child.props.children); }); }
     walk(tree);

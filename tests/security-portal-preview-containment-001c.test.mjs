@@ -95,13 +95,14 @@ test("customer detail pages pass no preview link for Owner or Manager", async ()
       "@/features/customers/server/queries": { getCustomerById: async () => customer, listPropertiesByCustomer: async () => [] },
       "@/features/portal/server/preview": helper,
       "@/features/portal/server/queries": { getCustomerPortalAccessSummary: async () => null },
-      "@/lib/auth/require-role": { requireOwnerOrManager: async () => ({ membership: { role } }) },
+      "@/lib/auth/require-role": { requireOwnerOrManager: async () => ({ membership: { role, organization: { timezone: "Atlantic/Canary" } } }) },
       "@/features/entitlements/feature-catalog": { FEATURES: { billingInvoicing: "billing.invoicing" } },
       "@/features/entitlements/server/resolver": { hasEntitlement: async () => false },
     });
     const result = await page.default({ params: Promise.resolve({ locale: "es", customerId: customer.id }), searchParams: Promise.resolve({}) });
     assert.equal(result.props.previewUrl, null);
     assert.equal(result.props.customer, customer);
+    assert.equal(result.props.timeZone, "Atlantic/Canary");
   }
   const view = readFileSync("src/components/customers/CustomerAccountView.tsx", "utf8");
   const panel = readFileSync("src/components/customers/CustomerPortalAccessPanel.tsx", "utf8");

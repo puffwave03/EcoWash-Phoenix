@@ -117,59 +117,74 @@ export async function getCustomerAccountFinancials(
   rawPaymentCursor?: string,
 ): Promise<CustomerAccountFinancials> {
   await requireOwnerOrManager(locale);
-  const supabase = await createSupabaseServerClient();
   const orderCursor = decodeAccountOrderCursor(rawOrderCursor, customerId, period);
   const paymentCursor = decodeAccountPaymentCursor(rawPaymentCursor, customerId, period);
-  const [summaryResult, ordersResult, paymentsResult] = await Promise.all([
-    supabase
-      .rpc("get_customer_account_summary", { target_customer_id: customerId })
-      .returns<SummaryRow[]>(),
-    (period === "recent" ? supabase.rpc("list_customer_account_orders", {
-      target_customer_id: customerId, target_limit: RECENT_LIMITS.orders, target_period: period,
-    }) : supabase.rpc("list_customer_account_orders_page", {
-      target_customer_id: customerId, target_period: period,
-      target_cursor_created_at: orderCursor?.createdAt ?? null,
-      target_cursor_id: orderCursor?.id ?? null,
-      target_direction: orderCursor?.direction ?? "older",
-      target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
-    })).returns<OrderRow[]>(),
-    (period === "recent" ? supabase.rpc("list_customer_account_payments", {
-      target_customer_id: customerId, target_limit: RECENT_LIMITS.payments, target_period: period,
-    }) : supabase.rpc("list_customer_account_payments_page", {
-      target_customer_id: customerId, target_period: period,
-      target_cursor_paid_at: paymentCursor?.paidAt ?? null,
-      target_cursor_created_at: paymentCursor?.createdAt ?? null,
-      target_cursor_id: paymentCursor?.id ?? null,
-      target_direction: paymentCursor?.direction ?? "older",
-      target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
-    })).returns<PaymentRow[]>(),
-  ]);
-
-  const error = summaryResult.error || ordersResult.error || paymentsResult.error;
-  if (error) {
-    console.error("Customer account financial query failed", error.code ?? "unknown");
-    return { orders: [], payments: [], summaries: [], pagination: { orderCursor: null, paymentCursor: null, orders: EMPTY_NAVIGATION, payments: EMPTY_NAVIGATION } };
-  }
-
-  const orderRows = Array.isArray(ordersResult.data) ? ordersResult.data as OrderRow[] : [];
-  const paymentRows = Array.isArray(paymentsResult.data) ? paymentsResult.data as PaymentRow[] : [];
-  const summaryRows = Array.isArray(summaryResult.data) ? summaryResult.data as SummaryRow[] : [];
-
-  const orderPage = period === "recent" ? { items: orderRows, navigation: EMPTY_NAVIGATION }
-    : paginateAccountRows(orderRows, orderCursor,
-      (row, direction) => ({ createdAt: row.created_at, id: row.id, direction }), customerId, period);
-  const paymentPage = period === "recent" ? { items: paymentRows, navigation: EMPTY_NAVIGATION }
-    : paginateAccountRows(paymentRows as PaymentPageRow[], paymentCursor,
-      (row, direction) => ({ paidAt: row.paid_at, createdAt: row.created_at, id: row.id, direction }), customerId, period);
-  return {
-    orders: orderPage.items.map(mapOrder),
-    payments: paymentPage.items.map(mapPayment),
-    summaries: summaryRows.map(mapSummary),
-    pagination: {
-      orderCursor: orderCursor ? rawOrderCursor ?? null : null,
-      paymentCursor: paymentCursor ? rawPaymentCursor ?? null : null,
-      orders: orderPage.navigation,
-      payments: paymentPage.navigation,
-    },
+  const pagination = {
+    orderCursor: orderCursor ? rawOrderCursor ?? null : null,
+    paymentCursor: paymentCursor ? rawPaymentCursor ?? null : null,
   };
+  const unavailable = { state: "unavailable", pagination } as const;
+  // Access checks above must propagate redirects/denials, never become read errors.
+  try {
+    const supabase = await createSupabaseServerClient();
+    const [summaryResult, ordersResult, paymentsResult] = await Promise.all([
+      supabase
+        .rpc("get_customer_account_summary", { target_customer_id: customerId })
+        .returns<SummaryRow[]>(),
+      (period === "recent" ? supabase.rpc("list_customer_account_orders", {
+        target_customer_id: customerId, target_limit: RECENT_LIMITS.orders, target_period: period,
+      }) : supabase.rpc("list_customer_account_orders_page", {
+        target_customer_id: customerId, target_period: period,
+        target_cursor_created_at: orderCursor?.createdAt ?? null,
+        target_cursor_id: orderCursor?.id ?? null,
+        target_direction: orderCursor?.direction ?? "older",
+        target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
+      })).returns<OrderRow[]>(),
+      (period === "recent" ? supabase.rpc("list_customer_account_payments", {
+        target_customer_id: customerId, target_limit: RECENT_LIMITS.payments, target_period: period,
+      }) : supabase.rpc("list_customer_account_payments_page", {
+        target_customer_id: customerId, target_period: period,
+        target_cursor_paid_at: paymentCursor?.paidAt ?? null,
+        target_cursor_created_at: paymentCursor?.createdAt ?? null,
+        target_cursor_id: paymentCursor?.id ?? null,
+        target_direction: paymentCursor?.direction ?? "older",
+        target_limit: CUSTOMER_ACCOUNT_PAGE_SIZE + 1,
+      })).returns<PaymentRow[]>(),
+    ]);
+
+    const error = summaryResult.error || ordersResult.error || paymentsResult.error;
+    if (error) {
+      console.error("Customer account financial query failed", error.code ?? "unknown");
+      return unavailable;
+    }
+
+    if (!Array.isArray(summaryResult.data) || !Array.isArray(ordersResult.data) || !Array.isArray(paymentsResult.data)) {
+      console.error("Customer account financial response unavailable");
+      return unavailable;
+    }
+    const orderRows = ordersResult.data as OrderRow[];
+    const paymentRows = paymentsResult.data as PaymentRow[];
+    const summaryRows = summaryResult.data as SummaryRow[];
+
+    const orderPage = period === "recent" ? { items: orderRows, navigation: EMPTY_NAVIGATION }
+      : paginateAccountRows(orderRows, orderCursor,
+        (row, direction) => ({ createdAt: row.created_at, id: row.id, direction }), customerId, period);
+    const paymentPage = period === "recent" ? { items: paymentRows, navigation: EMPTY_NAVIGATION }
+      : paginateAccountRows(paymentRows as PaymentPageRow[], paymentCursor,
+        (row, direction) => ({ paidAt: row.paid_at, createdAt: row.created_at, id: row.id, direction }), customerId, period);
+    return {
+      state: "ready",
+      orders: orderPage.items.map(mapOrder),
+      payments: paymentPage.items.map(mapPayment),
+      summaries: summaryRows.map(mapSummary),
+      pagination: {
+        ...pagination,
+        orders: orderPage.navigation,
+        payments: paymentPage.navigation,
+      },
+    };
+  } catch {
+    console.error("Customer account financial transport failed");
+    return unavailable;
+  }
 }
