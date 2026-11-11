@@ -4,6 +4,38 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-11. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — closeout (11/11/2026)
+
+**PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — CTO PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Phase 0 is complete: B2B customer-history documentation was published as `4c03949361438b7f83667c45548d930f6c0821d3`. Phase 1 READ ONLY audit is technically complete and CTO-approved as a planning basis; its completion as a published canonical checkpoint remains conditional on this documentation's publication. Preflight verified `main` = HEAD = `origin/main` = GitHub `main` at the same authorised baseline, with empty index and clean worktree.
+
+**Approved source:** external review report `PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001-CTO-REVIEW-20261111T183230Z.md`, analysed baseline `4c03949361438b7f83667c45548d930f6c0821d3`: **58 observations and six end-to-end flow views**. The report remains an external review artifact; its full matrix is not duplicated here and no portable repository link to a local Desktop path is implied.
+
+**General state:** Phoenix already connects customers, orders, catalog/prices, production, Warehouse, logistics, POS, payments/refunds, operational documents, B2B service albarans, ordinary invoicing, Accounting and Portal. Preserve these canonical models and integrations. Functional completion is bounded by each module's evidence; module existence does not prove an entire end-to-end process. **No new P0 was demonstrated.** CTO acceptance of the audit is not production certification.
+
+**Classification:** retain three independent dimensions: (1) functional state — COMPLETE / PARTIAL / MISSING / NOT VERIFIED; (2) available evidence; (3) concrete gap, impact and dependencies. Static inspection, automatic tests with simulated data, local SQL, recorded staging checks, PO browser UAT and physical/hardware tests are distinct. A missing verification is not automatically a defect; historical PASS results are not new executions at the audit baseline.
+
+**Principal findings from the approved report:**
+
+- **A08:** customer-account financial read errors are represented as empty history. Confirmed statically in [customer-account queries](../../src/features/customer-account/server/queries.ts) and their view contract; not reproduced on staging and no financial data damage demonstrated.
+- **A09:** [customer history date formatting](../../src/components/customers/CustomerAccountView.tsx) lacks an explicit organisation timezone for order/payment dates. No actual runtime time shift was demonstrated.
+- **B04:** post-payment revisions and exception handling require a defined workflow. Preserve Guard 2A and existing canonical refunds; their implementation is not missing and no general economic unlock is approved.
+- **F04/F07:** multiorder invoice drafts exist, but the periodic B2B contract is incomplete. Albaran and invoice are linked indirectly through the order; no direct document attribution was found and no need for a new table was demonstrated.
+- **H03–H09:** existing scoped security/tenant and logical-restore evidence remains valid. Complete SaaS security/permissions, privacy, authenticated recovery, capacity, operations and costs need further verification or decisions; do not convert these evidence gaps into confirmed vulnerabilities.
+
+**Essential fiscal boundary:** migration [`20261106195446_restore_operational_documents_001.sql`](../../supabase/migrations/20261106195446_restore_operational_documents_001.sql) deliberately retired the writers for new simplified invoices, advance declarations, advance invoices and final invoices after advances, while preserving historical records and protections. Earlier PASS checks for those paths are historical and do not prove that new issuance is active at this baseline. New ordinary invoices remain supported within the current management scope. Do not reactivate fiscal functions or infer fiscal conformity from this audit. Existing [Billing Event Contract](../04_ARCHITECTURE/Billing_Event_Contract_001.md) decisions remain separate prerequisites for future fiscal work.
+
+**Proposed sequence — CTO planning proposals, subject to PO decision; no missions started:**
+
+1. Customer-account reliability — A08/A09.
+2. Exceptions and revisions after collection — B04, preserving Guard 2A and canonical refunds.
+3. Periodic B2B document contract — F04/F07, reusing existing order/invoice/albaran relationships before proposing schema changes.
+4. Targeted integration checks, real roles and physical printing, limited to evidence still missing.
+5. SaaS gates: security, privacy, backup/recovery, operations, capacity and costs.
+
+**Limits preserved:** no new tests, SQL, UAT, restore or deployment were executed by the audit or this closeout. Do not claim all six E2E flows fully tested, complete multi-tenant security, completed application/Auth restore, verified physical printing, fiscal certification or Production Readiness. Existing evidence gaps, including B2B browser pagination beyond 25 documents, remain open in their respective checkpoints. These proposals do not authorise application work, database changes or fiscal implementation.
+
+[Session Handover](../00_START_HERE/SESSION_HANDOVER.md#phoenix-professional-integration-audit-001--closeout-11112026) owns continuation. This phase prepares only the two authorised Markdown files for CTO review; publication requires subsequent explicit PO commit/push authorisation. Earlier checkpoints, decisions and evidence are preserved without rewriting their historical states. No implementation mission is active or opened by this closeout.
+
 ## B2B-ALBARAN-CUSTOMER-HISTORY-001 — closeout (11/11/2026)
 
 **B2B-ALBARAN-CUSTOMER-HISTORY-001 — FUNCTIONAL COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT 5 OF 6 PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Functional closeout approved for the Business customer service-albaran history; no further application changes are required by this mission.
