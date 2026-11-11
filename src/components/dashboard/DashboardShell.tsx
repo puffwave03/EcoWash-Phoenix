@@ -8,6 +8,7 @@ import type { EntitlementAccess } from "@/features/entitlements/feature-catalog"
 import { Link } from "@/i18n/navigation";
 
 type DashboardShellText = {
+  albarans: string;
   accounting: string;
   alerts: string;
   billing: string;
@@ -120,6 +121,7 @@ export function DashboardShell({
               role={access.membership.role}
               alertCount={alertCount}
               text={{
+                albarans: text.albarans,
                 accounting: text.accounting,
                 alerts: text.alerts,
                 billing: text.billing,
@@ -200,6 +202,7 @@ export function DashboardShell({
             switchToPlatformLabel={text.switchToPlatform}
             alertCount={alertCount}
             text={{
+              albarans: text.albarans,
               accounting: text.accounting,
               alerts: text.alerts,
               billing: text.billing,
@@ -244,6 +247,7 @@ export function DashboardShell({
         role={access.membership.role}
         alertCount={alertCount}
         text={{
+          albarans: text.albarans,
           accounting: text.accounting,
           alerts: text.alerts,
           billing: text.billing,

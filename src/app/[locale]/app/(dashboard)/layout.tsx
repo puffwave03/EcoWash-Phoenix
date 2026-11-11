@@ -37,6 +37,7 @@ export default async function DashboardLayout({
       locale={locale}
       platformAccess={contexts.isPlatformAdmin}
       text={{
+        albarans: t("albarans"),
         accounting: t("accounting"),
         alerts: t("alerts"),
         billing: t("billing"),
