@@ -12,6 +12,7 @@ import {
   type Tone,
 } from "@/components/operational/OperationalUi";
 import { PropertyList } from "@/components/properties/PropertyList";
+import { CustomerServiceAlbaranHistory } from "@/components/service-albarans/CustomerServiceAlbaranHistory";
 import type { CustomerSegmentAssignment } from "@/features/catalog-segments/types";
 import { assignCustomerSegmentAction } from "@/features/catalog-segments/server/actions";
 import type {
@@ -99,6 +100,7 @@ function address(customer: Customer) {
 }
 
 export async function CustomerAccountView({
+  albaranPage,
   billingOverview,
   customer,
   eligibility,
@@ -110,6 +112,7 @@ export async function CustomerAccountView({
   properties,
   segmentAssignment,
 }: {
+  albaranPage?: string;
   billingOverview: CustomerBillingOverview | null;
   customer: Customer;
   eligibility: CustomerLifecycleEligibility | null;
@@ -329,6 +332,15 @@ export async function CustomerAccountView({
         <HistoryPagination customerId={customer.id} period={period} orderCursor={financials.pagination.orderCursor} paymentCursor={financials.pagination.paymentCursor} navigation={financials.pagination.payments} kind="payments" locale={locale} text={t.raw("history.pagination")} title={t("payments.title")} />
         {period === "recent" ? <p className="text-xs leading-5 text-muted">{t("history.boundedNote")}</p> : null}
       </DisclosureSection>
+
+      {customer.customerType === "business" ? <CustomerServiceAlbaranHistory
+        customerId={customer.id}
+        locale={locale}
+        page={albaranPage}
+        period={period}
+        orderCursor={financials.pagination.orderCursor}
+        paymentCursor={financials.pagination.paymentCursor}
+      /> : null}
 
       <DisclosureSection
         contentClassName="space-y-4"

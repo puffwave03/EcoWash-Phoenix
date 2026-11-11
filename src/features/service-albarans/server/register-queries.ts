@@ -29,8 +29,18 @@ const REGISTER_SELECT = "id,order_id,document_number,document_status,issued_at,s
 export async function listServiceAlbaranRegister(locale: string, params: AlbaranRegisterParams) {
   // Keep redirects/denials outside query error handling, including direct URL requests.
   const { membership } = await requirePrintAccess(locale);
+  return readServiceAlbaranRegisterPage(membership.organization, params);
+}
+
+// Internal server read shared by authorized register/customer entrypoints.
+// organization must come from the authenticated membership, never URL parameters.
+export async function readServiceAlbaranRegisterPage(
+  organization: { id: string; timezone: string },
+  params: AlbaranRegisterParams,
+  customerId?: string,
+) {
   const filters = normalizeAlbaranRegisterFilters(params);
-  const timeZone = membership.organization.timezone;
+  const timeZone = organization.timezone;
   const range = albaranRegisterDateRange(filters, timeZone);
   const base = { filters, timeZone };
   if (!range) return { ...base, state: "invalidFilters" } as const;
@@ -39,8 +49,9 @@ export async function listServiceAlbaranRegister(locale: string, params: Albaran
     const supabase = await createSupabaseServerClient();
     const readPage = (page: number) => {
       let query = supabase.from("service_albarans").select(REGISTER_SELECT, { count: "exact" })
-        .eq("organization_id", membership.organization.id)
+        .eq("organization_id", organization.id)
         .order("issued_at", { ascending: false }).order("id", { ascending: false });
+      if (customerId) query = query.eq("customer_id", customerId);
       if (filters.status !== "all") query = query.eq("document_status", filters.status);
       if (range.from) query = query.gte("issued_at", range.from);
       if (range.until) query = query.lt("issued_at", range.until);

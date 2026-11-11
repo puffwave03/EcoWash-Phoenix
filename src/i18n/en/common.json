@@ -46,6 +46,10 @@
       "next": "Next",
       "page": "Page {page} of {pages}",
       "loading": "Loading service albarans…"
+    },
+    "customerHistory": {
+      "empty": "This business customer has no service albarans.",
+      "unavailable": "Service albaran history is temporarily unavailable. Reload the section to try again."
     }
   },
   "brand": {

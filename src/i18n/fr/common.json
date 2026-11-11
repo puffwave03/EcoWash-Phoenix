@@ -46,6 +46,10 @@
       "next": "Suivante",
       "page": "Page {page} sur {pages}",
       "loading": "Chargement des bons de service…"
+    },
+    "customerHistory": {
+      "empty": "Ce client professionnel ne possède aucun bon de service.",
+      "unavailable": "L’historique des bons de service est temporairement indisponible. Rechargez la section pour réessayer."
     }
   },
   "brand": {

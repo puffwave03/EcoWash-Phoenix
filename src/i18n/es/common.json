@@ -46,6 +46,10 @@
       "next": "Siguiente",
       "page": "Página {page} de {pages}",
       "loading": "Cargando albaranes de servicio…"
+    },
+    "customerHistory": {
+      "empty": "Este cliente profesional no tiene albaranes de servicio.",
+      "unavailable": "El historial de albaranes de servicio no está disponible temporalmente. Recarga la sección para reintentar."
     }
   },
   "brand": {

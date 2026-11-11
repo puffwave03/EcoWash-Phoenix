@@ -46,6 +46,10 @@
       "next": "Successiva",
       "page": "Pagina {page} di {pages}",
       "loading": "Caricamento albarán di servizio…"
+    },
+    "customerHistory": {
+      "empty": "Nessun albarán di servizio per questo cliente Business.",
+      "unavailable": "Lo storico degli albarán di servizio non è al momento disponibile. Ricarica la sezione per riprovare."
     }
   },
   "brand": {

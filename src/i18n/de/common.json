@@ -46,6 +46,10 @@
       "next": "Weiter",
       "page": "Seite {page} von {pages}",
       "loading": "Leistungsnachweise werden geladen…"
+    },
+    "customerHistory": {
+      "empty": "Für diesen Geschäftskunden liegen keine Leistungsnachweise vor.",
+      "unavailable": "Der Verlauf der Leistungsnachweise ist vorübergehend nicht verfügbar. Laden Sie den Abschnitt erneut."
     }
   },
   "brand": {
