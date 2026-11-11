@@ -4,6 +4,25 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-11. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## B2B-ALBARAN-CUSTOMER-HISTORY-001 — closeout (11/11/2026)
+
+**B2B-ALBARAN-CUSTOMER-HISTORY-001 — FUNCTIONAL COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT 5 OF 6 PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Functional closeout approved for the Business customer service-albaran history; no further application changes are required by this mission.
+
+| Evidence | Result and boundary |
+|---|---|
+| Application publication | `f718896925243baa28ed32e848cac489cf056966` — `feat(b2b): add customer service albaran history`. |
+| Automatic staging deployment | `dpl_BQyGub8pvGYhCtbNgNokWg52SVXw`, project `ecowash-phoenix-staging`: **READY**, matching source SHA verified in the publication postflight. No deployment or service inspection is repeated here. |
+| Prior Codex validation | **19 targeted tests PASS**, **117 regressions PASS**, TypeScript **PASS**, scoped ESLint **PASS**, diff check **PASS**. Previously reported implementation results; no new test executions in this closeout. |
+| Automated pagination coverage | Simulated responses, including a **137-document** scenario. This is not browser UAT or testing with real data. |
+| PO browser UAT | **5 of 6 PASS**, supplied for closeout: Business customer with albarans accessible; history consultation; A4 opening in browser; cancelled-albaran display; Business customer without albarans, with screenshot supplied by the PO. |
+| Sixth PO control | Pagination with more than **25 documents: NOT EXECUTED IN THE BROWSER**. Automated coverage is recorded separately and does not establish this browser PASS. |
+
+**Implemented:** service-albaran history within the Business customer detail, including issued, cancelled and reissued documents with original numbering; server-side pagination of **25 documents per page**; dates in the organisation timezone; original-order and A4-document links; organisation/customer isolation using persisted identifiers and existing access controls; IT/ES/EN/FR/DE translations. Albarans remain commercial, **non-fiscal** documents. Existing issuance, cancellation, numbering and snapshots are preserved. No fiscal-document, payment or Accounting change; **no SQL migration**.
+
+**Residual checks — NOT VERIFIED / NON-BLOCKING FOR APPROVED FUNCTIONAL CLOSEOUT:** browser pagination with more than 25 documents; complete roles/permissions matrix with real sessions; negative cross-tenant access with a real authenticated session; physical printing on paper; responsive smartphone checks not executed. These remain open for commercialisation assessment. Production Readiness, fiscal certification and completed regulatory compliance are **not declared**.
+
+This checkpoint supersedes the earlier **PROPOSED / NOT STARTED** designation for this mission only. Historical checkpoints and their evidence remain unchanged. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#b2b-albaran-customer-history-001--closeout-11112026) owns continuation. At preparation, this two-document closeout is pending publication; subsequent CTO review and explicit commit/push authorisation are required. No new tests/UAT, database operation, deployment, commit, push or mission is performed here.
+
 ## B2B-ALBARAN-REGISTER-001 — closeout (11/11/2026)
 
 **B2B-ALBARAN-REGISTER-001 — FUNCTIONAL UAT PASS / STAGING READY / DOCUMENTATION CLOSEOUT.** Functionally complete on staging within the central, read-only B2B service albaran register scope.

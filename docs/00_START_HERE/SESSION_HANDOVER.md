@@ -4,6 +4,20 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-11
 
+## B2B-ALBARAN-CUSTOMER-HISTORY-001 — closeout (11/11/2026)
+
+**B2B-ALBARAN-CUSTOMER-HISTORY-001 — FUNCTIONAL COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT 5 OF 6 PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Functional closeout is approved within the Business customer service-albaran history scope. Published application commit: `f718896925243baa28ed32e848cac489cf056966`; automatic Vercel deployment `dpl_BQyGub8pvGYhCtbNgNokWg52SVXw`, project `ecowash-phoenix-staging`, **READY** with matching source SHA in the publication postflight. No deployment or service inspection is repeated here.
+
+**Delivered:** service-albaran history in the Business customer detail, including issued, cancelled and reissued documents; server-side pagination of **25 documents per page**; dates in the organisation timezone; links to original orders and A4 documents; organisation/customer isolation; IT/ES/EN/FR/DE translations. Albarans remain commercial, **non-fiscal** documents. Fiscal documents, payments and Accounting are unchanged; no SQL migration was introduced.
+
+**Prior Codex evidence:** **19 targeted tests PASS**, **117 regressions PASS**, TypeScript **PASS**, scoped ESLint **PASS**, diff check **PASS**. These are previously reported implementation results, not new executions during closeout. Automated pagination coverage uses simulated responses, including a **137-document** scenario; this is neither browser evidence nor a test with real data.
+
+**Product Owner browser UAT — 5 of 6 PASS, supplied for closeout:** (1) access to a Business customer with albarans PASS; (2) history consultation PASS; (3) opening the A4 document in the browser PASS; (4) cancelled-albaran display PASS; (5) Business customer without albarans PASS, with screenshot supplied by the PO. **Control 6 — browser pagination with more than 25 documents: NOT EXECUTED.** Automated coverage does not turn this sixth browser control into PASS.
+
+**Open checks — NOT VERIFIED:** browser pagination with more than 25 documents; complete role/permission checks with real sessions; negative cross-tenant access with a real authenticated session; physical printing on paper; responsive smartphone checks not executed. These do not block functional closeout in the approved scope, but remain open for commercialisation assessment. Production Readiness, fiscal certification and completed regulatory compliance are **not declared**.
+
+**Continuation:** [Project Status](../06_ROADMAP/Project_Status.md#b2b-albaran-customer-history-001--closeout-11112026) records acceptance and evidence boundaries. This checkpoint supersedes the earlier **PROPOSED / NOT STARTED** designation for this mission only; all prior checkpoints remain historical and intact. No further application change is required by this mission. At preparation, this two-document closeout remains pending publication and requires subsequent CTO review and explicit commit/push authorisation. No tests/UAT, database operations, deployment, commit, push or new mission are performed here.
+
 ## B2B-ALBARAN-REGISTER-001 — closeout (11/11/2026)
 
 **B2B-ALBARAN-REGISTER-001 — FUNCTIONAL UAT PASS / STAGING READY / DOCUMENTATION CLOSEOUT.** The central B2B service albaran register is functionally complete on staging. Approved application baseline and published commit: `77721ad56fb81d8f08bb5e26ebd03ee890ac210c`; Vercel deployment `dpl_HEQzzpFj2L5ytQ5ySyWSKjZaZPXJ`, project `ecowash-phoenix-staging`, **READY** as supplied in the CTO closeout mandate. No service or deployment inspection is repeated in this documentation phase.
