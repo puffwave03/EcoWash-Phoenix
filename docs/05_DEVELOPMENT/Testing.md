@@ -4,6 +4,28 @@ Status: Current validation evidence index
 
 Original security evidence reconciliation: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`. Subsequent D03 closeout: 2026-10-24, recorded in the dedicated evidence section below and the canonical checkpoints.
 
+## CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — closeout evidence (11/11/2026)
+
+This index records **previous Codex implementation results** separately from **PO-supplied browser UAT supported by screenshots**. No tests, SQL, UAT, database operation or deployment are repeated during this documentation closeout. [Project Status](../06_ROADMAP/Project_Status.md#customer-account-reliability-timezone-001--closeout-11112026) owns functional acceptance and publication; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#customer-account-reliability-timezone-001--closeout-11112026) owns continuation. Application baseline: `2923d74336157685ec2a62d95b34d82e251d7ce7`.
+
+| Prior Codex evidence | Reported result and limit |
+|---|---|
+| Mission-specific checks | [customer-account-reliability-timezone-001.test.mjs](../../tests/customer-account-reliability-timezone-001.test.mjs): **43 PASS / 0 FAIL**. Actual query/page/view code exercised with simulated read/access dependencies and React server rendering: ready/empty, each RPC error or missing response, transport failure, unavailable UI without false balances/empty histories/pagination, GET reload/context, independent sections, role denials and tenant/customer scoping. This is not a real Auth session or database test. |
+| Date/time coverage | Reported automatic checks cover IANA zones, UTC-midnight crossings, DST/summer/winter, date-only versus date/time and formatting in IT/ES/EN/FR/DE. Timestamp inputs and mapping semantics are preserved in the covered cases; no persisted data was modified for testing. This coverage is part of the 43 mission tests, not an additional execution count. |
+| Pertinent regressions | **98 total: 97 PASS / 1 pre-existing FAIL**, not 98 PASS. The FAIL is [progressive-disclosure-contract.test.mjs](../../tests/progressive-disclosure-contract.test.mjs), **"Customer Account collapses only long secondary lists using loaded data"**: an obsolete `defaultOpen` source-pattern assertion. Codex reports reproduction of that same historical test against baseline `0d036ef5df83534be6ab7cd65dd1169a2ed38fd4`; the file and failing assertion were left unchanged. |
+| Other validation / review | TypeScript **PASS**; scoped ESLint **PASS, zero warnings**; diff check **PASS**, including the then-new test. Complete patch verified against temporary baseline copies with resulting files identical to the local implementation; patch and implementation review **CTO PASS**. These are prior results, not checks rerun here. |
+
+**Product Owner browser UAT — 11/11/2026: four PASS observations, with the third explicitly limited.** The outcomes and screenshot support are supplied by the PO for closeout; Codex does not replay the browser checks or claim independent backend verification.
+
+| PO check | Observed result | Evidence boundary |
+|---|---|---|
+| UAT 1 — customer with history | **PASS:** Cliente Smoke Test shows financial summary, **19 orders in the total**, visible order/payment histories, distinct payments/refunds and no anomalous unavailable warning. | Does not establish every row/page, role or financial path. |
+| UAT 2 — customer without movements | **PASS:** correct financial EmptyState; zero order/payment histories; independent sections available; no invented financial balance. | Successful empty response, not a forced read failure. |
+| UAT 3 — date coherence | **PASS — LIMITED:** Customer Account and Accounting display coherent dates, times and amounts for the payment/refund on `EW-000165`, **1 November 2026 at 18:17**. | Original UTC timestamp and persisted organisation timezone were not independently verified. Multi-timezone/DST coverage comes from the reported automatic checks, not this browser UAT. |
+| UAT 4 — Todos filter | **PASS:** switching Recientes → Todos loads the customer history, with **19 orders indicated** and no visible anomaly. | The available dataset did not exercise navigation between multiple financial pages. |
+
+**Evidence gaps kept separate:** browser financial pagination across multiple pages **NOT EXECUTED**; forced financial error in the browser **NOT EXECUTED**; original UTC and multiple timezones with real sessions **NOT EXECUTED**. No new SQL/database test, multiuser or multitenant Auth verification, or production proof was performed. These limits do not automatically constitute defects or authorise new missions. No certification of all financial paths, fiscal conformity or Production Readiness is declared. Historical evidence/checkpoints are preserved; this three-document closeout is pending CTO review and subsequent PO publication authorisation, with no commit/push.
+
 ## B2B-ALBARAN-SERVICE-001 — closeout evidence (10/11/2026)
 
 This checkpoint separates **reported implementation checks**, **observed staging SQL metadata/data**, and **PO-supplied browser UAT**. It records existing evidence only; no test, UAT, Docker operation, migration or deployment is repeated for documentation. [Project Status](../06_ROADMAP/Project_Status.md#b2b-albaran-service-001--closeout-10112026) records functional acceptance; [Handover](../00_START_HERE/SESSION_HANDOVER.md#b2b-albaran-service-001--closeout-10112026) records continuation.

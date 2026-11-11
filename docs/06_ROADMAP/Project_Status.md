@@ -4,6 +4,24 @@ Status: Active — canonical implementation and acceptance inventory
 
 Current checkpoint: 2026-11-11. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
 
+## CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — closeout (11/11/2026)
+
+**CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — FUNCTIONAL COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT APPROVED / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** First implementation mission of Phase 2 of the Phoenix Professional Completion Workflow V1.0, limited to the approved A08/A09 findings.
+
+| Publication / review | Evidence and boundary |
+|---|---|
+| Application commit | `2923d74336157685ec2a62d95b34d82e251d7ce7` — `fix(customers): distinguish financial errors and use tenant timezone`; exactly 12 reviewed files published. |
+| Automatic staging deployment | `dpl_GZRm76n9rKFJeXRkk3QSSAFuEKHh`, project `ecowash-phoenix-staging`: **READY**, matching application source SHA verified in the publication postflight. No deployment/service check is repeated here. |
+| Acceptance | CTO implementation review **PASS**; PO functional browser UAT **APPROVED — 11/11/2026**, within the four observations and evidence limits indexed in [Testing](../05_DEVELOPMENT/Testing.md#customer-account-reliability-timezone-001--closeout-evidence-11112026). |
+
+**A08 — delivered:** the financial read contract explicitly distinguishes `ready` from `unavailable`. RPC errors, missing responses and transport exceptions do not become reliable empty histories or invented zero balances. An accessible warning offers a normal GET reload, preserving period, validated cursors and albaran-page context; unavailable financial data has no apparent pagination. Independent customer sections remain available; the last-activity timestamp is withheld when financial reads are incomplete. Existing Owner/Manager access checks remain outside read-error recovery.
+
+**A09 — delivered:** `formatOrganizationDateTime` receives the authoritative server membership timezone for order dates, payment date/times and last activity, retaining date-only versus date/time presentation. Persisted timestamps, filters, ordering and cursors are unchanged. No economic formula, payment/refund, POS, Billing, Accounting, albaran, fiscal, database/RPC/migration or permission change is introduced.
+
+**Evidence boundary:** [Testing](../05_DEVELOPMENT/Testing.md#customer-account-reliability-timezone-001--closeout-evidence-11112026) owns prior automated counts, the baseline-reproduced historical regression FAIL and PO screenshot-supported UAT. Successful populated and genuinely empty customer views, the Todos filter and limited cross-screen date coherence were observed by the PO. Multi-page browser traversal, a forced financial read error, original UTC validation and multiple timezones with real sessions were **NOT EXECUTED**. No new SQL/database, multiuser/multitenant Auth or production verification is claimed.
+
+This checkpoint supersedes the audit's open implementation status for A08/A09 within the delivered scope only; all earlier findings, priorities and checkpoints retain their historical evidence. It does not certify every financial path, fiscal conformity or Production Readiness. [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#customer-account-reliability-timezone-001--closeout-11112026) owns continuation. This documentation remains pending publication: only the three authorised Markdown files are prepared, with no code/test/database/environment change, repeated tests/UAT, deployment, commit or push. No next mission is authorised or started.
+
 ## PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — closeout (11/11/2026)
 
 **PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — CTO PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Phase 0 is complete: B2B customer-history documentation was published as `4c03949361438b7f83667c45548d930f6c0821d3`. Phase 1 READ ONLY audit is technically complete and CTO-approved as a planning basis; its completion as a published canonical checkpoint remains conditional on this documentation's publication. Preflight verified `main` = HEAD = `origin/main` = GitHub `main` at the same authorised baseline, with empty index and clean worktree.

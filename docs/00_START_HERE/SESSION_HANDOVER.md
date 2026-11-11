@@ -4,6 +4,16 @@ Status: Active — canonical resume instructions
 
 Date: 2026-11-11
 
+## CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — closeout (11/11/2026)
+
+**CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — FUNCTIONAL COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT APPROVED / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** First implementation mission of Phase 2 of the Phoenix Professional Completion Workflow V1.0. Application commit: `2923d74336157685ec2a62d95b34d82e251d7ce7`; publication postflight verified automatic staging deployment **READY** with matching source SHA. [Project Status](../06_ROADMAP/Project_Status.md#customer-account-reliability-timezone-001--closeout-11112026) records publication and the A08/A09 scope. The preceding integration-audit documentation was published as `0d036ef5df83534be6ab7cd65dd1169a2ed38fd4`; its earlier preparation checkpoint remains historical.
+
+**Accepted:** financial read failures are distinct from successful empty history, with an accessible warning and GET reload preserving navigation context; independent customer sections and Owner/Manager checks remain. Customer-account dates use the existing organisation-timezone helper with server membership context. Financial calculations, permissions and persisted timestamps are unchanged.
+
+[Testing](../05_DEVELOPMENT/Testing.md#customer-account-reliability-timezone-001--closeout-evidence-11112026) separates prior Codex validation, the pre-existing regression FAIL, and four PO browser checks on 11/11/2026, including limited date-coherence acceptance. Browser pagination across multiple financial pages, forced browser read failure, original UTC/multiple real-session timezones and new multiuser/tenant Auth checks remain unexecuted; no fiscal or Production Readiness claim follows.
+
+**Continuation:** prepare only the three authorised Markdown files, then stop for CTO review and subsequent explicit PO publication authorisation. This phase reruns no tests, SQL, UAT or deployment and changes no code, database or environment. No commit/push is performed and no next mission starts. Earlier checkpoints and their evidence are preserved.
+
 ## PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — closeout (11/11/2026)
 
 **PHOENIX-PROFESSIONAL-INTEGRATION-AUDIT-001 — CTO PASS / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Phase 0 is complete and published: the B2B customer-history documentation closeout is commit `4c03949361438b7f83667c45548d930f6c0821d3`. This confirms publication of the earlier preparation checkpoint below without changing its historical evidence. Documentation preflight verified `main` = HEAD = `origin/main` = GitHub `main` at that baseline, with empty index and clean worktree.
