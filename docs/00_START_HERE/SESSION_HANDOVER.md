@@ -2,7 +2,21 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-10
+Date: 2026-11-11
+
+## B2B-ALBARAN-REGISTER-001 — closeout (11/11/2026)
+
+**B2B-ALBARAN-REGISTER-001 — FUNCTIONAL UAT PASS / STAGING READY / DOCUMENTATION CLOSEOUT.** The central B2B service albaran register is functionally complete on staging. Approved application baseline and published commit: `77721ad56fb81d8f08bb5e26ebd03ee890ac210c`; Vercel deployment `dpl_HEQzzpFj2L5ytQ5ySyWSKjZaZPXJ`, project `ecowash-phoenix-staging`, **READY** as supplied in the CTO closeout mandate. No service or deployment inspection is repeated in this documentation phase.
+
+**Delivered:** `/app/albarans`, with dedicated permission-aware navigation, a central list of issued and cancelled B2B service documents, server-side search and filters, server-side pagination of **25 documents per page** without a 100-document history cap, original-order links and opening/reprinting A4 through the existing print route. Historical labels use the persisted snapshot. Server-side access checks and tenant isolation are retained, with IT/ES/EN/FR/DE translations. The register is read-only; existing issuance/cancellation and POS, Payments, Billing, REC and Accounting remain outside its write scope. **No SQL migration** was introduced.
+
+**Technical evidence already completed:** **26 targeted tests PASS**, **76 regressions PASS**, local SQL and PostgREST checks **PASS**, TypeScript, scoped lint and diff check **PASS**. Local SQL used simulated PostgreSQL roles/claims with fixture rollback; the HTTP query check used synthetic local claims. These are distinct from real authenticated staging role sessions and are not rerun for closeout.
+
+**Product Owner staging UAT — PASS, supplied for this closeout:** menu and document register; display of **3 documents**; issued/cancelled distinction; opening A4 and checking displayed content; customer search; cancelled filter; issued filter; restoration of the complete list. This records the observed three-document browser UAT separately from the automated pagination evidence.
+
+**Residual checks — NOT VERIFIED, non-blocking for documentation closeout:** physical printing on paper; responsive display on a smartphone; the complete permissions matrix with real sessions for different roles. No production approval, Production Readiness or fiscal certification is implied. Functional staging completion does not close these checks.
+
+**Continuation:** [Project Status](../06_ROADMAP/Project_Status.md#b2b-albaran-register-001--closeout-11112026) records acceptance. **B2B-ALBARAN-CUSTOMER-HISTORY-001 — PROPOSED / NOT STARTED** is a separate future improvement: show service albarans in the B2B customer detail, with number, date, order, status and access to A4 reprint. No implementation of that improvement starts here. This documentation closeout requires its own subsequent CTO/PO commit/push authorisation; all earlier dated checkpoints remain intact.
 
 ## B2B-ALBARAN-SERVICE-001 — closeout (10/11/2026)
 

@@ -2,7 +2,28 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-10. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-11. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## B2B-ALBARAN-REGISTER-001 — closeout (11/11/2026)
+
+**B2B-ALBARAN-REGISTER-001 — FUNCTIONAL UAT PASS / STAGING READY / DOCUMENTATION CLOSEOUT.** Functionally complete on staging within the central, read-only B2B service albaran register scope.
+
+| Evidence | Result and boundary |
+|---|---|
+| Application publication | `77721ad56fb81d8f08bb5e26ebd03ee890ac210c` — `feat(b2b): add service albaran register`; approved application baseline. |
+| Staging deployment | `dpl_HEQzzpFj2L5ytQ5ySyWSKjZaZPXJ`, project `ecowash-phoenix-staging`: **READY**, as supplied in the CTO closeout mandate. No Vercel operation is performed in this phase. |
+| Existing technical validation | **26 targeted tests PASS**, **76 regressions PASS**, local SQL and PostgREST checks **PASS**, TypeScript, scoped lint and diff check **PASS**. These results are recorded from implementation evidence, not new test runs. Local SQL roles/claims were simulated and fixtures rolled back; the HTTP query check used synthetic local claims, not a real staging Auth login. |
+| Product Owner staging UAT | **PASS:** menu and register; display of **3 documents**; distinction between issued and cancelled documents; A4 opening and displayed content; customer search; cancelled filter; issued filter; restoration of the complete list. The three-document UAT does not claim a browser traversal of more than 100 documents. |
+
+**Implemented:** `/app/albarans`; dedicated navigation consistent with print/read access; central issued/cancelled document list; server-side search and status/date filters; server-side pagination of **25 documents per page**, without an implicit 100-document history limit; original-order links; opening and reprinting through the existing A4 route; server-side permission checks, tenant isolation and translations in IT/ES/EN/FR/DE. Historical document labels come from persisted snapshots where appropriate. **No SQL migration.** The page adds no issuance, cancellation or financial write path, and does not change the accepted B2B issuance flow.
+
+**Residual checks — NOT VERIFIED / NON-BLOCKING FOR DOCUMENTATION CLOSEOUT:** physical printing on paper; responsive display on a smartphone; the complete permissions matrix with real authenticated sessions for different roles. No implicit production approval, Production Readiness or fiscal certification. Delivery albarans and monthly billing remain outside this mission.
+
+### B2B-ALBARAN-CUSTOMER-HISTORY-001
+
+**PROPOSED / NOT STARTED — separate future improvement.** Show existing service albarans directly in the B2B customer detail, including number, date, original order, status and access to A4 reprint. This entry records future scope only; it neither opens implementation nor expands the completed register mission.
+
+[Session Handover](../00_START_HERE/SESSION_HANDOVER.md#b2b-albaran-register-001--closeout-11112026) owns continuation. Publication of this documentation requires subsequent CTO/PO authorisation; no commit or push is performed in this phase. Earlier checkpoints, decisions and evidence remain historical and unchanged.
 
 ## B2B-ALBARAN-SERVICE-001 — closeout (10/11/2026)
 
