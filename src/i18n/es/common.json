@@ -1,4 +1,6 @@
 {
+  "fiscalCancellationBlocked": "Este pedido tiene una factura fiscal ya emitida. La cancelación ordinaria está bloqueada hasta que exista un procedimiento de rectificación fiscal aprobado. Se conservan los documentos y pagos; los reembolsos siguen disponibles mediante el procedimiento existente.",
+  "fiscalCancellationConflict": "No se ha podido verificar la cancelación de forma segura porque la transacción no utiliza una vista actualizada de los datos. Recarga el pedido e inténtalo de nuevo. No se ha registrado ninguna cancelación.",
   "serviceAlbarans": {
     "title": "Albarán de servicio",
     "notFiscal": "Documento comercial no fiscal. No es una factura ni un justificante de pago.",

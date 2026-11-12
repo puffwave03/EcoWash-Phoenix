@@ -1,4 +1,6 @@
 {
+  "fiscalCancellationBlocked": "Questo ordine ha una fattura fiscale già emessa. L’annullamento ordinario è bloccato finché non sarà disponibile un percorso di rettifica fiscale approvato. Documenti e pagamenti restano conservati; i rimborsi rimangono disponibili tramite il percorso esistente.",
+  "fiscalCancellationConflict": "Non è stato possibile verificare in sicurezza l’annullamento perché la transazione non usa una vista aggiornata dei dati. Ricarica l’ordine e riprova. Nessun annullamento è stato registrato.",
   "serviceAlbarans": {
     "title": "Albarán di servizio",
     "notFiscal": "Documento commerciale non fiscale. Non è una fattura né una prova di pagamento.",

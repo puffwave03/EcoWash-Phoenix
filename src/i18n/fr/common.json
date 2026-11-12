@@ -1,4 +1,6 @@
 {
+  "fiscalCancellationBlocked": "Cette commande possède une facture fiscale déjà émise. L’annulation ordinaire est bloquée tant qu’aucune procédure de rectification fiscale approuvée n’est disponible. Les documents et paiements sont conservés ; les remboursements restent accessibles par la procédure existante.",
+  "fiscalCancellationConflict": "L’annulation n’a pas pu être vérifiée en toute sécurité car la transaction n’utilise pas une vue à jour des données. Rechargez la commande et réessayez. Aucune annulation n’a été enregistrée.",
   "serviceAlbarans": {
     "title": "Bon de prestation",
     "notFiscal": "Document commercial non fiscal. Ce document n’est ni une facture ni une preuve de paiement.",

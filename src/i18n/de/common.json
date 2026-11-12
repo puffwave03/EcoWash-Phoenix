@@ -1,4 +1,6 @@
 {
+  "fiscalCancellationBlocked": "Für diesen Auftrag wurde bereits eine Steuerrechnung ausgestellt. Die reguläre Stornierung ist gesperrt, bis ein genehmigtes steuerliches Korrekturverfahren verfügbar ist. Dokumente und Zahlungen bleiben erhalten; Erstattungen sind weiterhin über das bestehende Verfahren möglich.",
+  "fiscalCancellationConflict": "Die Stornierung konnte nicht sicher geprüft werden, da die Transaktion keine aktuelle Datensicht verwendet. Laden Sie den Auftrag neu und versuchen Sie es erneut. Es wurde keine Stornierung gespeichert.",
   "serviceAlbarans": {
     "title": "Leistungsnachweis",
     "notFiscal": "Nicht steuerlicher Geschäftsbeleg. Keine Rechnung und kein Zahlungsnachweis.",

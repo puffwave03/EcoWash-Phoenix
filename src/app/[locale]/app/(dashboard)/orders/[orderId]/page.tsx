@@ -83,7 +83,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
+  searchParams: Promise<{ warehouse?: string; cancellationError?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
 };
 
 function SectionShell({
@@ -391,6 +391,11 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       </SectionShell>
 
       <SectionShell id="production" title={t("workflow.change")}>
+        {routeSearch.cancellationError === "fiscal-issued" || routeSearch.cancellationError === "conflict" ? (
+          <p className="mb-4 rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">
+            {commonT(routeSearch.cancellationError === "fiscal-issued" ? "fiscalCancellationBlocked" : "fiscalCancellationConflict")}
+          </p>
+        ) : null}
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <Card>
             {pendingQuickDrop ? <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950">{quickDropT("productionBlocked")}</div> : <StatusTransitionForm

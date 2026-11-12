@@ -1,4 +1,6 @@
 {
+  "fiscalCancellationBlocked": "This order has a previously issued fiscal invoice. Ordinary cancellation is blocked until an approved fiscal correction process is available. Existing documents and payments are preserved; refunds remain available through the existing process.",
+  "fiscalCancellationConflict": "Cancellation could not be safely verified because the transaction is not using a current view of the data. Reload the order and try again. No cancellation was recorded.",
   "serviceAlbarans": {
     "title": "Service delivery note",
     "notFiscal": "Non-fiscal commercial document. This is neither an invoice nor proof of payment.",

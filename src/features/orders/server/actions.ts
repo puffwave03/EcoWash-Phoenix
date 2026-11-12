@@ -339,6 +339,15 @@ export async function transitionOrderStatusAction(
   });
 
   if (error) {
+    if (targetStatus === "cancelled") {
+      const cancellationError = error.message.includes("order_fiscal_cancellation_blocked") ? "fiscal-issued"
+        : error.message.includes("order_fiscal_cancellation_conflict") ? "conflict" : null;
+      if (cancellationError) {
+        const path = surface === "order" ? `/${locale}/app/orders/${orderId}`
+          : `/${locale}/app/work/${surface}/${orderId}`;
+        redirect(`${path}?cancellationError=${cancellationError}`);
+      }
+    }
     if (targetStatus === "received" && surface === "order" && error.message.includes("inbound_pickup_incomplete")) {
       redirect(`/${locale}/app/orders/${orderId}?pickup=complete-first#production`);
     }
