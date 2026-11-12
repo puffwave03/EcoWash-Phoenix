@@ -2,7 +2,21 @@
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-11
+Date: 2026-11-12
+
+## FISCAL-ISSUED-ORDER-CANCEL-GATE-001 — closeout (12/11/2026)
+
+**CTO TECHNICAL PASS / SQL VALIDATION PASS / PUBLISHED / STAGING SQL APPLIED / PO VISUAL UAT PASS / NEGATIVE BROWSER UAT NOT EXECUTED / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** Application commit: `9d3f51978cff4045024427f9d00c76d8464efbf4`; automatic `ecowash-phoenix-staging` deployment `dpl_82KbA7HM1jwJ8gbgq2jmM1Si3EnP` was verified **READY** with matching source SHA. Staging `exthnplfokcucaqydney`: migration `20261112100551_fiscal_issued_order_cancel_gate_001.sql` applied once, history **120 → 121**. [Project Status](../06_ROADMAP/Project_Status.md#fiscal-issued-order-cancel-gate-001--closeout-12112026) owns release details and remaining decisions.
+
+**Delivered boundary:** ordinary cancellation is blocked at database level when an order has an issued fiscal document or issued fiscal history, including inactive historical links. The canonical transition RPC and direct status updates are guarded; ordinary invoice issuance serializes with cancellation. Prior cancellations, documents, payments and refunds are preserved. This protective gate does not implement fiscal corrections or complete the broader post-payment revision workflow.
+
+**Acceptance and evidence:** the PO reports visual UAT **PASS on three screens** in this closeout mandate. Negative browser UAT is **NOT EXECUTED**; the visual result is not evidence of a browser cancellation attempt being rejected. [Testing](../05_DEVELOPMENT/Testing.md#fiscal-issued-order-cancel-gate-001--closeout-evidence-12112026) separates prior automated checks, **14 isolated SQL cases PASS**, staging postflight and PO visual evidence. **No new tests, SQL, UAT or deployment checks are performed during this documentation closeout.**
+
+**Open historical case:** `EW-000173` retains a **EUR 1.00 residual credit to preserve and reconcile**, as recorded by the CTO/PO. The historical cancellation and issued invoice are not corrected by installing this gate. No write-off, refund, fiscal correction or completed reconciliation is inferred or authorised.
+
+**Preserved local work — B04-B1: HOLD.** All **23 unpublished files** in `/Users/cristianomegale/EcoWash-Phoenix` match their original manifest; its `main` remains at `b027283abf8b12d560e7f5c19df78d5111ef29e5`, one commit behind GitHub under the approved release exception. The fiscal worktree is at the published commit; only these three closeout Markdown files are prepared there. The **11 historical WIP commits** are retained. B04-B1 resumption, publication and future realignment require separate review/authorisation.
+
+**Continuation:** fiscal corrective documents remain a dependency **to be defined**, using the existing [Billing Event Contract](../04_ARCHITECTURE/Billing_Event_Contract_001.md) and [Fiscal Document Benchmark](../04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md), without reactivating retired fiscal writers. Prepare this documentation for CTO review, then await explicit commit/push authorisation. No subsequent implementation is authorised. No fiscal certification or Production Readiness is declared; all earlier checkpoints remain historical and intact.
 
 ## CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — closeout (11/11/2026)
 

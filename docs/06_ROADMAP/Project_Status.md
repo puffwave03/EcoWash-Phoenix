@@ -2,7 +2,29 @@
 
 Status: Active — canonical implementation and acceptance inventory
 
-Current checkpoint: 2026-11-11. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+Current checkpoint: 2026-11-12. Earlier consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). The dated checkpoints below preserve their own evidence.
+
+## FISCAL-ISSUED-ORDER-CANCEL-GATE-001 — closeout (12/11/2026)
+
+**CTO TECHNICAL PASS / SQL VALIDATION PASS / PUBLISHED / STAGING SQL APPLIED / PO VISUAL UAT PASS / NEGATIVE BROWSER UAT NOT EXECUTED / DOCUMENTATION CLOSEOUT PENDING PUBLICATION.** This checkpoint closes the authorised protective-gate implementation/release scope with the browser evidence gap explicit; it does not close the broader `ORDER-CANCELLATION-REFUND-FISCAL-001` direction or authorise a corrective fiscal workflow.
+
+| Release / evidence | Recorded result and boundary |
+|---|---|
+| GitHub publication | `9d3f51978cff4045024427f9d00c76d8464efbf4` — `fix(orders): block cancellation with issued fiscal documents`; exactly **12 approved files**. GitHub `main` reconfirmed at documentation preflight. |
+| Automatic staging deployment | `dpl_82KbA7HM1jwJ8gbgq2jmM1Si3EnP`, project `ecowash-phoenix-staging`: **READY**, matching source SHA verified in the release postflight. No deployment is performed or rechecked here. |
+| Staging migration | `exthnplfokcucaqydney`; [`20261112100551_fiscal_issued_order_cancel_gate_001.sql`](../../supabase/migrations/20261112100551_fiscal_issued_order_cancel_gate_001.sql), SQL SHA-256 `b5122e9940ee0e5fc79568d550066d0657a7e459c4799a904a2780ab2ccc7245`. Canonical CLI dry-run selected only this migration; one successful application, history **120 → 121**, canonical version recorded once. |
+| Staging postflight | **PASS:** cancellation trigger enabled; guard and ordinary issuer bodies match the approved SQL; internal helper denied to anonymous/authenticated callers; issuer ACL retained. All **59 public-table** row counts/content fingerprints unchanged, including documents, payments and history; only the expected guard/issuer function changes occurred. These are prior read-only release checks, not new SQL execution during closeout. |
+| Product Owner visual UAT | **PASS — three screens**, supplied in the closeout mandate. No additional scenario, role or screen-by-screen coverage is invented. **Negative browser UAT: NOT EXECUTED.** |
+
+**Implemented:** the database rejects ordinary transitions to `cancelled` when issued fiscal history is linked, even through inactive associations or direct status updates. The ordinary Billing issuer locks orders before invoice/counter mutation to serialize the two operations. Prior issued documents, financial movements, numbering and historical cancellations are not rewritten. This is a protective gate, not a fiscal rectification, a new refund system or a general unlock of paid orders.
+
+**`EW-000173` — OPEN / PRESERVE AND RECONCILE:** the CTO-recorded historical case has issued ordinary invoice `2026-A-000008` for **EUR 21.00**, confirmed collection **EUR 20.00** and a prior order cancellation. The **EUR 1.00 residual credit must be preserved and reconciled**. The gate does not repair that history or attest settlement; no automatic write-off, refund, accounting change or corrective document is approved here.
+
+**B04-B1 — HOLD:** the **23 local unpublished files** (15 tracked modifications, 8 untracked) remain intact against their original manifest, including its unapplied local migration. The earlier B04 report's SQL/concurrency evidence gaps are not closed by this gate's separate SQL validation. All **11 historical WIP commits** are retained; their absence from GitHub `main` does not establish missing functionality or approve publication. Main-worktree `main` stays at `b027283abf8b12d560e7f5c19df78d5111ef29e5`; `origin/main`/GitHub and the fiscal worktree are at the gate commit. The authorised temporary divergence is preserved, not realigned by this closeout.
+
+**Remaining dependency:** fiscal corrective-document rules and the approved correction path are **TO BE DEFINED** under the existing [Billing Event Contract](../04_ARCHITECTURE/Billing_Event_Contract_001.md) and [Fiscal Document Benchmark](../04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md), with separate CTO/PO decisions and professional IGIC validation where required. Retired simplified fiscal writers remain retired. No successor implementation, B04-B1 resumption, production approval, fiscal certification or Production Readiness follows from this checkpoint.
+
+[Testing](../05_DEVELOPMENT/Testing.md#fiscal-issued-order-cancel-gate-001--closeout-evidence-12112026) owns prior validation and remaining evidence limits; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md#fiscal-issued-order-cancel-gate-001--closeout-12112026) owns continuation. **No new tests are run.** Only the three authorised Markdown files are prepared for CTO review; documentation publication still requires explicit commit/push authorisation. All historical sections are preserved.
 
 ## CUSTOMER-ACCOUNT-RELIABILITY-TIMEZONE-001 — closeout (11/11/2026)
 
