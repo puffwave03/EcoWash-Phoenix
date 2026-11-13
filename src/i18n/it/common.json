@@ -1325,6 +1325,38 @@
     }
   },
   "billing": {
+    "fiscalTicket": {
+      "title": "Ticket fiscale da prepagamento integrale",
+      "localOnly": "Verifica locale con dati sintetici. Questo percorso non è autorizzato per emissioni fiscali reali.",
+      "open": "Apri il ticket già emesso",
+      "disabled": "Il percorso è disabilitato.",
+      "unavailable": "Impossibile verificare i dati. Ricarica senza ripetere automaticamente l’emissione.",
+      "blocked": "Ordine o pagamento non compatibile: occorrono accettazione, un solo pagamento POS integrale e nessuna storia fiscale incompatibile.",
+      "confirmationRequired": "Conferma entrambe le dichiarazioni prima di procedere.",
+      "uncertain": "Esito non confermato. Verifica il documento esistente prima di un nuovo tentativo; non registrare un altro pagamento.",
+      "paymentPreserved": "Il pagamento POS esistente viene conservato. L’emissione non registra un nuovo incasso.",
+      "recipient": "Destinatario",
+      "consumer": "Privato senza identificazione richiesta",
+      "identified": "Privato con identificazione richiesta",
+      "business": "Impresa o professionista",
+      "recipientHelp": "Se occorre identificare il destinatario, vengono usati i dati fiscali già registrati del cliente. Dati mancanti bloccano l’emissione.",
+      "serviceConfirmation": "Confermo che il servizio non era stato eseguito al pagamento e non è ancora stato eseguito.",
+      "scopeConfirmation": "Confermo che si tratta esclusivamente di servizi locali di lavanderia o tintoria ammessi nel perimetro di verifica.",
+      "issue": "Conferma ed emetti una sola volta",
+      "print": "Stampa / ristampa",
+      "documentTitle": "Fattura semplificata — pagamento anticipato integrale",
+      "issued": "Emissione",
+      "order": "Ordine",
+      "pickup": "Ritiro previsto",
+      "services": "Servizi",
+      "base": "Base imponibile",
+      "documented": "Totale fiscalmente documentato",
+      "commercialAtIssue": "Situazione commerciale all’emissione",
+      "commercialTotal": "Totale ordine",
+      "paidAtIssue": "Incasso documentato all’emissione",
+      "balanceAtIssue": "Saldo all’emissione",
+      "noSecondPayment": "Il ritiro non richiede un secondo incasso per questo importo."
+    },
     "pagination": {
       "label": "Pagine delle fatture",
       "older": "Più vecchi",
@@ -1344,7 +1376,7 @@
       "serviceDeclaration": "Conferma servizio, destinatario e condizioni ammesse; per gli altri casi usa la fattura ordinaria o richiedi revisione.",
       "issueUncertain": "Non è stato possibile verificare l’esito dell’emissione: non significa che sia stata rifiutata. Riapri questa stessa fattura per controllarne lo stato prima di qualsiasi altra azione; non ripetere l’emissione né creare un altro documento."
     },
-    "entry": {"prepare": "Prepara fattura", "draft": "Riprendi bozza fattura", "issued": "Consulta fattura", "sharedWalkIn": "Questo ordine occasionale non è fatturabile dal percorso Billing attuale. È necessario un cliente registrato.", "ineligible": "Questo ordine non è idoneo alla preparazione di una fattura nel percorso attuale.", "backToOrder": "Torna all’ordine"},
+    "entry": {"prepare": "Prepara fattura", "draft": "Riprendi bozza fattura", "issued": "Consulta fattura", "sharedWalkIn": "Questo ordine occasionale non è fatturabile dal percorso Billing attuale. È necessario un cliente registrato.", "ineligible": "Questo ordine non è idoneo alla preparazione di una fattura nel percorso attuale.", "backToOrder": "Torna all’ordine", "fullPrepaymentTicket": "Ticket fiscale da prepagamento integrale"},
     "create": {"title": "Crea bozza fattura", "description": "Seleziona uno o più ordini idonei dello stesso cliente e valuta. I valori vengono copiati nella bozza.", "settingsWarning": "Puoi preparare la bozza, ma devi completare i dati emittente prima dell’emissione.", "counterContext": "L’ordine al banco completato e il cliente sono già selezionati. Non reinserire vendita o pagamenti.", "customerSaved": "I dati di fatturazione mancanti del cliente sono stati salvati.", "customerFiscal": {"eyebrow": "Cliente fattura", "ready": "Identità di fatturazione pronta", "missing": "Dati richiesti", "description": "Completa solo i campi mancanti richiesti dal modello di fatturazione corrente.", "walkInDescription": "La ricevuta operativa non richiedeva dati fiscali. Poiché il cliente occasionale richiede fattura, completa solo i dati di fatturazione mancanti.", "registeredCustomerRequired": "Per creare una fattura è necessario un cliente registrato.", "addressLine1": "Indirizzo di fatturazione", "city": "Città di fatturazione", "postalCode": "CAP di fatturazione", "countryCode": "Codice paese di fatturazione", "taxId": "Identificativo fiscale", "save": "Salva dati mancanti"}, "search": {"label": "Cerca ordini idonei", "placeholder": "Numero ordine o nome/codice cliente", "apply": "Cerca", "clear": "Cancella ricerca", "more": "Sono disponibili altri ordini idonei. Affina la ricerca per trovare quelli meno recenti.", "empty": "Nessun ordine idoneo corrisponde a questa ricerca."}, "form": {"empty": "Nessun ordine idoneo disponibile per la fatturazione.", "inactiveNote": "La fatturazione storica è consentita senza riattivare il cliente.", "available": "{count} ordini idonei", "shown": "{count} ordini mostrati", "series": "Serie", "taxRate": "Aliquota %", "notes": "Note", "create": "Crea bozza"
       }},
     "detail": {"back": "Torna a Fatturazione"},

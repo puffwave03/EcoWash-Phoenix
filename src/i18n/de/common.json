@@ -1301,6 +1301,38 @@
     }
   },
   "billing": {
+    "fiscalTicket": {
+      "title": "Steuerticket für vollständige Vorauszahlung",
+      "localOnly": "Lokale Prüfung mit synthetischen Daten. Dieser Ablauf ist nicht für echte steuerliche Ausstellungen freigegeben.",
+      "open": "Bereits ausgestelltes Ticket öffnen",
+      "disabled": "Dieser Ablauf ist deaktiviert.",
+      "unavailable": "Die Daten konnten nicht geprüft werden. Neu laden, ohne die Ausstellung automatisch zu wiederholen.",
+      "blocked": "Unvereinbarer Auftrag oder Zahlung: Annahme, eine vollständige POS-Zahlung und keine unvereinbare Rechnungshistorie erforderlich.",
+      "confirmationRequired": "Vor dem Fortfahren beide Erklärungen bestätigen.",
+      "uncertain": "Ergebnis unbestätigt. Vor einem neuen Versuch nach dem vorhandenen Dokument sehen; keine weitere Zahlung erfassen.",
+      "paymentPreserved": "Die vorhandene POS-Zahlung bleibt erhalten. Die Ausstellung erfasst keine weitere Zahlung.",
+      "recipient": "Empfänger",
+      "consumer": "Privatkunde ohne erforderliche Identifizierung",
+      "identified": "Privatkunde mit erforderlicher Identifizierung",
+      "business": "Unternehmen oder Freiberufler",
+      "recipientHelp": "Bei erforderlicher Identifizierung werden die vorhandenen Steuerdaten des Kunden verwendet. Fehlende Angaben verhindern die Ausstellung.",
+      "serviceConfirmation": "Ich bestätige, dass die Leistung bei der Zahlung noch nicht erbracht war und weiterhin nicht erbracht ist.",
+      "scopeConfirmation": "Ich bestätige, dass ausschließlich örtliche Wäscherei- oder Reinigungsleistungen im Umfang dieser Prüfung enthalten sind.",
+      "issue": "Bestätigen und einmal ausstellen",
+      "print": "Drucken / erneut drucken",
+      "documentTitle": "Vereinfachte Rechnung — vollständige Vorauszahlung",
+      "issued": "Ausstellung",
+      "order": "Auftrag",
+      "pickup": "Voraussichtliche Abholung",
+      "services": "Leistungen",
+      "base": "Bemessungsgrundlage",
+      "documented": "Steuerlich dokumentierter Gesamtbetrag",
+      "commercialAtIssue": "Geschäftlicher Stand bei Ausstellung",
+      "commercialTotal": "Auftragssumme",
+      "paidAtIssue": "Bei Ausstellung dokumentierte Zahlung",
+      "balanceAtIssue": "Restbetrag bei Ausstellung",
+      "noSecondPayment": "Die Abholung erfordert keine erneute Zahlung dieses Betrags."
+    },
     "pagination": {
       "label": "Rechnungsseiten",
       "older": "Ältere",
@@ -1320,7 +1352,7 @@
       "serviceDeclaration": "Bestätigen Sie Leistung, Empfänger und zulässige Bedingungen; andernfalls ordentliche Rechnung verwenden oder Prüfung anfordern.",
       "issueUncertain": "Das Ergebnis der Ausstellung konnte nicht überprüft werden: Das bedeutet nicht, dass sie abgelehnt wurde. Öffnen Sie dieselbe Rechnung erneut und prüfen Sie ihren Status vor jeder weiteren Aktion; wiederholen Sie die Ausstellung nicht und erstellen Sie kein weiteres Dokument."
     },
-    "entry": {"prepare": "Rechnung vorbereiten", "draft": "Rechnungsentwurf fortsetzen", "issued": "Rechnung ansehen", "sharedWalkIn": "Dieser Laufkundenauftrag kann im aktuellen Billing-Ablauf nicht fakturiert werden. Ein registrierter Kunde ist erforderlich.", "ineligible": "Für diesen Auftrag kann im aktuellen Ablauf keine Rechnung vorbereitet werden.", "backToOrder": "Zurück zum Auftrag"},
+    "entry": {"prepare": "Rechnung vorbereiten", "draft": "Rechnungsentwurf fortsetzen", "issued": "Rechnung ansehen", "sharedWalkIn": "Dieser Laufkundenauftrag kann im aktuellen Billing-Ablauf nicht fakturiert werden. Ein registrierter Kunde ist erforderlich.", "ineligible": "Für diesen Auftrag kann im aktuellen Ablauf keine Rechnung vorbereitet werden.", "backToOrder": "Zurück zum Auftrag", "fullPrepaymentTicket": "Steuerticket für vollständige Vorauszahlung"},
     "create": {"title": "Rechnungsentwurf erstellen", "description": "Wählen Sie einen oder mehrere geeignete Aufträge desselben Kunden und derselben Währung. Die Werte werden im Entwurf festgeschrieben.", "settingsWarning": "Der Entwurf kann vorbereitet werden; vor der Ausstellung müssen die Ausstellerdaten vollständig sein.", "counterContext": "Der abgeschlossene Thekenauftrag und der Kunde sind bereits ausgewählt. Verkauf und Zahlungen müssen nicht erneut eingegeben werden.", "customerSaved": "Die fehlenden Rechnungsdaten des Kunden wurden gespeichert.", "customerFiscal": {"eyebrow": "Rechnungskunde", "ready": "Rechnungsidentität vollständig", "missing": "Daten erforderlich", "description": "Ergänzen Sie nur die im aktuellen Rechnungsmodell fehlenden Pflichtfelder.", "walkInDescription": "Der operative Beleg erforderte keine Steuerdaten. Da dieser Laufkunde eine Rechnung wünscht, ergänzen Sie nur die fehlende Rechnungsidentität.", "registeredCustomerRequired": "Vor dem Erstellen einer Rechnung ist ein registrierter Kunde erforderlich.", "addressLine1": "Rechnungsadresse", "city": "Rechnungsort", "postalCode": "Rechnungspostleitzahl", "countryCode": "Rechnungs-Ländercode", "taxId": "Steuer-ID", "save": "Fehlende Daten speichern"}, "search": {"label": "Geeignete Aufträge suchen", "placeholder": "Auftragsnummer oder Kundenname/-code", "apply": "Suchen", "clear": "Suche löschen", "more": "Weitere geeignete Aufträge sind verfügbar. Verfeinern Sie die Suche, um ältere Aufträge zu finden.", "empty": "Keine geeigneten Aufträge entsprechen dieser Suche."}, "form": {"empty": "Keine geeigneten Aufträge zur Rechnungsstellung verfügbar.", "inactiveNote": "Historische Abrechnung ist ohne Reaktivierung dieses Kunden zulässig.", "available": "{count} geeignete Aufträge", "shown": "{count} Aufträge angezeigt", "series": "Serie", "taxRate": "Steuersatz %", "notes": "Notizen", "create": "Entwurf erstellen"
       }},
     "detail": {"back": "Zurück zur Abrechnung"},

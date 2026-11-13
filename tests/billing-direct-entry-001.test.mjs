@@ -80,6 +80,8 @@ function billing({ role = "owner", entitled = true, locale = "it" } = {}) {
       if (name === "@/features/billing/pagination") return {};
       if (name === "@/features/billing/types") return load("src/features/billing/types.ts");
       if (name === "@/features/billing/server/order-entry") return load(entryPath);
+      // This ordinary-workflow harness keeps the new default-off ticket gate closed.
+      if (name === "@/features/billing/server/fiscal-ticket-queries") return { fiscalTicketEnabled: async () => false };
       if (name === "@/features/billing/server/queries") return load("src/features/billing/server/queries.ts");
       if (name === "@/components/billing/BillingCreateForm") return load(formPath);
       if (name === "@/components/Button") return { Button: "button" };

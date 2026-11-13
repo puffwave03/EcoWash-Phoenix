@@ -1325,6 +1325,38 @@
     }
   },
   "billing": {
+    "fiscalTicket": {
+      "title": "Fiscal ticket for full prepayment",
+      "localOnly": "Local validation with synthetic data. This workflow is not authorised for real fiscal issuance.",
+      "open": "Open the issued ticket",
+      "disabled": "This workflow is disabled.",
+      "unavailable": "The data could not be verified. Reload without automatically repeating issuance.",
+      "blocked": "Incompatible order or payment: acceptance, one full POS payment and no incompatible fiscal history are required.",
+      "confirmationRequired": "Confirm both declarations before continuing.",
+      "uncertain": "Unconfirmed outcome. Check for an existing document before retrying; do not record another payment.",
+      "paymentPreserved": "The existing POS payment is preserved. Issuance does not record another payment.",
+      "recipient": "Recipient",
+      "consumer": "Consumer without required identification",
+      "identified": "Consumer requiring identification",
+      "business": "Business or professional",
+      "recipientHelp": "When identification is required, existing customer fiscal details are used. Missing details block issuance.",
+      "serviceConfirmation": "I confirm that the service had not been performed when paid and has still not been performed.",
+      "scopeConfirmation": "I confirm that only local laundry or dry-cleaning services within this validation scope are included.",
+      "issue": "Confirm and issue once",
+      "print": "Print / reprint",
+      "documentTitle": "Simplified invoice — full advance payment",
+      "issued": "Issued",
+      "order": "Order",
+      "pickup": "Expected collection",
+      "services": "Services",
+      "base": "Taxable base",
+      "documented": "Fiscally documented total",
+      "commercialAtIssue": "Commercial position at issuance",
+      "commercialTotal": "Order total",
+      "paidAtIssue": "Payment documented at issuance",
+      "balanceAtIssue": "Balance at issuance",
+      "noSecondPayment": "Collection does not require a second payment of this amount."
+    },
     "pagination": {
       "label": "Invoice pages",
       "older": "Older",
@@ -1376,7 +1408,7 @@
       "serviceDeclaration": "Confirm the service, recipient and permitted conditions; use an ordinary invoice or request review for other cases.",
       "issueUncertain": "The issuance outcome could not be verified: this does not mean it was rejected. Reopen this same invoice to check its status before taking any further action; do not repeat issuance or create another document."
     },
-    "entry": {"prepare": "Prepare invoice", "draft": "Resume invoice draft", "issued": "View invoice", "sharedWalkIn": "This walk-in order cannot be invoiced through the current Billing flow. A registered customer is required.", "ineligible": "This order is not eligible for invoice preparation in the current flow.", "backToOrder": "Back to order"},
+    "entry": {"prepare": "Prepare invoice", "draft": "Resume invoice draft", "issued": "View invoice", "sharedWalkIn": "This walk-in order cannot be invoiced through the current Billing flow. A registered customer is required.", "ineligible": "This order is not eligible for invoice preparation in the current flow.", "backToOrder": "Back to order", "fullPrepaymentTicket": "Fiscal ticket for full prepayment"},
     "create": {
       "title": "Create invoice draft", "description": "Select one or more eligible orders for the same customer and currency. Values are snapshotted into the draft.", "settingsWarning": "You can prepare a draft, but complete the issuer configuration before issue.",
       "counterContext": "The completed counter order and customer are already selected. No sale or payment data needs to be entered again.", "customerSaved": "The missing customer billing details were saved.", "customerFiscal": {"eyebrow": "Invoice customer", "ready": "Billing identity ready", "missing": "Details required", "description": "Complete only the missing fields required by the current invoice model.", "walkInDescription": "The operational receipt required no fiscal details. Because this occasional customer requested an invoice, complete only the missing billing identity below.", "registeredCustomerRequired": "A registered customer is required before creating an invoice.", "addressLine1": "Billing address", "city": "Billing city", "postalCode": "Billing postal code", "countryCode": "Billing country code", "taxId": "Tax / fiscal ID", "save": "Save missing details"},

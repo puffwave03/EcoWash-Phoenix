@@ -1,0 +1,24 @@
+.ticket { margin: 1rem auto; background: white; color: black; overflow-wrap: anywhere; }
+.ticket article { padding: 3mm; border: 1px solid #ddd; }
+.ticket h1 { font-size: 1.2em; font-weight: 700; }
+.ticket h2 { margin: 0.7em 0 0.3em; font-size: 1em; font-weight: 700; }
+.ticket section { margin-top: 0.8em; border-top: 1px solid #ccc; padding-top: 0.5em; }
+.ticket dl > div { display: flex; justify-content: space-between; gap: 1em; }
+.ticket dd { text-align: right; white-space: nowrap; }
+.ticket header, .ticket dl, .item { break-inside: avoid; }
+.item { padding: 0.5em 0; }
+.controls { margin-bottom: 1rem; }
+.a4 { width: min(100%, 190mm); font-size: 14px; }
+.roll58 { width: min(100%, 58mm); font-size: 11px; line-height: 1.4; }
+.roll80 { width: min(100%, 80mm); font-size: 12px; line-height: 1.4; }
+@media print {
+  @page fiscal-ticket-a4 { size: A4; margin: 10mm; }
+  @page fiscal-ticket-roll { size: auto; margin: 0; }
+  :global(body):has(.ticket) *:has(.ticket) { display: contents; }
+  :global(body):has(.ticket) *:not(:has(.ticket)):not(.ticket):not(.ticket *) { display: none; }
+  .ticket { margin: 0; position: static; }
+  .ticket article { border: 0; }
+  .controls { display: none; }
+  .a4 { page: fiscal-ticket-a4; }
+  .roll58, .roll80 { page: fiscal-ticket-roll; }
+}
