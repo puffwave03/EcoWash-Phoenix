@@ -1302,6 +1302,10 @@
   },
   "billing": {
     "fiscalTicket": {
+      "terminalSaved": "Auftrag gespeichert. Erfasste Zahlungen bleiben erhalten; die steuerliche Ausstellung ist noch nicht bestätigt.",
+      "chooseRecipient": "Empfänger auswählen",
+      "recover": "Vorhandenes Dokument prüfen",
+      "operationalCopy": "Betriebliche Kopie öffnen — nicht steuerlich",
       "title": "Steuerticket für vollständige Vorauszahlung",
       "localOnly": "Lokale Prüfung mit synthetischen Daten. Dieser Ablauf ist nicht für echte steuerliche Ausstellungen freigegeben.",
       "open": "Bereits ausgestelltes Ticket öffnen",

@@ -1302,6 +1302,10 @@
   },
   "billing": {
     "fiscalTicket": {
+      "terminalSaved": "Pedido guardado. Se conservan los cobros registrados; la emisión fiscal aún no está confirmada.",
+      "chooseRecipient": "Selecciona el destinatario",
+      "recover": "Comprobar el documento existente",
+      "operationalCopy": "Abrir copia operativa — no fiscal",
       "title": "Ticket fiscal de prepago íntegro",
       "localOnly": "Validación local con datos sintéticos. Este flujo no está autorizado para emisiones fiscales reales.",
       "open": "Abrir el ticket ya emitido",

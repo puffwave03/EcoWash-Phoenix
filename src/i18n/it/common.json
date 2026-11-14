@@ -1326,6 +1326,10 @@
   },
   "billing": {
     "fiscalTicket": {
+      "terminalSaved": "Ordine salvato. Gli eventuali incassi registrati sono conservati; emissione fiscale non ancora confermata.",
+      "chooseRecipient": "Seleziona il destinatario",
+      "recover": "Verifica il documento esistente",
+      "operationalCopy": "Apri copia operativa — non fiscale",
       "title": "Ticket fiscale da prepagamento integrale",
       "localOnly": "Verifica locale con dati sintetici. Questo percorso non è autorizzato per emissioni fiscali reali.",
       "open": "Apri il ticket già emesso",

@@ -8,6 +8,9 @@ import type { PosActionState, PosLocation, PosOrderDue, PosPayment, PosSession, 
 import type { PosNavigation } from "@/features/pos/pagination";
 import { formatCurrency } from "@/lib/number-format";
 import { Link } from "@/i18n/navigation";
+import type { FiscalCoverageText } from "@/features/billing/fiscal-coverage-messages";
+
+type ServiceEvidenceOptions = { today: string; text: FiscalCoverageText };
 
 export type PosText = {
   actions: { close: string; open: string; pay: string; refund: string; search: string };
@@ -75,9 +78,10 @@ function OpenSessionForm({ action, locations, text }: { action: Action; location
   );
 }
 
-function PaymentForm({ action, order, session, text }: { action: Action; order: PosOrderDue; session: PosSession | null; text: PosText }) {
+function PaymentForm({ action, order, session, text, serviceEvidence }: { action: Action; order: PosOrderDue; session: PosSession | null; text: PosText; serviceEvidence?: ServiceEvidenceOptions }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [declareService, setDeclareService] = useState(false);
   return (
     <form action={formAction} className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2 xl:grid-cols-[8rem_1fr_1fr_auto] xl:items-end">
       <input name="orderId" type="hidden" value={order.id} /><input name="sessionId" type="hidden" value={session?.id ?? ""} /><input name="idempotencyKey" type="hidden" value={idempotencyKey} />
@@ -86,8 +90,15 @@ function PaymentForm({ action, order, session, text }: { action: Action; order: 
         <option disabled={!session} value="cash">{text.methods.cash}</option><option value="card">{text.methods.card}</option><option value="bank_transfer">{text.methods.bank_transfer}</option><option value="other">{text.methods.other}</option>
       </select></label>
       <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.common.reference}</span><input autoComplete="off" className={inputClass} name="reference" /></label>
-      <input name="notes" type="hidden" /><Button className="min-h-12" disabled={pending} type="submit">{text.actions.pay}</Button>
-      <div className="sm:col-span-2 xl:col-span-4">{result(state, text)}</div>
+      <input name="notes" type="hidden" />
+      {serviceEvidence && order.productionStatus === "completed" ? <fieldset className="space-y-2 sm:col-span-2 xl:col-span-4">
+        <label className="flex items-start gap-2 text-sm"><input checked={declareService} disabled={pending} name="serviceEvidence" onChange={event => setDeclareService(event.target.checked)} type="checkbox" />{serviceEvidence.text.declaration}</label>
+        <label className="block space-y-2 text-sm"><span>{serviceEvidence.text.date}</span><input className={inputClass} disabled={!declareService || pending} max={serviceEvidence.today} name="servicePerformedOn" required={declareService} type="date" /></label>
+        {state.fieldErrors.servicePerformedOn ? <p role="alert" className="text-sm text-red-700">{serviceEvidence.text.invalid}</p> : null}
+        {state.paymentOutcome === "uncertain" ? <p role="alert" className="text-sm text-amber-900">{serviceEvidence.text.uncertain}</p> : null}
+      </fieldset> : null}
+      <Button className="min-h-12" disabled={pending} type="submit">{text.actions.pay}</Button>
+      <div className="sm:col-span-2 xl:col-span-4">{state.paymentOutcome === "uncertain" ? null : result(state, text)}</div>
     </form>
   );
 }
@@ -122,9 +133,9 @@ function CloseSessionForm({ action, session, text }: { action: Action; session: 
   );
 }
 
-export function PosWorkspace({ actions, canSeeHistory, currency, history, historyNavigation, locale, locations, orders, payments, paymentNavigation, query, retryHref, session, summary, text }: {
+export function PosWorkspace({ actions, canSeeHistory, currency, history, historyNavigation, locale, locations, orders, payments, paymentNavigation, query, retryHref, session, summary, text, serviceEvidence }: {
   actions: { close: Action; open: Action; pay: Action; refund: Action };
-  canSeeHistory: boolean; currency: string; history: PosSession[] | null; historyNavigation: PosNavigation; locale: string; locations: PosLocation[] | null; orders: PosOrderDue[] | null; payments: PosPayment[] | null; paymentNavigation: PosNavigation; query: string; retryHref: string; session: PosSession | null; summary: PosSessionSummary | null; text: PosText;
+  canSeeHistory: boolean; currency: string; history: PosSession[] | null; historyNavigation: PosNavigation; locale: string; locations: PosLocation[] | null; orders: PosOrderDue[] | null; payments: PosPayment[] | null; paymentNavigation: PosNavigation; query: string; retryHref: string; session: PosSession | null; summary: PosSessionSummary | null; text: PosText; serviceEvidence?: ServiceEvidenceOptions;
 }) {
   return (
     <div className="space-y-6">
@@ -147,7 +158,7 @@ export function PosWorkspace({ actions, canSeeHistory, currency, history, histor
         <div className="grid gap-4 xl:grid-cols-2">{orders === null ? <ReadErrorNotice message={text.readErrors.orders} retryHref={retryHref} retryLabel={text.readErrors.retry} /> : orders.length === 0 ? <Card><p className="text-sm text-muted">{text.orders.empty}</p></Card> : orders.map((order) => (
           <Card key={order.id}><div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-primary">{order.orderNumber}</p><p className="text-sm text-muted">{order.customerName}</p></div><p className="text-xl font-semibold text-primary">{formatCurrency(order.outstanding, order.currency, locale)}</p></div>
             <dl className="mt-3 grid grid-cols-3 gap-2 text-sm"><div><dt className="text-muted">{text.orders.total}</dt><dd>{formatCurrency(order.total, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.paid}</dt><dd>{formatCurrency(order.totalPaid, order.currency, locale)}</dd></div><div><dt className="text-muted">{text.orders.outstanding}</dt><dd>{formatCurrency(order.outstanding, order.currency, locale)}</dd></div></dl>
-            {session ? <PaymentForm action={actions.pay} order={order} session={session} text={text} /> : null}
+            {session ? <PaymentForm action={actions.pay} order={order} session={session} text={text} serviceEvidence={serviceEvidence} /> : null}
           </Card>
         ))}</div>
       </section>

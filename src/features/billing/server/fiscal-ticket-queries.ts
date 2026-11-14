@@ -8,6 +8,28 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fiscalTicketSnapshot } from "@/features/billing/fiscal-ticket";
 import { getBillingInvoice } from "@/features/billing/server/queries";
 
+// Read-only recovery is available even after the issuance flag is disabled.
+// Printing an existing document must not depend on permission to issue a new one.
+export async function findIssuedFiscalTicketForOrder(locale: string, orderId: string) {
+  const { membership } = await requireOwnerOrManager(locale);
+  await requireEntitlement(locale, FEATURES.billingInvoicing);
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) notFound();
+  const supabase = await createSupabaseServerClient();
+  const org = membership.organization.id;
+  const links = await supabase.from("invoice_orders").select("invoice_id")
+    .eq("organization_id", org).eq("order_id", orderId).limit(2)
+    .returns<Array<{ invoice_id: string }>>();
+  if (links.error) return { state: "unavailable" as const };
+  if (!links.data?.length) return { state: "none" as const };
+  const invoices = await supabase.from("invoices").select("id, fiscal_ticket_order_snapshot")
+    .eq("organization_id", org).eq("document_status", "issued")
+    .in("id", links.data.map((link) => link.invoice_id)).limit(2)
+    .returns<Array<{ id: string; fiscal_ticket_order_snapshot: unknown }>>();
+  if (invoices.error) return { state: "unavailable" as const };
+  const invoice = invoices.data?.find((row) => fiscalTicketSnapshot(row.fiscal_ticket_order_snapshot));
+  return invoice ? { state: "issued" as const, invoiceId: invoice.id } : { state: "none" as const };
+}
+
 export async function fiscalTicketEnabled(locale: string) {
   const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);

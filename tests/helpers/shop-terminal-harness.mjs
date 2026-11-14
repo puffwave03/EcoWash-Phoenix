@@ -87,7 +87,7 @@ function terminal({ restored = null, refreshing = false, workspace = 1, storageV
     const localRequire = (name) => {
       if (name === "react") return hooks;
       if (name === "react/jsx-runtime") return require(name);
-      if (name === "@/i18n/navigation") return { Link: "a", useRouter: () => ({}) };
+      if (name === "@/i18n/navigation") return { Link: "a", useRouter: () => ({ push: (href) => { (calls.navigate ??= []).push(href); } }) };
       if (name.startsWith("@/components/")) return { PrintOrderActions: "print-actions", PortalMedia: "media", QuickDropTerminalPanel: "quick-drop" };
       if (name === "@/lib/number-format") return { formatCurrency: String };
       if (name.startsWith("@/")) return load(resolve(root, "src", name.slice(2)) + ".ts");

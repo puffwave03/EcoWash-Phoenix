@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import type { CSSProperties } from "react";
@@ -129,10 +130,11 @@ async function Labels({ context, locale, profile }: { context: PrintOrderContext
 }
 
 // Customer output accepts only an explicit allowlist, never the full order or item.
-async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueAt, customerNotes, items, currency, subtotal, discountAmount, total, totalPaid, balanceDue, locale, timezone }: {
+export async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueAt, customerNotes, items, currency, subtotal, discountAmount, total, totalPaid, balanceDue, locale, timezone, documentTitle, summaryTitle, fiscalDetails }: {
   header: Pick<PrintOrderContext, "branding" | "organizationName" | "locationName">;
   orderNumber: string; customerName: string; createdAt: string; dueAt: string | null;
   customerNotes: string | null; locale: string; timezone: string;
+  documentTitle?: string; summaryTitle?: string; fiscalDetails?: ReactNode;
   currency: string; subtotal: number; discountAmount: number; total: number; totalPaid: number; balanceDue: number;
   items: Array<Pick<PrintOrderContext["items"][number], "id" | "description" | "quantity" | "unitType" | "unitPrice" | "lineTotal">>;
 }) {
@@ -141,7 +143,7 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
     <article className="print-sheet print-ticket-sheet">
       <BrandHeader compact context={header} />
       <section className="print-ticket-code-block">
-        <div className="print-ticket-number"><p>{t("customerCopy.title")}</p><h2>{orderNumber}</h2></div>
+        <div className="print-ticket-number"><p>{documentTitle ?? t("customerCopy.title")}</p><h2>{orderNumber}</h2></div>
       </section>
       <dl className="print-ticket-grid">
         <div><dt>{t("fields.customer")}</dt><dd>{customerName}</dd></div>
@@ -153,7 +155,7 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
         <tbody>{items.map((item) => <tr key={item.id}><td>{item.description}</td><td data-label={t("fields.quantity")}>{formatQuantity(item.quantity, locale)}</td><td data-label={t("fields.unit")}>{t(`units.${item.unitType}`)}</td><td data-label={t("customerCopy.unitPrice")}>{formatCurrency(item.unitPrice, currency, locale)}</td><td data-label={t("fields.lineTotal")}>{formatCurrency(item.lineTotal, currency, locale)}</td></tr>)}</tbody>
       </table>
       <section>
-        <h3>{t("customerCopy.currentSummary")}</h3>
+        <h3>{summaryTitle ?? t("customerCopy.currentSummary")}</h3>
         <dl className="print-totals">
           <div><dt>{t("fields.subtotal")}</dt><dd>{formatCurrency(subtotal, currency, locale)}</dd></div>
           <div><dt>{t("fields.discount")}</dt><dd>−{formatCurrency(discountAmount, currency, locale)}</dd></div>
@@ -163,7 +165,7 @@ async function CustomerCopy({ header, orderNumber, customerName, createdAt, dueA
         </dl>
       </section>
       {customerNotes ? <section className="print-ticket-notes"><h3>{t("customerCopy.notes")}</h3><p>{customerNotes}</p></section> : null}
-      <footer><p className="print-legal-boundary">{t("customerCopy.notFiscal")}</p></footer>
+      {fiscalDetails ?? <footer><p className="print-legal-boundary">{t("customerCopy.notFiscal")}</p></footer>}
     </article>
   );
 }

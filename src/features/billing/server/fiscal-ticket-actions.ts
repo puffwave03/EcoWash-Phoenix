@@ -8,13 +8,12 @@ import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fiscalTicketRecipient } from "@/features/billing/fiscal-ticket";
 
-export async function issueFullPrepaymentTicketAction(locale: string, orderId: string, form: FormData) {
+export async function requestFullPrepaymentTicket(locale: string, orderId: string, form: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const recipient = fiscalTicketRecipient(form.get("recipient"));
-  const returnTo = `/${locale}/app/billing/full-prepayment?orderId=${encodeURIComponent(orderId)}`;
   if (!recipient || form.get("serviceNotPerformed") !== "on" || form.get("laundryScope") !== "on") {
-    redirect(`${returnTo}&result=confirmation`);
+    return { state: "confirmation" as const };
   }
   const supabase = await createSupabaseServerClient();
   let result: { invoice_id: string; invoice_number: string } | null = null;
@@ -32,8 +31,15 @@ export async function issueFullPrepaymentTicketAction(locale: string, orderId: s
   }
   // Never retry an uncertain mutation. The GET recovers the canonical document;
   // an explicit later submit uses the same payment attribution, not a new charge.
-  if (failed || !result) redirect(`${returnTo}&result=uncertain`);
+  if (failed || !result) return { state: "uncertain" as const };
   revalidatePath(`/${locale}/app/orders/${orderId}`);
   revalidatePath(`/${locale}/app/billing`);
-  redirect(`/${locale}/app/billing/${result.invoice_id}/ticket`);
+  return { state: "issued" as const, invoiceId: result.invoice_id };
+}
+
+export async function issueFullPrepaymentTicketAction(locale: string, orderId: string, form: FormData) {
+  const result = await requestFullPrepaymentTicket(locale, orderId, form);
+  const returnTo = `/${locale}/app/billing/full-prepayment?orderId=${encodeURIComponent(orderId)}`;
+  if (result.state !== "issued") redirect(`${returnTo}&result=${result.state}`);
+  redirect(`/${locale}/app/billing/${result.invoiceId}/ticket`);
 }

@@ -16,12 +16,12 @@ function query(sql) {
 const identities = Object.fromEntries(['org', 'orgB', 'owner', 'manager', 'staff', 'other', 'location', 'service', 'customer', 'business', 'inbound', 'ready'].map(key => [key, randomUUID()]));
 const auth = (sql, actor = identities.owner) => `begin; set local role authenticated; set local request.jwt.claim.sub=${quote(actor)}; set local request.jwt.claims=${quote(JSON.stringify({ sub: actor, role: 'authenticated' }))}; set local statement_timeout='12s'; ${sql}; commit;`;
 let session;
-function intake(amount = 9, customer = identities.customer) {
+function intake(amount = 9, customer = identities.customer, customerNotes = null, method = 'cash') {
   const sql = `select row_to_json(x) from public.submit_shop_terminal_order(
     target_idempotency_key=>${quote(randomUUID())},target_customer_id=>${quote(customer)},target_location_id=>${quote(identities.location)},
-    target_due_at=>now()+interval '1 day',target_customer_notes=>null,target_internal_notes=>'PRIVATE SYNTHETIC NOTES',
+    target_due_at=>now()+interval '1 day',target_customer_notes=>${customerNotes === null ? 'null' : quote(customerNotes)},target_internal_notes=>'PRIVATE SYNTHETIC NOTES',
     target_items=>${quote(JSON.stringify([{ serviceId: identities.service, quantity: 2 }]))}::jsonb,target_discount_amount=>0,
-    target_pos_session_id=>${quote(session)},target_payments=>${quote(JSON.stringify(amount ? [{ amount, method: 'cash', idempotencyKey: randomUUID() }] : []))}::jsonb,
+    target_pos_session_id=>${quote(session)},target_payments=>${quote(JSON.stringify(amount ? [{ amount, method, idempotencyKey: randomUUID() }] : []))}::jsonb,
     target_walk_in_name=>null,target_walk_in_phone=>null,target_production_assignee_id=>null,target_delivery_requested=>false,
     target_delivery_scheduled_at=>null,target_delivery_assigned_to=>null,target_delivery_address_line1=>null,target_delivery_address_line2=>null,
     target_delivery_city=>null,target_delivery_postal_code=>null,target_delivery_country_code=>null,target_delivery_contact_name=>null,
@@ -112,6 +112,27 @@ test('Phase A — real canonical schema, authenticated SQL sessions and syntheti
       set local app.billing_mutation='on'; set local app.fiscal_ticket_phase_a='on';
       update public.invoices set notes='SYNTHETIC MUTATION DENIED' where id=${quote(document.invoice_id)}; commit;`), /immutable|retired/);
     rejected(`select public.transition_order_status(${quote(first.order_id)},'cancelled','Synthetic cancel')`, /order_cancel_fiscal|fiscal.*cancel|cancel.*fiscal/);
+  });
+  await t.test('customer notes freeze at issuance, survive order edits and privileged mutation attempts', () => {
+    const order = intake(9, identities.customer, 'Customer instructions — original');
+    const before = fingerprint(order);
+    const issued = JSON.parse(query(auth(issue(order))).at(-1));
+    const original = query(`select fiscal_ticket_order_snapshot::text from public.invoices where id=${quote(issued.invoice_id)}`).at(-1);
+    assert.equal(JSON.parse(original).customer_notes, 'Customer instructions — original');
+    assert.equal(original.includes('PRIVATE SYNTHETIC NOTES'), false);
+    query(auth(`select public.update_order_details(${quote(order.order_id)},'normal',now()+interval '2 days','Changed after issuance','New private note')`));
+    assert.equal(query(`select fiscal_ticket_order_snapshot::text from public.invoices where id=${quote(issued.invoice_id)}`).at(-1), original);
+    rejected(`update public.invoices set fiscal_ticket_order_snapshot=jsonb_set(fiscal_ticket_order_snapshot,'{customer_notes}','"changed"') where id=${quote(issued.invoice_id)}`, /permission denied|immutable|retired/);
+    assert.throws(() => query(`begin; set local request.jwt.claim.sub=${quote(identities.owner)}; set local app.billing_mutation='on'; set local app.fiscal_ticket_phase_a='on'; update public.invoices set fiscal_ticket_order_snapshot=jsonb_set(fiscal_ticket_order_snapshot,'{customer_notes}','"changed"') where id=${quote(issued.invoice_id)}; commit;`), /immutable|retired/);
+    assert.equal(JSON.parse(query(auth(issue(order))).at(-1)).invoice_id, issued.invoice_id);
+    assert.equal(fingerprint(order), before);
+  });
+  await t.test('manual card intake uses the same canonical single collection and one fiscal attribution', () => {
+    const order = intake(9, identities.customer, null, 'card');
+    const before = fingerprint(order); const issued = JSON.parse(query(auth(issue(order))).at(-1));
+    assert.equal(query(`select count(*) from public.payments where order_id=${quote(order.order_id)} and status='confirmed' and method='card' and channel='pos' and pos_session_id is not null`).at(-1), '1');
+    assert.equal(JSON.parse(query(auth(issue(order))).at(-1)).invoice_id, issued.invoice_id);
+    assert.equal(fingerprint(order), before);
   });
   await t.test('partial payment rejected and entire issuance transaction rolled back', () => {
     const partial = intake(3); const before = fingerprint(partial);

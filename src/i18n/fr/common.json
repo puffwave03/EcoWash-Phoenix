@@ -1302,6 +1302,10 @@
   },
   "billing": {
     "fiscalTicket": {
+      "terminalSaved": "Commande enregistrée. Les encaissements enregistrés sont conservés ; l’émission fiscale n’est pas encore confirmée.",
+      "chooseRecipient": "Sélectionnez le destinataire",
+      "recover": "Vérifier le document existant",
+      "operationalCopy": "Ouvrir la copie opérationnelle — non fiscale",
       "title": "Ticket fiscal de prépaiement intégral",
       "localOnly": "Validation locale avec des données synthétiques. Ce parcours n’est pas autorisé pour une émission fiscale réelle.",
       "open": "Ouvrir le ticket déjà émis",

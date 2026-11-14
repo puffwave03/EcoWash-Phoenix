@@ -1326,6 +1326,10 @@
   },
   "billing": {
     "fiscalTicket": {
+      "terminalSaved": "Order saved. Any recorded payments are preserved; fiscal issuance is not yet confirmed.",
+      "chooseRecipient": "Select the recipient",
+      "recover": "Check the existing document",
+      "operationalCopy": "Open operational copy — non-fiscal",
       "title": "Fiscal ticket for full prepayment",
       "localOnly": "Local validation with synthetic data. This workflow is not authorised for real fiscal issuance.",
       "open": "Open the issued ticket",

@@ -1,3 +1,5 @@
+import { getTenantBranding } from "@/features/branding/server/queries";
+import { getOrderById } from "@/features/orders/server/queries";
 import { getFiscalTicketDocument } from "@/features/billing/server/fiscal-ticket-queries";
 import { FiscalTicketDocument } from "@/components/billing/FiscalTicketDocument";
 import { requirePrintAccess } from "@/features/printing/server/access";
@@ -10,10 +12,16 @@ export default async function FiscalTicketPage({ params, searchParams }: {
   searchParams?: Promise<{ format?: string | string[] }>;
 }) {
   const { locale, invoiceId } = await params;
-  await requirePrintAccess(locale);
+  const access = await requirePrintAccess(locale);
   const { detail, snapshot, timezone } = await getFiscalTicketDocument(locale, invoiceId);
   const preference = await getCustomerCopyPreference(locale, snapshot.location_id);
   const format = resolveCustomerCopyFormat((await searchParams)?.format, preference?.paperFormat);
-  return <FiscalTicketDocument detail={detail} snapshot={snapshot} locale={locale} timezone={timezone}
+  const enriched = Object.hasOwn(snapshot, "customer_notes");
+  const [branding, order] = enriched ? await Promise.all([
+    getTenantBranding(access.membership.organization.id),
+    detail.invoice.orderIds[0] ? getOrderById(locale, detail.invoice.orderIds[0]) : Promise.resolve(null),
+  ]) : [null, null];
+  const header = branding ? { branding, organizationName: access.membership.organization.name, locationName: null } : undefined;
+  return <FiscalTicketDocument header={header} orderCreatedAt={order?.createdAt} detail={detail} snapshot={snapshot} locale={locale} timezone={timezone}
     format={format} printRequestedAction={recordSalesDocumentEvent.bind(null, locale, "invoice", invoiceId, "print_requested")} />;
 }

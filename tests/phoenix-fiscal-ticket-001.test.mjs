@@ -95,6 +95,16 @@ for (const [name, tables] of Object.entries({
 })) test(`preview blocks ${name} instead of offering a charge or pretending it is full payment`, async () => {
   assert.equal((await api({ tables }).getFiscalTicketPreview('en', id(2))).state, 'blocked');
 });
+test('issued document lookup recovers history with issuance disabled and enforces tenant/role', async () => {
+  const links = [{ organization_id: id(1), order_id: id(2), invoice_id: id(5) }];
+  const invoices = [{ id: id(5), organization_id: id(1), document_status: 'issued', fiscal_ticket_order_snapshot: snapshot }];
+  const a = api({ tables: { organization_billing_settings: [{ organization_id: id(1), fiscal_ticket_phase_a_enabled: false }], invoice_orders: links, invoices } });
+  assert.equal((await a.findIssuedFiscalTicketForOrder('en', id(2))).invoiceId, id(5));
+  assert.ok(a.requests.every(u => u.searchParams.get('organization_id') === `eq.${id(1)}`));
+  assert.equal((await api({ tables: { invoice_orders: links.map(x => ({ ...x, organization_id: id(99) })) } }).findIssuedFiscalTicketForOrder('en', id(2))).state, 'none');
+  await assert.rejects(api({ denied: true }).findIssuedFiscalTicketForOrder('en', id(2)));
+  assert.equal((await api({ error: 'invoice_orders' }).findIssuedFiscalTicketForOrder('en', id(2))).state, 'unavailable');
+});
 test('read errors differ from missing orders; other tenant order cannot be previewed', async () => {
   assert.equal((await api({ error: 'payments' }).getFiscalTicketPreview('en', id(2))).state, 'unavailable');
   await assert.rejects(api().getFiscalTicketPreview('en', id(99)), /NOT_FOUND/);
@@ -165,6 +175,8 @@ for (const locale of ['it', 'en', 'es', 'fr', 'de']) test(`persisted fiscal tick
 test('print route reuses format preference and print gate, and never issues on GET', async () => {
   let printed = 0; let authorized = 0;
   const page = load('src/app/[locale]/app/(dashboard)/billing/[invoiceId]/ticket/page.tsx', {
+    '@/features/branding/server/queries': { getTenantBranding: async () => fail('LEGACY_BRANDING_READ') },
+    '@/features/orders/server/queries': { getOrderById: async () => fail('LEGACY_ORDER_READ') },
     '@/features/billing/server/fiscal-ticket-queries': { getFiscalTicketDocument: async () => ({ detail: {}, snapshot, timezone: 'Atlantic/Canary' }) },
     '@/components/billing/FiscalTicketDocument': { FiscalTicketDocument: 'ticket' },
     '@/features/printing/server/access': { requirePrintAccess: async () => { authorized++; } },

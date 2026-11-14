@@ -1,6 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { PosWorkspace, type PosText } from "@/components/pos/PosWorkspace";
-import { closePosSessionAction, openPosSessionAction, recordPosPaymentAction, refundPosPaymentAction } from "@/features/pos/server/actions";
+import { closePosSessionAction, openPosSessionAction, refundPosPaymentAction } from "@/features/pos/server/actions";
+import { recordPosPaymentWithCoverageAction } from "@/features/pos/server/coverage-actions";
+import { getPosFiscalCoverage } from "@/features/billing/server/fiscal-coverage";
+import { fiscalCoverageMessages } from "@/features/billing/fiscal-coverage-messages";
+import { PosFiscalCoverage } from "@/components/billing/PosFiscalCoverage";
 import { getCurrentPosSession, getPosCurrency, getPosSessionSummary, listPosLocations, listPosOrdersDue, listPosSessionHistory, listPosSessionPayments } from "@/features/pos/server/queries";
 import { requirePosAccess } from "@/features/pos/server/access";
 import { PosReadError } from "@/features/pos/read-error";
@@ -30,6 +34,10 @@ export default async function PosPage({ params, searchParams }: PosPageProps) {
   const paymentCursor = session ? decodePosPaymentCursor(paymentCursorInput, session.id) : null;
   const validPaymentCursor = paymentCursor ? paymentCursorInput ?? null : null;
   const [summary, paymentPage] = session ? await Promise.all([readPosSection(getPosSessionSummary(locale, session.id)), readPosSection(listPosSessionPayments(locale, session.id, paymentCursor))]) : [null, { items: [], pagination: { newerCursor: null, olderCursor: null } }];
+  const coverage = await getPosFiscalCoverage(locale, (paymentPage?.items ?? [])
+    .filter(p => p.status === "confirmed" && p.channel === "pos").map(p => p.id));
+  const serviceEvidence = coverage.state === "ready" && coverage.enabled
+    ? { today: coverage.today, text: fiscalCoverageMessages(locale) } : undefined;
   const paymentNavigation: PosNavigation = {
     currentCursor: validPaymentCursor,
     latestHref: validPaymentCursor ? posHistoryHref(q, null, validHistoryCursor) : null,
@@ -45,5 +53,5 @@ export default async function PosPage({ params, searchParams }: PosPageProps) {
   const text: PosText = {
     actions: t.raw("actions"), close: t.raw("close"), common: t.raw("common"), errors: t.raw("errors"), history: t.raw("history"), methods: t.raw("methods"), orders: t.raw("orders"), pagination: t.raw("pagination"), payments: t.raw("payments"), readErrors: t.raw("readErrors"), session: t.raw("session"), statuses: t.raw("statuses"), subtitle: t("subtitle"), success: t("success"), title: t("title"),
   };
-  return <PosWorkspace actions={{ close: closePosSessionAction.bind(null, locale), open: openPosSessionAction.bind(null, locale), pay: recordPosPaymentAction.bind(null, locale), refund: refundPosPaymentAction.bind(null, locale) }} canSeeHistory={canSeeHistory} currency={currency} history={historyPage?.items ?? null} historyNavigation={historyNavigation} locale={locale} locations={locations} orders={orders} payments={paymentPage?.items ?? null} paymentNavigation={paymentNavigation} query={q} retryHref={`/${locale}${posHistoryHref(q, validPaymentCursor, validHistoryCursor)}`} session={session} summary={summary} text={text} />;
+  return <div className="space-y-6"><PosWorkspace actions={{ close: closePosSessionAction.bind(null, locale), open: openPosSessionAction.bind(null, locale), pay: recordPosPaymentWithCoverageAction.bind(null, locale), refund: refundPosPaymentAction.bind(null, locale) }} canSeeHistory={canSeeHistory} currency={currency} history={historyPage?.items ?? null} historyNavigation={historyNavigation} locale={locale} locations={locations} orders={orders} payments={paymentPage?.items ?? null} paymentNavigation={paymentNavigation} query={q} retryHref={`/${locale}${posHistoryHref(q, validPaymentCursor, validHistoryCursor)}`} session={session} summary={summary} text={text} serviceEvidence={serviceEvidence} /><PosFiscalCoverage data={coverage} locale={locale} /></div>;
 }
