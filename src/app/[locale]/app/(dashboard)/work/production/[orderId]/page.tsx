@@ -13,7 +13,7 @@ type ProductionDetailPageProps = {
 export default async function ProductionDetailPage({ params, searchParams }: ProductionDetailPageProps) {
   const { locale, orderId } = await params;
   const cancellationError = (await searchParams).cancellationError;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
+  const [{ allowedTransitions, ticketUnico, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
     getProductionWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.production" }),
     getTranslations({ locale, namespace: "common.catalog" }),
@@ -26,6 +26,7 @@ export default async function ProductionDetailPage({ params, searchParams }: Pro
 
   return (
     <ProductionDetail
+      ticketUnico={ticketUnico}
       action={transitionOrderStatusAction.bind(null, locale, task.id, "production")}
       allowedTransitions={allowedTransitions}
       canConfigureWarehouse={isSupervision}

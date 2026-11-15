@@ -1,3 +1,5 @@
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -37,6 +39,7 @@ import {
 import { setOrderPhotoCustomerVisibilityAction } from "@/features/portal/server/actions";
 import { getOrderPhotos } from "@/features/order-photos/server/queries";
 import {
+  requestOrdinaryInvoiceAction,
   removeOrderItemAction,
   saveOrderItemAction,
   transitionOrderStatusAction,
@@ -83,7 +86,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ warehouse?: string; cancellationError?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
+  searchParams: Promise<{ fiscalReview?: string; warehouse?: string; cancellationError?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
 };
 
 function SectionShell({
@@ -108,6 +111,7 @@ function SectionShell({
 export default async function OrderDetailPage({ params, searchParams }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
   const routeSearch = await searchParams;
+  const automatic = await ticketUnicoEnabled(locale);
   const warehouseError = routeSearch.warehouse === "inbound-unavailable";
   const [access, order, items, history, services, logistics, handoff, assignments, paymentData, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
     requireMembership(locale),
@@ -192,6 +196,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
   return (
     <div className="space-y-6">
+      {routeSearch.fiscalReview === "uncertain" ? <p role="alert" className="rounded-control border border-amber-200 bg-amber-50 p-4">{commonT("billing.fiscalTicket.uncertain")}</p> : null}
+      {routeSearch.fiscalReview === "1" ? <p role="status" className="rounded-control border border-amber-200 bg-amber-50 p-4">{ticketUnicoMessages(locale).review}</p> : null}
       {!paymentData ? <PaymentReadErrorNotice locale={locale} /> : null}
       {routeSearch.itemsError === "1" ? (
         <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("orderItemsRequired")}</p>
@@ -211,6 +217,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             </p>
             <h2 className="mt-2 break-words text-2xl font-semibold text-white lg:truncate lg:text-3xl">
               {order.customerName}
+              {automatic && order.fiscalRoute === "manual_billing" ? <span className="ml-3 text-sm font-normal">{ticketUnicoMessages(locale).manual}</span> : null}
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="rounded-control bg-white px-3 py-1 text-xs font-semibold text-primary">
@@ -229,6 +236,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             </div>
           </div>
           <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
+            {automatic && canUsePos && entitlementEnabled(entitlements, FEATURES.shopTerminal) && order.fiscalRoute !== "manual_billing" && !["completed", "cancelled"].includes(order.productionStatus) ? <form action={requestOrdinaryInvoiceAction.bind(null, locale, order.id)}><Button type="submit">{ticketUnicoMessages(locale).ordinary}</Button></form> : null}
             {canManageAssignments && entitlementEnabled(entitlements, FEATURES.billingInvoicing) ? <BillingOrderEntry locale={locale} orderId={order.id} /> : null}
             {canPrint ? <PrintOrderActions locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
             {pendingQuickDrop ? <a className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-white px-4 font-semibold text-primary lg:w-auto" href="#items">{quickDropT("detailOrder")}</a> : null}
@@ -399,6 +407,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <Card>
             {pendingQuickDrop ? <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950">{quickDropT("productionBlocked")}</div> : <StatusTransitionForm
+              ticketUnico={automatic}
               action={transitionOrderStatusAction.bind(null, locale, order.id, "order")}
               canConfigureWarehouse={canManageAssignments}
               currentStatus={order.productionStatus}

@@ -7,26 +7,30 @@ export type PosBillingSnapshot = {
   items: Array<Pick<PrintOrderContext["items"][number], "id" | "description" | "quantity" | "unitType" | "unitPrice" | "lineTotal">>;
 };
 export type PosBillingDocument = {
-  id: string; number: string; issuedAt: string; paymentId: string; role: "advance" | "final";
+  id: string; number: string; issuedAt: string; paymentId: string | null; paymentIds?: string[];
+  type?: "simplified"; series?: string; issueDate?: string; taxRates?: number[]; role: "advance" | "final";
   event: "advance" | "service"; total: number; base: number; tax: number; roundingDelta: number | null;
   issuer?: { name: string; taxId: string; address: string };
   snapshot: PosBillingSnapshot | null;
 };
-export type PosBillingDocuments = { state: "ready"; enabled: boolean; documents: PosBillingDocument[] } | { state: "unavailable" };
+export type PosBillingDocuments = { state: "ready"; enabled: boolean; automatic?: boolean; documents: PosBillingDocument[] } | { state: "unavailable" };
 export const isPaymentLinkId = (value: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
 // Keep a malformed response distinct from a successful empty history.
 export function parsePosBillingDocuments(value: unknown): PosBillingDocuments {
   if (!value || typeof value !== "object") return { state: "unavailable" };
-  const data = value as { enabled?: unknown; documents?: unknown };
+  const data = value as { enabled?: unknown; automatic?: unknown; documents?: unknown };
+  if (data.automatic !== undefined && typeof data.automatic !== "boolean") return { state: "unavailable" };
   if (typeof data.enabled !== "boolean" || !Array.isArray(data.documents)) return { state: "unavailable" };
   for (const item of data.documents) {
     if (!item || typeof item !== "object") return { state: "unavailable" };
     const d = item as PosBillingDocument;
-    if (![d.id, d.paymentId].every(id => typeof id === "string" && isPaymentLinkId(id))
+    if (![d.id, ...(d.paymentId === null ? [] : [d.paymentId])].every(id => typeof id === "string" && isPaymentLinkId(id))
       || typeof d.number !== "string" || !d.number || typeof d.issuedAt !== "string"
       || ![d.total, d.base, d.tax].every(n => typeof n === "number" && Number.isFinite(n))
       || !["advance", "final"].includes(d.role) || !["advance", "service"].includes(d.event)) return { state: "unavailable" };
+    if ((d.paymentIds !== undefined && (!Array.isArray(d.paymentIds) || d.paymentIds.some(id => typeof id !== "string" || !isPaymentLinkId(id))))
+      || (d.taxRates !== undefined && (!Array.isArray(d.taxRates) || d.taxRates.some(rate => typeof rate !== "number" || !Number.isFinite(rate))))) return { state: "unavailable" };
     if (d.snapshot !== null) {
       const s = d.snapshot;
       if (!s || s.workflow !== "pos_billing_payment_link" || !isPaymentLinkId(s.order_id)
@@ -37,5 +41,5 @@ export function parsePosBillingDocuments(value: unknown): PosBillingDocuments {
           || typeof i.unitType !== "string" || ![i.quantity, i.unitPrice, i.lineTotal].every(n => typeof n === "number" && Number.isFinite(n)))) return { state: "unavailable" };
     }
   }
-  return { state: "ready", enabled: data.enabled, documents: data.documents as PosBillingDocument[] };
+  return { state: "ready", enabled: data.enabled, automatic: data.automatic as boolean | undefined, documents: data.documents as PosBillingDocument[] };
 }

@@ -71,6 +71,7 @@ function renderer(locale){
   '@/components/barcode/ScannableQrCode':empty,'@/features/barcode/payload':empty,'@/lib/organization-timezone':load('src/lib/organization-timezone.ts'),
  });
  const ui=load('src/components/billing/PosBillingCustomerCopy.tsx',{
+  '@/features/billing/ticket-unico':load('src/features/billing/ticket-unico.ts'),
   'next-intl/server':intl,'@/i18n/navigation':{Link:({children,prefetch:ignoredPrefetch,locale:ignoredLocale,...props})=>React.createElement('a',props,children)},'@/components/printing/OrderPrintDocument':copy,
   '@/components/printing/PrintButton':{PrintButton:()=>null},'@/lib/number-format':load('src/lib/number-format.ts'),
   '@/lib/organization-timezone':load('src/lib/organization-timezone.ts'),'@/features/billing/server/payment-link-actions':{issuePosBillingPaymentDocument:async()=>{}},
@@ -79,7 +80,7 @@ function renderer(locale){
  const context={branding:{brand:{name:'Synthetic laundry',logoPath:null},support:{}},organizationName:'Synthetic laundry',locationName:null,timezone:'Atlantic/Canary',
   order:{id:id(1),orderNumber:'EW-SYNTHETIC-21',customerName:'Live customer',customerNotes:'Live modified note',internalNotes:'SECRET INTERNAL',createdAt:snapshot.created_at,dueAt:snapshot.due_at,currency:'EUR',subtotal:21,discountAmount:0,total:21},items:snapshot.items,
   payments:[{id:id(2),amount:5,status:'confirmed',channel:'pos',paidAt:doc.issuedAt}],paymentSummary:{totalPaid:5,balanceDue:16}};
- return async(data,change={})=>renderToStaticMarkup(await ui.PosBillingCustomerCopy({locale,format:'80mm',data,context:{...context,...change}}));
+ return async(data,change={},format='80mm')=>renderToStaticMarkup(await ui.PosBillingCustomerCopy({locale,format,data,context:{...context,...change}}));
 }
 for(const locale of ['en','es','it','fr','de']){
  test(`${locale}: single existing customer layout, actual paid/residual, immutable notes and all issued references`,async()=>{
@@ -95,3 +96,66 @@ for(const locale of ['en','es','it','fr','de']){
   const pending=await render({state:'ready',enabled:true,documents:[]});assert.ok(pending.includes('<form'));assert.equal(/checked=/.test(pending),false);assert.ok(pending.includes('value=""'));assert.equal((pending.match(/<article/g)||[]).length,1);
  });
 }
+
+test('issued invoice with ZERO collections and later 5+16 retains fiscal snapshot and no pilot questionnaire',async()=>{
+ const render=renderer('en');const issued={...doc,paymentId:null,paymentIds:[],role:'final',event:'service',total:21,base:19.63,tax:1.37,type:'simplified',series:'S',taxRates:[7]};
+ const data={state:'ready',enabled:true,automatic:true,documents:[issued]};
+ for(const [paid,balance] of [[0,21],[5,16],[21,0]]){
+  const html=await render(data,{paymentSummary:{totalPaid:paid,balanceDue:balance}});
+  assert.ok(html.includes(doc.number));assert.ok(html.includes('7%'));assert.ok(html.includes('Frozen shirt'));assert.equal(html.includes('<form'),false);
+  assert.equal((html.match(/<article/g)||[]).length,1);
+ }
+ const pending=await render({...data,documents:[]});assert.equal(pending.includes('<form'),false);
+ assert.equal(types.parsePosBillingDocuments(data).state,'ready');
+ assert.equal(types.parsePosBillingDocuments({...data,documents:[{...issued,paymentIds:['bad-id']}]}).state,'unavailable');
+});
+
+test('same issued fiscal identity renders in A4, 58 mm and 80 mm without a new document',async()=>{
+ const render=renderer('es');const data={state:'ready',enabled:true,automatic:true,documents:[{...doc,paymentId:null,paymentIds:[],role:'final',event:'service',total:21,base:19.63,tax:1.37,type:'simplified',series:'S',taxRates:[7]}]};
+ for(const format of ['a4','58mm','80mm']){const html=await render(data,{},format);assert.ok(html.includes(`order-print-customer-${format}`));assert.ok(html.includes(doc.number));assert.equal((html.match(/<article/g)||[]).length,1);assert.equal(html.includes('<form'),false);}
+});
+
+
+for(const locale of ['en','es','it','fr','de'])test(`${locale}: unavailable fiscal read blocks printable data and recovers by GET only`,async()=>{
+ const render=renderer(locale);const html=await render({state:'unavailable'});
+ assert.ok(html.includes('role="alert"'));assert.ok(html.includes('/print/customer-copy?format=80mm'));
+ assert.equal(html.includes('<article'),false);assert.equal(html.includes('window.print'),false);
+ assert.equal(html.includes('<button'),false);assert.equal(html.includes('<form'),false);
+ assert.equal(html.includes('Live customer'),false);assert.equal(html.includes('Frozen shirt'),false);
+ // Subsequent successful read restores the same immutable invoice; it issues nothing.
+ const recovered=await render({state:'ready',enabled:true,automatic:true,documents:[doc]});
+ assert.ok(recovered.includes(doc.number));assert.equal((recovered.match(/<article/g)||[]).length,1);assert.equal(recovered.includes('<form'),false);
+});
+
+test('Billing entry preserves Phase A and ordinary links when Ticket Unico is off',async()=>{
+ for(const automatic of [false,true]) {
+  const ui=load('src/components/billing/BillingOrderEntry.tsx',{
+   '@/features/billing/server/ticket-unico':{ticketUnicoEnabled:async()=>automatic},
+   '@/features/billing/server/order-route-actions':{prepareOrdinaryBillingForOrder:async()=>{}},
+   'next-intl/server':{getTranslations:async()=>key=>key},
+   '@/features/billing/server/order-entry':{getBillingOrderEntry:async()=>({kind:'prepare',href:'/app/billing/new?orderId='+id(1)})},
+   '@/features/billing/server/fiscal-ticket-queries':{fiscalTicketEnabled:async()=>true},
+   '@/i18n/navigation':{Link:({children,locale:ignoredLocale,...props})=>React.createElement('a',props,children)},
+  });
+  const html=renderToStaticMarkup(await ui.BillingOrderEntry({locale:'en',orderId:id(1)}));
+  assert.equal(html.includes('/app/billing/full-prepayment?orderId='),!automatic);
+  assert.equal(html.includes('<form'),automatic);assert.equal(html.includes('/app/billing/new?orderId='),!automatic);
+ }
+});
+
+test('Terminal GET uses the legacy resolver with the flag off and refuses unknown fiscal history when on',async()=>{
+ for(const automatic of [false,true])for(const state of ['unavailable','ready']) {
+  const calls=[];const api=load('src/features/shop-terminal/server/customer-document.ts',{
+   '@/features/billing/server/ticket-unico':{ticketUnicoEnabled:async()=>automatic},
+   '@/features/billing/server/payment-link':{getPosBillingPaymentDocuments:async()=>{calls.push('read');return{state,documents:[],enabled:true,automatic};}},
+   '@/features/shop-terminal/server/access':{requireShopTerminalAccess:async()=>({membership:{role:'owner',organization:{id:'pilot'}}})},
+   '@/features/printing/server/access':{requirePrintAccess:async()=>{}},
+   '@/features/printing/server/queries':{getPrintOrderContext:async()=>({order:{id:id(1)},payments:[]})},
+   '@/features/entitlements/server/resolver':{hasEntitlement:async()=>true},
+   '@/features/entitlements/feature-catalog':{FEATURES:{billingInvoicing:'billing.invoicing'}},
+   '@/features/billing/server/fiscal-ticket-queries':{findIssuedFiscalTicketForOrder:async()=>{calls.push('legacy');return{state:'none'};},getFiscalTicketPreview:async()=>({state:'disabled'})},
+  });
+  assert.equal((await api.getTerminalCustomerDocument('en',id(1))).state,automatic&&state==='unavailable'?'unavailable':'operational');
+  assert.deepEqual(calls,automatic?['read']:['legacy']);
+ }
+});

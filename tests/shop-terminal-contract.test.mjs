@@ -279,7 +279,7 @@ test("30e active changes persist without replacing a draft during temporary cata
   assert.match(activePersistence, /customerDraftsRef\.current\.set\(customerId/);
   assert.match(activePersistence, /items: cart\.map/);
   assert.match(activePersistence, /persistCustomerDrafts\(draftStorageKey, customerDraftsRef\.current\)/);
-  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash\]/);
+  assert.match(activePersistence, /\[cardReference, cart, customerId, customerNotes, ordinaryInvoiceRequested, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash\]/);
   assert.match(select, /catalogCustomerRef\.current = null[\s\S]*setCart\(\[\]\)/);
 });
 
@@ -336,7 +336,8 @@ test("30h session persistence contains draft scalars and service ids, never serv
   assert.match(draftType, /productionAssigneeId\?: string/);
   assert.match(draftType, /delivery: DeliveryDraft/);
   assert.doesNotMatch(draftType, /ShopService|amount|currency|price|total|orderId|paymentId/);
-  assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|invoice|supabase/i);
+  assert.match(drafts, /ordinaryInvoiceRequested/);
+  assert.doesNotMatch(drafts, /actions\.submit|create_order|order_items|payments|supabase|\binvoices?\b/i);
 });
 
 test("31 responsive POS structure keeps a dense catalog and persistent one-third cart", async () => {

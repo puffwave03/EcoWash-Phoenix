@@ -1,3 +1,4 @@
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/Card";
 import { PageHeader } from "@/components/operational/OperationalUi";
@@ -23,6 +24,7 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
     getTranslations({ locale, namespace: "common.orders" }),
     getTranslations({ locale, namespace: "common.postCloseGate" }),
   ]);
+  const automatic = await ticketUnicoEnabled(locale);
   const steps = [
     t("form.steps.details"),
     t("form.steps.services"),
@@ -60,6 +62,7 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
         <Card className="min-w-0">
           <OrderForm
             action={createOrderAction.bind(null, locale)}
+            ticketUnico={automatic}
             customers={customers}
             initialCustomerId={customers.some((customer) => customer.id === rawSearchParams.customerId) ? rawSearchParams.customerId : undefined}
             locations={locations}

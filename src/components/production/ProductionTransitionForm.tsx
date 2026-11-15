@@ -1,5 +1,7 @@
 "use client";
 
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
+
 import { useState } from "react";
 import { operationalPrimaryActionClasses } from "@/components/operational/OperationalUi";
 import { ReadyWarehouseFields, type ReadyWarehouseText } from "@/components/warehouse/ReadyWarehouseFields";
@@ -9,6 +11,7 @@ import { requiresReason } from "@/features/orders/workflow";
 
 export function ProductionTransitionForm({
   action,
+  ticketUnico = false,
   allowedTransitions,
   canConfigureWarehouse,
   locale,
@@ -18,6 +21,7 @@ export function ProductionTransitionForm({
   text,
 }: {
   action: (formData: FormData) => Promise<void>;
+  ticketUnico?: boolean;
   allowedTransitions: ProductionStatus[];
   canConfigureWarehouse: boolean;
   locale: string;
@@ -68,6 +72,11 @@ export function ProductionTransitionForm({
           />
         </label>
       ) : null}
+      {ticketUnico && (["ready", "completed"] as string[]).includes(targetStatus) ? <div className="space-y-2 text-sm">
+        <input type="hidden" name="completionFormVersion" value="ticket-unico-v1" />
+        <p>{ticketUnicoMessages(locale).complete}</p>
+        <label className="flex items-center gap-2"><input type="checkbox" name="completionRecordedLate" />{ticketUnicoMessages(locale).late}</label>
+      </div> : null}
       {targetStatus === "ready" ? (
         <ReadyWarehouseFields
           canConfigure={canConfigureWarehouse}

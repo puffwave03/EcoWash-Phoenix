@@ -1,3 +1,4 @@
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { PosWorkspace, type PosText } from "@/components/pos/PosWorkspace";
 import { closePosSessionAction, openPosSessionAction, refundPosPaymentAction } from "@/features/pos/server/actions";
@@ -36,7 +37,8 @@ export default async function PosPage({ params, searchParams }: PosPageProps) {
   const [summary, paymentPage] = session ? await Promise.all([readPosSection(getPosSessionSummary(locale, session.id)), readPosSection(listPosSessionPayments(locale, session.id, paymentCursor))]) : [null, { items: [], pagination: { newerCursor: null, olderCursor: null } }];
   const coverage = await getPosFiscalCoverage(locale, (paymentPage?.items ?? [])
     .filter(p => p.status === "confirmed" && p.channel === "pos").map(p => p.id));
-  const serviceEvidence = coverage.state === "ready" && coverage.enabled
+  const automatic = await ticketUnicoEnabled(locale);
+  const serviceEvidence = !automatic && coverage.state === "ready" && coverage.enabled
     ? { today: coverage.today, text: fiscalCoverageMessages(locale) } : undefined;
   const paymentNavigation: PosNavigation = {
     currentCursor: validPaymentCursor,

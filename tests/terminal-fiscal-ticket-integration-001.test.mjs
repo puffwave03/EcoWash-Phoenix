@@ -29,6 +29,8 @@ const redirect = href => { throw Object.assign(Error('REDIRECT'), { href }); };
 function resolver(options = {}) {
   let previewReads = 0;
   const { getTerminalCustomerDocument } = load('src/features/shop-terminal/server/customer-document.ts', {
+    '@/features/billing/server/ticket-unico': { ticketUnicoEnabled: async () => false },
+    '@/features/billing/server/payment-link': {},
     '@/features/shop-terminal/server/access': { requireShopTerminalAccess: async () => {
       if (options.denied) throw Error('TENANT_OR_ROLE_DENIED');
       return { membership: { role: options.role ?? 'owner' } };

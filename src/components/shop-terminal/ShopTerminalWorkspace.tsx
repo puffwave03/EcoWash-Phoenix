@@ -1,5 +1,7 @@
 "use client";
 
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
+
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { PortalMedia } from "@/components/portal/PortalMedia";
@@ -22,6 +24,7 @@ type CartLine = { quantity: number; service: ShopService };
 type CustomerMode = "regular" | "walk_in" | null;
 type DeliveryDraft = PersistedDeliveryDraft;
 type ShopTerminalDraft = {
+  ordinaryInvoiceRequested?: boolean;
   cardReference: string;
   customerNotes: string;
   discount: number;
@@ -85,6 +88,7 @@ type Props = {
   };
   canConfigurePrinters: boolean;
   canInvoice: boolean;
+  ticketUnico?: boolean;
   canPrint: boolean;
   canScan: boolean;
   categoryLabels: Record<string, string>;
@@ -154,10 +158,11 @@ function parseDeliveryDraft(value: unknown): DeliveryDraft | null {
 function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const draft = value as Record<string, unknown>;
-  const allowedFields = new Set(["cardReference", "customerNotes", "discount", "dueAt", "internalNotes", "items", "delivery", "productionAssigneeId", "showSplitPayment", "splitCard", "splitCash"]);
+  const allowedFields = new Set(["ordinaryInvoiceRequested","cardReference", "customerNotes", "discount", "dueAt", "internalNotes", "items", "delivery", "productionAssigneeId", "showSplitPayment", "splitCard", "splitCash"]);
   if (Object.keys(draft).some((field) => !allowedFields.has(field))) return null;
   if (
-    typeof draft.cardReference !== "string"
+    (draft.ordinaryInvoiceRequested !== undefined && typeof draft.ordinaryInvoiceRequested !== "boolean")
+    || typeof draft.cardReference !== "string"
     || typeof draft.customerNotes !== "string"
     || typeof draft.discount !== "number" || !Number.isFinite(draft.discount) || draft.discount < 0
     || typeof draft.dueAt !== "string"
@@ -181,6 +186,7 @@ function parseStoredDraft(value: unknown): ShopTerminalDraft | null {
   }
   return {
     cardReference: draft.cardReference,
+    ordinaryInvoiceRequested: draft.ordinaryInvoiceRequested === true,
     customerNotes: draft.customerNotes,
     discount: draft.discount,
     dueAt: draft.dueAt,
@@ -382,7 +388,7 @@ export function ShopTerminalWorkspace(props: Props) {
 
 type SaleProps = Props & { namespace: string; onBusyChange: (busy: boolean) => void; onOccupiedChange: (occupied: boolean) => void; onRegisterSave: (save: (() => boolean) | null) => void; onStorageFailure: () => void; workspace: SalesWorkspace };
 
-function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultCountryCode, defaultCurrency, defaultProductionAssigneeId, deliveryAssignments, locale, namespace, onBusyChange, onOccupiedChange, onRegisterSave, onStorageFailure, operatorName, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text, workspace }: SaleProps) {
+function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, canScan, categoryLabels, customers: initialCustomers, defaultCountryCode, defaultCurrency, defaultProductionAssigneeId, deliveryAssignments, locale, namespace, onBusyChange, onOccupiedChange, onRegisterSave, onStorageFailure, operatorName, organizationName, pendingQuickDrops, printText, productionAssignments, quickDropClosed, quickDropText, role, session, text, ticketUnico = false, workspace }: SaleProps) {
   const router = useRouter();
   const draftStorageKey = workspaceDraftKey(namespace, workspace);
   const activeCustomerStorageKey = workspaceCustomerKey(namespace, workspace);
@@ -409,6 +415,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
   const [cardReference, setCardReference] = useState("");
   const [showSplitPayment, setShowSplitPayment] = useState(false);
   const [dueAt, setDueAt] = useState("");
+  const [ordinaryInvoiceRequested, setOrdinaryInvoiceRequested] = useState(false);
   const [customerNotes, setCustomerNotes] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
   const resolvedProductionDefault = resolveProductionAssignee(productionAssignments, defaultProductionAssigneeId);
@@ -606,6 +613,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
+      ordinaryInvoiceRequested,
       delivery,
       discount,
       dueAt,
@@ -618,7 +626,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     });
     if (persistCustomerDrafts(draftStorageKey, customerDraftsRef.current)) onOccupiedChange(true);
     else onStorageFailure();
-  }, [cardReference, cart, customerId, customerNotes, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash]);
+  }, [cardReference, cart, customerId, customerNotes, ordinaryInvoiceRequested, delivery, discount, draftStorageKey, dueAt, internalNotes, onOccupiedChange, onStorageFailure, productionAssigneeId, showSplitPayment, splitCard, splitCash]);
 
   useEffect(() => {
     const submittedCustomerId = submitState.result?.customerId;
@@ -716,6 +724,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     customerDraftsRef.current.set(customerId, {
       cardReference,
       customerNotes,
+      ordinaryInvoiceRequested,
       delivery,
       discount,
       dueAt,
@@ -746,6 +755,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     setCardReference(draft?.cardReference ?? "");
     setShowSplitPayment(draft?.showSplitPayment ?? false);
     setDueAt(draft?.dueAt ?? "");
+    setOrdinaryInvoiceRequested(draft?.ordinaryInvoiceRequested === true);
     setCustomerNotes(draft?.customerNotes ?? "");
     setInternalNotes(draft?.internalNotes ?? "");
     setProductionAssigneeId(resolveProductionAssignee(
@@ -887,6 +897,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
     setCardReference("");
     setShowSplitPayment(false);
     setDueAt("");
+    setOrdinaryInvoiceRequested(false);
     setCustomerNotes("");
     setInternalNotes("");
     setProductionAssigneeId(resolvedProductionDefault);
@@ -961,6 +972,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
           : [];
     const payload = {
       customerId,
+      ...(ticketUnico ? { ordinaryInvoiceRequested: formData.get("ordinaryInvoiceRequested") === "on" } : {}),
       customerName: selectedCustomerName,
       customerNotes: formData.get("customerNotes"),
       discountAmount: safeDiscount,
@@ -1322,6 +1334,7 @@ function SaleWorkspace({ actions, canConfigurePrinters, canInvoice, canPrint, ca
               </div>
               <label className="flex items-center justify-between gap-3 text-sm font-bold text-primary"><span>{text.discount}</span><input className="min-h-10 w-28 rounded-control border border-border px-3 text-right text-lg" disabled={!canDiscount} max={subtotal} min="0" onChange={(event) => setDiscount(Number(event.target.value))} step="0.01" type="number" value={discount} /></label>
               <dl className="space-y-1.5 border-t border-border pt-3"><div className="flex justify-between text-sm"><dt className="text-muted">{text.subtotal}</dt><dd className="font-bold text-primary">{formatCurrency(subtotal, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.discount}</dt><dd className="font-bold text-primary">− {formatCurrency(safeDiscount, currency, locale)}</dd></div><div className="mt-2 flex items-end justify-between rounded-control bg-primary p-4 text-white"><dt className="text-sm font-black uppercase tracking-[0.12em]">{text.total}</dt><dd className="text-4xl font-black">{formatCurrency(total, currency, locale)}</dd></div><div className="flex justify-between pt-1 text-sm"><dt className="text-muted">{text.expectedPaid}</dt><dd className="font-bold text-primary">{customPaymentInvalid && showSplitPayment ? "—" : formatCurrency(expectedPaid, currency, locale)}</dd></div><div className="flex justify-between text-sm"><dt className="text-muted">{text.expectedOutstanding}</dt><dd className="font-black text-primary">{customPaymentInvalid && showSplitPayment ? "—" : formatCurrency(roundMoney(total - expectedPaid), currency, locale)}</dd></div></dl>
+              {ticketUnico ? <label key={`ordinary-${customerId}`} className="flex items-center gap-2 text-sm"><input type="checkbox" name="ordinaryInvoiceRequested" disabled={isSubmitting || Boolean(attempt)} checked={ordinaryInvoiceRequested} onChange={event => setOrdinaryInvoiceRequested(event.target.checked)} />{ticketUnicoMessages(locale).ordinary}</label> : null}
               <details className="border-b border-border pb-3"><summary className="cursor-pointer text-sm font-bold text-primary">{text.notes}</summary><div className="mt-3 space-y-2"><label className="block text-sm font-bold text-primary"><span>{text.customerNotesLabel}</span><textarea className="mt-1 min-h-16 w-full rounded-control border border-border p-3 font-normal" name="customerNotes" onChange={(event) => setCustomerNotes(event.target.value)} value={customerNotes} /></label><label className="block text-sm font-bold text-primary"><span>{text.internalNotesLabel}</span><textarea className="mt-1 min-h-16 w-full rounded-control border border-border p-3 font-normal" name="internalNotes" onChange={(event) => setInternalNotes(event.target.value)} value={internalNotes} /></label></div></details>
               {submitState.error ? <p className="rounded-control bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">{submitState.error === "closedDay" ? text.errorClosedDay : submitState.error === "validation" ? text.errorValidation : submitState.error === "till" ? text.errorTill : submitState.error === "discount" ? text.errorDiscount : submitState.error === "inboundUnavailable" ? text.errorInbound : text.errorGeneric}</p> : null}
               <fieldset><legend className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-muted">{text.payment}</legend><div className="grid grid-cols-3 gap-2"><button className="min-h-16 rounded-control bg-primary px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="cash">{isSubmitting ? text.saving : text.paymentCash}</button><button className="min-h-16 rounded-control bg-primary-strong px-2 text-sm font-black uppercase text-white disabled:opacity-40" disabled={isSubmitting || !session || !customerId || !cart.length || total <= 0} name="intent" type="submit" value="card">{isSubmitting ? text.saving : text.paymentCard}</button><button className="min-h-16 rounded-control border-2 border-primary bg-white px-2 text-sm font-black uppercase text-primary disabled:opacity-40" disabled={isSubmitting || !customerId || !cart.length || total < 0} name="intent" type="submit" value="later">{isSubmitting ? text.saving : text.payLater}</button></div></fieldset>

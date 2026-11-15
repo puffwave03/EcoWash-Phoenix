@@ -1,3 +1,4 @@
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CustomerCopy } from "@/components/printing/OrderPrintDocument";
@@ -16,19 +17,28 @@ export async function PosBillingCustomerCopy({ context, data, locale, format, re
   const t = await getTranslations({ locale, namespace: "common.billing.fiscalTicket" });
   const print = await getTranslations({ locale, namespace: "common.print" });
   const m = paymentLinkMessages(locale);
-  const documents = data.state === "ready" ? data.documents : [];
+  const href = `/app/orders/${context.order.id}/print/customer-copy?format=${format}`;
+  // An unreadable fiscal history is not evidence that no invoice exists.
+  // Do not render the printable customer document (including browser print).
+  // Recovery is a GET of the same read-only route; never an issuer or POS retry.
+  if (data.state === "unavailable") return <section role="alert" className="rounded-control border border-amber-300 p-4">
+    <p>{t("unavailable")}</p>
+    <a href={`/${locale}${href}`}>{m.recovery}</a>
+    <Link href={`/app/orders/${context.order.id}`} locale={locale}>{print("actions.back")}</Link>
+  </section>;
+  const documents = data.documents;
   const snapshot = documents.find(d => d.snapshot?.order_id === context.order.id)?.snapshot;
-  const documented = new Set(documents.map(d => d.paymentId));
+  const documented = new Set(documents.flatMap(d => d.paymentIds ?? (d.paymentId ? [d.paymentId] : [])));
   const refunded = new Set(context.payments.filter(p => p.status === "refunded").map(p => p.refundedFromPaymentId));
   const pending = context.payments.filter(p => p.status === "confirmed" && p.channel === "pos" && !documented.has(p.id) && !refunded.has(p.id));
   const money = (value: number) => formatCurrency(value, context.order.currency, locale);
-  const href = `/app/orders/${context.order.id}/print/customer-copy?format=${format}`;
   const fiscalDetails = documents.length ? <section className="print-ticket-notes" aria-label={m.title}>
     <h3>{m.title}</h3>
     {documents.map(d => <div key={d.id}>
       {d.issuer ? <p>{d.issuer.name} · {d.issuer.taxId} · {d.issuer.address}</p> : null}
+      <p>{d.type === "simplified" ? ticketUnicoMessages(locale).fiscal : ""} · {d.series}</p>
       <p><strong>{d.number}</strong> · {formatOrganizationDateTime(d.issuedAt, locale, context.timezone)}</p>
-      <p>{t("documented")}: {money(d.total)} · {t("base")}: {money(d.base)} · IGIC: {money(d.tax)}</p>
+      <p>{t("documented")}: {money(d.total)} · {t("base")}: {money(d.base)} · IGIC {d.taxRates?.map(rate => `${rate}%`).join(" / ")}: {money(d.tax)}</p>
     </div>)}
     <p>{t("noSecondPayment")}</p>
   </section> : undefined;
@@ -39,11 +49,10 @@ export async function PosBillingCustomerCopy({ context, data, locale, format, re
       <nav aria-label={print("customerCopy.formatLabel")}>
         {(["a4", "58mm", "80mm"] as const).map(f => <Link key={f} locale={locale} prefetch={false} aria-current={format === f ? "page" : undefined} href={`/app/orders/${context.order.id}/print/customer-copy?format=${f}`}>{print(`customerCopy.formatOptions.${f}`)} </Link>)}
       </nav>
-      {data.state === "unavailable" ? <p role="alert">{t("unavailable")}</p> : null}
       {result === "uncertain" ? <p role="alert">{t("uncertain")}</p> : null}
       {result === "confirmation" ? <p role="alert">{t("confirmationRequired")}</p> : null}
-      <Link href={href} locale={locale} prefetch={false}>{m.recovery}</Link>
-      {data.state === "ready" && data.enabled && pending.length ? <section>
+      <a href={`/${locale}${href}`}>{m.recovery}</a>
+      {data.state === "ready" && data.enabled && !data.automatic && pending.length ? <section>
         <h2>{m.pending}</h2><p>{t("localOnly")}</p><p>{m.review}</p>
         {pending.map(p => <form key={p.id} action={issuePosBillingPaymentDocument.bind(null, locale, context.order.id)} className="my-4 grid gap-3">
           <input name="paymentId" type="hidden" value={p.id} />
@@ -68,7 +77,7 @@ export async function PosBillingCustomerCopy({ context, data, locale, format, re
       customerNotes: snapshot ? snapshot.customer_notes : context.order.customerNotes,
       items: snapshot?.items ?? context.items, currency: snapshot?.currency ?? context.order.currency,
       subtotal: snapshot?.subtotal ?? context.order.subtotal, discountAmount: snapshot?.discount ?? context.order.discountAmount,
-      total: snapshot?.total ?? context.order.total, totalPaid: context.paymentSummary.totalPaid,
+      total: snapshot?.total ?? context.order.total, summaryTitle: documents.length ? ticketUnicoMessages(locale).financial : undefined, totalPaid: context.paymentSummary.totalPaid,
       balanceDue: context.paymentSummary.balanceDue, locale, timezone: context.timezone, fiscalDetails })}
   </div>;
 }

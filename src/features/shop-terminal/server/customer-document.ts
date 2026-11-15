@@ -1,4 +1,6 @@
 import "server-only";
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
+import { getPosBillingPaymentDocuments } from "@/features/billing/server/payment-link";
 
 import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { requirePrintAccess } from "@/features/printing/server/access";
@@ -13,6 +15,10 @@ export async function getTerminalCustomerDocument(locale: string, orderId: strin
   await requirePrintAccess(locale);
   const context = await getPrintOrderContext(locale, orderId);
   const copyHref = `/app/orders/${encodeURIComponent(context.order.id)}/print/customer-copy?format=80mm`;
+  if (await ticketUnicoEnabled(locale)) {
+    const fiscal = await getPosBillingPaymentDocuments(locale, orderId);
+    return { state: fiscal.state === "unavailable" ? "unavailable" as const : "operational" as const, copyHref };
+  }
   if (!["owner", "manager"].includes(membership.role)
     || !await hasEntitlement(locale, FEATURES.billingInvoicing)) {
     return { state: "operational" as const, copyHref };

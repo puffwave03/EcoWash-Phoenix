@@ -46,6 +46,7 @@ export type ProductionDetailText = {
 
 type ProductionDetailProps = {
   action: (formData: FormData) => Promise<void>;
+  ticketUnico?: boolean;
   allowedTransitions: ProductionStatus[];
   backHref?: string;
   canConfigureWarehouse: boolean;
@@ -102,6 +103,7 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 
 export function ProductionDetail({
   action,
+  ticketUnico,
   allowedTransitions,
   backHref = "/app/work/production",
   canConfigureWarehouse,
@@ -253,6 +255,7 @@ export function ProductionDetail({
           <section className="space-y-3 border-t border-border pt-5">
             <h3 className="text-lg font-semibold text-primary">{text.nextPhase}</h3>
             <ProductionTransitionForm
+              ticketUnico={ticketUnico}
               action={action}
               allowedTransitions={allowedTransitions}
               canConfigureWarehouse={canConfigureWarehouse}

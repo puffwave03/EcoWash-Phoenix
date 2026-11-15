@@ -1,5 +1,6 @@
 "use server";
 
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
@@ -160,7 +161,8 @@ export async function createBillingDraftAction(locale: string, customerId: strin
   const orderIds = formData.getAll("orderId").map(String);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("create_billing_draft", {
+  const automatic = await ticketUnicoEnabled(locale);
+  const { data, error } = await supabase.rpc(automatic ? "create_billing_draft_with_order_route" : "create_billing_draft", {
     target_notes: nullable(value(formData, "notes", 2000)),
     target_order_ids: orderIds,
     target_series: value(formData, "series", 12),

@@ -23,6 +23,7 @@ export type OrderStatusFilter = (typeof ORDER_STATUS_FILTERS)[number];
 export type ActiveFilter = (typeof ACTIVE_FILTERS)[number];
 
 export type Order = {
+  fiscalRoute?: "automatic_simplified" | "manual_billing" | "review_required";
   assignedTo: string | null;
   assignedToName: string | null;
   completedAt: string | null;

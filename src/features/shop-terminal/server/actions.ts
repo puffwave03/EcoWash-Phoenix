@@ -1,5 +1,6 @@
 "use server";
 
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { revalidatePath } from "next/cache";
 import { routing } from "@/i18n/routing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -168,6 +169,7 @@ export async function getShopSubmissionStatusAction(locale: string, key: string)
 }
 
 type SubmitPayload = {
+  ordinaryInvoiceRequested?: unknown;
   customerId?: unknown;
   customerName?: unknown;
   customerNotes?: unknown;
@@ -225,7 +227,8 @@ export async function submitShopOrderAction(
   const deliveryScheduledAt = typeof delivery?.scheduledAt === "string" ? delivery.scheduledAt : "";
   const deliveryAddressLine1 = typeof delivery?.addressLine1 === "string" ? delivery.addressLine1.trim().slice(0, 240) : "";
   const deliveryContactPhone = typeof delivery?.contactPhone === "string" ? delivery.contactPhone.trim().slice(0, 40) : "";
-  if (!UUID.test(customerId) || !UUID.test(idempotencyKey) || (locationId && !UUID.test(locationId))
+  if ((payload.ordinaryInvoiceRequested !== undefined && typeof payload.ordinaryInvoiceRequested !== "boolean")
+    || !UUID.test(customerId) || !UUID.test(idempotencyKey) || (locationId && !UUID.test(locationId))
     || (sessionId && !UUID.test(sessionId)) || !Number.isFinite(discountAmount)
     || !dueAt || Number.isNaN(Date.parse(dueAt)) || (productionAssigneeId && !UUID.test(productionAssigneeId))
     || (deliveryAssignedTo && !UUID.test(deliveryAssignedTo))
@@ -262,7 +265,9 @@ export async function submitShopOrderAction(
     : activeLocations?.length === 1 ? activeLocations[0].id : null;
   if (!resolvedLocationId) return { error: "validation", result: null, rejectionProof: "before_rpc" };
 
-  const { data, error } = await supabase.rpc("submit_shop_terminal_order", {
+  const automatic = await ticketUnicoEnabled(locale);
+  const { data, error } = await supabase.rpc(automatic ? "submit_shop_terminal_order_with_fiscal_route" : "submit_shop_terminal_order", {
+    ...(automatic ? { target_ordinary_invoice_requested: payload.ordinaryInvoiceRequested === true } : {}),
     target_customer_id: customerId,
     target_customer_notes: typeof payload.customerNotes === "string" ? payload.customerNotes.slice(0, 600) : null,
     target_discount_amount: Math.round(discountAmount * 100) / 100,

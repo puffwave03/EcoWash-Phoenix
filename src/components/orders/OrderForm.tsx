@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
+import { useLocale } from "next-intl";
 import { Button } from "@/components/Button";
 import type { OrderActionState, Order } from "@/features/orders/types";
 import type { OrderSelectOption, PropertySelectOption } from "@/features/orders/server/queries";
@@ -27,6 +29,7 @@ type OrderFormProps = {
   action: (state: OrderActionState, formData: FormData) => Promise<OrderActionState>;
   customers: OrderSelectOption[];
   initialCustomerId?: string;
+  ticketUnico?: boolean;
   locations?: OrderSelectOption[];
   order?: Order;
   properties: PropertySelectOption[];
@@ -41,7 +44,8 @@ function fieldClass(hasError: boolean) {
   }`;
 }
 
-export function OrderForm({ action, customers, initialCustomerId, locations = [], order, properties, text }: OrderFormProps) {
+export function OrderForm({ action, customers, initialCustomerId, ticketUnico = false, locations = [], order, properties, text }: OrderFormProps) {
+  const locale = useLocale();
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [customerId, setCustomerId] = useState(order?.customerId ?? initialCustomerId ?? "");
   const [propertyId, setPropertyId] = useState(order?.propertyId ?? "");
@@ -51,6 +55,7 @@ export function OrderForm({ action, customers, initialCustomerId, locations = []
   return (
     <form action={formAction} className="space-y-6">
       {state.formError ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{state.formError === "closedDay" ? text.closedDay : text.error}</p> : null}
+      {ticketUnico && !order ? <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="ordinaryInvoiceRequested" />{ticketUnicoMessages(locale).ordinary}</label> : null}
       <div className="grid gap-4 md:grid-cols-2">
         {order ? (
           <>

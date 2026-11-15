@@ -1,7 +1,9 @@
 "use server";
 
+import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -99,8 +101,10 @@ export async function createOrderAction(
 
   await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
+  const automatic = await ticketUnicoEnabled(locale);
   const { data, error } = await supabase
-    .rpc("create_order", {
+    .rpc(automatic ? "create_order_with_fiscal_route" : "create_order", {
+      ...(automatic ? { target_ordinary_invoice_requested: formData.get("ordinaryInvoiceRequested") === "on" } : {}),
       target_customer_id: input.customerId,
       target_customer_notes: optionalDbValue(input.customerNotes),
       target_due_at: optionalDbValue(input.dueAt),
@@ -264,6 +268,24 @@ export async function updateOrderDiscountAction(
   revalidateOrders(locale, orderId);
 }
 
+async function requestOrderCompletion(
+  client: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  locale: string,
+  orderId: string,
+  parameters: Record<string, unknown>,
+) {
+  let result;
+  try {
+    result = await client.rpc("complete_order_with_billing", parameters);
+  } catch {
+    redirect(`/${locale}/app/orders/${orderId}?fiscalReview=uncertain`);
+  }
+  if ((!result.error && !result.data) || (result.error && !/^[0-9A-Z]{5}$/.test(result.error.code ?? ""))) {
+    redirect(`/${locale}/app/orders/${orderId}?fiscalReview=uncertain`);
+  }
+  return result;
+}
+
 export async function transitionOrderStatusAction(
   locale: string,
   orderId: string,
@@ -284,7 +306,8 @@ export async function transitionOrderStatusAction(
     .eq("id", orderId)
     .maybeSingle<{ assigned_to: string | null; production_status: ProductionStatus }>();
 
-  const requiredCapability = order && ["quality_check", "packing"].includes(order.production_status)
+  const automatic = ["ready", "completed"].includes(targetStatus) && await ticketUnicoEnabled(locale);
+  const requiredCapability = order && (["quality_check", "packing"].includes(order.production_status) || (automatic && order.production_status === "completed" && targetStatus === "ready"))
     ? "quality"
     : "production";
 
@@ -308,11 +331,16 @@ export async function transitionOrderStatusAction(
       redirect(readyErrorPath(locale, orderId, surface, "invalid-values"));
     }
 
-    const { error } = await supabase.rpc("transition_order_ready_with_storage", {
+    const { data: completion, error } = automatic ? await requestOrderCompletion(supabase, locale, orderId, {
+      target_status: "ready",
+      target_completed_now: formData.get("completionFormVersion") === "ticket-unico-v1" && formData.get("completionRecordedLate") !== "on",
       target_order_id: orderId,
       target_position_id: positionId,
       target_package_count: packageCount,
       target_storage_mode: storageMode,
+    }) : await supabase.rpc("transition_order_ready_with_storage", {
+      target_order_id: orderId, target_position_id: positionId,
+      target_package_count: packageCount, target_storage_mode: storageMode,
     });
     if (error) {
       if (error.message.includes("order_items_required")) {
@@ -327,16 +355,24 @@ export async function transitionOrderStatusAction(
       redirect(readyErrorPath(locale, orderId, surface, errorKind));
     }
     revalidateOrders(locale, orderId);
+    revalidatePath(`/${locale}/app/billing`);
     revalidatePath(`/${locale}/app/warehouse`);
+    if (completion?.status === "review_required") redirect(`/${locale}/app/orders/${orderId}?fiscalReview=1#production`);
     if (transitionLeavesSurface(surface, targetStatus)) redirect(productionSurfacePath(locale, surface));
     return;
   }
 
-  const { error } = await supabase.rpc("transition_order_status", {
+  const transition = {
     target_order_id: orderId,
     target_reason: optionalDbValue(reason),
     target_status: targetStatus,
-  });
+  };
+  const { data: completion, error } = automatic && targetStatus === "completed"
+    ? await requestOrderCompletion(supabase, locale, orderId, {
+      ...transition,
+      target_completed_now: formData.get("completionFormVersion") === "ticket-unico-v1" && formData.get("completionRecordedLate") !== "on",
+    })
+    : await supabase.rpc("transition_order_status", transition);
 
   if (error) {
     if (targetStatus === "cancelled") {
@@ -364,9 +400,20 @@ export async function transitionOrderStatusAction(
     return;
   }
 
+  if (completion?.status === "review_required") redirect(`/${locale}/app/orders/${orderId}?fiscalReview=1#production`);
   revalidateOrders(locale, orderId);
 
   if (transitionLeavesSurface(surface, targetStatus)) {
     redirect(productionSurfacePath(locale, surface));
   }
+}
+
+export async function requestOrdinaryInvoiceAction(locale: string, orderId: string) {
+  if (!isUuid(orderId)) return;
+  await requireShopTerminalAccess(locale);
+  if (!await ticketUnicoEnabled(locale)) redirect(`/${locale}/app/orders/${orderId}`);
+  const client = await createSupabaseServerClient();
+  const { error } = await client.rpc("request_order_ordinary_invoice", { target_order_id: orderId });
+  revalidateOrders(locale, orderId);
+  redirect(`/${locale}/app/orders/${orderId}${error ? "?fiscalReview=1" : ""}`);
 }

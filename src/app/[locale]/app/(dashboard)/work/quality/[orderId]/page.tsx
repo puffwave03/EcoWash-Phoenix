@@ -13,7 +13,7 @@ type QualityDetailPageProps = {
 export default async function QualityDetailPage({ params, searchParams }: QualityDetailPageProps) {
   const { locale, orderId } = await params;
   const cancellationError = (await searchParams).cancellationError;
-  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
+  const [{ allowedTransitions, ticketUnico, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
     getQualityWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.qualityWorkspace" }),
     getTranslations({ locale, namespace: "common.catalog" }),
@@ -29,6 +29,7 @@ export default async function QualityDetailPage({ params, searchParams }: Qualit
 
   return (
     <ProductionDetail
+      ticketUnico={ticketUnico}
       action={transitionOrderStatusAction.bind(null, locale, task.id, "quality")}
       allowedTransitions={allowedTransitions}
       backHref="/app/work/quality"

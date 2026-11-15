@@ -1,5 +1,7 @@
 "use client";
 
+import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
+
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { DisclosureSection } from "@/components/DisclosureSection";
@@ -22,6 +24,7 @@ function previousStatus(history: OrderHistory[]) {
 
 export function StatusTransitionForm({
   action,
+  ticketUnico = false,
   canConfigureWarehouse,
   currentStatus,
   history,
@@ -34,6 +37,7 @@ export function StatusTransitionForm({
   text,
 }: {
   action: (formData: FormData) => Promise<void>;
+  ticketUnico?: boolean;
   canConfigureWarehouse: boolean;
   currentStatus: ProductionStatus;
   history: OrderHistory[];
@@ -65,6 +69,11 @@ export function StatusTransitionForm({
             <input aria-label={text.reason} className="min-h-11 rounded-control border border-border px-3 text-sm" name="reason" placeholder={allowed.some(requiresReason) ? text.reason : ""} />
             <Button disabled={targetStatus === "ready" && (!readyPlacement.assignment || readyPlacement.positions.length === 0)} type="submit">{text.change}</Button>
           </div>
+      {ticketUnico && (["ready", "completed"] as string[]).includes(targetStatus) ? <div className="space-y-2 text-sm">
+        <input type="hidden" name="completionFormVersion" value="ticket-unico-v1" />
+        <p>{ticketUnicoMessages(locale).complete}</p>
+        <label className="flex items-center gap-2"><input type="checkbox" name="completionRecordedLate" />{ticketUnicoMessages(locale).late}</label>
+      </div> : null}
           {targetStatus === "ready" ? (
             <ReadyWarehouseFields canConfigure={canConfigureWarehouse} error={readyError} locale={locale} placement={readyPlacement} text={readyText} />
           ) : null}
