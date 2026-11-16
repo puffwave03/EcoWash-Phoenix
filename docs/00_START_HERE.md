@@ -1,50 +1,24 @@
 # Start Here
 
-Status: Active — entry point for new Phoenix sessions
+Status: Active
 
-Last updated: 2026-11-05
+Version: 0.1
 
-## Start a session
+Last Updated: 2026-08-23
 
-Read [AGENTS.md](../AGENTS.md), then the newest relevant checkpoints in [Session Handover](00_START_HERE/SESSION_HANDOVER.md) and [Project Status](06_ROADMAP/Project_Status.md), followed by the explicit task prompt. Verify actual branch, HEAD, origin/main, index and worktree against that task's expected baseline before acting. This entry point does not maintain a second SHA, active-mission list or product inventory.
+Current Mission: PORTAL-002.1 customer ordering and pickup requests completed and validated
 
-Read the newest relevant evidence first. Earlier checkpoints describe their own dates and scopes; a historical “next task”, WIP or pending gate does not establish current work or permission to start it. Keep automated tests, database evidence, deployment verification and Product Owner UAT distinct.
-
-## Document authority
-
-- [Session Handover](00_START_HERE/SESSION_HANDOVER.md): continuation and handoff, Git checkpoints and any preserved work.
-- [Project Status](06_ROADMAP/Project_Status.md): implementation state, UAT, findings and open gates.
-- [AGENTS.md](../AGENTS.md): stable roles, governance and architectural boundaries.
-- [Roadmap](01_PRODUCT/Roadmap.md): approved targets, sequencing and future requirements; an entry does not authorize implementation.
-- [Git Workflow](05_DEVELOPMENT/Git_Workflow.md): review, explicit commit/push approval and automatic staging publication procedure.
-- [Testing](05_DEVELOPMENT/Testing.md): evidence levels and dated validation records. Use later Handover/Status closeouts where the evidence index has not yet been updated.
-
-The compatibility file [CODEX_CURRENT_BASELINE.md](CODEX_CURRENT_BASELINE.md) owns neither a separate mutable baseline nor the next task. [CODEX_EXECUTION_CONTEXT.md](CODEX_EXECUTION_CONTEXT.md) supplements AGENTS and the authorized task. The separate Handover/Status responsibilities above remain in force.
-
-## Essential reading by mission
-
-Use the common session path above, then add only the references needed for the authorized scope:
-
-| Session or mission | Additional reading |
-|---|---|
-| New CTO session | [Roadmap](01_PRODUCT/Roadmap.md), [Git Workflow](05_DEVELOPMENT/Git_Workflow.md), then the relevant approved architecture report and current acceptance evidence. |
-| New Codex session | [Codex Execution Context](CODEX_EXECUTION_CONTEXT.md), [Git Workflow](05_DEVELOPMENT/Git_Workflow.md), [Setup](05_DEVELOPMENT/Setup.md) only when environment work is in scope. Its older bootstrap/next-task prose must be reconciled with later canonical checkpoints. |
-| Billing / fiscal | [Billing Event Contract](04_ARCHITECTURE/Billing_Event_Contract_001.md), including CTO conditions C1–C4 and open D01–D11; [Fiscal Document Benchmark](04_ARCHITECTURE/Fiscal_Document_Benchmark_001.md); latest Billing evidence in Handover, Status and Testing. Read [Security](04_ARCHITECTURE/Security.md) and [Database Design](03_DATABASE/Database_Design.md) when authorization or database work is involved. Technical review does not grant fiscal-compliance approval. |
-| Printing | Notes-visibility and REC-workflow closeouts in Handover/Status; future `COUNTER-THERMAL-DOCUMENTS-001` requirements in [Roadmap](01_PRODUCT/Roadmap.md); [Counter Operations Gap Review](04_ARCHITECTURE/Counter_Operations_Gap_Review_001.md) as dated evidence, applying subsequent closeouts. |
-| Operational incident / recovery | AGENTS incident and environment rules; [Recovery Runbook](05_DEVELOPMENT/Recovery_Runbook.md), [Deployment](05_DEVELOPMENT/Deployment.md), [Security](04_ARCHITECTURE/Security.md), and relevant Testing evidence. Prove the authorized target and applicable checkpoint before any mutation; historical recovery project IDs and counts are evidence, not reusable defaults. |
-
-This correction does not reconstruct a Phoenix V1.2 specification or reorganize Handover/Status. Those remain separate documentation decisions requiring their own scope.
-
-## Historical snapshots
-
-The snapshots below remain intact. Their baselines, environment observations, mission names and recommended sequences are dated evidence, not current execution instructions.
+Next Action: preserve the PORTAL-002.1 baseline and approve the next Portal increment before implementation
 
 ---
 
-<details>
-<summary>Historical PORTAL-002.1 resume snapshot — 23/08/2026</summary>
+## Purpose
 
-## Historical State
+Start here when resuming EcoWash Phoenix work. This file identifies the current committed baseline and the exact next action.
+
+---
+
+## Current State
 
 - Active branch: `main`
 - Remote repository: `https://github.com/puffwave03/EcoWash-Phoenix.git`
@@ -175,5 +149,3 @@ Next planning sequence:
 2. Keep customer address flexibility and delivery preferences as the next known Portal work, to be scoped and approved separately.
 3. Keep clearer Customers access in owner/manager navigation as a separate UX backlog item.
 4. Do not start PORTAL-002.2 without a separate approved mission; keep one task per logical commit.
-
-</details>

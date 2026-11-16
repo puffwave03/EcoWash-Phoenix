@@ -95,11 +95,8 @@ test("all three transition surfaces require the same final placement fields", ()
 
 test("server action routes READY only through the atomic RPC and retains other transitions", () => {
   const action = read("src/features/orders/server/actions.ts");
-  assert.match(action, /if \(targetStatus === "ready"\)[\s\S]*requestOrderCompletion\(supabase/);
-  assert.match(action, /client\.rpc\("complete_order_with_billing"/);
-  assert.match(action, /"transition_order_status"/);
-  const coordinator = read("supabase/migrations/20261115180534_ticket_unico_001_service_completion.sql");
-  assert.match(coordinator, /perform public\.transition_order_ready_with_storage/);
+  assert.match(action, /if \(targetStatus === "ready"\)[\s\S]*rpc\("transition_order_ready_with_storage"/);
+  assert.match(action, /rpc\("transition_order_status"/);
   assert.doesNotMatch(action, /requireOwnerOrManager/);
   const reader = read("src/features/warehouse/server/queries.ts");
   assert.match(reader, /getReadyWarehousePlacement[\s\S]*requireMembership\(locale\)/);

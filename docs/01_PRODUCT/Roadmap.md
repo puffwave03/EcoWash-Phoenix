@@ -8,22 +8,6 @@ Last consolidated: 2026-10-16
 
 This document records approved targets and sequencing constraints. [Project Status](../06_ROADMAP/Project_Status.md) owns implementation/UAT state; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) owns immediate continuation and Git/WIP. A roadmap entry is not implementation authorization.
 
-## PRINT-DOCUMENT-PREFERENCES-001 — Phase A checkpoint (09/11/2026)
-
-**FUNCTIONAL COMPLETE / CTO REVIEW PASS / PUBLISHED / STAGING MIGRATION PASS / STAGING READY / PO UAT PASS** for centralised preferences of the **customer EW copy**. [Project Status](../06_ROADMAP/Project_Status.md#print-document-preferences-001--phase-a-closeout-09112026) owns release identifiers and acceptance; [Testing](../05_DEVELOPMENT/Testing.md#print-document-preferences-001--phase-a-evidence-09112026) separates Codex, staging and PO browser evidence and its limits. The overall `COUNTER-THERMAL-DOCUMENTS-001` mission remains **PARTIAL**.
-
-**Delivered:** **Documents and printing**, persistent customer-copy format A4 / 58 mm / 80 mm by tenant/site, optional association with a compatible existing printer profile, and the preserved manual preview selector. Precedence is **valid manual preview selection → saved site preference → A4 fallback**; the override is temporary. No automatic hardware printing, document/number creation, payment or fiscal operation is introduced. REC, Billing, POS, Accounting, internal ticket and labels are unchanged.
-
-This checkpoint **supersedes the PROPOSED / NOT STARTED designation** of `PRINT-DOCUMENT-PREFERENCES-001` in the 08/11 checkpoint below, and supersedes its pending preferences/profile-association scope **only for the customer copy delivered in Phase A**. The dated checkpoints and original requirements remain preserved. The following requirements remain future scope, with **no new mission or implementation authorised here**:
-
-- Extend centralised configuration only to documents actually supported by a separately approved scope.
-- Consider an internal thermal-ticket layout without introducing three format selectors into the operator interface.
-- Configure copy counts when supported; the normally two-copy workflow is not complete.
-- Perform physical-printer and QR checks, including Epson TM-U220A / AVPos TC20, drivers, paper, cutting and connectivity.
-- Evaluate further operational-document formats while preserving canonical data and historical documents.
-
-PO UAT confirms browser behaviour with A4/80 mm preferences and temporary override; it does not certify hardware, automatic printing, multi-site configuration, all-role negative tests, complete local SQL execution, full backup restore, overall security, IGIC/VERI*FACTU or Production Readiness/commercialisation. Existing fiscal and release gates remain open; the customer copy and REC remain **non-fiscal operational documents**.
-
 ## Approved targets
 
 - EcoWash Phoenix operational at EcoWash La Tejita by **20 December 2026**.
@@ -33,62 +17,12 @@ PO UAT confirms browser behaviour with A4/80 mm preferences and temporary overri
 ## Sequencing constraints
 
 - Reuse implemented Terminal, production/quality, Warehouse, fulfillment, POS, Accounting, Billing, tenant configuration and onboarding. Do not repeat completed missions from archived priority lists.
-- Use Session Handover for current continuation and any preserved WIP, and Project Status for Billing acceptance and open gates. Historical WIP checkpoints do not establish an active patch. Each implementation or publication requires its own explicit authorization.
+- Review and accept the current protected Billing WIP independently of this documentation-only task. Session Handover defines the pending gates; no release is authorized here.
 - Complete outstanding real-store validation and continuity procedures under separate scopes. Configured browser printing is distinct from acceptance of physical Windows USB hardware; implemented till reconciliation is distinct from UX refinements.
 - Preserve order-level V1 operations; per-garment tracking, scan history and partial ready/fulfillment remain deferred.
 - Preserve tax-inclusive commercial pricing. Habitual simplified invoices where permitted and an external fiscal provider are approved directions, with implementation and fiscal timing still separately gated.
 - Distinguish ordinary invoicing, SIF/VERI*FACTU and B2B electronic invoice exchange. A provider integration must preserve canonical orders/payments/Billing, idempotency, tenant/fiscal identity and history.
 - Do not turn the older M1/P0/P1 candidate lists below into a new queue or invent completion percentages/dates. New implementation requires explicit CTO scope and PO authorization.
-
-## COUNTER-THERMAL-DOCUMENTS-001 — A1 and A2 checkpoint (08/11/2026)
-
-**Customer-copy scope completed; overall mission PARTIAL.** A1 is **COMPLETE / CTO PASS / PUBLISHED**. A2 is **COMPLETE / CTO PASS / PUBLISHED / STAGING READY / PO UAT PASS** for the browser checks performed on 08/11/2026. [Project Status](../06_ROADMAP/Project_Status.md#counter-thermal-documents-001--a1-and-a2-closeout-08112026) records commits and deployment; [Testing](../05_DEVELOPMENT/Testing.md#counter-thermal-documents-001--a1-and-a2-evidence-08112026) separates automated, synthetic, CTO and PO evidence.
-
-One **Customer copy** command opens the preview with transient A4 / 58 mm / 80 mm links and visible active format. A4 remains default/fallback; manual browser Print and return to Order are preserved. A2 supersedes A1's three separate format buttons. Canonical values, customer/staff note boundaries and five languages remain unchanged; no printer preference is persisted. The copy is **operational and non-fiscal**; REC, internal ticket, labels, Billing and POS behavior are unaffected.
-
-This later checkpoint supersedes the **PLANNED / NOT STARTED** status in the [05/11 specification](#counter-thermal-documents-001--po-format-requirements-05112026) **only for A1/A2 customer-copy delivery**. The original specification below remains intact. Future scope, not implemented by these phases:
-
-- Internal EW ticket layouts at 58/80 mm.
-- Persistent preferences by document/site and document-to-printer-profile association, reusing existing tenant/site profiles.
-- Configurable operational-document copies; the normally two-copy requirement is still future work.
-- Possible alternative operational REC formats, preserving historical documents.
-- Physical Epson TM-U220A / AVPos TC20 checks and real QR scanning, including paper, margins, cutting, drivers and connectivity.
-
-`PRINT-DOCUMENT-PREFERENCES-001` is **PROPOSED / NOT STARTED**, an architectural proposal only; no implementation or new mission is opened. Browser UAT does not certify physical or automatic printing, universal browser compatibility, security, IGIC/VERI*FACTU or commercial SaaS readiness. Existing fiscal-format validation gates below remain open.
-
-## REC-OPTIONAL-WORKFLOW-001 — implemented closeout (05/11/2026)
-
-**IMPLEMENTED / CTO PASS / STAGING READY / PO FUNCTIONAL UAT PASS.** Application commit: `98bea20f61b8c6b15deb827e335b648a237242f2`; staging deployment `dpl_2JH4EpLtL3GJAuazFRRYg99QSbDe` READY verified by the CTO. See [Project Status](../06_ROADMAP/Project_Status.md) for prior Codex results, the PO functional UAT on `EW-000171` / `EW-000172`, preserved historical `REC-2026-000035` and evidence limits.
-
-REC issuance is absent from ordinary Terminal/Order print actions. The protected legacy GET returns to Order detail without emission; its fiscal Billing branch remains available. EW customer copy, internal ticket and labels are the ordinary operational output. All historical REC records, including test-tenant records, numbering, immutable snapshots, consultation/reprinting, cancellations, audit and economic guards are preserved. The existing server action and RPC remain: backend issuance is not technically disabled by this UI correction. No database, POS, IGIC or Billing change was made.
-
-This closeout supersedes the earlier REC PLANNED / NOT STARTED statements. Physical printing, unauthorized-role browser checks and direct backend-blocking verification were not performed; no full hardware/security UAT is claimed. The A4 / 58–80 mm requirements below remain future scope of `COUNTER-THERMAL-DOCUMENTS-001`; Billing fiscal gates remain open. No new mission is authorized here.
-
-## COUNTER-THERMAL-DOCUMENTS-001 — PO format requirements (05/11/2026)
-
-**PLANNED / NOT STARTED — existing future mission; requirements recorded, implementation not authorized.** `COUNTER-NOTES-VISIBILITY-001` is **IMPLEMENTED / CTO PASS / STAGING READY / PO VISUAL UAT PASS** at application commit `9760605d0155d3451aab6e5dcb92dda0ef202688`; see [Project Status](../06_ROADMAP/Project_Status.md) for test, staging and scoped UAT evidence and its limits. Format selection and the normally two-copy workflow are not completed features of that correction.
-
-Approved Product Owner requirements for the future mission:
-
-- **Customer EW order copy:** thermal 58/80 mm or A4.
-- **Internal EW work ticket:** thermal 58/80 mm or A4, retaining confidential staff content only in the internal representation.
-- **Operator selection:** choose the format directly from the order. A configurable printer/profile default must allow manual override.
-- **One document, canonical data:** changing the format must not create new document numbers, payments or emissions. Adapt the layout for readable output in both formats; preserve the customer/internal content boundary.
-- **Copies:** printing normally in two copies remains a future requirement, not an implemented or hardware-validated capability.
-
-Fiscal-document presentation remains subject to the applicable fiscal requirements:
-
-| Billing document | Future format direction | Approval boundary |
-|---|---|---|
-| Simplified invoice | A4 and thermal | Mandatory content, readability and fiscal validation required |
-| Ordinary invoice | A4 initially; thermal possibility to evaluate | Thermal is not yet approved as a complete fiscal solution |
-| Monthly invoice | A4 preferred | Preserve canonical Billing content and the applicable fiscal contract |
-
-Billing remains the canonical source of fiscal documents. Emission, payment and printing stay distinct; format work must not modify already issued documents. The operational customer copy and internal work ticket do not become fiscal documents by changing paper format.
-
-**Historical REC planning checkpoint — superseded by the implemented closeout above:**
-
-**`REC-OPTIONAL-WORKFLOW-001` — PLANNED / NOT STARTED.** Preserve the approved direction: REC will not be mandatory in the future ordinary workflow. Preserve its complete history, numbering, immutable snapshots and reprinting. No REC behavior change is implemented or authorized by this documentation closeout. Neither roadmap mission is launched here.
 
 ## Historical roadmap checkpoints
 

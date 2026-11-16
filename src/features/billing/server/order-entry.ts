@@ -18,9 +18,9 @@ export async function getBillingOrderEntry(locale: string, orderId: string): Pro
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
   const organizationId = membership.organization.id;
-  const order = await supabase.from("orders").select("customer_id, id, is_active, production_status, currency, total, order_number, created_at")
+  const order = await supabase.from("orders").select("customer_id")
     .eq("organization_id", organizationId).eq("id", orderId)
-    .maybeSingle<{ customer_id: string; id: string; is_active: boolean; production_status: string; currency: string; total: number; order_number: string; created_at: string }>();
+    .maybeSingle<{ customer_id: string }>();
   if (order.error) throw order.error;
   if (!order.data) notFound();
   const customerId = order.data.customer_id;
@@ -29,27 +29,23 @@ export async function getBillingOrderEntry(locale: string, orderId: string): Pro
       .eq("organization_id", organizationId).eq("id", customerId)
       .maybeSingle<{ customer_code: string | null }>(),
     supabase.from("invoice_orders").select("invoice_id")
-      .eq("organization_id", organizationId).eq("order_id", orderId)
-      .eq("billing_link_role", "final").eq("is_active", true)
+      .eq("organization_id", organizationId).eq("order_id", orderId).eq("is_active", true)
       .maybeSingle<{ invoice_id: string }>(),
   ]);
   if (customer.error) throw customer.error;
   if (link.error) throw link.error;
   if (!customer.data) notFound();
+  if (customer.data.customer_code === "WALKIN-SHARED") return { kind: "unavailable", reason: "sharedWalkIn" };
   if (link.data) {
-    const invoice = await supabase.from("invoices").select("id, document_status, fiscal_document_type")
+    const invoice = await supabase.from("invoices").select("id, document_status")
       .eq("organization_id", organizationId).eq("id", link.data.invoice_id)
-      .maybeSingle<{ id: string; document_status: string; fiscal_document_type?: string }>();
+      .maybeSingle<{ id: string; document_status: string }>();
     if (invoice.error) throw invoice.error;
     if (!invoice.data || !["draft", "issued"].includes(invoice.data.document_status)) {
       throw new Error("billing_order_entry_invalid_document");
     }
-    if (customer.data.customer_code === "WALKIN-SHARED" && invoice.data.fiscal_document_type !== "simplified") {
-      return { kind: "unavailable", reason: "sharedWalkIn" };
-    }
     return { kind: invoice.data.document_status as "draft" | "issued", href: `/app/billing/${invoice.data.id}` };
   }
-  if (customer.data.customer_code === "WALKIN-SHARED") return { kind: "unavailable", reason: "sharedWalkIn" };
   // Cancelled documents have inactive links. Reuse the existing selector rather
   // than extending eligibility (or treating a read failure as an empty result).
   const { orders } = await listEligibleBillingOrders(locale, customerId, orderId);

@@ -2,6 +2,8 @@ import "server-only";
 
 import { notFound, redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { FulfillmentStatus } from "@/features/logistics/types";
 import type { PhotoCategory } from "@/features/order-photos/types";
@@ -123,6 +125,7 @@ type PortalAccessSummaryRow = {
   id: string;
   is_active: boolean;
   updated_at: string;
+  user_id: string;
 };
 
 type PortalTaskRow = {
@@ -546,7 +549,7 @@ export async function getCustomerPortalAccessSummary(
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("customer_portal_access")
-    .select("id, email, is_active, created_at, disabled_at, updated_at")
+    .select("id, email, is_active, created_at, disabled_at, updated_at, user_id")
     .eq("organization_id", membership.organization.id)
     .eq("customer_id", customerId)
     .maybeSingle<PortalAccessSummaryRow>();
@@ -556,6 +559,23 @@ export async function getCustomerPortalAccessSummary(
     return null;
   }
 
+  let lastSignInAt: string | null = null;
+
+  if (data && hasSupabaseAdminConfig()) {
+    try {
+      const admin = createSupabaseAdminClient();
+      const { data: authUser, error: authError } = await admin.auth.admin.getUserById(data.user_id);
+
+      if (authError) {
+        console.error("Customer portal auth summary failed", authError.code ?? authError.status ?? "unknown");
+      } else {
+        lastSignInAt = authUser.user?.last_sign_in_at ?? null;
+      }
+    } catch (authSummaryError) {
+      console.error("Customer portal auth summary configuration failed", authSummaryError);
+    }
+  }
+
   return data
     ? {
         disabledAt: data.disabled_at,
@@ -563,6 +583,7 @@ export async function getCustomerPortalAccessSummary(
         id: data.id,
         invitedAt: data.created_at,
         isActive: data.is_active,
+        lastSignInAt,
         updatedAt: data.updated_at,
       }
     : null;

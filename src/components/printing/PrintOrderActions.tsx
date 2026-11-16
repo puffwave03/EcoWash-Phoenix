@@ -1,27 +1,11 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useFormStatus } from "react-dom";
-import { issueOperationalReceiptAction } from "@/features/sales-documents/server/actions";
 
-export type PrintActionText = { "customer-copy": string; labels: string; receipt: string; ticket: string };
+export type PrintActionText = { labels: string; receipt: string; ticket: string };
 export type PrintOrderMode = keyof PrintActionText;
 
-function ReceiptIssueButton({ label }: { label: string }) {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      aria-busy={pending}
-      className="min-h-11 rounded-control border border-primary/20 bg-white px-3 text-sm font-bold text-primary disabled:opacity-50"
-      disabled={pending}
-      type="submit"
-    >
-      {label}
-    </button>
-  );
-}
-
-export function PrintOrderActions({ className = "", locale, modes = ["customer-copy", "ticket", "labels", "receipt"], orderId, text }: {
+export function PrintOrderActions({ className = "", locale, modes = ["receipt", "ticket", "labels"], orderId, text }: {
   className?: string;
   locale: string;
   orderId: string;
@@ -29,7 +13,7 @@ export function PrintOrderActions({ className = "", locale, modes = ["customer-c
   text: PrintActionText;
 }) {
   const actions = [
-    { href: `/app/orders/${orderId}/print/customer-copy`, label: text["customer-copy"], mode: "customer-copy" as const },
+    { href: `/app/orders/${orderId}/print/receipt`, label: text.receipt, mode: "receipt" as const },
     { href: `/app/orders/${orderId}/print/ticket`, label: text.ticket, mode: "ticket" as const },
     { href: `/app/orders/${orderId}/print/labels`, label: text.labels, mode: "labels" as const },
   ].filter((action) => modes.includes(action.mode));
@@ -46,11 +30,6 @@ export function PrintOrderActions({ className = "", locale, modes = ["customer-c
           {action.label}
         </Link>
       ))}
-      {modes.includes("receipt") ? (
-        <form action={issueOperationalReceiptAction.bind(null, locale, orderId)}>
-          <ReceiptIssueButton label={text.receipt} />
-        </form>
-      ) : null}
     </div>
   );
 }

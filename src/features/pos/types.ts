@@ -56,5 +56,4 @@ export type PosActionState = {
   fieldErrors: Record<string, string>;
   formError: string | null;
   success: boolean;
-  paymentOutcome?: "uncertain";
 };

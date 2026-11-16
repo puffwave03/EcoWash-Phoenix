@@ -7,13 +7,12 @@ import { getReadyWarehousePlacement } from "@/features/warehouse/server/queries"
 
 type QualityDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ readyError?: string; itemsError?: string; cancellationError?: string }>;
+  searchParams: Promise<{ readyError?: string; itemsError?: string }>;
 };
 
 export default async function QualityDetailPage({ params, searchParams }: QualityDetailPageProps) {
   const { locale, orderId } = await params;
-  const cancellationError = (await searchParams).cancellationError;
-  const [{ allowedTransitions, ticketUnico, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
     getQualityWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.qualityWorkspace" }),
     getTranslations({ locale, namespace: "common.catalog" }),
@@ -29,7 +28,6 @@ export default async function QualityDetailPage({ params, searchParams }: Qualit
 
   return (
     <ProductionDetail
-      ticketUnico={ticketUnico}
       action={transitionOrderStatusAction.bind(null, locale, task.id, "quality")}
       allowedTransitions={allowedTransitions}
       backHref="/app/work/quality"
@@ -39,8 +37,6 @@ export default async function QualityDetailPage({ params, searchParams }: Qualit
       readyError={(await searchParams).readyError}
       itemsError={(await searchParams).itemsError}
       itemsRequiredText={commonT("orderItemsRequired")}
-      cancellationErrorText={cancellationError === "fiscal-issued" ? commonT("fiscalCancellationBlocked")
-        : cancellationError === "conflict" ? commonT("fiscalCancellationConflict") : undefined}
       readyPlacement={readyPlacement}
       readyText={readyT.raw("labels") as ReadyWarehouseText}
       task={task}

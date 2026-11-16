@@ -60,7 +60,7 @@ export function parsePosRefund(formData: FormData) {
 }
 
 export function parseCloseSession(formData: FormData) {
-  const countedCash = value(formData, "countedCash", 24) ? money(formData, "countedCash") : Number.NaN;
+  const countedCash = money(formData, "countedCash");
   const sessionId = value(formData, "sessionId", 80);
   const fieldErrors: Record<string, string> = {};
   if (!Number.isFinite(countedCash) || countedCash < 0) fieldErrors.countedCash = "invalid";

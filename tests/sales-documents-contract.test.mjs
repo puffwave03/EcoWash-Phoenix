@@ -71,7 +71,7 @@ test("11b cancelled receipts remain historical and allow a newly numbered issued
   assert.doesNotMatch(issue, /document_status = 'cancelled'/);
 });
 
-test("12-14 legacy order entry does not issue; historical snapshot reprint and live EW remain available", async () => {
+test("12-14 receipt issue redirects to a readable persisted snapshot reprint while ticket and labels stay live", async () => {
   const [actions, issuePage, receiptPage, receiptDocument, printCss, ticketPage, labelsPage] = await Promise.all([
     source("src/features/sales-documents/server/actions.ts"),
     source("src/app/[locale]/app/(dashboard)/orders/[orderId]/print/receipt/page.tsx"),
@@ -86,11 +86,10 @@ test("12-14 legacy order entry does not issue; historical snapshot reprint and l
     actions.indexOf("export async function cancelOperationalReceiptAction"),
   );
   assert.match(issueAction, /supabase\.rpc\("issue_operational_receipt"/);
-  assert.match(issueAction, /export async function issueOperationalReceiptAction/);
-  assert.match(issueAction, /issued.status === "items_required"[\s\S]*itemsError=1/);
-  assert.doesNotMatch(issuePage, /issueOperationalReceipt|sales-documents\/server\/actions/);
-  assert.match(issuePage, /requirePrintAccess\(locale\)/);
-  assert.match(issuePage, /redirect\(`\/\$\{locale\}\/app\/orders\/\$\{encodeURIComponent\(orderId\)\}`\)/);
+  assert.doesNotMatch(issueAction, /revalidatePath/);
+  assert.match(issuePage, /issueOperationalReceipt\(locale, orderId\)/);
+  assert.match(issuePage, /documents\/receipts\/\$\{receipt\.id\}\/print/);
+  assert.ok(issuePage.indexOf("issueOperationalReceipt(locale, orderId)") < issuePage.indexOf("redirect("));
   assert.match(receiptPage, /getOperationalReceipt\(locale, receiptId\)/);
   assert.match(receiptDocument, /receipt\.snapshot/);
   assert.match(receiptDocument, /print-preview-toolbar operational-receipt-toolbar print:hidden/);

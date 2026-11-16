@@ -43,9 +43,9 @@ const button = (tree, label) => nodes(tree).find((node) => node.type === "button
 
 // Execute the real TSX, handlers and cleanup with deferred action promises and
 // in-memory storage. Hooks are simulated; this does not test React scheduling or DOM layout.
-function terminal({ restored = null, refreshing = false, workspace = 1, storageValues = new Map(), confirmResult = true } = {}) {
+function terminal({ restored = null, refreshing = false, workspace = 1, storageValues = new Map() } = {}) {
   const state = new Map(), refs = new Map(), actionSlots = new Map(), modules = new Map();
-  const calls = { submit: [], status: [], occupied: [], confirm: [] };
+  const calls = { submit: [], status: [], occupied: [] };
   const response = deferred();
   let stateIndex, refIndex, actionIndex, effects, timers = [];
   const storage = {
@@ -87,7 +87,7 @@ function terminal({ restored = null, refreshing = false, workspace = 1, storageV
     const localRequire = (name) => {
       if (name === "react") return hooks;
       if (name === "react/jsx-runtime") return require(name);
-      if (name === "@/i18n/navigation") return { Link: "a", useRouter: () => ({ push: (href) => { (calls.navigate ??= []).push(href); } }) };
+      if (name === "@/i18n/navigation") return { Link: "a", useRouter: () => ({}) };
       if (name.startsWith("@/components/")) return { PrintOrderActions: "print-actions", PortalMedia: "media", QuickDropTerminalPanel: "quick-drop" };
       if (name === "@/lib/number-format") return { formatCurrency: String };
       if (name.startsWith("@/")) return load(resolve(root, "src", name.slice(2)) + ".ts");
@@ -99,8 +99,7 @@ function terminal({ restored = null, refreshing = false, workspace = 1, storageV
     } }).outputText;
     runInNewContext(code, {
       module: compiledModule, exports: compiledModule.exports, require: localRequire, crypto: webcrypto,
-      window: { sessionStorage: storage, setTimeout: (callback) => timers.push(callback), clearTimeout() {},
-        confirm(message) { calls.confirm.push(message); return confirmResult; } },
+      window: { sessionStorage: storage, setTimeout: (callback) => timers.push(callback), clearTimeout() {} },
       FormData: class extends Map { get(key) { return super.get(key) ?? null; } },
     }, { filename: file });
     return compiledModule.exports;

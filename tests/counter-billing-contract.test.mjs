@@ -111,7 +111,7 @@ test("10 counter bridge cannot duplicate invoice lines or payment rows", async (
   ]);
   const bridge = files.join("\n");
   assert.doesNotMatch(bridge, /from\("invoice_items"\)\.(insert|update)|from\("payments"\)\.(insert|update)/);
-  assert.match(bridge, /rpc\("create_billing_draft_with_order_route"/);
+  assert.match(bridge, /rpc\("create_billing_draft"/);
 });
 
 test("11 operational receipt remains explicitly non-fiscal", async () => {

@@ -16,7 +16,7 @@ import { hasEntitlement } from "@/features/entitlements/server/resolver";
 
 type CustomerDetailPageProps = {
   params: Promise<{ customerId: string; locale: string }>;
-  searchParams: Promise<{ period?: string; orderCursor?: string; paymentCursor?: string; albaranPage?: string }>;
+  searchParams: Promise<{ period?: string; orderCursor?: string; paymentCursor?: string }>;
 };
 
 export default async function CustomerDetailPage({
@@ -42,13 +42,11 @@ export default async function CustomerDetailPage({
 
   return (
     <CustomerAccountView
-      albaranPage={rawSearchParams.albaranPage}
       customer={customer}
       billingOverview={billingOverview}
       eligibility={eligibility}
       financials={financials}
       locale={locale}
-      timeZone={access.membership.organization.timezone}
       period={period}
       portalAccess={portalAccess}
       previewUrl={previewUrl}

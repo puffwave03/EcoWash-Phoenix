@@ -1,4 +1,3 @@
-import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { ShopTerminalWorkspace, type ShopTerminalText } from "@/components/shop-terminal/ShopTerminalWorkspace";
 import type { PrintActionText } from "@/components/printing/PrintOrderActions";
@@ -40,7 +39,6 @@ export default async function ShopPage({ params }: ShopPageProps) {
     getTranslations({ locale, namespace: "common.postCloseGate" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
-  const automatic = await ticketUnicoEnabled(locale);
   const operationalOptions = await listShopOperationalOptions(locale, session?.locationId ?? null);
   const quickDropClosed = closeState.organizationWide || Boolean(
     session?.locationId && closeState.locationIds.includes(session.locationId),
@@ -70,7 +68,6 @@ export default async function ShopPage({ params }: ShopPageProps) {
         searchCustomers: searchShopCustomersAction.bind(null, locale),
         submit: submitShopOrderAction.bind(null, locale),
       }}
-      ticketUnico={automatic}
       canPrint={entitlementEnabled(entitlements, FEATURES.printing)}
       canScan={entitlementEnabled(entitlements, FEATURES.barcode)}
       canInvoice={entitlementEnabled(entitlements, FEATURES.billingInvoicing) && access.membership.role !== "staff"}

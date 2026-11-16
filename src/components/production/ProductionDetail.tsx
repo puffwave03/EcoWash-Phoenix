@@ -46,7 +46,6 @@ export type ProductionDetailText = {
 
 type ProductionDetailProps = {
   action: (formData: FormData) => Promise<void>;
-  ticketUnico?: boolean;
   allowedTransitions: ProductionStatus[];
   backHref?: string;
   canConfigureWarehouse: boolean;
@@ -55,7 +54,6 @@ type ProductionDetailProps = {
   readyError?: string;
   itemsError?: string;
   itemsRequiredText: string;
-  cancellationErrorText?: string;
   readyPlacement: ReadyWarehousePlacement;
   readyText: ReadyWarehouseText;
   task: ProductionTask;
@@ -103,7 +101,6 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 
 export function ProductionDetail({
   action,
-  ticketUnico,
   allowedTransitions,
   backHref = "/app/work/production",
   canConfigureWarehouse,
@@ -112,7 +109,6 @@ export function ProductionDetail({
   readyError,
   itemsError,
   itemsRequiredText,
-  cancellationErrorText,
   readyPlacement,
   readyText,
   task,
@@ -134,9 +130,6 @@ export function ProductionDetail({
         <span aria-hidden="true">←</span> {text.back}
       </Link>
 
-      {cancellationErrorText ? (
-        <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{cancellationErrorText}</p>
-      ) : null}
       {itemsError === "1" ? (
         <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{itemsRequiredText}</p>
       ) : null}
@@ -255,7 +248,6 @@ export function ProductionDetail({
           <section className="space-y-3 border-t border-border pt-5">
             <h3 className="text-lg font-semibold text-primary">{text.nextPhase}</h3>
             <ProductionTransitionForm
-              ticketUnico={ticketUnico}
               action={action}
               allowedTransitions={allowedTransitions}
               canConfigureWarehouse={canConfigureWarehouse}

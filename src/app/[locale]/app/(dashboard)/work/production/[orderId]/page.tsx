@@ -7,13 +7,12 @@ import { getReadyWarehousePlacement } from "@/features/warehouse/server/queries"
 
 type ProductionDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ readyError?: string; itemsError?: string; cancellationError?: string }>;
+  searchParams: Promise<{ readyError?: string; itemsError?: string }>;
 };
 
 export default async function ProductionDetailPage({ params, searchParams }: ProductionDetailPageProps) {
   const { locale, orderId } = await params;
-  const cancellationError = (await searchParams).cancellationError;
-  const [{ allowedTransitions, ticketUnico, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
+  const [{ allowedTransitions, isSupervision, task, timeZone }, t, catalogT, readyT, commonT] = await Promise.all([
     getProductionWorkspaceTask(locale, orderId),
     getTranslations({ locale, namespace: "common.production" }),
     getTranslations({ locale, namespace: "common.catalog" }),
@@ -26,7 +25,6 @@ export default async function ProductionDetailPage({ params, searchParams }: Pro
 
   return (
     <ProductionDetail
-      ticketUnico={ticketUnico}
       action={transitionOrderStatusAction.bind(null, locale, task.id, "production")}
       allowedTransitions={allowedTransitions}
       canConfigureWarehouse={isSupervision}
@@ -35,8 +33,6 @@ export default async function ProductionDetailPage({ params, searchParams }: Pro
       readyError={(await searchParams).readyError}
       itemsError={(await searchParams).itemsError}
       itemsRequiredText={commonT("orderItemsRequired")}
-      cancellationErrorText={cancellationError === "fiscal-issued" ? commonT("fiscalCancellationBlocked")
-        : cancellationError === "conflict" ? commonT("fiscalCancellationConflict") : undefined}
       readyPlacement={readyPlacement}
       readyText={readyT.raw("labels") as ReadyWarehouseText}
       task={task}

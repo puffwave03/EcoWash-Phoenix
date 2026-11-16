@@ -1,28 +1,12 @@
 # Deployment
 
-Status: Current deployment reference — staging test environment / production deferred
+Status: Active
 
 Version: 0.1
 
-Current publication procedure: 2026-10-28. Earlier environment clarification: 2026-10-24. Original release-plan update: 2026-08-22.
+Last Updated: 2026-08-22
 
-Historical operational checkpoint (2026-08-22): Operational role/workspace phase validated. This is not the current mission.
-
-## Current environment boundary and authority
-
-[Session Handover](../00_START_HERE/SESSION_HANDOVER.md) and [Project Status](../06_ROADMAP/Project_Status.md) own current acceptance, publication checkpoints and authorized continuation. The August release milestones, resource observations and procedures below are retained as historical reference; they do not assign a current mission or constitute a new environment verification. Later canonical checkpoints take precedence over superseded statements.
-
-Staging remains a test/UAT environment. The existing EcoWash pilot tenant may be used with synthetic data under the approved scope; real customer personal data must not be introduced into the current staging environment. A pilot with real data requires a separately approved environment/tenant and explicit PO/CTO authorization. Historical references below to a possible staging-only pilot do not authorize that use. No live Phoenix fiscal issuance or unauthorized real collection is approved by staging acceptance.
-
-Production gates remain in force, including `AUTH-DR-001C`, the security/privacy and recovery requirements, Production Readiness Review and the separately approved fiscal path. [Security](../04_ARCHITECTURE/Security.md), [Testing](Testing.md) and the canonical checkpoints distinguish completed scoped evidence from remaining gates. This clarification performs no deployment, remote check or environment change and authorizes none.
-
-## Canonical ordinary staging publication
-
-The verified ordinary Phoenix path is: CTO review → explicit Product Owner commit/push authorization → reviewed mission commit on GitHub `main` and authorized push → automatic deployment to the dedicated Vercel project `ecowash-phoenix-staging` → verify source commit and deployment state → scoped Product Owner staging UAT → canonical documentation closeout. [Git Workflow](Git_Workflow.md) owns the file-selection and approval sequence; [Session Handover](../00_START_HERE/SESSION_HANDOVER.md) identifies the latest checkpoint. The Vercel target labelled `production` inside **this staging project** is not commercial Phoenix production. No Vercel CLI or direct local-worktree deployment is required for the ordinary path.
-
-Before choosing another method, the CTO checks the current documents, code, project link and last verified deployment evidence. Use the established path when sufficient. A different deployment procedure requires a demonstrated technical limitation, a bounded risk/benefit explanation and explicit Product Owner approval; it is not inferred from a missing local CLI. Do not create a new environment, tool or dependency merely to replace a working route. A method change remains a separate approved phase, with exact target proof and no commercial-production access by implication.
-
-Staging SQL application is a separate authorized phase; an applied migration does not publish the UI. Do not repeat it during application deployment. After automatic deployment, verify the new source SHA and `READY` state rather than inferring success from an earlier deployment. The `69ea49c` mission followed this path: `dpl_F2NsptMYkGFp9kTUVDuedyWwtJ4T` was READY on the staging project, followed by PO functional enable/disable UAT PASS; its remaining security evidence is recorded in [Testing](Testing.md). No commit, push or deployment is authorized by this document alone.
+Current Mission: Operational role/workspace phase validated
 
 ---
 
@@ -34,14 +18,14 @@ Track the current staging deployment contract and preserve the production-deferr
 
 ## Contents
 
-Historical release result: staging was online and validated at the recorded checkpoint; real production remains deferred. The latest dated handover and status supersede earlier mission labels below.
+Current release result: staging is online and validated; real production is deferred until the pilot product is functionally complete.
 
 This document is a plan. It does not declare EcoWash Phoenix production-ready and does not authorize deployment, DNS changes, environment changes, Supabase project creation, Auth redirect changes or migration application.
 
-## Historical Release Position — August 2026
+## Current Release Position
 
 - `main` is the only release branch.
-- Baseline at that checkpoint before DOCS-OPS-017: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`.
+- Latest confirmed operational baseline before DOCS-OPS-017: `edebb79 UI-FORMAT-005 feat: normalize quantity and currency formatting`.
 - SEC-001 is completed.
 - PILOT-001 is approved and canonicalized.
 - RELEASE-001.2 staging deployment rehearsal and Auth validation are completed.
@@ -57,7 +41,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 ## Staging Requirements
 
 - Git local and remote `main` are synchronized at an approved commit.
-- The approved release commit contains only reviewed mission files; unrelated local changes remain excluded.
+- Working tree is clean.
 - `npm run lint` passes.
 - `npm run build` passes.
 - `git diff --check` passes.
@@ -71,7 +55,7 @@ This document is a plan. It does not declare EcoWash Phoenix production-ready an
 - Auth recovery redirect works for the staging canonical URL.
 - `NEXT_PUBLIC_SITE_INDEXING=false` is used for staging/preview deployments.
 - `SUPABASE_SERVICE_ROLE_KEY` is server-side only for staff invitations and customer access management and must never use a `NEXT_PUBLIC_` prefix.
-- Customer Portal Preview is disabled by F02 independently of `ENABLE_STAGING_CUSTOMER_PREVIEW`: the endpoint always returns 404 and the helper always returns `null`. The former flag-enabled staging review behavior is superseded; the flag cannot enable Preview.
+- `ENABLE_STAGING_CUSTOMER_PREVIEW=true` is server-side only for the staging customer portal review helper; it must not use a `NEXT_PUBLIC_` prefix and must not be enabled in a future real production environment.
 - Staging can use the assigned Vercel domain; a custom domain is not required for the first staging deployment.
 - Staging uses EcoWash Staging Supabase, not a production Supabase project.
 - No production deployment, DNS cutover or production Supabase work is part of staging rehearsal.
@@ -279,7 +263,7 @@ Use this checklist first for staging rehearsal. Production deployment is not aut
 Pre-deploy:
 
 - Release commit approved.
-- Release commit and included file list verified; unrelated local changes excluded.
+- Working tree clean.
 - `npm run lint` passes.
 - `npm run build` passes.
 - Environment matrix approved.
@@ -291,8 +275,8 @@ Pre-deploy:
 
 Deploy:
 
-- Publish only the approved GitHub `main` commit through the existing automatic staging integration.
-- Use another hosting or deployment path only under a separate justified PO approval.
+- Deploy from approved commit only.
+- Use the selected hosting provider's staging or production deployment path according to the approved task.
 - Do not change DNS until the deployment passes health checks and a production cutover task explicitly authorizes DNS work.
 - Keep previous deployment available for rollback.
 
@@ -432,7 +416,7 @@ Staging environment contract:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | EcoWash Staging anon key | Must be anon key only; no service-role key. |
 | `NEXT_PUBLIC_SITE_INDEXING` | literal flag | Must be `false`. |
 | `SUPABASE_SERVICE_ROLE_KEY` | server-side secret | Required for staff invitations and customer access management; never expose to browser code and never commit. |
-| `ENABLE_STAGING_CUSTOMER_PREVIEW` | superseded server-side staging flag | F02 disables Preview regardless of this flag: endpoint always 404, helper always `null`. The former flag-enabled review contract is historical and superseded. |
+| `ENABLE_STAGING_CUSTOMER_PREVIEW` | server-side staging flag | May be `true` only on the Vercel staging project for review; never expose to browser code and do not enable in future real production. |
 
 Staging indexing contract:
 
@@ -471,6 +455,6 @@ Current staging status:
 - Indexing is disabled.
 - `/robots.txt` returns `Disallow: /`.
 - Customer portal routes are deployed and protected.
-- Customer Portal Preview is disabled independently of the flag: endpoint always 404, helper always `null`. The earlier feature-flagged staging status is superseded by F02.
+- Staging customer preview is feature-flagged server-side only.
 - Automatic deploy from `main` is working.
 - No real production resource has been created.

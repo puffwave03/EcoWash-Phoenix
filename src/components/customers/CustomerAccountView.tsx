@@ -12,7 +12,6 @@ import {
   type Tone,
 } from "@/components/operational/OperationalUi";
 import { PropertyList } from "@/components/properties/PropertyList";
-import { CustomerServiceAlbaranHistory } from "@/components/service-albarans/CustomerServiceAlbaranHistory";
 import type { CustomerSegmentAssignment } from "@/features/catalog-segments/types";
 import { assignCustomerSegmentAction } from "@/features/catalog-segments/server/actions";
 import type {
@@ -42,7 +41,6 @@ import {
 } from "@/features/portal/server/actions";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/number-format";
-import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 import { accountHistoryHref, type AccountNavigation } from "@/features/customer-account/pagination";
 
 function HistoryPagination({ customerId, period, orderCursor, paymentCursor, navigation, kind, locale, text, title }: {
@@ -62,13 +60,13 @@ function HistoryPagination({ customerId, period, orderCursor, paymentCursor, nav
   </nav>;
 }
 
-function formatDate(value: string | null, locale: string, timeZone: string, withTime = false) {
+function formatDate(value: string | null, locale: string, withTime = false) {
   if (!value) return "-";
 
-  return formatOrganizationDateTime(value, locale, timeZone, {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     ...(withTime ? { timeStyle: "short" as const } : {}),
-  });
+  }).format(new Date(value));
 }
 
 function latestDate(values: Array<string | null>) {
@@ -101,7 +99,6 @@ function address(customer: Customer) {
 }
 
 export async function CustomerAccountView({
-  albaranPage,
   billingOverview,
   customer,
   eligibility,
@@ -112,9 +109,7 @@ export async function CustomerAccountView({
   previewUrl,
   properties,
   segmentAssignment,
-  timeZone,
 }: {
-  albaranPage?: string;
   billingOverview: CustomerBillingOverview | null;
   customer: Customer;
   eligibility: CustomerLifecycleEligibility | null;
@@ -125,7 +120,6 @@ export async function CustomerAccountView({
   previewUrl: string | null;
   properties: Property[];
   segmentAssignment: CustomerSegmentAssignment;
-  timeZone: string;
 }) {
   const [t, customerText] = await Promise.all([
     getTranslations({ locale, namespace: "common.customerAccount" }),
@@ -137,17 +131,13 @@ export async function CustomerAccountView({
   const currentSegment = segmentAssignment.segments.find(
     (segment) => segment.id === segmentAssignment.currentSegmentId,
   );
-  const lastActivity = financials.state === "ready" ? latestDate([
+  const lastActivity = latestDate([
     customer.updatedAt,
     portalAccess?.updatedAt ?? null,
     ...(billingOverview?.recentInvoices ?? []).map((invoice) => invoice.issuedAt ?? invoice.createdAt),
     ...financials.summaries.flatMap((summary) => [summary.lastOrderAt, summary.lastPaymentAt]),
-  ]) : null;
+  ]);
   const billingAddress = address(customer);
-  const reloadParams = new URLSearchParams(accountHistoryHref(customer.id, period,
-    financials.pagination.orderCursor, financials.pagination.paymentCursor).split("?")[1]);
-  if (albaranPage) reloadParams.set("albaranPage", albaranPage);
-  const reloadHref = `/${locale}/app/customers/${customer.id}?${reloadParams.toString()}#financial-summary`;
 
   return (
     <div className="space-y-6">
@@ -177,7 +167,7 @@ export async function CustomerAccountView({
                 <span className="rounded-full border border-primary/15 bg-primary-soft px-3 py-1 font-semibold text-primary">
                   {currentSegment?.name ?? t("noSegment")}
                 </span>
-                {financials.state === "ready" ? <span className="text-muted">{t("lastActivity")}: {formatDate(lastActivity, locale, timeZone, true)}</span> : null}
+                <span className="text-muted">{t("lastActivity")}: {formatDate(lastActivity, locale, true)}</span>
               </div>
             </div>
             <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto lg:grid-cols-1 xl:grid-cols-2">
@@ -206,12 +196,7 @@ export async function CustomerAccountView({
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground" id="financial-summary">{t("financial.title")}</h2>
           <p className="mt-1 text-sm leading-6 text-muted">{t("financial.description")}</p>
         </div>
-        {financials.state === "unavailable" ? (
-          <Card className="border-amber-200 bg-amber-50">
-            <p role="alert" className="text-sm font-semibold text-amber-900">{t("financial.unavailable")}</p>
-            <a className="mt-3 inline-flex min-h-11 items-center rounded-control border border-border px-3 text-sm font-semibold text-primary hover:bg-primary-soft" href={reloadHref}>{t("financial.reload")}</a>
-          </Card>
-        ) : financials.summaries.length === 0 ? (
+        {financials.summaries.length === 0 ? (
           <EmptyState>{t("financial.empty")}</EmptyState>
         ) : financials.summaries.map((summary) => (
           <div className="space-y-3" key={summary.currency}>
@@ -269,14 +254,13 @@ export async function CustomerAccountView({
         ))}
       </nav>
 
-      {financials.state === "ready" ? <>
       <DisclosureSection
         contentClassName="space-y-4"
         count={financials.orders.length}
         defaultOpen={period !== "recent" || financials.orders.length <= 3}
         id="customer-orders"
         summary={financials.orders[0]
-          ? `${formatDate(financials.orders[0].createdAt, locale, timeZone)} · ${formatCurrency(financials.orders[0].total, financials.orders[0].currency, locale)}`
+          ? `${formatDate(financials.orders[0].createdAt, locale)} · ${formatCurrency(financials.orders[0].total, financials.orders[0].currency, locale)}`
           : t("orders.description")}
         title={t("orders.title")}
       >
@@ -288,7 +272,7 @@ export async function CustomerAccountView({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <Link className="text-lg font-semibold text-primary hover:underline" href={`/app/orders/${order.id}`} locale={locale}>{order.orderNumber}</Link>
-                    <p className="mt-1 text-sm text-muted">{formatDate(order.createdAt, locale, timeZone)} · {order.propertyName || t("orders.noProperty")}</p>
+                    <p className="mt-1 text-sm text-muted">{formatDate(order.createdAt, locale)} · {order.propertyName || t("orders.noProperty")}</p>
                   </div>
                   <StatusBadge tone={productionTone(order.productionStatus)}>{productionStatuses[order.productionStatus]}</StatusBadge>
                 </div>
@@ -314,7 +298,7 @@ export async function CustomerAccountView({
         defaultOpen={period !== "recent" || financials.payments.length <= 3}
         id="customer-payments"
         summary={financials.payments[0]
-          ? `${formatDate(financials.payments[0].paidAt, locale, timeZone, true)} · ${formatCurrency(financials.payments[0].amount, financials.payments[0].currency, locale)}`
+          ? `${formatDate(financials.payments[0].paidAt, locale, true)} · ${formatCurrency(financials.payments[0].amount, financials.payments[0].currency, locale)}`
           : t("payments.description")}
         title={t("payments.title")}
       >
@@ -327,7 +311,7 @@ export async function CustomerAccountView({
                   <p className={`text-lg font-semibold ${payment.status === "refunded" ? "text-blue-800" : "text-foreground"}`}>
                     {payment.status === "refunded" ? "−" : ""}{formatCurrency(payment.amount, payment.currency, locale)}
                   </p>
-                  <p className="mt-1 text-sm text-muted">{formatDate(payment.paidAt, locale, timeZone, true)}</p>
+                  <p className="mt-1 text-sm text-muted">{formatDate(payment.paidAt, locale, true)}</p>
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">{t("payments.method")}</p>
@@ -345,16 +329,6 @@ export async function CustomerAccountView({
         <HistoryPagination customerId={customer.id} period={period} orderCursor={financials.pagination.orderCursor} paymentCursor={financials.pagination.paymentCursor} navigation={financials.pagination.payments} kind="payments" locale={locale} text={t.raw("history.pagination")} title={t("payments.title")} />
         {period === "recent" ? <p className="text-xs leading-5 text-muted">{t("history.boundedNote")}</p> : null}
       </DisclosureSection>
-      </> : null}
-
-      {customer.customerType === "business" ? <CustomerServiceAlbaranHistory
-        customerId={customer.id}
-        locale={locale}
-        page={albaranPage}
-        period={period}
-        orderCursor={financials.pagination.orderCursor}
-        paymentCursor={financials.pagination.paymentCursor}
-      /> : null}
 
       <DisclosureSection
         contentClassName="space-y-4"
@@ -398,7 +372,7 @@ export async function CustomerAccountView({
               manageAction={manageCustomerPortalAccessAction.bind(null, locale, customer.id)}
               previewUrl={previewUrl}
               text={{
-                active: customerText("portal.active"), accessDisabled: customerText("portal.accessDisabled"), authUnavailable: customerText("portal.authUnavailable"), configurationError: customerText("portal.configurationError"), disable: customerText("portal.disable"), disabled: customerText("portal.disabled"), email: customerText("portal.email"), emailDelivery: customerText("portal.emailDelivery"), emailInvalid: customerText("portal.emailInvalid"), enable: customerText("portal.enable"), error: customerText("portal.error"), invite: customerText("portal.invite"), invitedAt: customerText("portal.invitedAt"), inviteError: customerText("portal.inviteError"), membershipError: customerText("portal.membershipError"), preview: customerText("portal.preview"), rateLimit: customerText("portal.rateLimit"), resend: customerText("portal.resend"), resetPassword: customerText("portal.resetPassword"), resetPasswordError: customerText("portal.resetPasswordError"), resetPasswordSuccess: customerText("portal.resetPasswordSuccess"), resendSuccess: customerText("portal.resendSuccess"), success: customerText("portal.success"), title: customerText("portal.title"), unauthorized: customerText("portal.unauthorized"),
+                active: customerText("portal.active"), accessDisabled: customerText("portal.accessDisabled"), authUnavailable: customerText("portal.authUnavailable"), configurationError: customerText("portal.configurationError"), disable: customerText("portal.disable"), disabled: customerText("portal.disabled"), email: customerText("portal.email"), emailDelivery: customerText("portal.emailDelivery"), emailInvalid: customerText("portal.emailInvalid"), enable: customerText("portal.enable"), error: customerText("portal.error"), invite: customerText("portal.invite"), invitedAt: customerText("portal.invitedAt"), lastSignIn: customerText("portal.lastSignIn"), inviteError: customerText("portal.inviteError"), membershipError: customerText("portal.membershipError"), noLastSignIn: customerText("portal.noLastSignIn"), pending: customerText("portal.pending"), preview: customerText("portal.preview"), rateLimit: customerText("portal.rateLimit"), resend: customerText("portal.resend"), resetPassword: customerText("portal.resetPassword"), resetPasswordError: customerText("portal.resetPasswordError"), resetPasswordSuccess: customerText("portal.resetPasswordSuccess"), resendSuccess: customerText("portal.resendSuccess"), success: customerText("portal.success"), title: customerText("portal.title"), unauthorized: customerText("portal.unauthorized"),
                 inactiveCustomer: t("lifecycle.portalInactive"),
               }}
             />

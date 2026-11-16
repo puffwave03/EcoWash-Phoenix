@@ -1,4 +1,4 @@
-import { BillingIssuerSaveControls } from "@/components/billing/BillingIssuerSaveControls";
+import { Button } from "@/components/Button";
 import { DisclosureSection } from "@/components/DisclosureSection";
 import { saveBillingSettingsAction } from "@/features/billing/server/actions";
 import type { BillingSettings } from "@/features/billing/types";
@@ -9,12 +9,10 @@ const inputClass = "min-h-11 w-full rounded-control border border-border bg-whit
 export function BillingSettingsPanel({
   locale,
   settings,
-  saved = false,
   text,
 }: {
   locale: string;
   settings: BillingSettings;
-  saved?: boolean;
   text: Record<string, string>;
 }) {
   const requiredLabels = {
@@ -40,16 +38,13 @@ export function BillingSettingsPanel({
     <DisclosureSection
       actionLabel={settings.isIssueReady ? text.edit : text.review}
       contentClassName="rounded-card border border-border bg-white p-4 shadow-card sm:p-6"
-      defaultOpen={saved || !settings.isIssueReady}
-      key={saved ? "issuer-saved" : "issuer-settings"}
+      defaultOpen={!settings.isIssueReady}
       id="issuer-settings"
       statusLabel={settings.isIssueReady ? text.ready : text.missing}
       statusTone={settings.isIssueReady ? "success" : "warning"}
       summary={settings.isIssueReady ? issuerSummary : `${settings.organizationName} · ${text.description}`}
       title={text.title}
     >
-      <p className="text-sm leading-6 text-muted">{text.partialSaveHelp}</p>
-      <p className="mt-2 text-sm leading-6 text-muted">{text.verificationNotice}</p>
       {!settings.isIssueReady && settings.autofilledFields.length ? <p className="rounded-control bg-primary-soft px-3 py-2 text-sm leading-6 text-primary">{text.autofillNotice}</p> : null}
       {!settings.isIssueReady && settings.missingRequiredFields.length ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -59,14 +54,14 @@ export function BillingSettingsPanel({
       ) : null}
       <form action={saveBillingSettingsAction.bind(null, locale)} className="mt-5 grid gap-4 border-t border-border pt-5 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            ["issuerLegalName", text.legalName, settings.issuerLegalName, false],
-            ["issuerTaxId", text.taxId, settings.issuerTaxId, false],
-            ["issuerAddressLine1", text.addressLine1, settings.issuerAddressLine1, false],
+            ["issuerLegalName", text.legalName, settings.issuerLegalName, true],
+            ["issuerTaxId", text.taxId, settings.issuerTaxId, true],
+            ["issuerAddressLine1", text.addressLine1, settings.issuerAddressLine1, true],
             ["issuerAddressLine2", text.addressLine2, settings.issuerAddressLine2, false],
-            ["issuerCity", text.city, settings.issuerCity, false],
+            ["issuerCity", text.city, settings.issuerCity, true],
             ["issuerRegion", text.region, settings.issuerRegion, false],
-            ["issuerPostalCode", text.postalCode, settings.issuerPostalCode, false],
-            ["issuerCountryCode", text.countryCode, settings.issuerCountryCode, false],
+            ["issuerPostalCode", text.postalCode, settings.issuerPostalCode, true],
+            ["issuerCountryCode", text.countryCode, settings.issuerCountryCode, true],
             ["issuerEmail", text.email, settings.issuerEmail, false],
             ["issuerPhone", text.phone, settings.issuerPhone, false],
             ["defaultSeries", text.defaultSeries, settings.defaultSeries, true],
@@ -80,7 +75,9 @@ export function BillingSettingsPanel({
             <span>{text.defaultTaxRate}</span>
             <input className={inputClass} defaultValue={taxRateInputValue(settings.defaultTaxRate)} inputMode="decimal" max="100" min="0" name="defaultTaxRate" required step="0.01" type="number" />
           </label>
-          <BillingIssuerSaveControls label={text.save} pendingLabel={text.saving} saved={saved} savedLabel={text.saved} />
+          <div className="flex items-end sm:col-span-2 lg:col-span-3">
+            <Button type="submit">{text.save}</Button>
+          </div>
       </form>
     </DisclosureSection>
   );

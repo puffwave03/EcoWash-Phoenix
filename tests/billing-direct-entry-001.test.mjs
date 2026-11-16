@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { runInNewContext } from "node:vm";
 import test from "node:test";
 import ts from "typescript";
-import { terminal, nodes, content, customer, labelsFor } from "./helpers/shop-terminal-harness.mjs";
+import { terminal, nodes, content, customer } from "./helpers/shop-terminal-harness.mjs";
 
 const require = createRequire(import.meta.url);
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -80,8 +80,6 @@ function billing({ role = "owner", entitled = true, locale = "it" } = {}) {
       if (name === "@/features/billing/pagination") return {};
       if (name === "@/features/billing/types") return load("src/features/billing/types.ts");
       if (name === "@/features/billing/server/order-entry") return load(entryPath);
-      // This ordinary-workflow harness keeps the new default-off ticket gate closed.
-      if (name === "@/features/billing/server/fiscal-ticket-queries") return { fiscalTicketEnabled: async () => false };
       if (name === "@/features/billing/server/queries") return load("src/features/billing/server/queries.ts");
       if (name === "@/components/billing/BillingCreateForm") return load(formPath);
       if (name === "@/components/Button") return { Button: "button" };
@@ -107,7 +105,7 @@ function billing({ role = "owner", entitled = true, locale = "it" } = {}) {
     return compiled.exports;
   }
   function linkInvoice(status, { active = status !== "cancelled", organizationId = "org-a" } = {}) {
-    rows.invoice_orders.push({ organization_id: organizationId, order_id: "order-a", invoice_id: "invoice-a", is_active: active, billing_link_role: "final" });
+    rows.invoice_orders.push({ organization_id: organizationId, order_id: "order-a", invoice_id: "invoice-a", is_active: active });
     rows.invoices.push({ organization_id: organizationId, id: "invoice-a", document_status: status });
   }
   return { rows, calls, failures, missing, denied, featureDenied, linkInvoice, messages,
@@ -136,7 +134,7 @@ test("eligible order uses canonical selection and server-derived customer; GET c
 for (const status of ["draft", "issued"]) test(`existing ${status} opens canonical invoice, never a second preparation`, async () => {
   const ui = billing(); ui.linkInvoice(status);
   // A consolidated invoice can link other orders without changing the target.
-  ui.rows.invoice_orders.push({ organization_id: "org-a", order_id: "order-b", invoice_id: "invoice-a", is_active: true, billing_link_role: "final" });
+  ui.rows.invoice_orders.push({ organization_id: "org-a", order_id: "order-b", invoice_id: "invoice-a", is_active: true });
   const before = JSON.stringify(ui.rows);
   assert.deepEqual(normalize(await ui.entry()), { kind: status, href: "/app/billing/invoice-a" });
   const action = await ui.action();
@@ -195,17 +193,6 @@ test("WALKIN-SHARED stays excluded even with forged URL customer, with a clear u
   assert.ok(content(tree).includes(ui.messages.billing.entry.sharedWalkIn));
   assert.equal(nodes(tree).some((node) => node.type === "form" || typeof node.type === "function"), false);
   assert.equal(ui.calls.rpc.length, 0);
-});
-
-test("WALKIN-SHARED can reopen its linked simplified draft without becoming eligible for ordinary creation", async () => {
-  const ui = billing(); ui.rows.customers[0].customer_code = "WALKIN-SHARED";
-  ui.rows.invoice_orders.push({ organization_id: "org-a", order_id: "order-a", invoice_id: "simple-draft", is_active: true, billing_link_role: "final" });
-  ui.rows.invoices.push({ organization_id: "org-a", id: "simple-draft", document_status: "draft", fiscal_document_type: "simplified", customer_id: null });
-  assert.deepEqual(normalize(await ui.entry()), { kind: "draft", href: "/app/billing/simple-draft" });
-  await assert.rejects(ui.page({ orderId: "order-a", customerId: "forged" }), (e) => e.href === "/it/app/billing/simple-draft");
-  assert.equal(ui.calls.rpc.length, 0);
-  ui.rows.invoices[0].fiscal_document_type = "ordinary";
-  assert.deepEqual(normalize(await ui.entry()), { kind: "unavailable", reason: "sharedWalkIn" });
 });
 
 for (const config of [{ role: "staff" }, { entitled: false }]) test(`server access gate blocks reads: ${JSON.stringify(config)}`, async () => {
@@ -269,7 +256,7 @@ for (const canInvoice of [true, false]) for (const isWalkIn of [true, false]) te
     orderId: "order-a", orderNumber: "MEMORY-ONLY", total: 36, paid: 0, outstanding: 36 } });
   await request.settled;
   const link = nodes(ui.render()).find((node) => node.props.href?.startsWith("/app/billing/"));
-  assert.equal(Boolean(link), canInvoice);
+  assert.equal(Boolean(link), canInvoice && !isWalkIn);
   if (link) {
     assert.equal(link.props.href, "/app/billing/new?orderId=order-a&source=shop");
     const billingUi = billing(); const query = Object.fromEntries(new URL(link.props.href, "https://memory.invalid").searchParams);
@@ -277,47 +264,4 @@ for (const canInvoice of [true, false]) for (const isWalkIn of [true, false]) te
   }
   assert.equal(ui.calls.submit.length, 1);
   assert.equal(ui.calls.status.length, 0);
-});
-
-for (const confirmResult of [false, true]) test(`Terminal order documents: no REC action with confirmation preference=${confirmResult}`, async () => {
-  const ui = terminal({ confirmResult });
-  ui.props.canPrint = true;
-  ui.props.canInvoice = true;
-  const request = ui.start();
-  ui.response.resolve({ error: null, result: { customerId: customer.id, customerName: "A", isWalkIn: false,
-    orderId: "order-a", orderNumber: "MEMORY-ONLY", total: 35, paid: 35, outstanding: 0 } });
-  await request.settled;
-  const tree = ui.render();
-  assert.ok(nodes(tree).some((node) => node.props.id === "order-documents-title" && content(node) === ui.props.text.orderDocuments));
-  assert.ok(nodes(tree).some((node) => node.props.href === "/app/orders/order-a/print/ticket"));
-  const receipt = nodes(tree).find((node) => node.props.href === "/app/orders/order-a/print/receipt");
-  assert.equal(receipt, undefined);
-  assert.ok(nodes(tree).some((node) => node.props.href === "/app/billing/new?orderId=order-a&source=shop"));
-  assert.equal(ui.calls.confirm.length, 0);
-  assert.equal(ui.calls.submit.length, 1);
-  assert.equal(ui.calls.status.length, 0);
-});
-
-test("Terminal document actions keep existing print and Billing gates", async () => {
-  const ui = terminal(); ui.props.canPrint = false; ui.props.canInvoice = false; ui.props.role = "staff";
-  const request = ui.start();
-  ui.response.resolve({ error: null, result: { customerId: customer.id, customerName: "A", isWalkIn: false,
-    orderId: "order-a", orderNumber: "MEMORY-ONLY", total: 35, paid: 0, outstanding: 35 } });
-  await request.settled;
-  assert.equal(nodes(ui.render()).some((node) => node.props.href?.includes("/print/") || node.props.href?.startsWith("/app/billing/")), false);
-  assert.match(read("src/app/[locale]/app/(dashboard)/shop/page.tsx"), /role !== "staff"/);
-});
-
-test("Terminal document labels exist in all five locales", () => {
-  for (const locale of ["es", "it", "en", "fr", "de"]) {
-    const labels = labelsFor(locale);
-    for (const key of ["orderDocuments", "documentTicket", "documentReceipt", "documentReceiptConfirm", "documentReceiptHelp", "documentInvoice", "documentInvoiceHelp"])
-      assert.ok(labels[key]?.trim(), `${locale}.${key}`);
-  }
-});
-
-test("occasional order remains unavailable for new Billing documents even with old fiscal settings",async()=>{
- const ui=billing();ui.rows.customers[0].customer_code="WALKIN-SHARED";
- ui.rows.organization_billing_settings.push({organization_id:"org-a",simplified_invoicing_enabled:true,simplified_series:"S"});
- assert.equal((await ui.entry()).kind,"unavailable");assert.equal(ui.calls.rpc.length,0);
 });

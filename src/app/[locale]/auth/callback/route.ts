@@ -61,12 +61,6 @@ function markRecoverySession(
   return response;
 }
 
-function scriptString(value: string) {
-  // HTML parses script end tags before JavaScript strings. Escape every '<'
-  // so interpolated data cannot close the element or change its parser state.
-  return JSON.stringify(value).replace(/</g, "\\u003c");
-}
-
 function callbackBridgeHtml(locale: string, nextPath: string) {
   const loginPath = `/${locale}/login?status=authCallbackError`;
 
@@ -96,13 +90,13 @@ function callbackBridgeHtml(locale: string, nextPath: string) {
             body: JSON.stringify({
               access_token: accessToken || undefined,
               refresh_token: refreshToken || undefined,
-              next: ${scriptString(nextPath)}
+              next: ${JSON.stringify(nextPath)}
             })
           });
           const payload = await response.json();
-          window.location.replace(payload.redirectTo || ${scriptString(loginPath)});
+          window.location.replace(payload.redirectTo || ${JSON.stringify(loginPath)});
         } catch {
-          window.location.replace(${scriptString(loginPath)});
+          window.location.replace(${JSON.stringify(loginPath)});
         }
       })();
     </script>

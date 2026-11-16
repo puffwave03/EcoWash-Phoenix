@@ -1,13 +1,11 @@
 "use server";
 
-import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireShopTerminalAccess } from "@/features/shop-terminal/server/access";
 import { requireMembership } from "@/lib/auth/require-membership";
 import { hasOperationalCapability } from "@/lib/auth/capabilities";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { OrderActionState, OrderFinancialMutationError, ProductionStatus } from "@/features/orders/types";
+import type { OrderActionState, ProductionStatus } from "@/features/orders/types";
 import {
   isUuid,
   optionalDbValue,
@@ -62,13 +60,6 @@ function fail(
   return { fieldErrors, formError, success: false };
 }
 
-function orderFinancialMutationError(error: { code?: string; message?: string }): OrderFinancialMutationError | null {
-  if (error.message?.includes("order_financial_payment_locked")) return "financialPayment";
-  if (error.message?.includes("order_financial_document_locked")) return "financialDocument";
-  if (error.message?.includes("order_financial_conflict") || error.code === "40001") return "financialConflict";
-  return null;
-}
-
 function revalidateOrders(locale: string, orderId?: string) {
   revalidatePath(`/${locale}/app`);
   revalidatePath(`/${locale}/app/orders`);
@@ -101,10 +92,8 @@ export async function createOrderAction(
 
   await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
-  const automatic = await ticketUnicoEnabled(locale);
   const { data, error } = await supabase
-    .rpc(automatic ? "create_order_with_fiscal_route" : "create_order", {
-      ...(automatic ? { target_ordinary_invoice_requested: formData.get("ordinaryInvoiceRequested") === "on" } : {}),
+    .rpc("create_order", {
       target_customer_id: input.customerId,
       target_customer_notes: optionalDbValue(input.customerNotes),
       target_due_at: optionalDbValue(input.dueAt),
@@ -215,8 +204,6 @@ export async function saveOrderItemAction(
 
   if (error) {
     console.error("Order item save failed", error.code);
-    const financialError = orderFinancialMutationError(error);
-    if (financialError) return fail(financialError);
     return fail("generic");
   }
 
@@ -228,7 +215,7 @@ export async function removeOrderItemAction(
   locale: string,
   orderId: string,
   itemId: string,
-): Promise<OrderFinancialMutationError | null> {
+) {
   await requireMembership(locale);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("remove_order_item", {
@@ -236,13 +223,9 @@ export async function removeOrderItemAction(
     target_order_id: orderId,
   });
 
-  if (error) {
-    console.error("Order item remove failed", error.code);
-    return orderFinancialMutationError(error);
-  }
+  if (error) console.error("Order item remove failed", error.code);
 
   revalidateOrders(locale, orderId);
-  return null;
 }
 
 export async function updateOrderDiscountAction(
@@ -262,28 +245,7 @@ export async function updateOrderDiscountAction(
 
   if (error) console.error("Order discount update failed", error.code);
 
-  const financialError = error ? orderFinancialMutationError(error) : null;
-  if (financialError) redirect(`/${locale}/app/orders/${orderId}?financialError=${financialError}#items`);
-
   revalidateOrders(locale, orderId);
-}
-
-async function requestOrderCompletion(
-  client: Awaited<ReturnType<typeof createSupabaseServerClient>>,
-  locale: string,
-  orderId: string,
-  parameters: Record<string, unknown>,
-) {
-  let result;
-  try {
-    result = await client.rpc("complete_order_with_billing", parameters);
-  } catch {
-    redirect(`/${locale}/app/orders/${orderId}?fiscalReview=uncertain`);
-  }
-  if ((!result.error && !result.data) || (result.error && !/^[0-9A-Z]{5}$/.test(result.error.code ?? ""))) {
-    redirect(`/${locale}/app/orders/${orderId}?fiscalReview=uncertain`);
-  }
-  return result;
 }
 
 export async function transitionOrderStatusAction(
@@ -306,8 +268,7 @@ export async function transitionOrderStatusAction(
     .eq("id", orderId)
     .maybeSingle<{ assigned_to: string | null; production_status: ProductionStatus }>();
 
-  const automatic = ["ready", "completed"].includes(targetStatus) && await ticketUnicoEnabled(locale);
-  const requiredCapability = order && (["quality_check", "packing"].includes(order.production_status) || (automatic && order.production_status === "completed" && targetStatus === "ready"))
+  const requiredCapability = order && ["quality_check", "packing"].includes(order.production_status)
     ? "quality"
     : "production";
 
@@ -331,16 +292,11 @@ export async function transitionOrderStatusAction(
       redirect(readyErrorPath(locale, orderId, surface, "invalid-values"));
     }
 
-    const { data: completion, error } = automatic ? await requestOrderCompletion(supabase, locale, orderId, {
-      target_status: "ready",
-      target_completed_now: formData.get("completionFormVersion") === "ticket-unico-v1" && formData.get("completionRecordedLate") !== "on",
+    const { error } = await supabase.rpc("transition_order_ready_with_storage", {
       target_order_id: orderId,
       target_position_id: positionId,
       target_package_count: packageCount,
       target_storage_mode: storageMode,
-    }) : await supabase.rpc("transition_order_ready_with_storage", {
-      target_order_id: orderId, target_position_id: positionId,
-      target_package_count: packageCount, target_storage_mode: storageMode,
     });
     if (error) {
       if (error.message.includes("order_items_required")) {
@@ -355,35 +311,18 @@ export async function transitionOrderStatusAction(
       redirect(readyErrorPath(locale, orderId, surface, errorKind));
     }
     revalidateOrders(locale, orderId);
-    revalidatePath(`/${locale}/app/billing`);
     revalidatePath(`/${locale}/app/warehouse`);
-    if (completion?.status === "review_required") redirect(`/${locale}/app/orders/${orderId}?fiscalReview=1#production`);
     if (transitionLeavesSurface(surface, targetStatus)) redirect(productionSurfacePath(locale, surface));
     return;
   }
 
-  const transition = {
+  const { error } = await supabase.rpc("transition_order_status", {
     target_order_id: orderId,
     target_reason: optionalDbValue(reason),
     target_status: targetStatus,
-  };
-  const { data: completion, error } = automatic && targetStatus === "completed"
-    ? await requestOrderCompletion(supabase, locale, orderId, {
-      ...transition,
-      target_completed_now: formData.get("completionFormVersion") === "ticket-unico-v1" && formData.get("completionRecordedLate") !== "on",
-    })
-    : await supabase.rpc("transition_order_status", transition);
+  });
 
   if (error) {
-    if (targetStatus === "cancelled") {
-      const cancellationError = error.message.includes("order_fiscal_cancellation_blocked") ? "fiscal-issued"
-        : error.message.includes("order_fiscal_cancellation_conflict") ? "conflict" : null;
-      if (cancellationError) {
-        const path = surface === "order" ? `/${locale}/app/orders/${orderId}`
-          : `/${locale}/app/work/${surface}/${orderId}`;
-        redirect(`${path}?cancellationError=${cancellationError}`);
-      }
-    }
     if (targetStatus === "received" && surface === "order" && error.message.includes("inbound_pickup_incomplete")) {
       redirect(`/${locale}/app/orders/${orderId}?pickup=complete-first#production`);
     }
@@ -400,20 +339,9 @@ export async function transitionOrderStatusAction(
     return;
   }
 
-  if (completion?.status === "review_required") redirect(`/${locale}/app/orders/${orderId}?fiscalReview=1#production`);
   revalidateOrders(locale, orderId);
 
   if (transitionLeavesSurface(surface, targetStatus)) {
     redirect(productionSurfacePath(locale, surface));
   }
-}
-
-export async function requestOrdinaryInvoiceAction(locale: string, orderId: string) {
-  if (!isUuid(orderId)) return;
-  await requireShopTerminalAccess(locale);
-  if (!await ticketUnicoEnabled(locale)) redirect(`/${locale}/app/orders/${orderId}`);
-  const client = await createSupabaseServerClient();
-  const { error } = await client.rpc("request_order_ordinary_invoice", { target_order_id: orderId });
-  revalidateOrders(locale, orderId);
-  redirect(`/${locale}/app/orders/${orderId}${error ? "?fiscalReview=1" : ""}`);
 }

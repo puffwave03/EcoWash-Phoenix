@@ -8,7 +8,6 @@ import type {
   BillingCustomerContext,
   BillingCustomerFiscalField,
   BillingDocumentStatus,
-  BillingFiscalDocumentType,
   BillingInvoice,
   BillingInvoiceListEntry,
   BillingHistorySummary,
@@ -26,15 +25,6 @@ import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type InvoiceRow = {
-  billing_event_kind?: "service" | "advance";
-  operation_total?: number | null;
-  operation_taxable_base?: number | null;
-  operation_tax_total?: number | null;
-  documented_advance_total?: number | null;
-  documented_advance_taxable_base?: number | null;
-  documented_advance_tax_total?: number | null;
-  operation_rounding_base_delta?: number | null;
-  operation_items_snapshot?: BillingInvoice["operationItemsSnapshot"];
   cancelled_at: string | null;
   cancellation_reason: string | null;
   created_at: string;
@@ -44,15 +34,12 @@ type InvoiceRow = {
   customer_city: string | null;
   customer_country_code: string | null;
   customer_email: string | null;
-  customer_id: string | null;
-  customer_name: string | null;
+  customer_id: string;
+  customer_name: string;
   customer_postal_code: string | null;
   customer_tax_id: string | null;
   discount_total: number;
   document_status: BillingDocumentStatus;
-  fiscal_document_type: BillingFiscalDocumentType;
-  recipient_snapshot_mode?: BillingInvoice["recipientSnapshotMode"];
-  service_performed_on?: string | null;
   due_date: string | null;
   id: string;
   invoice_number: string | null;
@@ -87,7 +74,6 @@ type PaymentRow = {
   method: BillingPayment["method"];
   order_id: string;
   paid_at: string;
-  refunded_from_payment_id: string | null;
   status: BillingPayment["status"];
 };
 
@@ -152,7 +138,7 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, billing_event_kind, operation_total, operation_taxable_base, operation_tax_total, documented_advance_total, documented_advance_taxable_base, documented_advance_tax_total, operation_rounding_base_delta, operation_items_snapshot, service_performed_on, recipient_snapshot_mode, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
 const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
 
 function number(value: number | string | null) {
@@ -183,30 +169,12 @@ function mapInvoice(
   links: InvoiceOrderRow[],
   orderNumbers: Map<string, string>,
   payments: PaymentRow[],
-  linkedPaidTotal?: number,
 ): BillingInvoice {
-  if (row.fiscal_document_type !== undefined && row.fiscal_document_type !== "ordinary" && row.fiscal_document_type !== "simplified") {
-    throw new Error("billing_invalid_fiscal_document_type");
-  }
-  const recipientMode = row.recipient_snapshot_mode ?? "registered";
-  if (!["registered", "anonymous", "identified"].includes(recipientMode)
-    || ((row.fiscal_document_type ?? "ordinary") === "ordinary" && (row.customer_id === null || row.customer_name === null || recipientMode !== "registered"))) {
-    throw new Error("billing_invalid_recipient_snapshot");
-  }
   const orderIds = links.map((link) => link.order_id);
-  const paidTotal = linkedPaidTotal ?? paymentTotals(payments.filter((payment) => orderIds.includes(payment.order_id)));
+  const paidTotal = paymentTotals(payments.filter((payment) => orderIds.includes(payment.order_id)));
   const total = number(row.total);
 
   return {
-    billingEventKind: row.billing_event_kind ?? "service",
-    operationTotal: row.operation_total == null ? null : number(row.operation_total),
-    operationTaxableBase: row.operation_taxable_base == null ? null : number(row.operation_taxable_base),
-    operationTaxTotal: row.operation_tax_total == null ? null : number(row.operation_tax_total),
-    documentedAdvanceTotal: row.documented_advance_total == null ? null : number(row.documented_advance_total),
-    documentedAdvanceTaxableBase: row.documented_advance_taxable_base == null ? null : number(row.documented_advance_taxable_base),
-    documentedAdvanceTaxTotal: row.documented_advance_tax_total == null ? null : number(row.documented_advance_tax_total),
-    operationRoundingBaseDelta: row.operation_rounding_base_delta == null ? null : number(row.operation_rounding_base_delta),
-    operationItemsSnapshot: row.operation_items_snapshot ?? null,
     cancelledAt: row.cancelled_at,
     cancellationReason: row.cancellation_reason,
     createdAt: row.created_at,
@@ -222,7 +190,6 @@ function mapInvoice(
     customerTaxId: row.customer_tax_id,
     discountTotal: number(row.discount_total),
     documentStatus: row.document_status,
-    fiscalDocumentType: row.fiscal_document_type ?? "ordinary",
     dueDate: row.due_date,
     id: row.id,
     invoiceNumber: row.invoice_number,
@@ -246,8 +213,6 @@ function mapInvoice(
     paidTotal,
     paymentStatus: derivePayment(row.document_status, total, paidTotal),
     pricesIncludeTax: row.prices_include_tax,
-    recipientSnapshotMode: recipientMode,
-    servicePerformedOn: row.service_performed_on ?? null,
     sequenceNumber: row.sequence_number,
     series: row.series,
     subtotal: number(row.subtotal),
@@ -273,34 +238,19 @@ async function hydrateInvoices(
   const orderIds = [...new Set(links.map((link) => link.order_id))];
   if (orderIds.length === 0) return rows.map((row) => mapInvoice(row, [], new Map(), []));
 
-  const [ordersResult, paymentsResult, attributionResult] = await Promise.all([
+  const [ordersResult, paymentsResult] = await Promise.all([
     supabase.from("orders").select("id, order_number").in("id", orderIds).returns<OrderNumberRow[]>(),
-    supabase.from("payments").select("id, order_id, amount, method, status, paid_at, refunded_from_payment_id").in("order_id", orderIds).returns<PaymentRow[]>(),
-    supabase.from("billing_invoice_payment_links").select("invoice_id, payment_id, attributed_amount")
-      .in("invoice_id", invoiceIds).returns<Array<{ invoice_id: string; payment_id: string; attributed_amount: number }>>(),
+    supabase.from("payments").select("id, order_id, amount, method, status, paid_at").in("order_id", orderIds).returns<PaymentRow[]>(),
   ]);
   if (ordersResult.error) throw ordersResult.error;
   if (paymentsResult.error) throw paymentsResult.error;
-  if (attributionResult.error) throw attributionResult.error;
   const orderNumbers = new Map((ordersResult.data ?? []).map((order) => [order.id, order.order_number]));
-  const paymentById = new Map((paymentsResult.data ?? []).map((payment) => [payment.id, payment]));
 
   return rows.map((row) => mapInvoice(
     row,
     links.filter((link) => link.invoice_id === row.id),
     orderNumbers,
     paymentsResult.data ?? [],
-    row.billing_event_kind === "advance" || row.operation_total != null
-      ? Math.round((attributionResult.data ?? []).filter((link) => link.invoice_id === row.id)
-        .reduce((sum, link) => {
-          const payment = paymentById.get(link.payment_id);
-          if (payment?.status !== "confirmed") return sum;
-          const refunded = (paymentsResult.data ?? []).filter((candidate) =>
-            candidate.status === "refunded" && candidate.refunded_from_payment_id === link.payment_id,
-          ).reduce((total, refund) => total + number(refund.amount), 0);
-          return sum + number(link.attributed_amount) - refunded;
-        }, 0) * 100) / 100
-      : undefined,
   ));
 }
 
@@ -467,60 +417,12 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
   const invoices = await hydrateInvoices(supabase, [invoiceResult.data]);
   const invoice = invoices[0];
   if (!invoice) notFound();
-  const { data: paymentData, error: paymentError } = invoice.orderIds.length
-    ? await supabase.from("payments").select("id, order_id, amount, method, status, paid_at, refunded_from_payment_id").eq("organization_id", membership.organization.id).in("order_id", invoice.orderIds).order("paid_at", { ascending: false }).returns<PaymentRow[]>()
-    : { data: [] as PaymentRow[], error: null };
-  if (paymentError) throw paymentError;
-
-  let paymentLinks: NonNullable<BillingInvoiceDetail["paymentLinks"]> = [];
-  let advanceDocuments: NonNullable<BillingInvoiceDetail["advanceDocuments"]> = [];
-  if (invoice.fiscalDocumentType === "simplified" && invoice.orderIds.length === 1) {
-    const orderId = invoice.orderIds[0];
-    const [linksResult, orderLinksResult] = await Promise.all([
-      supabase.from("billing_invoice_payment_links").select("payment_id, invoice_id, billing_link_role")
-        .eq("organization_id", membership.organization.id).eq("order_id", orderId)
-        .returns<Array<{ payment_id: string; invoice_id: string; billing_link_role: "advance" | "final" }>>(),
-      supabase.from("invoice_orders").select("invoice_id")
-        .eq("organization_id", membership.organization.id).eq("order_id", orderId)
-        .eq("billing_link_role", "advance").returns<Array<{ invoice_id: string }>>(),
-    ]);
-    if (linksResult.error) throw linksResult.error;
-    if (orderLinksResult.error) throw orderLinksResult.error;
-    paymentLinks = (linksResult.data ?? []).map((row) => ({
-      paymentId: row.payment_id, invoiceId: row.invoice_id, role: row.billing_link_role,
-    }));
-    const advanceIds = (orderLinksResult.data ?? []).map((row) => row.invoice_id);
-    if (advanceIds.length) {
-      const result = await supabase.from("invoices")
-        .select("id, invoice_number, issue_date, total, taxable_base, tax_total")
-        .eq("organization_id", membership.organization.id).in("id", advanceIds)
-        .order("issue_date", { ascending: true })
-        .returns<Array<{ id: string; invoice_number: string | null; issue_date: string; total: number; taxable_base: number; tax_total: number }>>();
-      if (result.error) throw result.error;
-      advanceDocuments = (result.data ?? []).map((row) => ({
-        id: row.id, invoiceNumber: row.invoice_number, issueDate: row.issue_date,
-        total: number(row.total), taxableBase: number(row.taxable_base), taxTotal: number(row.tax_total),
-      }));
-    }
-  }
-
-  // Issued C2 documents display only their canonical attribution and its refunds.
-  // Drafts and historical invoices retain the order ledger used by preparation.
-  const documentPaymentIds = new Set(paymentLinks
-    .filter((link) => link.invoiceId === invoice.id).map((link) => link.paymentId));
-  const documentScoped = invoice.billingEventKind === "advance" || invoice.operationTotal != null;
-  const visiblePayments = (paymentData ?? []).filter((payment) => !documentScoped
-    || documentPaymentIds.has(payment.id)
-    || (payment.status === "refunded" && payment.refunded_from_payment_id != null
-      && documentPaymentIds.has(payment.refunded_from_payment_id)));
+  const { data: paymentData } = invoice.orderIds.length
+    ? await supabase.from("payments").select("id, order_id, amount, method, status, paid_at").in("order_id", invoice.orderIds).order("paid_at", { ascending: false }).returns<PaymentRow[]>()
+    : { data: [] as PaymentRow[] };
 
   return {
-    // Immutable attribution, never the current mutable order total.
-    fullPrepayment: invoice.billingEventKind === "advance" && invoice.documentStatus === "issued"
-      && paymentLinks.some((link) => link.invoiceId === invoice.id && link.role === "final"),
     invoice,
-    paymentLinks,
-    advanceDocuments,
     items: itemsResult.data.map((item) => ({
       description: item.description,
       discountAmount: number(item.discount_amount),
@@ -536,7 +438,7 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
       unitPrice: number(item.unit_price),
       unitType: item.unit_type,
     })),
-    payments: visiblePayments.map((payment) => ({
+    payments: (paymentData ?? []).map((payment) => ({
       amount: number(payment.amount),
       id: payment.id,
       method: payment.method,

@@ -13,7 +13,6 @@ import {
 } from "@/features/entitlements/feature-catalog";
 
 type AppNavigationText = {
-  albarans: string;
   accounting: string;
   alerts: string;
   billing: string;
@@ -85,7 +84,7 @@ function NavigationIcon({ href }: { href: string }) {
     );
   }
 
-  if (href === "/app/orders" || href === "/app/albarans") {
+  if (href === "/app/orders") {
     return (
       <svg aria-hidden="true" className={iconClasses} fill="none" viewBox="0 0 24 24">
         <path d="M8 5h10a2 2 0 0 1 2 2v12H8a3 3 0 0 1-3-3V5m0 11a3 3 0 0 1 3-3h12M5 5h3v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
@@ -214,9 +213,6 @@ export function AppNavigation({
     ? { href: "/app/shop", label: text.shop, match: "/app/shop" }
     : null;
   const counterNavigationItems = shopNavigationItem ? [shopNavigationItem] : posNavigationItem ? [posNavigationItem] : [];
-  const albaranNavigationItems = canUse("pos") && entitlementEnabled(entitlements, FEATURES.printing)
-    ? [{ href: "/app/albarans", label: text.albarans, match: "/app/albarans" }]
-    : [];
   const navigationGroups: NavigationGroup[] = isControlRole
     ? [
         {
@@ -240,7 +236,6 @@ export function AppNavigation({
         },
         {
           items: [
-            ...albaranNavigationItems,
             { href: "/app/customers", label: text.customers, match: "/app/customers" },
             ...(entitlementEnabled(entitlements, FEATURES.billingInvoicing)
               ? [{ href: "/app/billing", label: text.billing, match: "/app/billing" }]
@@ -264,7 +259,6 @@ export function AppNavigation({
           items: [
             { href: "/app/work", label: text.work, match: "/app/work" },
             ...counterNavigationItems,
-            ...albaranNavigationItems,
             ...(canUse("production")
               ? [{ href: "/app/work/production", label: text.production, match: "/app/work/production" }]
               : []),

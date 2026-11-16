@@ -4,7 +4,6 @@ export const BILLING_ISSUER_REQUIRED_FIELDS = ["issuerLegalName", "issuerTaxId",
 export const BILLING_CUSTOMER_FISCAL_FIELDS = ["billingAddressLine1", "billingCity", "billingPostalCode", "billingCountryCode", "taxId"] as const;
 
 export type BillingDocumentStatus = (typeof BILLING_DOCUMENT_STATUSES)[number];
-export type BillingFiscalDocumentType = "ordinary" | "simplified";
 export type BillingPaymentStatus = (typeof BILLING_PAYMENT_STATUSES)[number];
 export type BillingIssuerRequiredField = (typeof BILLING_ISSUER_REQUIRED_FIELDS)[number];
 export type BillingCustomerFiscalField = (typeof BILLING_CUSTOMER_FISCAL_FIELDS)[number];
@@ -44,19 +43,6 @@ export type BillingCustomerContext = {
 };
 
 export type BillingInvoice = {
-  billingEventKind?: "service" | "advance";
-  operationTotal?: number | null;
-  operationTaxableBase?: number | null;
-  operationTaxTotal?: number | null;
-  documentedAdvanceTotal?: number | null;
-  documentedAdvanceTaxableBase?: number | null;
-  documentedAdvanceTaxTotal?: number | null;
-  operationRoundingBaseDelta?: number | null;
-  operationItemsSnapshot?: Array<{
-    description: string; quantity: number; unit_type: string; unit_price: number;
-    line_subtotal: number; discount_amount: number; taxable_base: number;
-    tax_rate: number; tax_amount: number; line_total: number;
-  }> | null;
   cancelledAt: string | null;
   cancellationReason: string | null;
   createdAt: string;
@@ -66,13 +52,12 @@ export type BillingInvoice = {
   customerCity: string | null;
   customerCountryCode: string | null;
   customerEmail: string | null;
-  customerId: string | null;
-  customerName: string | null;
+  customerId: string;
+  customerName: string;
   customerPostalCode: string | null;
   customerTaxId: string | null;
   discountTotal: number;
   documentStatus: BillingDocumentStatus;
-  fiscalDocumentType: BillingFiscalDocumentType;
   dueDate: string | null;
   id: string;
   invoiceNumber: string | null;
@@ -96,8 +81,6 @@ export type BillingInvoice = {
   paidTotal: number;
   paymentStatus: BillingPaymentStatus;
   pricesIncludeTax: boolean;
-  recipientSnapshotMode: "registered" | "anonymous" | "identified";
-  servicePerformedOn?: string | null;
   sequenceNumber: number | null;
   series: string;
   subtotal: number;
@@ -132,12 +115,9 @@ export type BillingPayment = {
 };
 
 export type BillingInvoiceDetail = {
-  fullPrepayment?: boolean;
   invoice: BillingInvoice;
   items: BillingInvoiceItem[];
   payments: BillingPayment[];
-  paymentLinks?: Array<{ paymentId: string; invoiceId: string; role: "advance" | "final" }>;
-  advanceDocuments?: Array<{ id: string; invoiceNumber: string | null; issueDate: string; total: number; taxableBase: number; taxTotal: number }>;
 };
 
 export type EligibleBillingOrder = {

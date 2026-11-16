@@ -53,7 +53,6 @@ export function BillingCreateForm({ emptyMessage, hasMore, locale, orders, selec
                   </label>
                 ))}
               </div>
-              <input name="fiscalDocumentType" type="hidden" value="ordinary" />
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_1fr_auto] lg:items-end">
                 <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.series}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={settings.defaultSeries} name="series" required /></label>
                 <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.taxRate}</span><input className="min-h-11 w-full rounded-control border border-border px-3" defaultValue={taxRateInputValue(settings.defaultTaxRate)} inputMode="decimal" max="100" min="0" name="taxRate" required step="0.01" type="number" /></label>

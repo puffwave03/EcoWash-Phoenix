@@ -1,10 +1,7 @@
-import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
-import { ticketUnicoMessages } from "@/features/billing/ticket-unico";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { BillingOrderEntry } from "@/components/billing/BillingOrderEntry";
-import { ServiceAlbaranPanel } from "@/components/service-albarans/ServiceAlbaranPanel";
 import { CustomerHandoffPanel, type CustomerHandoffText } from "@/components/orders/CustomerHandoffPanel";
 import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { OrderItems } from "@/components/orders/OrderItems";
@@ -13,8 +10,6 @@ import { StatusTransitionForm } from "@/components/orders/StatusTransitionForm";
 import { LogisticsPanel } from "@/components/logistics/LogisticsPanel";
 import { OrderPhotosPanel } from "@/components/order-photos/OrderPhotosPanel";
 import { PaymentsPanel } from "@/components/payments/PaymentsPanel";
-import { PaymentReadErrorNotice } from "@/components/payments/PaymentReadErrorNotice";
-import { PaymentReadError } from "@/features/payments/read-error";
 import { PrintOrderActions, type PrintActionText } from "@/components/printing/PrintOrderActions";
 import { OrderStoragePanel, type OrderStorageText } from "@/components/warehouse/OrderStoragePanel";
 import { WarehouseMovementHistory, type WarehouseMovementText } from "@/components/warehouse/WarehouseMovementHistory";
@@ -39,7 +34,6 @@ import {
 import { setOrderPhotoCustomerVisibilityAction } from "@/features/portal/server/actions";
 import { getOrderPhotos } from "@/features/order-photos/server/queries";
 import {
-  requestOrdinaryInvoiceAction,
   removeOrderItemAction,
   saveOrderItemAction,
   transitionOrderStatusAction,
@@ -86,7 +80,7 @@ import {
 
 type OrderDetailPageProps = {
   params: Promise<{ locale: string; orderId: string }>;
-  searchParams: Promise<{ fiscalReview?: string; warehouse?: string; cancellationError?: string; readyError?: string; itemsError?: string; financialError?: string; pickup?: string; returnError?: string; albaranError?: string }>;
+  searchParams: Promise<{ warehouse?: string; readyError?: string; itemsError?: string; pickup?: string; returnError?: string }>;
 };
 
 function SectionShell({
@@ -111,9 +105,8 @@ function SectionShell({
 export default async function OrderDetailPage({ params, searchParams }: OrderDetailPageProps) {
   const { locale, orderId } = await params;
   const routeSearch = await searchParams;
-  const automatic = await ticketUnicoEnabled(locale);
   const warehouseError = routeSearch.warehouse === "inbound-unavailable";
-  const [access, order, items, history, services, logistics, handoff, assignments, paymentData, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
+  const [access, order, items, history, services, logistics, handoff, assignments, payments, paymentSummary, photos, quickDrop, entitlements, t, catalogT, printT, quickDropT, gateT, storageT, movementT, readyT, commonT] = await Promise.all([
     requireMembership(locale),
     getOrderById(locale, orderId),
     listOrderItems(locale, orderId),
@@ -122,12 +115,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getOrderLogistics(locale, orderId),
     getCustomerHandoff(locale, orderId),
     listAssignableStaff(locale),
-    Promise.all([getOrderPayments(locale, orderId), getOrderPaymentSummary(locale, orderId)])
-      .then(([payments, summary]) => ({ payments, summary }))
-      .catch((error: unknown) => {
-        if (error instanceof PaymentReadError) return null;
-        throw error;
-      }),
+    getOrderPayments(locale, orderId),
+    getOrderPaymentSummary(locale, orderId),
     getOrderPhotos(locale, orderId),
     getQuickDropOrderOrNull(locale, orderId),
     getCurrentEntitlements(locale, [FEATURES.pos, FEATURES.printing, FEATURES.billingInvoicing]),
@@ -141,7 +130,6 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
     getTranslations({ locale, namespace: "common.readyWarehouse" }),
     getTranslations({ locale, namespace: "common" }),
   ]);
-  const paymentSummary = paymentData?.summary;
   const pendingQuickDrop = quickDrop?.detailState === "pending_detail";
   const pickupReceiptBlocked = order.productionStatus === "draft"
     && (logistics.pickup?.status === "scheduled" || logistics.pickup?.status === "in_progress");
@@ -196,18 +184,8 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
 
   return (
     <div className="space-y-6">
-      {routeSearch.fiscalReview === "uncertain" ? <p role="alert" className="rounded-control border border-amber-200 bg-amber-50 p-4">{commonT("billing.fiscalTicket.uncertain")}</p> : null}
-      {routeSearch.fiscalReview === "1" ? <p role="status" className="rounded-control border border-amber-200 bg-amber-50 p-4">{ticketUnicoMessages(locale).review}</p> : null}
-      {!paymentData ? <PaymentReadErrorNotice locale={locale} /> : null}
       {routeSearch.itemsError === "1" ? (
         <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">{commonT("orderItemsRequired")}</p>
-      ) : null}
-      {routeSearch.financialError === "financialPayment" || routeSearch.financialError === "financialDocument" || routeSearch.financialError === "financialConflict" ? (
-        <p className="rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-950" role="alert">
-          {routeSearch.financialError === "financialPayment" ? t("items.financialPayment")
-            : routeSearch.financialError === "financialDocument" ? t("items.financialDocument")
-              : t("items.financialConflict")}
-        </p>
       ) : null}
       <section className="rounded-card bg-[#09291f] p-5 text-white shadow-card lg:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -217,7 +195,6 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             </p>
             <h2 className="mt-2 break-words text-2xl font-semibold text-white lg:truncate lg:text-3xl">
               {order.customerName}
-              {automatic && order.fiscalRoute === "manual_billing" ? <span className="ml-3 text-sm font-normal">{ticketUnicoMessages(locale).manual}</span> : null}
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="rounded-control bg-white px-3 py-1 text-xs font-semibold text-primary">
@@ -231,12 +208,11 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">
                 {t(`priorities.${order.priority}`)}
               </span>
-              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : paymentSummary ? paymentStatusLabels[paymentSummary.paymentStatus] : t("payments.unavailable")}</span>
+              <span className="rounded-control bg-white/12 px-3 py-1 text-xs font-semibold text-white">{pendingQuickDrop ? quickDropT("unpriced") : paymentStatusLabels[paymentSummary.paymentStatus]}</span>
               {pendingQuickDrop ? <span className="rounded-control bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-950">{quickDropT("pendingDetail")}</span> : null}
             </div>
           </div>
           <div className="flex w-full flex-col gap-2 lg:w-auto lg:items-end">
-            {automatic && canUsePos && entitlementEnabled(entitlements, FEATURES.shopTerminal) && order.fiscalRoute !== "manual_billing" && !["completed", "cancelled"].includes(order.productionStatus) ? <form action={requestOrdinaryInvoiceAction.bind(null, locale, order.id)}><Button type="submit">{ticketUnicoMessages(locale).ordinary}</Button></form> : null}
             {canManageAssignments && entitlementEnabled(entitlements, FEATURES.billingInvoicing) ? <BillingOrderEntry locale={locale} orderId={order.id} /> : null}
             {canPrint ? <PrintOrderActions locale={locale} modes={pendingQuickDrop ? ["ticket"] : undefined} orderId={order.id} text={printT.raw("actions") as PrintActionText} /> : null}
             {pendingQuickDrop ? <a className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-white px-4 font-semibold text-primary lg:w-auto" href="#items">{quickDropT("detailOrder")}</a> : null}
@@ -311,7 +287,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("payments.balanceDue")}</dt>
-          <dd className="mt-1 text-xl font-semibold text-primary">{pendingQuickDrop ? quickDropT("unpriced") : paymentSummary ? formatCurrency(paymentSummary.balanceDue, order.currency, locale) : t("payments.unavailable")}</dd>
+          <dd className="mt-1 text-xl font-semibold text-primary">{pendingQuickDrop ? quickDropT("unpriced") : formatCurrency(paymentSummary.balanceDue, order.currency, locale)}</dd>
         </Card>
         <Card>
           <dt className="text-sm text-muted">{t("photos.title")}</dt>
@@ -331,9 +307,6 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
                   addItem: t("items.add"),
                   description: t("items.description"),
                   error: t("items.error"),
-                  financialConflict: t("items.financialConflict"),
-                  financialDocument: t("items.financialDocument"),
-                  financialPayment: t("items.financialPayment"),
                   notes: t("items.notes"),
                   categoryLabels: catalogT.raw("categories") as Record<string, string>,
                   quantity: t("items.quantity"),
@@ -359,9 +332,6 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
                 description: t("items.description"),
                 edit: t("edit"),
                 error: t("items.error"),
-                financialConflict: t("items.financialConflict"),
-                financialDocument: t("items.financialDocument"),
-                financialPayment: t("items.financialPayment"),
                 lineTotal: t("items.lineTotal"),
                 categoryLabels: catalogT.raw("categories") as Record<string, string>,
                 quantity: t("items.quantity"),
@@ -399,15 +369,9 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       </SectionShell>
 
       <SectionShell id="production" title={t("workflow.change")}>
-        {routeSearch.cancellationError === "fiscal-issued" || routeSearch.cancellationError === "conflict" ? (
-          <p className="mb-4 rounded-control border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert">
-            {commonT(routeSearch.cancellationError === "fiscal-issued" ? "fiscalCancellationBlocked" : "fiscalCancellationConflict")}
-          </p>
-        ) : null}
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <Card>
             {pendingQuickDrop ? <div className="rounded-control border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950">{quickDropT("productionBlocked")}</div> : <StatusTransitionForm
-              ticketUnico={automatic}
               action={transitionOrderStatusAction.bind(null, locale, order.id, "order")}
               canConfigureWarehouse={canManageAssignments}
               currentStatus={order.productionStatus}
@@ -534,7 +498,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
         />
       </SectionShell>
 
-      {paymentSummary && (handoff || canCompleteCustomerHandoff) ? (
+      {(handoff || canCompleteCustomerHandoff) ? (
         <SectionShell id="customer-handoff" title={t("handoff.title")}>
           <CustomerHandoffPanel
             action={completeCustomerHandoffAction.bind(null, locale, order.id)}
@@ -554,7 +518,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       ) : null}
 
       <SectionShell id="payments" title={t("payments.title")}>
-        {!paymentData ? <Card><p className="font-semibold text-primary">{t("payments.unavailable")}</p></Card> : pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
+        {pendingQuickDrop ? <Card><p className="font-semibold text-primary">{quickDropT("unpriced")}</p><p className="mt-1 text-sm text-muted">{quickDropT("detailBeforeFinancial")}</p></Card> : <PaymentsPanel
           actions={{
             manualExternal: recordManualExternalPaymentAction.bind(null, locale, order.id),
             manualExternalRefund: recordManualExternalRefundAction.bind(null, locale, order.id),
@@ -567,10 +531,10 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           isOrderCancelled={order.productionStatus === "cancelled"}
           locale={locale}
           orderId={order.id}
-          payments={paymentData.payments}
+          payments={payments}
           posHref={`/app/pos?q=${encodeURIComponent(order.orderNumber)}`}
           posSessionId={posSession?.id ?? null}
-          summary={paymentData.summary}
+          summary={paymentSummary}
           manualExternalText={t.raw("payments.manualExternal")}
           manualExternalRefundText={t.raw("payments.manualExternalRefund")}
           text={{
@@ -603,8 +567,6 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
           }}
         />}
       </SectionShell>
-
-      {canPrint ? <ServiceAlbaranPanel canCancel={canManageAssignments} error={routeSearch.albaranError === "1"} hasItems={items.some((item) => item.isActive)} locale={locale} order={order} /> : null}
 
       <SectionShell id="photos" title={t("photos.title")}>
         <OrderPhotosPanel

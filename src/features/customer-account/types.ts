@@ -50,21 +50,14 @@ export type CustomerAccountPayment = {
   status: PaymentRecordStatus;
 };
 
-type CustomerAccountCursorContext = {
-  orderCursor: string | null;
-  paymentCursor: string | null;
-};
-
 export type CustomerAccountFinancials = {
-  state: "ready";
   orders: CustomerAccountOrder[];
   payments: CustomerAccountPayment[];
   summaries: CustomerAccountSummary[];
-  pagination: CustomerAccountCursorContext & {
+  pagination: {
+    orderCursor: string | null;
+    paymentCursor: string | null;
     orders: { olderCursor: string | null; newerCursor: string | null };
     payments: { olderCursor: string | null; newerCursor: string | null };
   };
-} | {
-  state: "unavailable";
-  pagination: CustomerAccountCursorContext;
 };

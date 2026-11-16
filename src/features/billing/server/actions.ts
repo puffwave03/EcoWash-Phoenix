@@ -1,12 +1,10 @@
 "use server";
 
-import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner, requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTaxRate } from "@/features/billing/tax-rate";
-import { validateBillingDocumentSelection } from "@/features/billing/document-type";
 import { FEATURES } from "@/features/entitlements/feature-catalog";
 import { requireEntitlement } from "@/features/entitlements/server/resolver";
 
@@ -21,9 +19,6 @@ function nullable(valueToNormalize: string) {
 }
 
 function billingError(message: string | undefined) {
-  if (message?.includes("billing_invalid_draft")) return "invalidDraft";
-  if (message?.includes("billing_recipient_invalid")) return "customer";
-  if (message?.includes("billing_series_reserved") || message?.includes("billing_simplified_series_used")) return "settingsInvalid";
   if (message?.includes("issuer_configuration")) return "issuer";
   if (message?.includes("customer_configuration")) return "customer";
   if (message?.includes("already_invoiced")) return "duplicate";
@@ -32,57 +27,34 @@ function billingError(message: string | undefined) {
   return "generic";
 }
 
-function revalidateBilling(locale: string, customerId?: string | null, invoiceId?: string) {
+function revalidateBilling(locale: string, customerId?: string, invoiceId?: string) {
   revalidatePath(`/${locale}/app/billing`);
   if (invoiceId) revalidatePath(`/${locale}/app/billing/${invoiceId}`);
   if (customerId) revalidatePath(`/${locale}/app/customers/${customerId}`);
 }
 
 export async function saveBillingSettingsAction(locale: string, formData: FormData) {
-  const { membership } = await requireOwner(locale);
+  await requireOwner(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
-  const series = value(formData, "defaultSeries", 13).toUpperCase();
-  const taxRateInput = value(formData, "defaultTaxRate", 16);
-  const taxRate = taxRateInput ? parseTaxRate(taxRateInput) : null;
-  if (!/^[A-Z0-9-]{1,12}$/.test(series) || taxRate === null) {
-    redirect(`/${locale}/app/billing?error=settingsInvalid`);
-  }
+  const taxRate = parseTaxRate(value(formData, "defaultTaxRate", 16));
   const supabase = await createSupabaseServerClient();
-  // The canonical RPC replaces all issuer fields. Read persisted values, without
-  // branding fallbacks, so a blank/omitted field cannot accidentally erase them.
-  const { data: existing, error: readError } = await supabase
-    .from("organization_billing_settings")
-    .select("issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone")
-    .eq("organization_id", membership.organization.id)
-    .maybeSingle<Record<string, string | null>>();
-  if (readError) redirect(`/${locale}/app/billing?error=generic`);
-  const issuer: Record<string, string> = {};
-  for (const [field, column, max] of [
-    ["issuerLegalName", "issuer_legal_name", 180],
-    ["issuerTaxId", "issuer_tax_id", 80],
-    ["issuerAddressLine1", "issuer_address_line1", 180],
-    ["issuerAddressLine2", "issuer_address_line2", 180],
-    ["issuerCity", "issuer_city", 100],
-    ["issuerRegion", "issuer_region", 100],
-    ["issuerPostalCode", "issuer_postal_code", 24],
-    ["issuerCountryCode", "issuer_country_code", 3],
-    ["issuerEmail", "issuer_email", 254],
-    ["issuerPhone", "issuer_phone", 40],
-  ] as const) {
-    issuer[`target_${column}`] = value(formData, field, max) || existing?.[column] || "";
-  }
-  issuer.target_issuer_country_code = issuer.target_issuer_country_code.toUpperCase();
-  if (issuer.target_issuer_country_code && issuer.target_issuer_country_code.length !== 2) {
-    redirect(`/${locale}/app/billing?error=settingsInvalid`);
-  }
   const { error } = await supabase.rpc("upsert_organization_billing_settings", {
-    ...issuer,
-    target_default_series: series,
-    target_default_tax_rate: taxRate,
+    target_default_series: value(formData, "defaultSeries", 12),
+    target_default_tax_rate: taxRate ?? -1,
+    target_issuer_address_line1: value(formData, "issuerAddressLine1", 180),
+    target_issuer_address_line2: value(formData, "issuerAddressLine2", 180),
+    target_issuer_city: value(formData, "issuerCity", 100),
+    target_issuer_country_code: value(formData, "issuerCountryCode", 2).toUpperCase(),
+    target_issuer_email: value(formData, "issuerEmail", 254),
+    target_issuer_legal_name: value(formData, "issuerLegalName", 180),
+    target_issuer_phone: value(formData, "issuerPhone", 40),
+    target_issuer_postal_code: value(formData, "issuerPostalCode", 24),
+    target_issuer_region: value(formData, "issuerRegion", 100),
+    target_issuer_tax_id: value(formData, "issuerTaxId", 80),
   });
   if (error) redirect(`/${locale}/app/billing?error=${billingError(error.message)}`);
   revalidateBilling(locale);
-  redirect(`/${locale}/app/billing?saved=issuerSettings#issuer-save-feedback`);
+  redirect(`/${locale}/app/billing?saved=settings`);
 }
 
 export async function saveBillingCustomerFiscalAction(
@@ -154,15 +126,10 @@ export async function saveBillingCustomerFiscalAction(
 export async function createBillingDraftAction(locale: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
-  const selection = validateBillingDocumentSelection(formData.getAll("fiscalDocumentType"));
-  if (!selection.allowed) {
-    redirect(`/${locale}/app/billing/new?customerId=${encodeURIComponent(customerId)}&error=${selection.reason}`);
-  }
   const orderIds = formData.getAll("orderId").map(String);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
-  const automatic = await ticketUnicoEnabled(locale);
-  const { data, error } = await supabase.rpc(automatic ? "create_billing_draft_with_order_route" : "create_billing_draft", {
+  const { data, error } = await supabase.rpc("create_billing_draft", {
     target_notes: nullable(value(formData, "notes", 2000)),
     target_order_ids: orderIds,
     target_series: value(formData, "series", 12),
@@ -175,26 +142,25 @@ export async function createBillingDraftAction(locale: string, customerId: strin
   redirect(`/${locale}/app/billing/${data}`);
 }
 
-export async function updateBillingDraftAction(locale: string, invoiceId: string, customerId: string | null, formData: FormData) {
+export async function updateBillingDraftAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const taxRate = parseTaxRate(value(formData, "taxRate", 16));
   const supabase = await createSupabaseServerClient();
-  const payload = {
+  const { error } = await supabase.rpc("update_billing_draft", {
     target_due_date: nullable(value(formData, "dueDate", 10)),
     target_invoice_id: invoiceId,
     target_issue_date: value(formData, "issueDate", 10),
     target_notes: nullable(value(formData, "notes", 2000)),
     target_series: value(formData, "series", 12),
     target_tax_rate: taxRate,
-  };
-  const { error } = await supabase.rpc("update_billing_draft", payload);
+  });
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
   revalidateBilling(locale, customerId, invoiceId);
   redirect(`/${locale}/app/billing/${invoiceId}?saved=draft`);
 }
 
-export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string | null) {
+export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -204,7 +170,7 @@ export async function issueBillingInvoiceAction(locale: string, invoiceId: strin
   redirect(`/${locale}/app/billing/${invoiceId}?saved=issued`);
 }
 
-export async function cancelBillingInvoiceAction(locale: string, invoiceId: string, customerId: string | null, formData: FormData) {
+export async function cancelBillingInvoiceAction(locale: string, invoiceId: string, customerId: string, formData: FormData) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -217,7 +183,7 @@ export async function cancelBillingInvoiceAction(locale: string, invoiceId: stri
   redirect(`/${locale}/app/billing/${invoiceId}?saved=cancelled`);
 }
 
-export async function deleteBillingDraftAction(locale: string, invoiceId: string, customerId: string | null) {
+export async function deleteBillingDraftAction(locale: string, invoiceId: string, customerId: string) {
   await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();

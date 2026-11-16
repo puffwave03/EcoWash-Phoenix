@@ -1,5 +1,4 @@
 import "server-only";
-import { ticketUnicoEnabled } from "@/features/billing/server/ticket-unico";
 
 import { notFound } from "next/navigation";
 import type {
@@ -314,7 +313,6 @@ export async function getProductionWorkspaceTask(
 
   return {
     allowedTransitions,
-    ticketUnico: await ticketUnicoEnabled(locale),
     isSupervision,
     task,
     timeZone,

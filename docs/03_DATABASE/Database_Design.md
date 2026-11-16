@@ -1,48 +1,5 @@
 # Database Design
 
-Status: Current authorization model supplement — CTO REVIEW PASS
-
-Last reconciled: 2026-10-23; baseline `9b03b8b9e2120b1c65668da63410aa8a76c53c35`.
-
-## Implemented identity and authorization model
-
-Supabase Auth, PostgreSQL and Storage are implemented. The migration history is the schema source of truth; the July model preserved below is a historical design snapshot, not a complete current table inventory. This supplement reconciles security relationships without redesigning operational, financial or fiscal models.
-
-| Existing relation or field | Current responsibility | Authorization boundary |
-| --- | --- | --- |
-| `profiles`, `organization_memberships` | Auth-linked profile and organization membership with `role`, `is_active`, `operational_capabilities`. | Tenant roles remain Owner, Manager and Staff. Membership establishes tenant access; it does not by itself express assignment to each operational record. |
-| `orders.assigned_to`, `pickups.assigned_to`, `deliveries.assigned_to` | Assignment to an operational actor. | Workspace filters and relevant mutation RPCs enforce capability/assignment. These fields do not imply that every SELECT policy filters by assignee. |
-| `customer_portal_access` | Connects an Auth `user_id` to a tenant's `customer_id`, with association state. | Separate from staff membership. Canonical Portal context uses the authenticated UUID, active association/customer, organization state and Portal entitlement. Customer RPCs scope reads to that context. |
-| `platform_admins`, `platform_audit_log` | Separate Platform identity and administration audit. | Guarded cross-tenant administration; Platform Admin is not an `app_role` tenant membership or an automatic grant to read all raw business tables. |
-| `organizations.status`, `platform_service_status`, `deleted_at` | Organization activity, platform suspension and logical deletion. | F04 membership/role/shared-profile helpers and canonical Portal context require active organization/service and no logical deletion. PostgREST pre-request separately handles suspended identity associations. |
-
-Sources: [tenant foundation](../../supabase/migrations/20260727000100_app_003_tenant_foundation.sql), [capabilities and assignments](../../supabase/migrations/20260820000100_ux_ops_001_8_access_capabilities.sql), [Portal association](../../supabase/migrations/20260803000100_portal_001_customer_portal.sql), [Platform administration](../../supabase/migrations/20260827000300_platform_admin_001_saas_control_center.sql), [Portal context](../../supabase/migrations/20261014000200_portal_entitlement_boundary_001.sql), [F04 helpers](../../supabase/migrations/20261023122144_security_f04_inactive_org_helpers_001a.sql).
-
-## Tenant isolation and visibility within one tenant
-
-Authenticated identity and canonical membership/Portal context determine tenant access; client-supplied organization IDs are not authorization. Existing composite tenant relationships, RLS and explicit RPC checks protect organization boundaries. The accepted staging Tenant A/B tests include real direct reads; see [Testing](../05_DEVELOPMENT/Testing.md).
-
-The SELECT policies `customers_select_member`, `orders_select_member` and `payments_select_member` call `is_organization_member(organization_id)`. They do not require an operational assignment or capability. See the [customer policy](../../supabase/migrations/20260728000100_app_005_customers_properties.sql), [order policy](../../supabase/migrations/20260728000200_app_006_orders_workflow.sql) and [payment policy](../../supabase/migrations/20260728000300_app_007_logistics_photos_payments.sql). F04 adds organization-state enforcement to the shared helper, preserving this membership-based visibility model.
-
-Application route guards, server-query filters, SQL SELECT policies and RPC authorization are separate layers. For example, Customer Account RPCs enforce Owner/Manager even though operational payment-table SELECT uses membership. See [Customer Account functions](../../supabase/migrations/20260826000100_customer_account_001_financial_summary.sql). UI denial alone cannot establish direct table/RPC denial.
-
-**F03 — DEFERRED / REASSESS BEFORE SAAS RELEASE:** the current Staff authorization model is retained under the recorded PO/CTO decision. Membership-based direct intra-tenant reads can remain broader than workspace filters; that limitation is unresolved and must be reassessed before SaaS release. No new read-permission model is authorized.
-
-**D03 — COMPLETE / STAGING HTTP UAT PASS (24/10/2026):** [migration `20261023192656_security_d03_multicontext_suspension_001b.sql`](../../supabase/migrations/20261023192656_security_d03_multicontext_suspension_001b.sql) coordinates `platform_assert_request_allowed()` and `app_current_organization_id()`. A usable Staff or canonical Portal context is no longer globally vetoed by another associated suspended tenant. Tenant-specific helpers/RLS/RPC authorization, the unique eligible Staff context, canonical Portal without fallback and separate Platform Admin privileges remain authoritative. The [published D03 checkpoint](../00_START_HERE/SESSION_HANDOVER.md#security-d03-multicontext-suspension-001b--complete--cto-pass--staging-http-uat-pass) records application once on staging, local SQL and authenticated HTTP evidence, and synthetic-fixture cleanup. This closes the earlier D03 gap only within the verified paths; it is not browser UAT, universal RLS/RPC coverage or complete SaaS certification. [Security](../04_ARCHITECTURE/Security.md), [Testing](../05_DEVELOPMENT/Testing.md) and [Project Status](../06_ROADMAP/Project_Status.md) retain the detailed evidence and remaining gates, including `AUTH-DR-001C`.
-
-## Billing C2 local validation of canonical data boundaries — 26/10/2026
-
-[Migration `20261026105505`](../../supabase/migrations/20261026105505_billing_c2_rls_42501_fix_001.sql) changes only the advance-declaration SELECT policy, not Billing document, payment, numbering or fiscal-history models. Its helper requires D03's unique active Staff context, same-tenant Owner/Manager role and `billing.invoicing` entitlement; the private resolver's direct client EXECUTE remains denied. The correction was applied only to the synthetic local C2 database; the separate staging and production authorization boundaries are unchanged by this local application.
-
-In the local C2 UAT, `invoices` remains the canonical issued-document record and `billing_invoice_number_counters` the numbering source; `invoice_orders` and `billing_invoice_payment_links` preserve advance/final order and distinct POS-payment attribution. The original full-order draft became the numbered EUR 5.00 final invoice under the same UUID, retaining a EUR 7.00 operation snapshot and the EUR 2.00 advance reference; no parallel invoice truth was created. `service_performed_on=2026-10-26` is the declared fiscal service date, separate from production-completion history. This observed synthetic example is not a production fiscal-validity or handoff certification. [Testing](../05_DEVELOPMENT/Testing.md#billing-c2-local-rls-and-fiscal-uat-evidence--26102026) records the audit figures and evidence boundaries.
-
-## Historical database design — 2026-07-28
-
-The original design below is preserved verbatim. Its proposed tables, pre-migration language, global order sequence and payment descriptions are historical; later canonical migrations and domain rules take precedence. It must not be used as a complete current schema or authorization inventory.
-
-<details>
-<summary>Original APP database model — historical reference</summary>
-
 Status: Active
 
 Version: 0.1
@@ -282,5 +239,3 @@ APP-008.1 adds `organizations.timezone` with default `Atlantic/Canary`. Dashboar
 - Prefer deactivation for catalog services and prices.
 - Use cancellation/void/refund records instead of destructive deletion for orders and payments.
 - `order_status_history` and `audit_logs` are append-only.
-
-</details>
