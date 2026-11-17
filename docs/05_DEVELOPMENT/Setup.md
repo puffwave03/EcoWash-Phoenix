@@ -1,12 +1,14 @@
 # Setup
 
+> **CURRENT STAGING SETUP — 2026-11-17:** The old cloud tenant, users and seeded business data no longer exist. The Recovery schema is live (95 migrations); only one new Platform Admin exists, with **zero organizations, locations and tenant memberships**. The historical 'First Owner Bootstrap' section below is NOT a report of the current cloud state. Use the authorized Platform **existing Owner identity** onboarding flow only after PO review. Auth invitation/recovery email cannot yet be relied upon (Resend sender domain unverified). See [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md).
+
 Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-07-30
+Last Updated: 2026-11-17 (current notice; historical setup steps date to 2026-07-30)
 
-Current Mission: INFRA-001.1
+Current Mission: Documentation closeout before new-tenant bootstrap
 
 ---
 

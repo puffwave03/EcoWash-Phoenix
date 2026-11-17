@@ -1,12 +1,14 @@
 # Testing
 
+> **CURRENT STAGING TEST GATE — 2026-11-17:** Recovery 95/95 migrations, counted schema parity, empty hosted tenant data/Storage and newly authenticated Platform Admin browser login **PASS**. **NOT TESTED** on the new hosted database: tenant onboarding and tenant operational end-to-end flows; prior UAT evidence below belongs to the pre-cutover environment. Auth recovery / magic-link delivery **FAIL** (Resend unverified sender domain). Fiscal/commercial release **NOT APPROVED**. Refer to [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md).
+
 Status: Active
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-11-17 (current test gate; following history dated 2026-08-22)
 
-Current Mission: Operational role/workspace phase validated; QA-001 next
+Current Mission: Recovery staging authentication smoke PASS; tenant onboarding and remaining UAT OPEN
 
 ---
 

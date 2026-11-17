@@ -1,8 +1,10 @@
 # Session Handover
 
+> **CURRENT STAGING BASELINE — 2026-11-17:** The 95-migration Recovery has replaced the old hosted application database on the same Supabase project. One new Platform Admin completed browser login UAT. The tenant pilot is **not created**; Auth email delivery is **broken**. Resume from [Recovery Cutover Evidence](PHOENIX_RECOVERY_CUTOVER_2026-11-17.md), then this handover and Project Status. Dated pre-cutover customer, order, invoice and Auth records below are historical evidence only, not current hosted state.
+
 Status: Active — canonical resume instructions
 
-Date: 2026-10-16
+Date: 2026-11-17 (current cutover checkpoint; historical entries retained below)
 
 ## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
 

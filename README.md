@@ -1,6 +1,8 @@
 # EcoWash Phoenix
 
-EcoWash Phoenix is a multi-tenant laundry operations platform with a multilingual public website. EcoWash La Tejita is the first tenant/reference; tenant identity, catalog, pricing, currency, timezone and branding are configurable.
+EcoWash Phoenix is a multi-tenant laundry operations platform with a multilingual public website. EcoWash La Tejita is the **intended** first tenant/reference; the clean 2026-11-17 Recovery staging environment does **not yet contain** that tenant. Tenant identity, catalog, pricing, currency, timezone and branding are configurable.
+
+> **Current staging recovery checkpoint:** [PHOENIX-RECOVERY-CUTOVER-20261117](docs/00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). Historical feature/UAT evidence should not be confused with newly initialized staging data. Fiscal and commercial-production readiness remain unapproved.
 
 ## Documentation and resume
 

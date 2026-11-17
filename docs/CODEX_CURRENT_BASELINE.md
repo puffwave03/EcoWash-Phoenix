@@ -1,8 +1,10 @@
 # Codex Current Baseline
 
+> **CURRENT RESUME (2026-11-17):** GitHub `main` was cut over to the 2026-10-16 Recovery application tree at commit `a2b82dd`; the hosted Supabase was rebuilt to 95 migrations and has no tenant. Read [Recovery Cutover](00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md), then Session Handover and Project Status. This compatibility file must not be used to resume old October WIP or to execute a historical next-task instruction.
+
 Status: Compatibility entry and historical reference
 
-Last consolidated: 2026-10-16
+Last status pointer refreshed: 2026-11-17; underlying historical implementation inventory consolidated 2026-10-16
 
 ## Current source of truth
 
@@ -12,7 +14,7 @@ The filename is retained for existing references. This file no longer owns a mut
 2. Read [Project Status](06_ROADMAP/Project_Status.md) for implementation, UAT and outstanding gates.
 3. Follow [AGENTS.md](../AGENTS.md) and the explicit task prompt. [Codex Execution Context](CODEX_EXECUTION_CONTEXT.md) is supplementary execution guidance.
 
-Do not update a second feature/status inventory here after each task. Do not reset Git to a historical SHA or execute an archived next-work list. In particular, preserve the current seven-file Billing WIP identified in Session Handover.
+Do not update a second feature/status inventory here after each task. Do not reset Git to a historical SHA or execute an archived next-work list. **Do not assume the October Billing WIP is still present:** inspect the actual local working tree and current GitHub baseline before touching files.
 
 ## Historical baseline — 2026-09-29
 

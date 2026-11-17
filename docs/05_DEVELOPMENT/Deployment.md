@@ -1,12 +1,14 @@
 # Deployment
 
-Status: Active
+> **CURRENT STAGING DEPLOYMENT — 2026-11-17:** GitHub `main` commit `a2b82ddccba1d8f2842a43a4dcf2c32ba4e65dbf` and Vercel `ecowash-phoenix-staging` deployment `dpl_FW9wMW37pUYD5rL3Q8YHLouqumq3` are `READY`, and Supabase staging contains the clean 95-migration Recovery. **No first tenant exists yet.** The 2026-08-22 claim below that Resend SMTP and password recovery work is **historical and currently FALSE**: current Resend recovery requests fail with unverified sender-domain error 550. This is a staging-only cutover, **not commercial production**. See [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). Do not change production DNS, environment secrets, SMTP or deployment without a separate approved task.
+
+Status: Active (historic deployment contract preserved below)
 
 Version: 0.1
 
-Last Updated: 2026-08-22
+Last Updated: 2026-11-17 (current checkpoint banner; body retains its historical 2026-08-22 release contract)
 
-Current Mission: Operational role/workspace phase validated
+Current Mission: Recovery staging cutover documented; tenant onboarding / email repair / operational UAT remain separate gates
 
 ---
 

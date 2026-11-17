@@ -1,8 +1,10 @@
 # Staging Recovery Inventory and Runbook
 
-Status: AUTH-DR-001B3 CLOSED / PASS; AUTH-DR-001B4 COMPLETE / PASS; AUTH-DR-001C deferred as a hard pre-production / release gate
+> **RECOVERY CUTOVER UPDATE — 2026-11-17:** The existing staging Supabase project was rebuilt using exactly 95 Recovery migrations. The previous cloud data was backed up and then removed; Storage is now empty with the canonical bucket definitions restored. The **latest** old-state backup has hash verification but **no end-to-end restore rehearsal** and no evidenced encrypted off-device copy. Never infer that the historical October backup/rehearsal results apply to this November archive. Full evidence, scope, limits, first Platform Admin and email failure: [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md).
 
-Last verified: 2026-10-06
+Status: AUTH-DR-001B3 CLOSED / PASS; AUTH-DR-001B4 COMPLETE / PASS; AUTH-DR-001C deferred as a hard pre-production / release gate (historical pre-cutover evidence)
+
+Historical inventory last verified: 2026-10-06; current cutover check: 2026-11-17 (linked evidence above)
 
 Scope: EcoWash Phoenix staging only. Production does not exist and is not authorized by this document.
 

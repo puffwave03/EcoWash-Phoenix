@@ -1,8 +1,10 @@
 # Project Status
 
+> **CURRENT STAGING RECOVERY STATUS — 2026-11-17:** Hosted Supabase `exthnplfokcucaqydney` now has **95 migrations** through `20261015000100`, `public` **53 tables / 223 functions / 92 non-internal triggers**, **0 organizations**, **0 orders**, **1 new Auth user**, **1 active Platform Admin**, and **0 Storage files**. GitHub/Vercel baseline is `a2b82dd`, deployment READY; Platform Admin login **PO UAT PASS**. Tenant/bootstrap and operational UAT are **OPEN**; Resend Auth email **FAIL**; fiscal/commercial readiness **NOT APPROVED**. Details and evidence: [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). Historical implementation and UAT checkpoints below remain preserved, but their old tenant data no longer exists on hosted staging.
+
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
+Last consolidated: 2026-11-17 (Recovery staging cutover checkpoint). Historical feature/UAT consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
 
 ## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
 
