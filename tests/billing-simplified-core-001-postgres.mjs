@@ -1,22 +1,11 @@
-// Explicit local integration check: node tests/billing-simplified-core-001-postgres.mjs
-// Uses a cached postgres:17 image, no network, host ports, mounted data or tenants.
+// Invoked by billing-postgres-test-runner-001.mjs in the fixed existing lab.
+// Shared synthetic fixtures remain available for the following draft suite.
 // Billing DDL/RPCs are real repository SQL. Auth/entitlement resolvers and source
 // tables are controlled fixtures; this is not a full Supabase/RLS acceptance test.
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-const name = `phoenix-simplified-core-${randomUUID()}`;
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
-function docker(args, input) {
-  const result = spawnSync("docker", args, { input, encoding: "utf8", timeout: 60000 });
-  if (result.error || result.status !== 0) {
-    throw new Error(`${args[0]} failed: ${result.error?.message ?? result.stderr}`);
-  }
-  return result.stdout;
-}
-const query = (sql) => docker(["exec", "-i", name, "psql", "-U", "postgres", "-v", "ON_ERROR_STOP=1", "-At"], sql);
 const org = "00000000-0000-4000-8000-000000000001";
 const customer = "00000000-0000-4000-8000-000000000002";
 const order = "00000000-0000-4000-8000-000000000003";
@@ -33,43 +22,40 @@ const expectError = (statement, expected) => `
     raise exception 'Expected ${expected}';
   end $test$;`;
 
-try {
-  docker(["run", "--detach", "--rm", "--pull=never", "--name", name, "--network=none",
-    "--tmpfs", "/var/lib/postgresql/data", "--env", "POSTGRES_HOST_AUTH_METHOD=trust", "postgres:17"]);
-  let ready = false;
-  for (let attempt = 0; attempt < 40; attempt++) {
-    const status = spawnSync("docker", ["exec", name, "pg_isready", "-U", "postgres"], { encoding: "utf8" });
-    if (status.status === 0) { ready = true; break; }
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  assert.ok(ready, "isolated PostgreSQL did not start");
+export async function runBillingCorePostgresTests({ query, concurrentQuery }) {
   query(`
-    create role anon;
-    create role authenticated;
+    do $$ begin
+      if not exists (select 1 from pg_roles where rolname = 'anon') then create role anon; end if;
+      if not exists (select 1 from pg_roles where rolname = 'authenticated') then create role authenticated; end if;
+    end $$;
     create schema extensions;
     create extension pgcrypto with schema extensions;
     create schema auth;
     create type public.app_role as enum ('owner', 'manager', 'staff');
     create type public.service_unit_type as enum ('piece', 'weight');
-    create function auth.uid() returns uuid language sql as $$ select null::uuid $$;
+    create function auth.uid() returns uuid language sql as $$ select '00000000-0000-4000-8000-000000000002'::uuid $$;
     create function public.app_current_organization_id() returns uuid language sql as $$
       select current_setting('test.org')::uuid $$;
     create function public.has_organization_role(org uuid, roles public.app_role[]) returns boolean language sql as $$
       select org = public.app_current_organization_id() and current_setting('test.role')::public.app_role = any(roles) $$;
     create function public.organization_entitlement_is_enabled(uuid, text, timestamptz) returns boolean language sql as $$
-      select current_setting('test.entitled')::boolean $$;
+      select coalesce(nullif(current_setting('test.billing', true), ''),
+        nullif(current_setting('test.entitled', true), ''), 'false')::boolean $$;
+    create function public.require_pos_access(uuid) returns void language plpgsql as $$ begin
+      if current_setting('test.pos', true) is distinct from 'true' then raise exception 'pos_not_authorized'; end if; end $$;
     create function public.set_updated_at() returns trigger language plpgsql as $$
       begin new.updated_at := now(); return new; end $$;
     create table public.organizations (id uuid primary key, name text);
     create table public.profiles (id uuid primary key);
+    insert into public.profiles values ('00000000-0000-4000-8000-000000000002');
     create table public.customers (
-      id uuid primary key, organization_id uuid, customer_code text, customer_type text,
+      id uuid primary key, organization_id uuid, customer_code text, customer_type text default 'individual',
       display_name text, company_name text, tax_id text, billing_address_line1 text,
       billing_address_line2 text, billing_city text, billing_postal_code text, billing_country_code char(2),
       email text, unique(organization_id, id)
     );
     create table public.orders (
-      id uuid primary key, organization_id uuid, customer_id uuid, currency text default 'EUR',
+      id uuid primary key, organization_id uuid, customer_id uuid, currency text default 'EUR', location_id uuid,
       is_active boolean default true, production_status text default 'received', created_at timestamptz default now(),
       subtotal numeric default 10, discount_amount numeric default 2, total numeric default 8,
       unique(organization_id, id)
@@ -83,6 +69,12 @@ try {
     create table public.organization_branding (
       organization_id uuid, commercial_name text, business_address text,
       support_email text, support_phone text, logo_path text
+    );
+    create table public.pos_sessions (id uuid primary key, organization_id uuid, location_id uuid, status text default 'closed');
+    create table public.payments (
+      id uuid primary key, organization_id uuid, order_id uuid, amount numeric, method text, status text default 'confirmed',
+      channel text default 'pos', pos_session_id uuid, recorded_by uuid, confirmed_by uuid, paid_at timestamptz default now(),
+      refunded_from_payment_id uuid
     );
   `);
   query(read("supabase/migrations/20260826000300_billing_001_invoicing_foundation.sql"));
@@ -107,6 +99,40 @@ try {
   // interpretation and canonical creation math are exercised, not reimplemented.
   const draft = query(`${auth} select public.create_billing_draft(array['${order}']::uuid[]);`).trim().split("\n").at(-1);
   assert.match(draft, /^[0-9a-f-]{36}$/);
+  // Exercise issue idempotency BEFORE applying the simplified core migration.
+  const retryOrder = "00000000-0000-4000-8000-000000000090";
+  query(`${auth}
+    insert into public.customers (id, organization_id, customer_code, customer_type, display_name,
+      billing_address_line1, billing_city, billing_postal_code, billing_country_code)
+    values ('00000000-0000-4000-8000-000000000092', '${org}', 'C-RETRY', 'individual', 'Retry fixture', 'Street', 'City', '00000', 'ES');
+    insert into public.orders (id, organization_id, customer_id)
+    values ('${retryOrder}', '${org}', '00000000-0000-4000-8000-000000000092');
+    insert into public.order_items (id, organization_id, order_id)
+    values ('00000000-0000-4000-8000-000000000091', '${org}', '${retryOrder}');
+  `);
+  const retryDraft = query(`${auth} select public.create_billing_draft(array['${retryOrder}']::uuid[]);`).split("\n").at(-1);
+  const [firstIssue, competingIssue] = await Promise.all([
+    concurrentQuery(`${auth} begin; select * from public.issue_billing_invoice('${retryDraft}'); select pg_sleep(0.5); commit;`),
+    concurrentQuery(`${auth} begin; select * from public.issue_billing_invoice('${retryDraft}'); commit;`),
+  ]);
+  const issueRow = (output) => output.split("\n").find((line) => line.startsWith(`${retryDraft}|`));
+  assert.ok(issueRow(firstIssue)); assert.equal(issueRow(firstIssue), issueRow(competingIssue));
+  const retrySnapshot = query(`select row_to_json(i) from public.invoices i where id = '${retryDraft}';`);
+  const counterSnapshot = query("select json_agg(c order by c.organization_id, c.series) from public.billing_invoice_number_counters c;");
+  assert.equal(issueRow(query(`${auth} select * from public.issue_billing_invoice('${retryDraft}');`)), issueRow(firstIssue));
+  assert.equal(query(`select row_to_json(i) from public.invoices i where id = '${retryDraft}';`), retrySnapshot);
+  assert.equal(query("select json_agg(c order by c.organization_id, c.series) from public.billing_invoice_number_counters c;"), counterSnapshot);
+  assert.equal(query("select next_value from public.billing_invoice_number_counters where series = 'A';"), "2");
+  query(`${auth}
+    ${expectError(`perform public.create_billing_draft(array['${retryOrder}']::uuid[])`, "billing_order_already_invoiced")}
+    select set_config('test.role', 'staff', false);
+    ${expectError(`perform public.issue_billing_invoice('${retryDraft}')`, "billing_not_authorized")}
+    select set_config('test.role', 'owner', false); select set_config('test.entitled', 'false', false);
+    ${expectError(`perform public.issue_billing_invoice('${retryDraft}')`, "billing_entitlement_required")}
+    select set_config('test.entitled', 'true', false); select set_config('test.org', '00000000-0000-4000-8000-000000000099', false);
+    ${expectError(`perform public.issue_billing_invoice('${retryDraft}')`, "billing_invalid_draft")}
+  `);
+  console.log("PASS issue-idempotency SQL: competing first issue/retry, one number/counter allocation, snapshot unchanged, duplicate/tenant/role/entitlement guards");
   query(read("supabase/migrations/20261118175639_billing_simplified_core_001.sql"));
   assert.equal(query(`select fiscal_document_type from public.invoices where id = '${draft}';`).trim(), "ordinaria");
 
@@ -134,7 +160,7 @@ try {
   assert.equal(prepared.taxable_base, 7.48);
   assert.equal(prepared.tax_total, 0.52);
   assert.equal(prepared.invoice_number, null);
-  assert.equal(query("select count(*) from public.billing_invoice_number_counters;").trim(), "0");
+  assert.equal(query("select json_agg(c order by c.organization_id, c.series) from public.billing_invoice_number_counters c;"), counterSnapshot);
   query(`${auth}
     begin;
     select set_config('app.billing_mutation', 'on', true);
@@ -168,7 +194,7 @@ try {
   const retried = query(`${auth} select * from public.issue_billing_invoice('${ordinary}');`).trim().split("\n").at(-1);
   assert.equal(retried, issued);
   assert.equal(query(`select row_to_json(i) from public.invoices i where id = '${ordinary}';`).trim(), beforeRetry);
-  assert.equal(query("select next_value from public.billing_invoice_number_counters where series = 'A';").trim(), "2");
+  assert.equal(query("select next_value from public.billing_invoice_number_counters where series = 'A';").trim(), "3");
   query(`${auth}
     begin;
     select set_config('app.billing_mutation', 'on', true);
@@ -180,7 +206,5 @@ try {
   console.log("PASS PostgreSQL 17: migration, legacy ordinary default, anonymous snapshot, inclusive totals,");
   console.log("role/entitlement/tenant guards with controlled resolvers, distinct series, disabled fiscal use,");
   console.log("ordinary first issue/retry/counter/snapshot, immutability and cancelled rejection.");
-  console.log("Not exercised: full Supabase identity/RLS, competing sessions, tax-law eligibility or UI E2E.");
-} finally {
-  docker(["rm", "--force", name]);
+  console.log("Not exercised: full Supabase identity/RLS, tax-law eligibility or UI E2E.");
 }
