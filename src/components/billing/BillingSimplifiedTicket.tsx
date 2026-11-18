@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { BillingSimplifiedDraftDocument } from "@/features/billing/simplified-document";
+import type { BillingSimplifiedDraftDocument, BillingSimplifiedIssuedDocument } from "@/features/billing/simplified-document";
 import type { OrganizationBrandingSettings } from "@/features/branding/types";
 import { formatTaxRate } from "@/features/billing/tax-rate";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
@@ -7,7 +7,7 @@ import { formatOrganizationDateTime } from "@/lib/organization-timezone";
 import { simplifiedTicketCopy } from "./simplified-ticket-copy";
 
 export type BillingSimplifiedTicketProps = {
-  document: BillingSimplifiedDraftDocument;
+  document: BillingSimplifiedDraftDocument | BillingSimplifiedIssuedDocument;
   locale: string;
   timeZone: string;
   preview?: boolean;
@@ -82,22 +82,27 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
   const logoUrl = present(issuer.logoPath) && presentation.branding?.logoPath === issuer.logoPath
     ? presentation.branding.logoUrl : null;
   const serviceConditions = presentation.serviceConditions?.trim() ? presentation.serviceConditions : null;
+  const issuedSource = snapshot.fiscalUseAllowed === true && document.fiscalDocumentType === "simplificada"
+    && document.status === "issued" && present(document.number) && validDate(document.issuedAt)
+    && !preview && !demonstration;
+  const visibleNumber = issuedSource ? document.number : preview ? null : demonstration?.number;
+  const visibleDate = issuedSource ? document.issuedAt : preview ? null : demonstration?.issuedAt;
   const missing: string[] = [];
   for (const [value, label] of [
     [issuer.legalName, copy.issuer], [issuer.taxId, copy.taxId], [issuer.addressLine1, copy.address],
     [issuer.city, copy.city], [issuer.postalCode, copy.postalCode], [issuer.countryCode, copy.country],
     [document.series, copy.series],
   ] as const) if (!present(value)) missing.push(label);
-  if (!preview && !present(demonstration?.number)) missing.push(copy.number);
-  if (!preview && !validDate(demonstration?.issuedAt)) missing.push(copy.date);
+  if (!preview && !present(visibleNumber)) missing.push(copy.number);
+  if (!preview && !validDate(visibleDate)) missing.push(copy.date);
   let zoneValid = true;
   try { new Intl.DateTimeFormat(locale, { timeZone }); } catch { zoneValid = false; missing.push(copy.timezone); }
   const currencyValid = /^[A-Z]{3}$/.test(totals.currency ?? "");
   const money = (amount: number) => currencyValid && Number.isFinite(amount) ? formatCurrency(amount, totals.currency, locale) : "—";
   const date = (value?: string | null) => zoneValid && validDate(value)
     ? formatOrganizationDateTime(value!, locale, timeZone) : "—";
-  const sourceValid = snapshot.fiscalUseAllowed === false && document.fiscalDocumentType === "simplificada"
-    && document.status === "draft" && document.number === null && document.issuedAt === null;
+  const sourceValid = issuedSource || (snapshot.fiscalUseAllowed === false && document.fiscalDocumentType === "simplificada"
+    && document.status === "draft" && document.number === null && document.issuedAt === null);
   if (!sourceValid) missing.push(copy.source);
   if (!currencyValid || !items.length || !Number.isFinite(tax.rate) || !tax.pricesIncludeTax
     || ![totals.subtotal, totals.discount, totals.total, tax.taxableBase, tax.amount].every(Number.isFinite)
@@ -106,13 +111,14 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
   if (recipient === null && presentation.isSharedWalkIn !== true) missing.push(copy.recipientKind);
   if (recipient !== null && (!present(recipient.name) || presentation.isSharedWalkIn === true)) missing.push(copy.recipient);
 
-  return <div className="order-print-document order-print-receipt order-print-receipt-80mm billing-simplified-ticket" lang={locale} data-fiscal-issued="false">
+  const issued = issuedSource && missing.length === 0;
+  return <div className="order-print-document order-print-receipt order-print-receipt-80mm billing-simplified-ticket" lang={locale} data-fiscal-issued={issued ? "true" : "false"}>
     <style>{styles}</style>
-    <aside className="simplified-state" role={missing.length ? "alert" : "status"}>
+    {!issued ? <aside className="simplified-state" role={missing.length ? "alert" : "status"}>
       <strong>{preview ? copy.preview : demonstration ? copy.demo : copy.draft}</strong>
       {missing.length ? <><p>{copy.incomplete}</p><ul>{missing.map((field) => <li key={field}>{field}</li>)}</ul></> : null}
-    </aside>
-    {sourceValid ? <div className="print-sheet print-receipt-sheet print-receipt-sheet-80mm simplified-paper">
+    </aside> : null}
+    {sourceValid && (!issuedSource || issued) ? <div className="print-sheet print-receipt-sheet print-receipt-sheet-80mm simplified-paper">
       <article className="simplified-fiscal" aria-label={preview ? copy.preview : copy.title}>
         <header className="print-brand-header">
           {logoUrl ? <Image className="print-brand-logo" src={logoUrl} alt={issuer.legalName ?? copy.issuer} width={160} height={64} unoptimized /> : null}
@@ -124,9 +130,9 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
         </header>
         <section className="simplified-title">
           <h2>{preview ? copy.preview : copy.title}</h2>
-          <strong>{!preview && demonstration?.number ? demonstration.number : "—"}</strong>
+          <strong>{visibleNumber || "—"}</strong>
           <p>{copy.series}: {document.series || "—"}</p>
-          <p>{copy.date}: {date(preview ? null : demonstration?.issuedAt)}</p>
+          <p>{copy.date}: {date(visibleDate)}</p>
         </section>
         <section className="simplified-recipient" aria-label={copy.recipient}>
           {recipient ? <><strong>{recipient.name || "—"}</strong>

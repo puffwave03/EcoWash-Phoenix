@@ -216,6 +216,21 @@ test("other-tenant, issued and cancelled simplified targets are rejected", async
   }
 });
 
+test("internal issued reader accepts only issued simplified documents and preserves tenant/role gates", async () => {
+  const h = queryHarness({ status: "issued" });
+  assert.equal((await h.queries.getBillingSimplifiedIssued("es", "draft-a")).invoice.documentStatus, "issued");
+  await assert.rejects(h.queries.getBillingInvoice("es", "draft-a"), (error) => error === h.notFound);
+  for (const options of [{ status: "draft" }, { status: "cancelled" }, { status: "issued", type: "ordinaria" }, { status: "issued", tenant: "org-b" }]) {
+    const denied = queryHarness(options);
+    await assert.rejects(denied.queries.getBillingSimplifiedIssued("es", "draft-a"), (error) => error === denied.notFound);
+  }
+  for (const options of [{ role: "staff" }, { entitled: false }]) {
+    const denied = queryHarness(options);
+    await assert.rejects(denied.queries.getBillingSimplifiedIssued("es", "draft-a"), /DENIED/);
+    assert.equal(denied.calls.length, 0);
+  }
+});
+
 test("existing detail and print routes continue through the guarded ordinary reader", () => {
   for (const path of [
     "src/app/[locale]/app/(dashboard)/billing/[invoiceId]/page.tsx",

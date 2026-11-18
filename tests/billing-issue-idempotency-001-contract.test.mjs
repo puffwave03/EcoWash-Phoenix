@@ -28,12 +28,16 @@ assert.ok(branchStart >= 0 && branchEnd > branchStart);
 const retry = currentFunction.slice(branchStart, branchEnd);
 const retryCode = retry.replace(/--[^\n]*/g, "");
 
-test("the append-only migration replaces only the current issuance RPC", () => {
+test("the idempotency migration is preserved behind the new canonical dispatcher", () => {
   const definitions = readdirSync(new URL("../supabase/migrations/", import.meta.url))
     .filter((name) => name.endsWith(".sql"))
     .sort()
     .filter((name) => /create (?:or replace )?function public\.issue_billing_invoice\(/i.test(read(`supabase/migrations/${name}`)));
-  assert.equal(definitions.at(-1), migrationName);
+  assert.equal(definitions.at(-1), "20261118211638_billing_simplified_issue_001.sql");
+  const dispatcher = read(`supabase/migrations/${definitions.at(-1)}`);
+  assert.match(dispatcher, /alter function public.issue_billing_invoice\(uuid\) rename to issue_ordinary_billing_invoice/);
+  assert.match(dispatcher, /revoke all on function public.issue_ordinary_billing_invoice\(uuid\) from public, anon, authenticated/);
+  assert.match(dispatcher, /return query select \* from public.issue_ordinary_billing_invoice\(target_invoice_id\)/);
   const envelope = sql.replace(currentFunction, "").replace(/--[^\n]*/g, "").trim();
   assert.match(envelope, /^begin;\s+commit;$/);
   assert.equal((sql.match(/create or replace function/g) ?? []).length, 1);

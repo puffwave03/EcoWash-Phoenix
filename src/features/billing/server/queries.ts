@@ -416,7 +416,14 @@ export async function getBillingSimplifiedDraft(locale: string, invoiceId: strin
   return getBillingDocument(locale, invoiceId, "simplificada");
 }
 
-async function getBillingDocument(locale: string, invoiceId: string, expectedType: BillingFiscalDocumentType): Promise<BillingInvoiceDetail> {
+// Internal issued read only: ordinary operator detail/print routes remain scoped
+// to ordinaria. No route or operator control is added for this reader.
+export async function getBillingSimplifiedIssued(locale: string, invoiceId: string): Promise<BillingInvoiceDetail> {
+  return getBillingDocument(locale, invoiceId, "simplificada", "issued");
+}
+
+async function getBillingDocument(locale: string, invoiceId: string, expectedType: BillingFiscalDocumentType,
+  simplifiedStatus: "draft" | "issued" = "draft"): Promise<BillingInvoiceDetail> {
   const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -426,14 +433,14 @@ async function getBillingDocument(locale: string, invoiceId: string, expectedTyp
   ]);
   if (invoiceResult.error || !invoiceResult.data) notFound();
   if ((invoiceResult.data.fiscal_document_type ?? "ordinaria") !== expectedType) notFound();
-  if (expectedType === "simplificada" && invoiceResult.data.document_status !== "draft") notFound();
+  if (expectedType === "simplificada" && invoiceResult.data.document_status !== simplifiedStatus) notFound();
   if (itemsResult.error) throw itemsResult.error;
   if (!Array.isArray(itemsResult.data)) throw new Error("billing_invoice_items_invalid_response");
   const invoices = await hydrateInvoices(supabase, [invoiceResult.data]);
   const invoice = invoices[0];
   if (!invoice) notFound();
   const { data: paymentData } = invoice.orderIds.length
-    ? await supabase.from("payments").select("id, order_id, amount, method, status, paid_at").in("order_id", invoice.orderIds).order("paid_at", { ascending: false }).returns<PaymentRow[]>()
+    ? await supabase.from("payments").select("id, order_id, amount, method, status, paid_at").eq("organization_id", membership.organization.id).in("order_id", invoice.orderIds).order("paid_at", { ascending: false }).returns<PaymentRow[]>()
     : { data: [] as PaymentRow[] };
 
   return {
