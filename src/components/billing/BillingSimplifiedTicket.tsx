@@ -10,6 +10,7 @@ export type BillingSimplifiedTicketProps = {
   document: BillingSimplifiedDraftDocument;
   locale: string;
   timeZone: string;
+  preview?: boolean;
   // Resolved from the existing issuer logo path, as for REC. Operational data
   // are supplied separately; none of them are written into the fiscal snapshot.
   presentation?: {
@@ -73,7 +74,7 @@ const styles = `
 const present = (value: string | null | undefined) => Boolean(value?.trim());
 const validDate = (value: string | null | undefined) => Boolean(value && Number.isFinite(Date.parse(value)));
 
-export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, presentation = {}, demonstration }: BillingSimplifiedTicketProps) {
+export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, presentation = {}, demonstration, preview = false }: BillingSimplifiedTicketProps) {
   const copy = simplifiedTicketCopy[locale.split("-")[0] as keyof typeof simplifiedTicketCopy] ?? simplifiedTicketCopy.es;
   const { document, issuer, recipient, items, tax, totals, orders } = snapshot;
   // The caller resolves this exact persisted issuer path through the existing
@@ -85,9 +86,10 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
   for (const [value, label] of [
     [issuer.legalName, copy.issuer], [issuer.taxId, copy.taxId], [issuer.addressLine1, copy.address],
     [issuer.city, copy.city], [issuer.postalCode, copy.postalCode], [issuer.countryCode, copy.country],
-    [document.series, copy.series], [demonstration?.number, copy.number],
+    [document.series, copy.series],
   ] as const) if (!present(value)) missing.push(label);
-  if (!validDate(demonstration?.issuedAt)) missing.push(copy.date);
+  if (!preview && !present(demonstration?.number)) missing.push(copy.number);
+  if (!preview && !validDate(demonstration?.issuedAt)) missing.push(copy.date);
   let zoneValid = true;
   try { new Intl.DateTimeFormat(locale, { timeZone }); } catch { zoneValid = false; missing.push(copy.timezone); }
   const currencyValid = /^[A-Z]{3}$/.test(totals.currency ?? "");
@@ -107,11 +109,11 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
   return <div className="order-print-document order-print-receipt order-print-receipt-80mm billing-simplified-ticket" lang={locale} data-fiscal-issued="false">
     <style>{styles}</style>
     <aside className="simplified-state" role={missing.length ? "alert" : "status"}>
-      <strong>{demonstration ? copy.demo : copy.draft}</strong>
+      <strong>{preview ? copy.preview : demonstration ? copy.demo : copy.draft}</strong>
       {missing.length ? <><p>{copy.incomplete}</p><ul>{missing.map((field) => <li key={field}>{field}</li>)}</ul></> : null}
     </aside>
     {sourceValid ? <div className="print-sheet print-receipt-sheet print-receipt-sheet-80mm simplified-paper">
-      <article className="simplified-fiscal" aria-label={copy.title}>
+      <article className="simplified-fiscal" aria-label={preview ? copy.preview : copy.title}>
         <header className="print-brand-header">
           {logoUrl ? <Image className="print-brand-logo" src={logoUrl} alt={issuer.legalName ?? copy.issuer} width={160} height={64} unoptimized /> : null}
           <h1>{issuer.legalName || "—"}</h1>
@@ -121,10 +123,10 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
           {[issuer.phone, issuer.email].filter(Boolean).map((contact) => <p key={contact}>{contact}</p>)}
         </header>
         <section className="simplified-title">
-          <h2>{copy.title}</h2>
-          <strong>{demonstration?.number || "—"}</strong>
+          <h2>{preview ? copy.preview : copy.title}</h2>
+          <strong>{!preview && demonstration?.number ? demonstration.number : "—"}</strong>
           <p>{copy.series}: {document.series || "—"}</p>
-          <p>{copy.date}: {date(demonstration?.issuedAt)}</p>
+          <p>{copy.date}: {date(preview ? null : demonstration?.issuedAt)}</p>
         </section>
         <section className="simplified-recipient" aria-label={copy.recipient}>
           {recipient ? <><strong>{recipient.name || "—"}</strong>
