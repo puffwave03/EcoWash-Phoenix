@@ -8,6 +8,7 @@ import type {
   BillingCustomerContext,
   BillingCustomerFiscalField,
   BillingDocumentStatus,
+  BillingFiscalDocumentType,
   BillingInvoice,
   BillingInvoiceListEntry,
   BillingHistorySummary,
@@ -35,11 +36,12 @@ type InvoiceRow = {
   customer_country_code: string | null;
   customer_email: string | null;
   customer_id: string;
-  customer_name: string;
+  customer_name: string | null;
   customer_postal_code: string | null;
   customer_tax_id: string | null;
   discount_total: number;
   document_status: BillingDocumentStatus;
+  fiscal_document_type?: BillingFiscalDocumentType;
   due_date: string | null;
   id: string;
   invoice_number: string | null;
@@ -138,7 +140,7 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
 const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
 
 function number(value: number | string | null) {
@@ -190,6 +192,7 @@ function mapInvoice(
     customerTaxId: row.customer_tax_id,
     discountTotal: number(row.discount_total),
     documentStatus: row.document_status,
+    fiscalDocumentType: row.fiscal_document_type ?? "ordinaria",
     dueDate: row.due_date,
     id: row.id,
     invoiceNumber: row.invoice_number,
@@ -355,7 +358,7 @@ export async function getBillingCustomerContext(locale: string, customerId: stri
 }
 
 type BillingListRow = {
-  id: string; created_at: string; invoice_number: string | null; customer_name: string;
+  id: string; created_at: string; invoice_number: string | null; customer_name: string | null;
   issue_date: string; currency: string; total: number; paid_total: number;
   outstanding: number; payment_status: BillingPaymentStatus; order_numbers: string[];
 };
@@ -404,6 +407,16 @@ export async function getBillingHistorySummary(locale: string): Promise<BillingH
 }
 
 export async function getBillingInvoice(locale: string, invoiceId: string): Promise<BillingInvoiceDetail> {
+  return getBillingDocument(locale, invoiceId, "ordinaria");
+}
+
+// A separate read contract for future integrations; there is no operator page
+// or fiscal print route for this preparatory type.
+export async function getBillingSimplifiedDraft(locale: string, invoiceId: string): Promise<BillingInvoiceDetail> {
+  return getBillingDocument(locale, invoiceId, "simplificada");
+}
+
+async function getBillingDocument(locale: string, invoiceId: string, expectedType: BillingFiscalDocumentType): Promise<BillingInvoiceDetail> {
   const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
@@ -412,6 +425,8 @@ export async function getBillingInvoice(locale: string, invoiceId: string): Prom
     supabase.from("invoice_items").select("id, source_order_id, description, unit_type, quantity, unit_price, line_subtotal, discount_amount, taxable_base, tax_rate, tax_amount, line_total, display_order").eq("organization_id", membership.organization.id).eq("invoice_id", invoiceId).order("display_order").returns<InvoiceItemRow[]>(),
   ]);
   if (invoiceResult.error || !invoiceResult.data) notFound();
+  if ((invoiceResult.data.fiscal_document_type ?? "ordinaria") !== expectedType) notFound();
+  if (expectedType === "simplificada" && invoiceResult.data.document_status !== "draft") notFound();
   if (itemsResult.error) throw itemsResult.error;
   if (!Array.isArray(itemsResult.data)) throw new Error("billing_invoice_items_invalid_response");
   const invoices = await hydrateInvoices(supabase, [invoiceResult.data]);

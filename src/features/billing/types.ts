@@ -1,9 +1,11 @@
 export const BILLING_DOCUMENT_STATUSES = ["draft", "issued", "cancelled"] as const;
+export const BILLING_FISCAL_DOCUMENT_TYPES = ["ordinaria", "simplificada"] as const;
 export const BILLING_PAYMENT_STATUSES = ["draft", "unpaid", "partially_paid", "paid", "cancelled"] as const;
 export const BILLING_ISSUER_REQUIRED_FIELDS = ["issuerLegalName", "issuerTaxId", "issuerAddressLine1", "issuerCity", "issuerPostalCode", "issuerCountryCode"] as const;
 export const BILLING_CUSTOMER_FISCAL_FIELDS = ["billingAddressLine1", "billingCity", "billingPostalCode", "billingCountryCode", "taxId"] as const;
 
 export type BillingDocumentStatus = (typeof BILLING_DOCUMENT_STATUSES)[number];
+export type BillingFiscalDocumentType = (typeof BILLING_FISCAL_DOCUMENT_TYPES)[number];
 export type BillingPaymentStatus = (typeof BILLING_PAYMENT_STATUSES)[number];
 export type BillingIssuerRequiredField = (typeof BILLING_ISSUER_REQUIRED_FIELDS)[number];
 export type BillingCustomerFiscalField = (typeof BILLING_CUSTOMER_FISCAL_FIELDS)[number];
@@ -53,11 +55,12 @@ export type BillingInvoice = {
   customerCountryCode: string | null;
   customerEmail: string | null;
   customerId: string;
-  customerName: string;
+  customerName: string | null;
   customerPostalCode: string | null;
   customerTaxId: string | null;
   discountTotal: number;
   documentStatus: BillingDocumentStatus;
+  fiscalDocumentType: BillingFiscalDocumentType;
   dueDate: string | null;
   id: string;
   invoiceNumber: string | null;
