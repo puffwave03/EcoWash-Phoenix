@@ -13,6 +13,10 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf
 const orgA = "5a5a6393-7366-5506-9527-8c9da2c11884", orgB = "b4e08840-0912-5db1-ad22-c0291af2abdd";
 const orderId = "00000000-0000-4000-8000-000000000101", invoiceId = "00000000-0000-4000-8000-000000000201";
 const lab = "phoenix-local-baseline-001", root = "/Volumes/DEV/Phoenix-Local-Baseline-001";
+const stagingOrg = "601a0b5c-cfff-413d-952c-63be6b5978e5";
+const stagingUrl = "https://exthnplfokcucaqydney.supabase.co";
+const stagingEnv = { PHOENIX_BILLING_SIMPLIFIED_UI: "phoenix-staging-readonly-001",
+  VERCEL: "1", VERCEL_ENV: "production", VERCEL_PROJECT_ID: "prj_u7MwRwQOLyRSRvbuhRLdURx653aZ" };
 const base = "src/features/billing/server/";
 const pagePath = "src/app/[locale]/app/(dashboard)/billing/simplified/page.tsx";
 const copyPath = "src/components/billing/simplified-ui-copy.ts";
@@ -154,6 +158,7 @@ function harness(options = {}) {
   }
   h.access = () => load(`${base}simplified-ui-access.ts`).requireBillingSimplifiedUiAccess("es");
   h.enabled = (org) => load(`${base}simplified-ui-access.ts`).billingSimplifiedUiEnabled(org);
+  h.mutationEnabled = (org) => load(`${base}simplified-ui-access.ts`).billingSimplifiedUiMutationEnabled(org);
   h.state = (selection = { orderId }) => load(`${base}simplified-ui.ts`).getBillingSimplifiedUiState("es", selection);
   h.history = () => load(`${base}simplified-ui.ts`).getBillingSimplifiedUiOrderForInvoice("es", invoiceId);
   h.page = (query = { orderId }) => load(pagePath).default({ params: Promise.resolve({ locale: "es" }), searchParams: Promise.resolve(query) });
@@ -168,6 +173,14 @@ function harness(options = {}) {
     text: { kinds: { invoice: "Factura" }, statuses: { issued: "Emitida" }, open: "Abrir / reimprimir" },
   });
   h.home = () => load("src/app/[locale]/app/(dashboard)/billing/page.tsx").default({ params: Promise.resolve({ locale: "es" }), searchParams: Promise.resolve({}) });
+  return h;
+}
+function stagingHarness(options = {}) {
+  const h = harness({ org: stagingOrg, url: stagingUrl, cwd: "/vercel/path0", ...options,
+    env: { ...stagingEnv, ...options.env } });
+  for (const rows of Object.values(h.rows)) for (const row of rows) {
+    if (row.organization_id === orgA) row.organization_id = stagingOrg;
+  }
   return h;
 }
 function formData(ids = [orderId]) {
@@ -428,4 +441,129 @@ test("simplified reprint denies foreign tenant, unauthorized role/entitlement/PO
     assert.equal(mutations(h).length, 0); assert.ok(!h.calls.includes("issued-read"));
     assert.ok(!h.calls.some((c) => c.event));
   }
+});
+
+test("staging opt-in requires the exact Vercel project, Supabase endpoint and synthetic tenant; it never enables writes", async () => {
+  for (const environment of ["preview", "production"]) {
+    const h = stagingHarness({ env: { VERCEL_ENV: environment } });
+    assert.equal(await h.enabled(stagingOrg), true);
+    assert.equal(await h.mutationEnabled(stagingOrg), false);
+    assert.equal(await h.mutationEnabled(), false);
+    await h.access();
+    assert.ok(!h.calls.includes("config") && !h.calls.includes("path"));
+  }
+  const local = harness();
+  for (const org of [orgA, orgB]) assert.equal(await local.mutationEnabled(org), true);
+  assert.equal(await local.enabled(stagingOrg), false);
+  assert.equal(await local.mutationEnabled(stagingOrg), false);
+});
+
+test("staging rejects missing opt-in, other Vercel projects, local runtimes and lookalike or other Supabase endpoints", async () => {
+  for (const options of [
+    { env: { PHOENIX_BILLING_SIMPLIFIED_UI: undefined } },
+    { env: { PHOENIX_BILLING_SIMPLIFIED_UI: lab } },
+    { env: { VERCEL: undefined } }, { env: { VERCEL: "0" } },
+    { env: { VERCEL_PROJECT_ID: undefined } }, { env: { VERCEL_PROJECT_ID: "commercial-production" } },
+    { env: { VERCEL_ENV: undefined } }, { env: { VERCEL_ENV: "development", NODE_ENV: "production" } },
+    { url: "http://127.0.0.1:58321" }, { url: "https://other.supabase.co" },
+    { url: `${stagingUrl}.example.test` }, { url: stagingUrl.replace("https:", "http:") },
+  ]) {
+    const h = stagingHarness(options);
+    assert.equal(await h.enabled(stagingOrg), false);
+    await assert.rejects(h.page(), /NOT_FOUND/);
+    for (const action of ["prepare", "issue"]) await assert.rejects(h.action(action), /ui_disabled/);
+    assert.equal(mutations(h).length, 0); assert.ok(!h.calls.includes("client"));
+  }
+});
+
+test("staging derives the tenant from membership and preserves Owner/Manager, Billing and POS authorization", async () => {
+  for (const role of ["owner", "manager"]) await stagingHarness({ role }).access();
+  for (const options of [{ role: "staff" }, { entitled: false }, { pos: false }, { posOrg: orgA },
+    { org: orgA }, { org: orgB }, { org: "other-real-tenant" }]) {
+    const h = stagingHarness(options);
+    await assert.rejects(h.page(), /DENIED|denied/);
+    for (const action of ["prepare", "issue"]) await assert.rejects(h.action(action), /DENIED|denied/);
+    assert.equal(mutations(h).length, 0); assert.ok(!h.calls.includes("client"));
+    if (options.org) assert.equal(await h.enabled(options.org), false);
+  }
+});
+
+test("staging navigation exposes Factura simplificada only for the allowlisted tenant and preserves the ordinary URL", async () => {
+  for (const org of [stagingOrg, orgA, orgB, "other-real-tenant"]) {
+    const h = stagingHarness({ org }), tree = await h.home();
+    const action = nodes(tree).find((n) => n.type === "page-header").props.action;
+    const links = nodes(action).filter((n) => n.type === "a");
+    assert.equal(links[0].props.href, "/app/billing/new");
+    assert.equal(links.length, org === stagingOrg ? 2 : 1);
+    if (org === stagingOrg) assert.match(text(action), /Factura simplificada/);
+    assert.equal(mutations(h).length, 0);
+  }
+});
+
+test("staging GET stays read-only for empty, ready, blocked and existing draft states; no fiscal forms are rendered", async () => {
+  for (const status of ["empty", "ready", "blocked", "draft"]) {
+    const h = stagingHarness();
+    if (status === "blocked") h.bridge = { status: "blocked", reason: "not_fully_paid", context: null };
+    if (status === "draft") h.draft();
+    const before = JSON.stringify([h.rows, h.detail, h.preview]);
+    const tree = await h.page(status === "empty" ? {} : { orderId });
+    assert.match(text(tree), /Staging · solo consulta/);
+    const forms = nodes(tree).filter((n) => n.type === "form");
+    assert.equal(forms.length, 1); assert.equal(forms[0].props.method, "get");
+    assert.ok(!nodes(tree).some((n) => ["series", "confirm"].includes(n.props?.name)));
+    if (status === "draft") {
+      assert.match(text(tree), /VISTA PREVIA · SIN EMISIÓN FISCAL/);
+      const ticket = nodes(tree).find((n) => n.type === BillingSimplifiedTicket);
+      assert.equal(ticket.props.preview, true);
+      assert.match(renderToStaticMarkup(createElement(BillingSimplifiedTicket, ticket.props)), /data-fiscal-issued="false"/);
+    }
+    if (status !== "empty") {
+      const read = h.calls.find((c) => c.read === "orders");
+      assert.deepEqual(read.filters, [["organization_id", stagingOrg], ["id", orderId]]);
+    }
+    assert.equal(JSON.stringify([h.rows, h.detail, h.preview]), before);
+    assert.equal(mutations(h).length, 0);
+  }
+});
+
+test("forged staging prepare/issue submissions are rejected before any order read, service, RPC or revalidation", async () => {
+  for (const role of ["owner", "manager"]) for (const status of ["ready", "draft", "issued"]) {
+    const h = stagingHarness({ role });
+    if (status === "draft") h.draft();
+    if (status === "issued") h.issued();
+    const form = formData(); form.set("organizationId", orgA); form.set("invoiceId", invoiceId);
+    for (let retry = 0; retry < 2; retry++) for (const action of ["prepare", "issue"]) {
+      await assert.rejects(h.action(action, form), /billing_simplified_ui_read_only/);
+    }
+    assert.equal(mutations(h).length, 0);
+    assert.ok(!h.calls.includes("client") && !h.calls.includes("bridge"));
+    assert.ok(!h.calls.some((call) => call.revalidate));
+  }
+});
+
+test("staging retrieves an existing issued ticket without changing snapshots or enabling ordinary-action bypass", async () => {
+  const h = stagingHarness(); h.issued(); const before = JSON.stringify([h.detail, h.rows]);
+  for (let retry = 0; retry < 2; retry++) {
+    await redirected(h.printPage(), new RegExp(`orderId=${orderId}`));
+    const tree = await h.page(), ticket = nodes(tree).find((n) => n.type === BillingSimplifiedTicket);
+    assert.equal(ticket.props.document.document.number, h.detail.invoice.invoiceNumber);
+    assert.deepEqual([ticket.props.document.totals.total, ticket.props.document.tax.amount], [13, .85]);
+    assert.equal(nodes(tree).filter((n) => typeof n.props?.action === "function").length, 0);
+  }
+  await redirected(h.ordinaryIssue(), /billing\?error=unauthorized/);
+  assert.equal(JSON.stringify([h.detail, h.rows]), before); assert.equal(mutations(h).length, 0);
+});
+
+test("staging cannot retrieve another tenant's order or issued document", async () => {
+  const h = stagingHarness();
+  for (const rows of Object.values(h.rows)) for (const row of rows) row.organization_id = orgA;
+  assert.equal((await h.state()).reason, "order_unavailable");
+  assert.equal(await h.history(), null);
+  assert.ok(!h.calls.includes("bridge") && !h.calls.includes("issued-read"));
+  assert.equal(mutations(h).length, 0);
+});
+
+test("read-only staging explanation is available in all five UI locales", () => {
+  const { billingSimplifiedUiCopy } = loadPreviewModule(copyPath);
+  for (const locale of ["es", "it", "en", "fr", "de"]) assert.ok(billingSimplifiedUiCopy(locale).readOnly?.trim());
 });

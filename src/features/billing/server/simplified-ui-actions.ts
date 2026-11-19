@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createBillingSimplifiedDraft } from "@/features/billing/server/simplified-draft";
 import { issueBillingSimplifiedInvoice } from "@/features/billing/server/simplified-issue";
 import { getBillingSimplifiedUiState } from "@/features/billing/server/simplified-ui";
-import { requireBillingSimplifiedUiAccess } from "@/features/billing/server/simplified-ui-access";
+import { requireBillingSimplifiedUiMutationAccess } from "@/features/billing/server/simplified-ui-access";
 
 function selectedOrder(form: FormData) {
   const ids = form.getAll("orderId");
@@ -20,7 +20,7 @@ function destination(locale: string, orderId: string | null, error?: string) {
 }
 
 export async function prepareBillingSimplifiedUiAction(locale: string, form: FormData) {
-  await requireBillingSimplifiedUiAccess(locale);
+  await requireBillingSimplifiedUiMutationAccess(locale);
   const orderId = selectedOrder(form);
   if (!orderId) redirect(destination(locale, null, "invalid_input"));
   const state = await getBillingSimplifiedUiState(locale, { orderId });
@@ -34,7 +34,7 @@ export async function prepareBillingSimplifiedUiAction(locale: string, form: For
 }
 
 export async function issueBillingSimplifiedUiAction(locale: string, form: FormData) {
-  await requireBillingSimplifiedUiAccess(locale);
+  await requireBillingSimplifiedUiMutationAccess(locale);
   const orderId = selectedOrder(form);
   if (!orderId) redirect(destination(locale, null, "invalid_input"));
   if (form.get("confirm") !== "issue") redirect(destination(locale, orderId, "invalid_input"));

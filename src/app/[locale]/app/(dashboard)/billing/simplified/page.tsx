@@ -6,7 +6,7 @@ import { BillingSimplifiedTicket } from "@/components/billing/BillingSimplifiedT
 import { billingSimplifiedUiBlockedLabel, billingSimplifiedUiCopy } from "@/components/billing/simplified-ui-copy";
 import { PrintInvoiceButton } from "@/components/billing/PrintInvoiceButton";
 import { getBillingSimplifiedUiState } from "@/features/billing/server/simplified-ui";
-import { billingSimplifiedUiEnabled } from "@/features/billing/server/simplified-ui-access";
+import { billingSimplifiedUiEnabled, billingSimplifiedUiMutationEnabled } from "@/features/billing/server/simplified-ui-access";
 import { prepareBillingSimplifiedUiAction, issueBillingSimplifiedUiAction } from "@/features/billing/server/simplified-ui-actions";
 import { Link } from "@/i18n/navigation";
 
@@ -21,6 +21,7 @@ export default async function BillingSimplifiedPage({ params, searchParams }: {
     orderNumber: typeof query.orderNumber === "string" ? query.orderNumber : undefined,
   });
   const text = billingSimplifiedUiCopy(locale);
+  const mutationsEnabled = await billingSimplifiedUiMutationEnabled();
   const t = await getTranslations({ locale, namespace: "common.billing" });
   const order = "order" in state ? state.order : undefined;
   return (
@@ -33,13 +34,14 @@ export default async function BillingSimplifiedPage({ params, searchParams }: {
         </nav>
         <h1 className="text-2xl font-semibold text-primary">{text.simplified}</h1>
         <p className="text-sm text-muted">{text.description}</p>
+        {!mutationsEnabled ? <p role="status">{text.readOnly}</p> : null}
         <form action={`/${locale}/app/billing/simplified`} className="flex flex-wrap items-end gap-3" method="get" role="search">
           <label className="space-y-2 text-sm font-semibold text-primary"><span>{text.order}</span><input className="block min-h-11 rounded-control border border-border px-3" defaultValue={order?.order_number ?? query.orderNumber} maxLength={80} name="orderNumber" required /></label>
           <Button type="submit" variant="secondary">{text.search}</Button>
         </form>
         {query.error && state.status !== "issued" && state.status !== "issued_unavailable" ? <p role="alert">{billingSimplifiedUiBlockedLabel(locale, query.error)}</p> : null}
         {state.status === "blocked" ? <p role="alert">{billingSimplifiedUiBlockedLabel(locale, state.reason)}</p> : null}
-        {state.status === "ready" ? (
+        {state.status === "ready" && mutationsEnabled ? (
           <Card>
             <p className="mb-4 font-semibold">{state.order.order_number}</p>
             <form action={prepareBillingSimplifiedUiAction.bind(null, locale)} className="flex flex-wrap items-end gap-3">
@@ -49,7 +51,8 @@ export default async function BillingSimplifiedPage({ params, searchParams }: {
             </form>
           </Card>
         ) : null}
-        {state.status === "draft" ? (
+        {state.status === "draft" && !mutationsEnabled ? <p className="font-semibold">{text.preview} · {state.order.order_number}</p> : null}
+        {state.status === "draft" && mutationsEnabled ? (
           <form action={issueBillingSimplifiedUiAction.bind(null, locale)} className="space-y-4">
             <p className="font-semibold">{text.preview} · {state.order.order_number}</p>
             <input name="orderId" type="hidden" value={state.order.id} />
