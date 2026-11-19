@@ -5,14 +5,17 @@ import { spawn, spawnSync } from "node:child_process";
 // configuration, Docker context, TCP endpoint, container lifecycle or cleanup.
 const daemon = "unix:///Users/cristianomegale/.docker/run/docker.sock";
 const container = "phoenix-billing-pg-test-20261118";
-const database = "phoenix_billing_test_001";
-const args = ["--host", daemon, "exec", "-i", container, "env", "-i", "PATH=/usr/local/bin:/usr/bin:/bin",
-  "psql", "-X", "-w", "-q", "-h", "/var/run/postgresql", "-p", "5432", "-U", "postgres", "-d", database,
-  "-v", "ON_ERROR_STOP=1", "-v", "VERBOSITY=verbose", "-At"];
 const prefix = "set statement_timeout = '15s'; set lock_timeout = '10s';\n";
 
-export function openBillingPostgresLab() {
+export function openBillingPostgresLab({ simplifiedIssue = false } = {}) {
   assert.ok(process.argv.includes("--authorized-billing-lab"), "Explicit --authorized-billing-lab opt-in required");
+  assert.equal(typeof simplifiedIssue, "boolean");
+  // Only these two explicit mission targets exist; no connection string or
+  // caller-provided database/container name is accepted. No creation/cleanup.
+  const database = simplifiedIssue ? "phoenix_billing_issue_test_001" : "phoenix_billing_test_001";
+  const args = ["--host", daemon, "exec", "-i", container, "env", "-i", "PATH=/usr/local/bin:/usr/bin:/bin",
+    "psql", "-X", "-w", "-q", "-h", "/var/run/postgresql", "-p", "5432", "-U", "postgres", "-d", database,
+    "-v", "ON_ERROR_STOP=1", "-v", "VERBOSITY=verbose", "-At"];
   const inspected = spawnSync("docker", ["--host", daemon, "inspect", "--format", "{{.Name}}|{{.State.Running}}", container],
     { encoding: "utf8", timeout: 10000 });
   assert.equal(inspected.error, undefined);
@@ -40,6 +43,7 @@ export function openBillingPostgresLab() {
   }
   assert.equal(query("select current_database() || '|' || current_user || '|' || (inet_server_addr() is null)::text;"),
     `${database}|postgres|true`);
+  if (simplifiedIssue) assert.equal(query("show server_version_num;"), "170006", "PostgreSQL 17.6 required");
   const objects = query(`select count(*) from pg_class relation join pg_namespace namespace on namespace.oid = relation.relnamespace
     where namespace.nspname not like 'pg_%' and namespace.nspname <> 'information_schema';`);
   const functions = query(`select count(*) from pg_proc routine join pg_namespace namespace on namespace.oid = routine.pronamespace
