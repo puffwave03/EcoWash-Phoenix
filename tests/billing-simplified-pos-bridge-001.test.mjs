@@ -119,7 +119,7 @@ test("fully paid order yields only a non-fiscal ticket preview from the existing
   assert.equal(result.ticket.preview, true); assert.equal("demonstration" in result.ticket, false);
   const plain = text(html(result));
   assert.match(plain, /VISTA PREVIA · SIN EMISIÓN FISCAL/);
-  assert.match(plain, /CLIENTE SIN IDENTIFICAR/);
+  assert.match(plain, /Cliente sin identificar/);
   assert.doesNotMatch(plain, /EJEMPLO-DEMO|FACTURA SIMPLIFICADA|DEMOSTRACIÓN/);
   assert.doesNotMatch(html(result), /<button|<form/);
   assert.equal(JSON.stringify([h.rows, h.detail]), before);
@@ -260,7 +260,7 @@ test("the draft must belong solely to this order/customer and retain the anonymo
 test("named recipient reads only its existing Billing identity", async () => {
   const h = bridge(); h.rows.customers[0].customer_code = "C-1"; h.detail.invoice.customerName = "Real stored name";
   const result = await h.read(); assert.equal(result.status, "preview");
-  assert.match(text(html(result)), /Real stored name/); assert.doesNotMatch(text(html(result)), /CLIENTE SIN IDENTIFICAR/);
+  assert.match(text(html(result)), /Real stored name/); assert.doesNotMatch(text(html(result)), /Cliente sin identificar/);
 });
 
 test("all source errors and unavailable Billing columns produce blocked results without a schema change", async () => {

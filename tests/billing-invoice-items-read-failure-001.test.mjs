@@ -62,6 +62,8 @@ function billing({ role = "owner" } = {}) {
     const compiledModule = { exports: {} };
     const localRequire = (name) => {
       if (name === "server-only") return {};
+      if (name === "@/features/billing/server/simplified-ui-access") return { billingSimplifiedUiEnabled: async () => false };
+      if (name === "@/features/billing/server/simplified-ui") return { getBillingSimplifiedUiOrderForInvoice() { throw Error("Unexpected simplified navigation"); } };
       if (name === "react/jsx-runtime") return require(name);
       if (name === "next/navigation") return { notFound() { throw notFound; } };
       if (name === "@/lib/auth/require-role") return { requireOwnerOrManager: async (locale) => {

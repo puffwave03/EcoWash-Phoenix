@@ -10,6 +10,8 @@ import type { BillingPaymentStatus } from "@/features/billing/types";
 import { Link } from "@/i18n/navigation";
 import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { formatCurrency } from "@/lib/number-format";
+import { billingSimplifiedUiEnabled } from "@/features/billing/server/simplified-ui-access";
+import { billingSimplifiedUiCopy } from "@/components/billing/simplified-ui-copy";
 
 const issuerFieldLabelKeys = {
   issuerAddressLine1: "addressLine1",
@@ -39,10 +41,12 @@ export default async function BillingPage({ params, searchParams }: {
   ]);
   const status = filters.status;
   const primaryCurrency = summary.currency;
+  const simplifiedEnabled = await billingSimplifiedUiEnabled(access.membership.organization.id);
+  const simplifiedText = billingSimplifiedUiCopy(locale);
 
   return (
     <div className="space-y-6">
-      <PageHeader action={<Link href="/app/billing/new" locale={locale}><Button>{t("actions.create")}</Button></Link>} description={t("description")} eyebrow={t("eyebrow")} title={t("title")} />
+      <PageHeader action={<div className="flex flex-wrap gap-3"><Link href="/app/billing/new" locale={locale}><Button>{simplifiedEnabled ? simplifiedText.ordinary : t("actions.create")}</Button></Link>{simplifiedEnabled ? <Link href="/app/billing/simplified" locale={locale}><Button variant="secondary">{simplifiedText.simplified}</Button></Link> : null}</div>} description={t("description")} eyebrow={t("eyebrow")} title={t("title")} />
       {query.error ? <p className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{t(`errors.${query.error}`)}</p> : null}
       {query.saved ? <p className="rounded-control border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{t("saved")}</p> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

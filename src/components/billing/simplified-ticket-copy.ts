@@ -1,6 +1,6 @@
 // Fiscal title and anonymous label are the exact Spanish wording requested by
 // the PO. Surrounding presentation follows the application's five locales.
-const fixed = { title: "FACTURA SIMPLIFICADA", unidentified: "CLIENTE SIN IDENTIFICAR" };
+const fixed = { title: "FACTURA SIMPLIFICADA", unidentified: "Cliente sin identificar" };
 const es = {
   ...fixed, demo: "DEMOSTRACIÓN · DATOS SINTÉTICOS", draft: "BORRADOR", incomplete: "DOCUMENTO INCOMPLETO", preview: "VISTA PREVIA · SIN EMISIÓN FISCAL",
   issuer: "Emisor", taxId: "NIF", address: "Dirección", city: "Localidad", postalCode: "Código postal", country: "País",

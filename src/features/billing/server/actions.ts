@@ -161,9 +161,17 @@ export async function updateBillingDraftAction(locale: string, invoiceId: string
 }
 
 export async function issueBillingInvoiceAction(locale: string, invoiceId: string, customerId: string) {
-  await requireOwnerOrManager(locale);
+  const { membership } = await requireOwnerOrManager(locale);
   await requireEntitlement(locale, FEATURES.billingInvoicing);
   const supabase = await createSupabaseServerClient();
+  // This action belongs to the ordinary UI. The shared SQL dispatcher must
+  // not expose simplified issuance around its separately guarded entry point.
+  const target = await supabase.from("invoices").select("fiscal_document_type")
+    .eq("organization_id", membership.organization.id).eq("id", invoiceId)
+    .maybeSingle<{ fiscal_document_type: string }>();
+  if (target.error || target.data?.fiscal_document_type !== "ordinaria") {
+    redirect(`/${locale}/app/billing?error=unauthorized`);
+  }
   const { error } = await supabase.rpc("issue_billing_invoice", { target_invoice_id: invoiceId });
   if (error) redirect(`/${locale}/app/billing/${invoiceId}?error=${billingError(error.message)}`);
   revalidateBilling(locale, customerId, invoiceId);

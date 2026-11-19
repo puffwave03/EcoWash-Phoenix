@@ -112,7 +112,7 @@ test("failed presentation after issue retains the persisted identity for safe re
 test("issued ticket shows persisted identity and anonymous label, never preview/demo status", async () => {
   const result = await service().issue(); const before = JSON.stringify(result.ticket), html = render(result.ticket);
   assert.match(html, /data-fiscal-issued="true"/); assert.match(plain(html), /FACTURA SIMPLIFICADA.*2026-S-000001/);
-  assert.match(plain(html), /CLIENTE SIN IDENTIFICAR/); assert.match(plain(html), /IGIC \(7%\) 0,85.*TOTAL 13,00/);
+  assert.match(plain(html), /Cliente sin identificar/); assert.match(plain(html), /IGIC \(7%\) 0,85.*TOTAL 13,00/);
   assert.doesNotMatch(plain(html), /BORRADOR|VISTA PREVIA|DEMOSTRACIÓN|DOCUMENTO INCOMPLETO/);
   assert.equal(JSON.stringify(result.ticket), before); assert.equal(render(result.ticket), html);
   assert.equal(result.ticket.document.recipient, null);
@@ -121,7 +121,7 @@ test("issued ticket shows persisted identity and anonymous label, never preview/
 test("named issued recipient and operational refund status never rewrite fiscal content", async () => {
   const h = service(); Object.assign(h.detail.invoice, { customerName: "Stored name", customerTaxId: "STORED", paidTotal: 5, outstanding: 8 });
   const result = await h.issue(), html = render(result.ticket);
-  assert.match(plain(html), /Stored name.*STORED/); assert.doesNotMatch(plain(html), /CLIENTE SIN IDENTIFICAR/);
+  assert.match(plain(html), /Stored name.*STORED/); assert.doesNotMatch(plain(html), /Cliente sin identificar/);
   assert.match(plain(html), /TOTAL 13,00.*Pagado 5,00.*Pendiente 8,00/);
 });
 
@@ -167,6 +167,6 @@ test("SQL preserves ordinary body, revokes bypass, freezes issued fields and ser
   assert.match(sql, /invoice_items_simplified_snapshot_lock/); assert.match(sql, /invoice_orders_simplified_snapshot_lock/);
   assert.match(sql, /invoices_simplified_state_valid/);
   assert.match(sql, /other.fiscal_document_type <> 'simplificada'/);
-  assert.doesNotMatch(sql, /create table|create policy|CLIENTE SIN IDENTIFICAR/);
+  assert.doesNotMatch(sql, /create table|create policy|Cliente sin identificar/);
   assert.match(sql, /^begin;$/m); assert.match(sql, /^commit;$/m);
 });

@@ -36,7 +36,7 @@ test("synthetic ticket shows exact issuer, number, series, date, services and st
 test("shared walk-in is only a visual label; no fiscal identity is added to the document", () => {
   const props = previewProps();
   assert.equal(props.document.recipient, null);
-  assert.match(text(render(props)), /CLIENTE SIN IDENTIFICAR/);
+  assert.match(text(render(props)), /Cliente sin identificar/);
   assert.equal(props.document.recipient, null);
   assert.equal(props.document.document.number, null);
   assert.equal(props.document.document.issuedAt, null);
@@ -47,7 +47,7 @@ test("named recipient preserves actual supplied name, NIF and address instead of
   assert.match(html, /Cliente de ejemplo/);
   assert.match(html, /NIF CLIENTE DE EJEMPLO/);
   assert.match(html, /Calle de Prueba, 20/);
-  assert.doesNotMatch(html, /CLIENTE SIN IDENTIFICAR/);
+  assert.doesNotMatch(html, /Cliente sin identificar/);
 });
 
 test("an omitted recipient without shared-walk-in provenance is incomplete and never labelled unidentified", () => {
@@ -55,7 +55,7 @@ test("an omitted recipient without shared-walk-in provenance is incomplete and n
   delete props.presentation.isSharedWalkIn;
   const html = render(props);
   assert.match(text(html), /DOCUMENTO INCOMPLETO.*Tipo de destinatario/);
-  assert.doesNotMatch(text(html), /CLIENTE SIN IDENTIFICAR/);
+  assert.doesNotMatch(text(html), /Cliente sin identificar/);
 });
 
 for (const key of ["legalName", "taxId", "addressLine1", "city", "postalCode", "countryCode"]) {
