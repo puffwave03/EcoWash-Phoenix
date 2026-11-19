@@ -5,6 +5,12 @@ Scope: Stable operating protocol for EcoWash Phoenix Codex tasks
 
 Read [AGENTS.md](../AGENTS.md), [Session Handover](00_START_HERE/SESSION_HANDOVER.md) and [Project Status](06_ROADMAP/Project_Status.md) before implementation. This supplementary protocol does not own product status or the next task. [CODEX_CURRENT_BASELINE.md](CODEX_CURRENT_BASELINE.md) is a compatibility pointer with historical evidence. The explicit task prompt remains authoritative.
 
+## Local simplified Billing continuation boundary
+
+For the **`90283ec`** functional baseline and **`BILLING-SIMPLIFIED-UI-001`** closeout, use the [local UAT checkpoint](00_START_HERE/SESSION_HANDOVER.md#billing-simplified-ui-001--local-uat-closeout-2026-11-19) and [acceptance status](06_ROADMAP/Project_Status.md#billing-simplified-ui-001--completed-local-acceptance-2026-11-19). They record the PO's identified/`WALKIN-SHARED` UAT PASS, synthetic issue with IGIC included and no second collection, verified reprint, and local-only application of migration `20261119115411`.
+
+Do not interpret local synthetic acceptance as authorization for staging/production fiscal issuance. Preserve the explicit server-side laboratory opt-in and synthetic-tenant restrictions. Future Supabase/Vercel staging preparation requires verification of exact targets, migration alignment/dependencies and protections before separately approved execution. **`POS-SINGLE-FISCAL-TICKET-001`** is a separate future Terminal objective (collection and one immediate fiscal ticket, when applicable), not an instruction to begin implementation. This documentation closeout authorizes no code, SQL, test or configuration change, commit, push or deploy.
+
 ## A. Responsibilities
 
 - The Product Owner defines the desired outcome and acceptance criteria.

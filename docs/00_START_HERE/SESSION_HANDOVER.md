@@ -1,10 +1,27 @@
 # Session Handover
 
-> **CURRENT STAGING BASELINE — 2026-11-17:** The 95-migration Recovery has replaced the old hosted application database on the same Supabase project. One new Platform Admin completed browser login UAT. The tenant pilot is **not created**; Auth email delivery is **broken**. Resume from [Recovery Cutover Evidence](PHOENIX_RECOVERY_CUTOVER_2026-11-17.md), then this handover and Project Status. Dated pre-cutover customer, order, invoice and Auth records below are historical evidence only, not current hosted state.
+> **LAST DOCUMENTED STAGING BASELINE — 2026-11-17:** The 95-migration Recovery has replaced the old hosted application database on the same Supabase project. One new Platform Admin completed browser login UAT. The tenant pilot is **not created**; Auth email delivery is **broken**. Evidence: [Recovery Cutover](PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). This dated hosted checkpoint was not reverified during the local Billing documentation closeout. Dated pre-cutover customer, order, invoice and Auth records below are historical evidence only, not current hosted state.
 
 Status: Active — canonical resume instructions
 
-Date: 2026-11-17 (current cutover checkpoint; historical entries retained below)
+Date: 2026-11-19 (local simplified Billing closeout; historical entries retained below)
+
+## BILLING-SIMPLIFIED-UI-001 — Local UAT closeout (2026-11-19)
+
+**CTO CODE REVIEW PASS / PRODUCT OWNER LOCAL UAT PASS.** Functional commit **`90283ec`** (`feat(billing): complete simplified invoice UI and fiscal ticket`) is the local `main` baseline. The PO confirms UAT PASS for both an identified customer and **`WALKIN-SHARED`** in the isolated Toshiba laboratory **`/Volumes/DEV/Phoenix-Local-Baseline-001`**, project **`phoenix-local-baseline-001`**. These are recorded acceptance results, not tests repeated by this documentation task.
+
+- The paid-order → simplified Billing draft → synthetic issue → persisted fiscal document → **80 mm ticket** path passed. Prices include IGIC; the existing POS payment is reused, with **no second collection**. Billing remains the fiscal source of truth; REC remains operational.
+- The identified-customer example is order **`E2EA-000001`**, document **`2026-SLAB-000001`**, total **EUR 10.70**, including **EUR 0.70 IGIC**. Reprint from **Contabilidad → Documentos de venta → Abrir / reimprimir** was verified against the existing issued ticket, preserving number, amounts and snapshot without new issuance or numbering.
+- `WALKIN-SHARED` is permitted only for an eligible simplified invoice; **Cliente sin identificar** is ticket presentation, never an invented recipient fiscal identity. The ordinary-invoice protection remains in place.
+- Migration **`20261119115411_billing_simplified_anonymous_insert_001.sql`** was applied **exclusively to the local Toshiba laboratory**. This does not establish staging or production migration alignment. The simplified UI/issuance path retains its explicit, server-checked laboratory opt-in and synthetic-tenant restrictions; it is disabled outside that authorized context.
+
+**No staging or production fiscal issuance is authorized.** Local synthetic acceptance does not grant remote migration, deployment or fiscal activation permission. This closeout changes documentation only: no application/SQL/test/configuration change, environment access, business-data mutation, commit, push or deployment.
+
+**Next separate objective: `POS-SINGLE-FISCAL-TICKET-001`.** Prepare a separately scoped CTO mission for collection and one immediate fiscal ticket from the Terminal, when applicable, reusing canonical POS and Billing without duplicate payment or fiscal document. This objective is not implemented or started by the closeout.
+
+**Future staging preparation:** verify the exact Supabase/Vercel staging targets, actual migration history and required dependencies, and the authorization/tenant/environment protections before proposing an approved update and UAT plan. Preserve staging data and keep fiscal issuance disabled until separately authorized; do not bypass the current laboratory gate to reach staging.
+
+This checkpoint controls current Billing continuation. Earlier simplified-invoices-as-future statements and next-task/release instructions below are historical and grant no new authorization; unrelated acceptance gates remain unchanged.
 
 ## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
 

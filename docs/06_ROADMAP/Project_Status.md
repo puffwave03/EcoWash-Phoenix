@@ -1,10 +1,25 @@
 # Project Status
 
-> **CURRENT STAGING RECOVERY STATUS — 2026-11-17:** Hosted Supabase `exthnplfokcucaqydney` now has **95 migrations** through `20261015000100`, `public` **53 tables / 223 functions / 92 non-internal triggers**, **0 organizations**, **0 orders**, **1 new Auth user**, **1 active Platform Admin**, and **0 Storage files**. GitHub/Vercel baseline is `a2b82dd`, deployment READY; Platform Admin login **PO UAT PASS**. Tenant/bootstrap and operational UAT are **OPEN**; Resend Auth email **FAIL**; fiscal/commercial readiness **NOT APPROVED**. Details and evidence: [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). Historical implementation and UAT checkpoints below remain preserved, but their old tenant data no longer exists on hosted staging.
+> **LAST DOCUMENTED STAGING RECOVERY STATUS — 2026-11-17:** Hosted Supabase `exthnplfokcucaqydney` had **95 migrations** through `20261015000100`, `public` **53 tables / 223 functions / 92 non-internal triggers**, **0 organizations**, **0 orders**, **1 new Auth user**, **1 active Platform Admin**, and **0 Storage files**. GitHub/Vercel baseline was `a2b82dd`, deployment READY; Platform Admin login **PO UAT PASS**. Tenant/bootstrap and operational UAT were **OPEN**; Resend Auth email **FAIL**; fiscal/commercial readiness **NOT APPROVED**. Details and evidence: [Recovery Cutover](../00_START_HERE/PHOENIX_RECOVERY_CUTOVER_2026-11-17.md). This dated hosted checkpoint was not reverified during the local Billing closeout. Historical implementation and UAT checkpoints below remain preserved, but their old tenant data no longer exists on hosted staging.
 
 Status: Active — canonical implementation and acceptance inventory
 
-Last consolidated: 2026-11-17 (Recovery staging cutover checkpoint). Historical feature/UAT consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`). Billing release checkpoint: 16/10/2026.
+Last updated: 2026-11-19 (local simplified Billing UAT closeout). Recovery staging checkpoint: 2026-11-17. Historical feature/UAT consolidation: 2026-10-16 (`PHOENIX-DOCUMENTATION-CONSOLIDATION-001`, CTO PASS; published as `2aac81acf2554622fdf0a53bd064e0ee82651e47`).
+
+## BILLING-SIMPLIFIED-UI-001 — Completed local acceptance (2026-11-19)
+
+**CTO CODE REVIEW PASS / PO UAT PASS — TOSHIBA SYNTHETIC LAB ONLY.** Functional commit **`90283ec`** (`feat(billing): complete simplified invoice UI and fiscal ticket`) is the local `main` baseline. The PO confirms the identified-customer and **`WALKIN-SHARED`** cases in **`/Volumes/DEV/Phoenix-Local-Baseline-001`**, project **`phoenix-local-baseline-001`**. This documentation-only phase records completed evidence and does not rerun application, database or fiscal tests.
+
+- **Validated:** paid order → simplified draft → synthetic issue → persisted Billing document → 80 mm fiscal ticket; IGIC-inclusive amounts and **no second collection**. Example: **`E2EA-000001` → `2026-SLAB-000001`**, **EUR 10.70 total / EUR 0.70 IGIC included**. Reprint through the sales-document registry retrieves the issued snapshot and preserves the original number and amounts without creating another invoice or payment.
+- **Anonymous case:** eligible simplified invoices accept the managerial `WALKIN-SHARED` identifier; the ticket displays **Cliente sin identificar** without inventing recipient fiscal data. Ordinary anonymous invoicing remains blocked; the ordinary flow and POS contracts are preserved.
+- **Database scope:** migration **`20261119115411_billing_simplified_anonymous_insert_001.sql`** applied **only to the Toshiba laboratory**. No staging/production application of this migration is recorded or authorized here.
+- **Activation scope:** the simplified path remains protected by its explicit server-side local-project, runtime, endpoint, synthetic-tenant and authorization checks. **No fiscal issuance is authorized in staging or production.** Local UAT PASS does not establish commercial/fiscal production readiness.
+
+**Next separate objective — `POS-SINGLE-FISCAL-TICKET-001`:** collection and a single immediate fiscal ticket from the Terminal, when applicable, through the canonical POS/Billing path with no duplicate collection or document. Requires its own CTO scope and approval; no implementation is started by this closeout.
+
+**Future Supabase/Vercel staging preparation:** first verify target identity, actual migration alignment and dependencies, and environment/tenant/role protections; then prepare a data-preserving update and UAT plan for separate authorization. Do not enable staging issuance or weaken the laboratory gate as part of documentation work.
+
+Only the three authorized canonical documents change in this phase; no code, SQL, tests, configuration, environment or business data is modified. No commit, push or deploy. The local acceptance above supersedes older simplified-invoice pending statuses and historical next-task instructions only for this mission; other gates remain open as previously recorded. See [current handover](../00_START_HERE/SESSION_HANDOVER.md#billing-simplified-ui-001--local-uat-closeout-2026-11-19).
 
 ## BILLING-DIRECT-ENTRY-001 — Product Owner UAT checkpoint (16/10/2026)
 
