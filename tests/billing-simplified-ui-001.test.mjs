@@ -44,7 +44,7 @@ function harness(options = {}) {
     org: options.org ?? orgA, role: options.role ?? "owner", entitled: options.entitled ?? true,
     pos: options.pos ?? true, posOrg: options.posOrg ?? options.org ?? orgA,
     url: options.url ?? "http://127.0.0.1:58321", calls: [],
-    customer: { isSharedWalkIn: false, isFiscalReady: true, customerName: "Live customer", ...options.customer },
+    customer: { isSharedWalkIn: false, customerType: "business", isFiscalReady: true, customerName: "Live customer", ...options.customer },
     settings: { isIssueReady: true, missingRequiredFields: [], ...options.settings },
     bridge: { status: "blocked", reason: "simplified_draft_required", context: null },
     rows: {
@@ -231,6 +231,19 @@ test("incomplete identified customer/issuer cannot reach draft service", async (
     const h = harness(options); assert.equal((await h.state()).reason, reason);
     await redirected(h.action("prepare"), new RegExp(`error=${reason}`)); assert.equal(mutations(h).length, 0);
   }
+});
+
+test("private simplified recipient without billing address may prepare; business still requires fiscal readiness", async () => {
+  const individual = harness({ customer: { customerType: "individual", isFiscalReady: false, customerName: "Persona de prueba" } });
+  assert.equal((await individual.state()).status, "ready");
+  assert.equal(mutations(individual).length, 0);
+
+  const business = harness({ customer: { customerType: "business", isFiscalReady: false, customerName: "Empresa de prueba" } });
+  assert.equal((await business.state()).reason, "customer_incomplete");
+  assert.equal(mutations(business).length, 0);
+
+  const unidentified = harness({ customer: { customerType: "unknown", isFiscalReady: false, customerName: "Incoherent" } });
+  assert.equal((await unidentified.state()).reason, "customer_incomplete");
 });
 
 test("bridge partial/unreconciled/ineligible/ordinary-invoiced states block both actions", async () => {

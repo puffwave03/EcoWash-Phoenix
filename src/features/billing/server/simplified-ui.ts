@@ -64,7 +64,12 @@ export async function getBillingSimplifiedUiState(locale: string, selection: { o
     }
   }
   if (bridge.status === "blocked" && bridge.reason !== "simplified_draft_required") return { status: "blocked", reason: bridge.reason, order };
-  if (!customer.isSharedWalkIn && (!customer.isFiscalReady || !customer.customerName.trim())) return { status: "blocked", reason: "customer_incomplete", order };
+  // A consumer simplified invoice does not require a complete billing address.
+  // Business recipient completeness remains protected; do not relax ordinary Billing.
+  if (!customer.isSharedWalkIn && (
+    !customer.customerName.trim()
+    || (customer.customerType !== "individual" && !customer.isFiscalReady)
+  )) return { status: "blocked", reason: "customer_incomplete", order };
   const settings = await getBillingSettings(locale);
   if (!settings.isIssueReady) return { status: "blocked", reason: "issuer_incomplete", order };
   if (bridge.status === "preview") {
