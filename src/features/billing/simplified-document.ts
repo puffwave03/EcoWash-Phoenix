@@ -34,6 +34,7 @@ export function billingSimplifiedIssuedDocument(detail: BillingInvoiceDetail) {
 
 function simplifiedSnapshot<S extends "draft" | "issued">({ invoice, items }: BillingInvoiceDetail, status: S) {
   return {
+    presentation: { version: invoice.ticketPresentationVersion ?? null, timeZone: invoice.ticketTimezone ?? null, specialMessage: invoice.ticketSpecialMessage ?? null, serviceConditions: invoice.ticketFooter ?? null, scheduleByOrder: invoice.ticketScheduleByOrder },
     document: {
       id: invoice.id,
       fiscalDocumentType: "simplificada" as const,

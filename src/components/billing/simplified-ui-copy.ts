@@ -1,7 +1,7 @@
 const es = {
   ordinary: "Factura ordinaria", simplified: "Factura simplificada",
   description: "Un único pedido pagado. Se utiliza el cobro POS existente.",
-  readOnly: "Staging · solo consulta. La creación de borradores y la emisión están deshabilitadas.",
+  readOnly: "solo consulta. La creación de borradores y la emisión están deshabilitadas.",
   order: "Número de pedido", search: "Comprobar pedido", prepare: "Preparar borrador",
   series: "Serie exclusiva para facturas simplificadas", issue: "Emitir factura simplificada",
   confirm: "He revisado el borrador y solicito la emisión definitiva.",
@@ -19,7 +19,7 @@ type Copy = typeof es;
 const copy: Record<string, Copy> = {
   es,
   it: {
-    readOnly: "Staging · sola consultazione. Creazione delle bozze ed emissione disabilitate.",
+    readOnly: "sola consultazione. Creazione delle bozze ed emissione disabilitate.",
     ordinary: "Fattura ordinaria", simplified: "Fattura semplificata", description: "Un solo ordine pagato. Si utilizza l’incasso POS esistente.",
     order: "Numero ordine", search: "Verifica ordine", prepare: "Prepara bozza", series: "Serie riservata alle fatture semplificate", issue: "Emetti fattura semplificata",
     confirm: "Ho verificato la bozza e richiedo l’emissione definitiva.", preview: "ANTEPRIMA · NESSUNA EMISSIONE FISCALE", issued: "Fattura emessa", refresh: "Recupera documento",
@@ -31,7 +31,7 @@ const copy: Record<string, Copy> = {
     tax: "Importi o modello IGIC dell’ordine incompatibili con la fattura semplificata.", orderUnavailable: "Ordine non disponibile per questa organizzazione.",
   },
   en: {
-    readOnly: "Staging · read only. Draft creation and issuance are disabled.",
+    readOnly: "read only. Draft creation and issuance are disabled.",
     ordinary: "Ordinary invoice", simplified: "Simplified invoice", description: "One paid order. Uses the existing POS payment.",
     order: "Order number", search: "Check order", prepare: "Prepare draft", series: "Series reserved for simplified invoices", issue: "Issue simplified invoice",
     confirm: "I have checked the draft and request final issuance.", preview: "PREVIEW · NO FISCAL ISSUANCE", issued: "Invoice issued", refresh: "Retrieve document",
@@ -43,7 +43,7 @@ const copy: Record<string, Copy> = {
     tax: "Order amounts or IGIC model are incompatible with simplified invoicing.", orderUnavailable: "Order unavailable for this organization.",
   },
   fr: {
-    readOnly: "Staging · consultation uniquement. La création de brouillons et l’émission sont désactivées.",
+    readOnly: "consultation uniquement. La création de brouillons et l’émission sont désactivées.",
     ordinary: "Facture ordinaire", simplified: "Facture simplifiée", description: "Une seule commande payée. Le paiement POS existant est utilisé.",
     order: "Numéro de commande", search: "Vérifier la commande", prepare: "Préparer le brouillon", series: "Série réservée aux factures simplifiées", issue: "Émettre la facture simplifiée",
     confirm: "J’ai vérifié le brouillon et demande l’émission définitive.", preview: "APERÇU · AUCUNE ÉMISSION FISCALE", issued: "Facture émise", refresh: "Récupérer le document",
@@ -55,7 +55,7 @@ const copy: Record<string, Copy> = {
     tax: "Les montants ou le modèle IGIC sont incompatibles avec la facture simplifiée.", orderUnavailable: "Commande indisponible pour cette organisation.",
   },
   de: {
-    readOnly: "Staging · nur Ansicht. Entwurfserstellung und Ausstellung sind deaktiviert.",
+    readOnly: "nur Ansicht. Entwurfserstellung und Ausstellung sind deaktiviert.",
     ordinary: "Ordentliche Rechnung", simplified: "Vereinfachte Rechnung", description: "Ein bezahlter Auftrag. Die vorhandene POS-Zahlung wird verwendet.",
     order: "Auftragsnummer", search: "Auftrag prüfen", prepare: "Entwurf vorbereiten", series: "Reihe für vereinfachte Rechnungen", issue: "Vereinfachte Rechnung ausstellen",
     confirm: "Ich habe den Entwurf geprüft und fordere die endgültige Ausstellung an.", preview: "VORSCHAU · KEINE STEUERLICHE AUSSTELLUNG", issued: "Rechnung ausgestellt", refresh: "Dokument abrufen",

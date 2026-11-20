@@ -61,7 +61,7 @@ export function previewProps(scenario = "walkin", locale = "es") {
     customerAddressLine1: "Calle de Prueba, 20", customerCity: "Ciudad de ejemplo", customerPostalCode: "00000", customerCountryCode: "ES",
   });
   if (scenario === "incomplete") Object.assign(detail.invoice, { issuerTaxId: null, issuerAddressLine1: null });
-  if (scenario === "long") detail.items[0].description = "Servicio de lavandería para prendas delicadas · "
+  if ((scenario === "long" || scenario === "unpaid-long")) detail.items[0].description = "Servicio de lavandería para prendas delicadas · "
     + "DescripciónLargaSinEspacios".repeat(6);
   if (scenario === "tenant-b") Object.assign(detail.invoice, {
     issuerLegalName: "Tintorería de ejemplo B", issuerLogoPath: "synthetic-tenant-b/logo.svg",
@@ -88,8 +88,20 @@ export function previewProps(scenario = "walkin", locale = "es") {
 }
 
 export function previewHtml(scenario = "walkin", locale = "es") {
-  const { BillingSimplifiedTicket } = loadPreviewModule("src/components/billing/BillingSimplifiedTicket.tsx");
+  const { BillingSimplifiedTicket, OperationalOrderTicket } = loadPreviewModule("src/components/billing/BillingSimplifiedTicket.tsx");
   const { PrintButton } = loadPreviewModule("src/components/printing/PrintButton.tsx");
+  const props = previewProps(scenario, locale);
+  const operational = scenario.startsWith("unpaid");
+  const schedule = { readyAt: "2026-11-20T10:00:00Z", pickupAt: null, deliveryAt: "2026-11-21T17:30:00Z" };
+  const component = operational ? createElement(OperationalOrderTicket, {
+    data: { ...props.document, tax: undefined,
+      issuer: { ...props.document.issuer, taxId: null },
+      recipient: { ...props.document.recipient, name: "Cliente de ejemplo" },
+      items: props.document.items.map((item) => ({ ...item, discountAmount: null, lineTotal: item.lineSubtotal })),
+    }, locale, timeZone: props.timeZone,
+    presentation: { ...props.presentation, isSharedWalkIn: false, payment: { paidAmount: 0, outstandingAmount: props.document.totals.total },
+      scheduleByOrder: { "synthetic-order": schedule }, pickupByOrder: undefined },
+  }) : createElement(BillingSimplifiedTicket, props);
   const html = renderToStaticMarkup(createElement("html", { lang: locale },
     createElement("head", null, createElement("meta", { charSet: "utf-8" }),
       createElement("meta", { name: "viewport", content: "width=device-width, initial-scale=1" }),
@@ -104,9 +116,9 @@ export function previewHtml(scenario = "walkin", locale = "es") {
     createElement("body", null,
       createElement("nav", { className: "local-preview-controls", "aria-label": "Preview local" },
         createElement("p", null, "Preview local · ejemplos sintéticos · 80 mm"),
-        ...["walkin", "named", "incomplete", "long", "tenant-b", "no-logo", "no-note", "long-note"].map((name) => createElement("a", { key: name, href: `/?case=${name}&locale=${locale}` }, name)),
+        ...["walkin", "named", "incomplete", "long", "tenant-b", "no-logo", "no-note", "long-note", "unpaid", "unpaid-long"].map((name) => createElement("a", { key: name, href: `/?case=${name}&locale=${locale}` }, name)),
         createElement("div", { id: "local-preview-print" }, createElement(PrintButton, { label: "Imprimir ejemplo" }))),
-      createElement(BillingSimplifiedTicket, previewProps(scenario, locale)),
+      component,
       // Static SSR does not hydrate client controls. Bind only the existing
       // browser print operation, without a history callback or business write.
       createElement("script", null, "document.querySelector('#local-preview-print button').addEventListener('click',()=>window.print())"))));
@@ -117,7 +129,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   createServer((request, response) => {
     const url = new URL(request.url, "http://127.0.0.1:4180");
     if (request.method !== "GET" || url.pathname !== "/") { response.writeHead(404).end(); return; }
-    const scenario = ["walkin", "named", "incomplete", "long", "tenant-b", "no-logo", "no-note", "long-note"].includes(url.searchParams.get("case")) ? url.searchParams.get("case") : "walkin";
+    const scenario = ["walkin", "named", "incomplete", "long", "tenant-b", "no-logo", "no-note", "long-note", "unpaid", "unpaid-long"].includes(url.searchParams.get("case")) ? url.searchParams.get("case") : "walkin";
     const locale = ["es", "it", "en", "fr", "de"].includes(url.searchParams.get("locale")) ? url.searchParams.get("locale") : "es";
     response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
     response.end(previewHtml(scenario, locale));

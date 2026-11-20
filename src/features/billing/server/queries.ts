@@ -26,6 +26,10 @@ import { requireOwnerOrManager } from "@/lib/auth/require-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type InvoiceRow = {
+  ticket_footer?: string | null;
+  ticket_special_message?: string | null;
+  ticket_presentation_version?: number | null;
+  ticket_timezone?: string | null;
   cancelled_at: string | null;
   cancellation_reason: string | null;
   created_at: string;
@@ -68,7 +72,7 @@ type InvoiceRow = {
   total: number;
 };
 
-type InvoiceOrderRow = { invoice_id: string; order_id: string };
+type InvoiceOrderRow = { invoice_id: string; order_id: string; ticket_schedule?: import("@/features/printing/ticket-settings").TicketSchedule | null };
 type OrderNumberRow = { id: string; order_number: string };
 type PaymentRow = {
   amount: number;
@@ -140,7 +144,7 @@ type InvoiceItemRow = {
   unit_type: BillingInvoiceItem["unitType"];
 };
 
-const INVOICE_SELECT = "id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
+const INVOICE_SELECT = "ticket_special_message, ticket_presentation_version, ticket_timezone, ticket_footer, id, customer_id, invoice_number, series, sequence_number, document_status, fiscal_document_type, issue_date, due_date, currency, subtotal, discount_total, taxable_base, tax_total, total, prices_include_tax, notes, cancellation_reason, issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, issuer_logo_path, customer_name, customer_tax_id, customer_address_line1, customer_address_line2, customer_city, customer_postal_code, customer_country_code, customer_email, issued_at, cancelled_at, created_at";
 const SETTINGS_SELECT = "issuer_legal_name, issuer_tax_id, issuer_address_line1, issuer_address_line2, issuer_city, issuer_region, issuer_postal_code, issuer_country_code, issuer_email, issuer_phone, default_series, default_tax_rate";
 
 function number(value: number | string | null) {
@@ -177,6 +181,11 @@ function mapInvoice(
   const total = number(row.total);
 
   return {
+    ticketFooter: row.ticket_footer ?? null,
+    ticketSpecialMessage: row.ticket_special_message ?? null,
+    ticketPresentationVersion: row.ticket_presentation_version ?? null,
+    ticketTimezone: row.ticket_timezone ?? null,
+    ticketScheduleByOrder: Object.fromEntries(links.filter((link) => link.ticket_schedule).map((link) => [link.order_id, link.ticket_schedule!])),
     cancelledAt: row.cancelled_at,
     cancellationReason: row.cancellation_reason,
     createdAt: row.created_at,
@@ -233,7 +242,7 @@ async function hydrateInvoices(
   const invoiceIds = rows.map((row) => row.id);
   const { data: linkData, error: linkError } = await supabase
     .from("invoice_orders")
-    .select("invoice_id, order_id")
+    .select("invoice_id, order_id, ticket_schedule")
     .in("invoice_id", invoiceIds)
     .returns<InvoiceOrderRow[]>();
   if (linkError) throw linkError;

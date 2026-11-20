@@ -37,6 +37,7 @@ async function removeBrandFiles(
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
   paths: string[],
 ) {
+  paths = paths.filter((path) => path.split("/")[1] !== "logo");
   if (paths.length === 0) return;
   const { error } = await supabase.storage.from("brand-media").remove(paths);
   if (error) console.error("Brand media cleanup failed", error.name);

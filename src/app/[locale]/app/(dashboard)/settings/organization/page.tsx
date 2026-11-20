@@ -2,6 +2,9 @@ import { getTranslations } from "next-intl/server";
 import { OrganizationSettingsForm } from "@/components/organization-settings/OrganizationSettingsForm";
 import { saveOrganizationSettingsAction } from "@/features/organization-settings/server/actions";
 import { requireOwner } from "@/lib/auth/require-role";
+import { TicketSettingsForm } from "@/components/printing/TicketSettingsForm";
+import { getOwnerTicketSettings } from "@/features/printing/server/ticket-settings";
+import { saveTicketSettingsAction } from "@/features/printing/server/ticket-settings-actions";
 
 export default async function OrganizationSettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -21,5 +24,6 @@ export default async function OrganizationSettingsPage({ params }: { params: Pro
       settings={organization}
       text={{ name: t("name"), currency: t("currency"), currencyHelp: t("currencyHelp"), currencyLocked: t("currencyLocked"), timezone: t("timezone"), timezoneLocked: t("timezoneLocked"), locale: t("locale"), country: t("country"), countryHelp: t("countryHelp"), save: t("save"), saving: t("saving"), saved: t("saved"), invalid: t("invalid"), unavailable: t("unavailable") }}
     />
+    <TicketSettingsForm locale={locale} settings={await getOwnerTicketSettings(locale)} action={saveTicketSettingsAction.bind(null, locale)} />
   </div>;
 }

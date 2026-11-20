@@ -507,7 +507,7 @@ test("staging GET stays read-only for empty, ready, blocked and existing draft s
     if (status === "draft") h.draft();
     const before = JSON.stringify([h.rows, h.detail, h.preview]);
     const tree = await h.page(status === "empty" ? {} : { orderId });
-    assert.match(text(tree), /Staging · solo consulta/);
+    assert.match(text(tree), /solo consulta.*creación de borradores.*emisión.*deshabilitadas/);
     const forms = nodes(tree).filter((n) => n.type === "form");
     assert.equal(forms.length, 1); assert.equal(forms[0].props.method, "get");
     assert.ok(!nodes(tree).some((n) => ["series", "confirm"].includes(n.props?.name)));
@@ -566,4 +566,22 @@ test("staging cannot retrieve another tenant's order or issued document", async 
 test("read-only staging explanation is available in all five UI locales", () => {
   const { billingSimplifiedUiCopy } = loadPreviewModule(copyPath);
   for (const locale of ["es", "it", "en", "fr", "de"]) assert.ok(billingSimplifiedUiCopy(locale).readOnly?.trim());
+});
+
+test("retired B1 UAT opt-in cannot enable release reads or mutations", async () => {
+  const options = { env: { PHOENIX_BILLING_SIMPLIFIED_UI: "phoenix-b1-uat-001" },
+    cwd: "/Volumes/DEV/Phoenix-B1-UAT-001/runtime/web", url: "http://127.0.0.1:58421", config: 'project_id = "phoenix-b1-uat-001"' };
+  for (const overrides of [{}, { url: "http://127.0.0.1:58321", cwd: `${root}/runtime/web`, config: `project_id = "${lab}"` },
+    { env: { ...options.env, VERCEL: "1" } },
+    { env: { PHOENIX_BILLING_SIMPLIFIED_UI: lab } },
+    { env: { PHOENIX_BILLING_SIMPLIFIED_UI: "phoenix-staging-readonly-001", VERCEL: "1", VERCEL_ENV: "preview", VERCEL_PROJECT_ID: stagingEnv.VERCEL_PROJECT_ID } }]) {
+    const h = harness({ ...options, ...overrides });
+    for (const organizationId of [orgA, orgB, stagingOrg, "real-tenant"]) {
+      assert.equal(await h.enabled(organizationId), false);
+      assert.equal(await h.mutationEnabled(organizationId), false);
+    }
+    for (const action of ["prepare", "issue"]) await assert.rejects(h.action(action), /billing_simplified_ui_disabled/);
+    assert.equal(mutations(h).length, 0);
+    assert.ok(!h.calls.includes("client") && !h.calls.includes("bridge"));
+  }
 });

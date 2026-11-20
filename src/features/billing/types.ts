@@ -1,3 +1,4 @@
+import type { TicketSchedule } from "@/features/printing/ticket-settings";
 export const BILLING_DOCUMENT_STATUSES = ["draft", "issued", "cancelled"] as const;
 export const BILLING_FISCAL_DOCUMENT_TYPES = ["ordinaria", "simplificada"] as const;
 export const BILLING_PAYMENT_STATUSES = ["draft", "unpaid", "partially_paid", "paid", "cancelled"] as const;
@@ -45,6 +46,11 @@ export type BillingCustomerContext = {
 };
 
 export type BillingInvoice = {
+  ticketFooter?: string | null;
+  ticketSpecialMessage?: string | null;
+  ticketPresentationVersion?: number | null;
+  ticketTimezone?: string | null;
+  ticketScheduleByOrder?: Record<string, TicketSchedule | null>;
   cancelledAt: string | null;
   cancellationReason: string | null;
   createdAt: string;

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { BillingSimplifiedDraftDocument, BillingSimplifiedIssuedDocument } from "@/features/billing/simplified-document";
+import { ticketText, type TicketSchedule } from "@/features/printing/ticket-settings";
 import type { OrganizationBrandingSettings } from "@/features/branding/types";
 import { formatTaxRate } from "@/features/billing/tax-rate";
 import { formatCurrency, formatQuantity } from "@/lib/number-format";
@@ -17,8 +18,10 @@ export type BillingSimplifiedTicketProps = {
     branding?: Pick<OrganizationBrandingSettings, "logoPath" | "logoUrl">;
     // Optional current service conditions, not an immutable fiscal field.
     serviceConditions?: string | null;
+    specialMessage?: string | null;
     isSharedWalkIn?: boolean;
     payment?: { paidAmount: number; outstandingAmount: number; methodLabel?: string };
+    scheduleByOrder?: Readonly<Record<string, TicketSchedule | null>>;
     pickupByOrder?: Readonly<Record<string, string | null>>;
   };
   // Explicit examples for an isolated preview, never a generated fiscal number.
@@ -71,17 +74,38 @@ const styles = `
 }
 `;
 
+const customerStyles = `
+.customer-design .customer-order { margin:0 0 3mm; padding:2mm 0; border-block:2px solid #111; overflow-wrap:anywhere; }
+.customer-design .customer-order strong { display:block; font-size:16px; line-height:1.3; }
+.customer-design .customer-order p { font-size:13px; font-weight:bold; }
+.customer-design .customer-order p.customer-ready-date { font-size:11px; font-weight:normal; }
+.customer-design .simplified-special-message { margin:0; padding:2mm 3mm; border-top:1px dashed #555; overflow-wrap:anywhere; break-inside:auto; }
+.customer-design .simplified-special-message h2 { font-size:11px; margin:0 0 1mm; }
+.customer-design .simplified-special-message p { margin:0; white-space:pre-wrap; orphans:3; widows:3; }
+@media print {
+ body:has(.customer-design) { margin:0!important; padding:0!important; background:white!important; }
+ body:has(.customer-design) *:has(.billing-simplified-ticket) { display:contents!important; }
+ body:has(.customer-design) *:not(.billing-simplified-ticket):not(.billing-simplified-ticket *):not(:has(.billing-simplified-ticket)) { display:none!important; }
+ .customer-design { background:white; border:0; }
+ .customer-design .simplified-special-message { padding:2mm 1mm; }
+ .customer-design .customer-order { break-inside:avoid; }
+}
+`;
+
 const present = (value: string | null | undefined) => Boolean(value?.trim());
 const validDate = (value: string | null | undefined) => Boolean(value && Number.isFinite(Date.parse(value)));
 
 export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, presentation = {}, demonstration, preview = false }: BillingSimplifiedTicketProps) {
   const copy = simplifiedTicketCopy[locale.split("-")[0] as keyof typeof simplifiedTicketCopy] ?? simplifiedTicketCopy.es;
-  const { document, issuer, recipient, items, tax, totals, orders } = snapshot;
-  // The caller resolves this exact persisted issuer path through the existing
-  // branding storage helper, as for REC; unrelated tenant branding is ignored.
-  const logoUrl = present(issuer.logoPath) && presentation.branding?.logoPath === issuer.logoPath
-    ? presentation.branding.logoUrl : null;
-  const serviceConditions = presentation.serviceConditions?.trim() ? presentation.serviceConditions : null;
+  presentation = { ...snapshot.presentation, ...presentation,
+    ...(snapshot.fiscalUseAllowed && snapshot.presentation ? {
+      serviceConditions: snapshot.presentation.serviceConditions,
+      specialMessage: snapshot.presentation.specialMessage ?? null,
+      scheduleByOrder: snapshot.presentation.scheduleByOrder,
+    } : {}),
+  };
+  if (snapshot.fiscalUseAllowed && snapshot.presentation?.timeZone) timeZone = snapshot.presentation.timeZone;
+  const { document, issuer, recipient, items, tax, totals } = snapshot;
   const issuedSource = snapshot.fiscalUseAllowed === true && document.fiscalDocumentType === "simplificada"
     && document.status === "issued" && present(document.number) && validDate(document.issuedAt)
     && !preview && !demonstration;
@@ -95,12 +119,8 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
   ] as const) if (!present(value)) missing.push(label);
   if (!preview && !present(visibleNumber)) missing.push(copy.number);
   if (!preview && !validDate(visibleDate)) missing.push(copy.date);
-  let zoneValid = true;
-  try { new Intl.DateTimeFormat(locale, { timeZone }); } catch { zoneValid = false; missing.push(copy.timezone); }
+  try { new Intl.DateTimeFormat(locale, { timeZone }); } catch { missing.push(copy.timezone); }
   const currencyValid = /^[A-Z]{3}$/.test(totals.currency ?? "");
-  const money = (amount: number) => currencyValid && Number.isFinite(amount) ? formatCurrency(amount, totals.currency, locale) : "—";
-  const date = (value?: string | null) => zoneValid && validDate(value)
-    ? formatOrganizationDateTime(value!, locale, timeZone) : "—";
   const sourceValid = issuedSource || (snapshot.fiscalUseAllowed === false && document.fiscalDocumentType === "simplificada"
     && document.status === "draft" && document.number === null && document.issuedAt === null);
   if (!sourceValid) missing.push(copy.source);
@@ -118,22 +138,66 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
       <strong>{preview ? copy.preview : demonstration ? copy.demo : copy.draft}</strong>
       {missing.length ? <><p>{copy.incomplete}</p><ul>{missing.map((field) => <li key={field}>{field}</li>)}</ul></> : null}
     </aside> : null}
-    {sourceValid && (!issuedSource || issued) ? <div className="print-sheet print-receipt-sheet print-receipt-sheet-80mm simplified-paper">
-      <article className="simplified-fiscal" aria-label={preview ? copy.preview : copy.title}>
+    {sourceValid && (!issuedSource || issued) ? <TicketPaper snapshot={snapshot} locale={locale} timeZone={timeZone} presentation={presentation}
+      customerDesign={snapshot.presentation?.version === 2} preview={preview} visibleNumber={visibleNumber} visibleDate={visibleDate} series={document.series} /> : null}
+  </div>;
+}
+
+// A single paper layout for Billing snapshots and unpaid operational orders.
+// The operational input has no invoice type, fiscal number or tax calculation.
+export type TicketPaperData = Pick<BillingSimplifiedDraftDocument, "issuer" | "recipient" | "totals" | "orders"> & {
+  items: Array<Pick<BillingSimplifiedDraftDocument["items"][number], "id" | "description" | "quantity" | "unitPrice" | "lineTotal"> & { discountAmount: number | null; unitType: string }>;
+  tax?: BillingSimplifiedDraftDocument["tax"];
+};
+function TicketDates({ schedule, locale, date, prominent = false }: { prominent?: boolean; schedule: TicketSchedule; locale: string; date: (value: string | null) => string }) {
+  const copy = ticketText(locale);
+  return <>{schedule.readyAt ? <p className={prominent ? "customer-ready-date" : undefined}>{copy.ready}: {date(schedule.readyAt)}</p> : null}
+    {schedule.pickupAt ? <p>{copy.pickup}: {date(schedule.pickupAt)}</p> : null}
+    {schedule.deliveryAt ? <p>{copy.delivery}: {date(schedule.deliveryAt)}</p> : null}</>;
+}
+function TicketPaper({ snapshot, locale, timeZone, presentation = {}, preview = false, visibleNumber, visibleDate, series, operational = false, customerDesign = false }: {
+  snapshot: TicketPaperData; locale: string; timeZone: string; presentation?: BillingSimplifiedTicketProps["presentation"];
+  customerDesign?: boolean; preview?: boolean; visibleNumber?: string | null; visibleDate?: string | null; series?: string; operational?: boolean;
+}) {
+  const copy = simplifiedTicketCopy[locale.split("-")[0] as keyof typeof simplifiedTicketCopy] ?? simplifiedTicketCopy.es;
+  const operationalCopy = ticketText(locale);
+  const { issuer, recipient, items, tax, totals, orders } = snapshot;
+  let zoneValid = true;
+  try { new Intl.DateTimeFormat(locale, { timeZone }); } catch { zoneValid = false; }
+  const currencyValid = /^[A-Z]{3}$/.test(totals.currency);
+  // The caller resolves this exact persisted issuer path through the existing
+  // branding storage helper, as for REC; unrelated tenant branding is ignored.
+  const logoUrl = present(issuer.logoPath) && presentation.branding?.logoPath === issuer.logoPath
+    ? presentation.branding.logoUrl : null;
+  const serviceConditions = presentation.serviceConditions?.trim() ? presentation.serviceConditions : null;
+  const specialMessage = presentation.specialMessage?.trim() ? presentation.specialMessage : null;
+  const money = (amount: number) => currencyValid && Number.isFinite(amount) ? formatCurrency(amount, totals.currency, locale) : "—";
+  const date = (value?: string | null) => zoneValid && validDate(value)
+    ? formatOrganizationDateTime(value!, locale, timeZone) : "—";
+  return <div className={`print-sheet print-receipt-sheet print-receipt-sheet-80mm simplified-paper${customerDesign ? " customer-design" : ""}`}>
+      {customerDesign ? <style>{customerStyles}</style> : null}
+      <article className="simplified-fiscal" aria-label={operational ? operationalCopy.operational : preview ? copy.preview : copy.title}>
         <header className="print-brand-header">
           {logoUrl ? <Image className="print-brand-logo" src={logoUrl} alt={issuer.legalName ?? copy.issuer} width={160} height={64} unoptimized /> : null}
           <h1>{issuer.legalName || "—"}</h1>
-          <p>{copy.taxId}: {issuer.taxId || "—"}</p>
+          {!operational || issuer.taxId ? <p>{copy.taxId}: {issuer.taxId || "—"}</p> : null}
           <p>{[issuer.addressLine1, issuer.addressLine2].filter(Boolean).join(", ") || "—"}</p>
           <p>{[issuer.postalCode, issuer.city, issuer.region, issuer.countryCode].filter(Boolean).join(" ")}</p>
           {[issuer.phone, issuer.email].filter(Boolean).map((contact) => <p key={contact}>{contact}</p>)}
         </header>
         <section className="simplified-title">
-          <h2>{preview ? copy.preview : copy.title}</h2>
-          <strong>{visibleNumber || "—"}</strong>
-          <p>{copy.series}: {document.series || "—"}</p>
-          <p>{copy.date}: {date(visibleDate)}</p>
+          <h2>{operational ? operationalCopy.operational : preview ? copy.preview : copy.title}</h2>
+          {operational ? !customerDesign && orders.map((order) => <strong key={order.id}>{copy.order}: {order.number}</strong>) : <>
+            <strong>{visibleNumber || "—"}</strong>
+            <p>{copy.series}: {series || "—"}</p>
+            <p>{copy.date}: {date(visibleDate)}</p>
+          </>}
         </section>
+        {customerDesign ? <section className="customer-order" aria-label={copy.order}>
+          {orders.map((order) => <div key={order.id}><strong>{copy.order}: {order.number}</strong>
+            {presentation.scheduleByOrder?.[order.id] ? <TicketDates schedule={presentation.scheduleByOrder[order.id]!} locale={locale} date={date} prominent /> : null}
+          </div>)}
+        </section> : null}
         <section className="simplified-recipient" aria-label={copy.recipient}>
           {recipient ? <><strong>{recipient.name || "—"}</strong>
             {recipient.taxId ? <p>{copy.taxId}: {recipient.taxId}</p> : null}
@@ -146,14 +210,14 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
           <thead><tr><th scope="col">{copy.quantity}</th><th scope="col">{copy.unitPrice}</th><th scope="col">{copy.discount}</th><th scope="col">{copy.amount}</th></tr></thead>
           {items.map((item) => <tbody key={item.id}>
             <tr><td colSpan={4} className="simplified-service">{item.description}</td></tr>
-            <tr className="simplified-values"><td>{formatQuantity(item.quantity, locale)} {copy[item.unitType] ?? item.unitType}</td><td>{money(item.unitPrice)}</td><td>{money(item.discountAmount)}</td><td>{money(item.lineTotal)}</td></tr>
+            <tr className="simplified-values"><td>{formatQuantity(item.quantity, locale)} {copy[item.unitType as "piece" | "weight"] ?? item.unitType}</td><td>{money(item.unitPrice)}</td><td>{item.discountAmount === null ? "—" : money(item.discountAmount)}</td><td>{money(item.lineTotal)}</td></tr>
           </tbody>)}
         </table>
         <dl className="simplified-totals">
           <div><dt>{copy.subtotal}</dt><dd>{money(totals.subtotal)}</dd></div>
           <div><dt>{copy.discount}</dt><dd>{money(totals.discount)}</dd></div>
-          <div><dt>{copy.base}</dt><dd>{money(tax.taxableBase)}</dd></div>
-          <div><dt>IGIC ({Number.isFinite(tax.rate) ? formatTaxRate(tax.rate, locale) : "—"}%)</dt><dd>{money(tax.amount)}</dd></div>
+          {tax ? <><div><dt>{copy.base}</dt><dd>{money(tax.taxableBase)}</dd></div>
+          <div><dt>IGIC ({Number.isFinite(tax.rate) ? formatTaxRate(tax.rate, locale) : "—"}%)</dt><dd>{money(tax.amount)}</dd></div></> : null}
           <div className="simplified-total"><dt>{copy.total}</dt><dd>{money(totals.total)}</dd></div>
         </dl>
         <p className="simplified-included">{copy.included}</p>
@@ -164,11 +228,21 @@ export function BillingSimplifiedTicket({ document: snapshot, locale, timeZone, 
           <div><dt>{copy.paid}</dt><dd>{presentation.payment ? money(presentation.payment.paidAmount) : copy.unavailable}</dd></div>
           <div><dt>{copy.outstanding}</dt><dd>{presentation.payment ? money(presentation.payment.outstandingAmount) : copy.unavailable}</dd></div>
           {presentation.payment?.methodLabel ? <div><dt>{copy.method}</dt><dd>{presentation.payment.methodLabel}</dd></div> : null}
-          {orders.map((order) => <div key={order.id}><dt>{copy.order}</dt><dd>{order.number}
+          {!customerDesign && orders.map((order) => <div key={order.id}><dt>{copy.order}</dt><dd>{order.number}
+            {presentation.scheduleByOrder?.[order.id] ? <TicketDates schedule={presentation.scheduleByOrder[order.id]!} locale={locale} date={date} /> : null}
             {presentation.pickupByOrder?.[order.id] ? <p>{copy.pickup}: {date(presentation.pickupByOrder[order.id])}</p> : null}</dd></div>)}
         </dl>
       </section>
+      {specialMessage ? <section className="simplified-special-message" aria-label={operationalCopy.specialMessage}><h2>{operationalCopy.specialMessage}</h2><p>{specialMessage}</p></section> : null}
       {serviceConditions ? <footer className="simplified-terms"><p>{serviceConditions}</p></footer> : null}
-    </div> : null}
+    </div>;
+}
+
+export function OperationalOrderTicket({ data, locale, timeZone, presentation }: {
+  data: TicketPaperData; locale: string; timeZone: string; presentation: BillingSimplifiedTicketProps["presentation"];
+}) {
+  return <div className="order-print-document order-print-receipt order-print-receipt-80mm billing-simplified-ticket" lang={locale} data-fiscal-issued="false">
+    <style>{styles}</style>
+    <TicketPaper snapshot={data} locale={locale} timeZone={timeZone} presentation={presentation} operational customerDesign />
   </div>;
 }
